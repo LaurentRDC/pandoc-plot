@@ -1,0 +1,77 @@
+name:           pandoc-plot
+version:        1.0.0.0
+cabal-version:  >= 1.12
+synopsis:       A Pandoc filter to include figures generated from code blocks
+description:    A Pandoc filter to include figures generated from code blocks. Keep the document and Python code in the same location. Output is captured and included as a figure.
+category:       Documentation
+homepage:       https://github.com/LaurentRDC/pandoc-plot#readme
+bug-reports:    https://github.com/LaurentRDC/pandoc-plot/issues
+author:         Laurent P. René de Cotret
+maintainer:     Laurent P. René de Cotret
+license:        GPL-2
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    CHANGELOG.md
+    LICENSE
+    README.md
+    stack.yaml
+
+source-repository head
+    type: git
+    location: https://github.com/LaurentRDC/pandoc-plot
+
+library
+    exposed-modules:
+        Text.Pandoc.Filter.Plot
+        Text.Pandoc.Filter.Plot.Internal
+    other-modules:
+        Paths_pandoc_plot
+        Text.Pandoc.Filter.Plot.Types
+        Text.Pandoc.Filter.Plot.Parse
+        Text.Pandoc.Filter.Plot.Renderers
+        Text.Pandoc.Filter.Plot.Renderers.Matplotlib
+        Text.Pandoc.Filter.Plot.Renderers.Plotly
+    hs-source-dirs:
+        src
+    ghc-options: -Wall -Wcompat
+    build-depends:
+          base               >=4 && <5
+        , containers
+        , directory
+        , data-default-class >= 0.1.2
+        , filepath           >= 1.4   && < 2
+        , hashable           >= 1     && < 2
+        , pandoc             >= 2     && < 3
+        , pandoc-types       >=1.12   && < 2
+        , shakespeare        >= 2.0   && < 3
+        , temporary
+        , text               >= 1     && < 2
+        , typed-process      >= 0.2.1 && < 1
+        , yaml               >= 0.8   && < 1
+        , mtl                >= 2.2   && < 2.3
+    default-language: Haskell2010
+
+executable pandoc-plot
+    main-is: Main.hs
+    other-modules:
+        ManPage
+        Paths_pandoc_plot
+    hs-source-dirs:
+        executable
+    ghc-options: -Wall -Wcompat -rtsopts -threaded -with-rtsopts=-N
+    build-depends:
+          base                  >=4 && <5
+        , directory
+        , data-default-class    >= 0.1.2
+        , deepseq
+        , filepath
+        , open-browser          >= 0.2.1.0
+        , optparse-applicative  >= 0.14 && < 1
+        , pandoc
+        , pandoc-plot
+        , pandoc-types          >1.12 && <2
+        , template-haskell      > 2.7 && < 3
+        , temporary
+        , text
+    default-language: Haskell2010
