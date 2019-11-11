@@ -54,7 +54,6 @@ import           Text.Pandoc.Walk                   (walkM)
 import           Text.Pandoc.Filter.Plot.Internal
 import           Text.Pandoc.Filter.Plot.Renderers
 
-type Configuration = ()
 type PandocPlotError = ()
 
 

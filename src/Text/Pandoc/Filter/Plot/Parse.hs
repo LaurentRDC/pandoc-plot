@@ -51,28 +51,8 @@ import           Text.Pandoc.Readers             (readMarkdown)
 
 import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Renderers
+import           Text.Pandoc.Filter.Plot.Configuration
 
-
--- | Keys that pandoc-plot will look for in code blocks. These are only exported for testing purposes.
-directoryKey, captionKey, dpiKey, includePathKey, saveFormatKey, withLinksKey :: String
-directoryKey     = "directory"
-captionKey       = "caption"
-dpiKey           = "dpi"
-includePathKey   = "include"
-saveFormatKey    = "format"
-withLinksKey     = "links"
-
-
--- | list of all keys related to pandoc-plot that
--- can be specified in source material.
-inclusionKeys :: [String]
-inclusionKeys = [ directoryKey
-                , captionKey
-                , dpiKey
-                , includePathKey
-                , saveFormatKey
-                , withLinksKey
-                ]
 
 renderer :: Attr -> Maybe Renderer
 renderer attrs = listToMaybe $ filter (\r -> rendererName r `elem` attrs) attrs
@@ -101,7 +81,6 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = figureSpec <$> (renderer
                     , script       = mconcat $ intersperse "\n" [header, includeScript, T.pack content]
                     , saveFormat   = fromMaybe (defaultSaveFormat config) $ join $ saveFormatFromString <$> Map.lookup saveFormatKey attrs'
                     , directory    = makeValid $ Map.findWithDefault (defaultDirectory config) directoryKey attrs'
-                    , dpi          = fromMaybe (defaultDPI config) $ read <$> Map.lookup dpiKey attrs'
                     , renderer     = lib
                     , blockAttrs   = (id', filter (\c -> c `notElem` ["pyplot", "plotly"]) cls, filteredAttrs)
                     }

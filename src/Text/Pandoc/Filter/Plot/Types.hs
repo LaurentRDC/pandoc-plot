@@ -21,7 +21,6 @@ import           Data.Default.Class     (Default, def)
 import           Data.Hashable          (Hashable(..))
 import           Data.Semigroup         as Sem
 import           Data.Text              (Text, pack)
-import           Data.Yaml              (ToJSON, object, toJSON, (.=))
 
 import           GHC.Generics           (Generic)
 
@@ -61,7 +60,6 @@ data Renderer = Renderer
 
 instance Hashable Renderer where
     hashWithSalt s = hashWithSalt s . rendererName
-
 
 -- | Generated figure file format supported by pandoc-plot.
 -- Note: all formats are supported by Matplotlib, but not all

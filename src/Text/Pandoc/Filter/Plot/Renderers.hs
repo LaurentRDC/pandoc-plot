@@ -13,7 +13,7 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , module Text.Pandoc.Filter.Plot.Renderers.Plotly
  ) where
 
-import Text.Pandoc.Filter.Plot.Types
+import Text.Pandoc.Filter.Plot.Types                (Renderer)
 import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import Text.Pandoc.Filter.Plot.Renderers.Plotly
 

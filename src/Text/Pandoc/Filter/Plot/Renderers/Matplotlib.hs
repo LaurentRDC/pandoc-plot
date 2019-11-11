@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE CPP               #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2019
@@ -10,9 +11,7 @@ Stability   : internal
 Portability : portable
 -}
 
-module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (
-      matplotlib
-) where
+module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (matplotlib) where
 
 import           Text.Pandoc.Filter.Plot.Internal
 import           Text.Shakespeare.Text           (st)
@@ -30,3 +29,4 @@ captureMatplotlib FigureSpec{..} fname = [st|
 import matplotlib.pyplot as plt
 plt.savefig(r"#{fname}", dpi=#{dpi})
 |]
+

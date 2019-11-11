@@ -28,6 +28,7 @@ library
     other-modules:
         Paths_pandoc_plot
         Text.Pandoc.Filter.Plot.Types
+        Text.Pandoc.Filter.Plot.Configuration
         Text.Pandoc.Filter.Plot.Parse
         Text.Pandoc.Filter.Plot.Renderers
         Text.Pandoc.Filter.Plot.Renderers.Matplotlib

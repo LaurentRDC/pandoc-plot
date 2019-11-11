@@ -12,6 +12,8 @@ This module re-exports internal pandoc-plot functionality.
 
 module Text.Pandoc.Filter.Plot.Internal (
       module Text.Pandoc.Filter.Plot.Types
+    , module Text.Pandoc.Filter.Plot.Configuration 
  ) where
 
-import           Text.Pandoc.Filter.Plot.Types
+import Text.Pandoc.Filter.Plot.Types
+import Text.Pandoc.Filter.Plot.Configuration

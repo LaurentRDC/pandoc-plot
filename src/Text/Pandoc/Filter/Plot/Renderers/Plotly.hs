@@ -10,9 +10,7 @@ Stability   : internal
 Portability : portable
 -}
 
-module Text.Pandoc.Filter.Plot.Renderers.Plotly (
-      plotly
-) where
+module Text.Pandoc.Filter.Plot.Renderers.Plotly (plotly) where
 
 import           Text.Pandoc.Filter.Plot.Internal
 import           Text.Shakespeare.Text           (st)
