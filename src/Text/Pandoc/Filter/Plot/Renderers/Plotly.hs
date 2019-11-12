@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2019
@@ -12,8 +12,7 @@ Portability : portable
 
 module Text.Pandoc.Filter.Plot.Renderers.Plotly (plotly) where
 
-import           Text.Pandoc.Filter.Plot.Internal
-import           Text.Shakespeare.Text           (st)
+import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 plotly :: Renderer
 plotly = Renderer {

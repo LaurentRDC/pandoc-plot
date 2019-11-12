@@ -31,6 +31,7 @@ library
         Text.Pandoc.Filter.Plot.Configuration
         Text.Pandoc.Filter.Plot.Parse
         Text.Pandoc.Filter.Plot.Renderers
+        Text.Pandoc.Filter.Plot.Renderers.Prelude
         Text.Pandoc.Filter.Plot.Renderers.Matplotlib
         Text.Pandoc.Filter.Plot.Renderers.Plotly
     hs-source-dirs:
