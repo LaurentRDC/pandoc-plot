@@ -44,8 +44,8 @@ library
         , data-default-class >= 0.1.2
         , filepath           >= 1.4   && < 2
         , hashable           >= 1     && < 2
-        , pandoc             >= 2     && < 3
-        , pandoc-types       >=1.12   && < 2
+        , pandoc             >= 2.8   && < 3
+        , pandoc-types       >= 1.20  && < 2
         , shakespeare        >= 2.0   && < 3
         , temporary
         , text               >= 1     && < 2

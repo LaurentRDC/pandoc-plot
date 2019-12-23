@@ -18,6 +18,7 @@ plotly :: Renderer
 plotly = Renderer {
       rendererName = "plotly"
     , rendererSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
+    , allowedInclusionKeys = mempty
     , capture = capturePlotly
 }
 

@@ -11,6 +11,7 @@ Portability : portable
 module Text.Pandoc.Filter.Plot.Renderers (
       module Text.Pandoc.Filter.Plot.Renderers.Matplotlib
     , module Text.Pandoc.Filter.Plot.Renderers.Plotly
+    , renderers
  ) where
 
 import Text.Pandoc.Filter.Plot.Types                (Renderer)

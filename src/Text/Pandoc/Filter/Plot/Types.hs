@@ -19,19 +19,22 @@ import           Control.Monad.Reader
 import           Data.Char              (toLower)
 import           Data.Default.Class     (Default, def)
 import           Data.Hashable          (Hashable(..))
-import           Data.Semigroup         as Sem
-import           Data.Text              (Text, pack)
+import           Data.Text              (Text)
 
 import           GHC.Generics           (Generic)
 
 import           Text.Pandoc.Definition (Attr)
 
 
+
 -- | Monad in which to run pandoc-plot computations
-type PlotM a = ReaderT () IO a
+type PlotM a = ReaderT Configuration IO a
 
 
 type Script = Text
+
+
+type InclusionKey = Text
 
 
 -- | Datatype containing all parameters required to run pandoc-plot.
@@ -39,27 +42,46 @@ type Script = Text
 -- It is assumed that once a @FigureSpec@ has been created, no configuration
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
-    { caption        :: String     -- ^ Figure caption.
-    , withLinks      :: Bool       -- ^ Append links to source code and high-dpi figure to caption.
-    , script         :: Script     -- ^ Source code for the figure.
-    , saveFormat     :: SaveFormat -- ^ Save format of the figure.
-    , directory      :: FilePath   -- ^ Directory where to save the file.
-    , dpi            :: Int        -- ^ Dots-per-inch of figure.
-    , figureRenderer :: Renderer   -- ^ Rendering library.
-    , blockAttrs     :: Attr       -- ^ Attributes not related to @pandoc-plot@ will be propagated.
+    { caption        :: Text           -- ^ Figure caption.
+    , withLinks      :: Bool           -- ^ Append links to source code and high-dpi figure to caption.
+    , script         :: Script         -- ^ Source code for the figure.
+    , saveFormat     :: SaveFormat     -- ^ Save format of the figure.
+    , directory      :: FilePath       -- ^ Directory where to save the file.
+    , dpi            :: Int            -- ^ Dots-per-inch of figure.
+    , figureRenderer :: Renderer       -- ^ Rendering library.
+    , extraAttrs     :: [(Text, Text)] -- ^ Renderer-specific extra attributes.
+    , blockAttrs     :: Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
     } deriving Generic
 
 instance Hashable FigureSpec -- From Generic
 
 
 data Renderer = Renderer 
-    { rendererName :: Text
-    , rendererSaveFormats :: [SaveFormat]
-    , capture :: FigureSpec -> FilePath -> Script
+    { rendererName         :: Text
+    , rendererSaveFormats  :: [SaveFormat]
+    , allowedInclusionKeys :: [InclusionKey]
+    , capture              :: FigureSpec -> FilePath -> Script
     }
 
 instance Hashable Renderer where
     hashWithSalt s = hashWithSalt s . rendererName
+
+data Configuration = Configuration
+    { defaultDirectory    :: FilePath
+    , defaultWithLinks    :: Bool
+    , defaultDPI          :: Int
+    , defaultSaveFormat   :: SaveFormat
+    , pythonInterpreter   :: String
+    }
+
+instance Default Configuration where
+    def = Configuration
+        { defaultDirectory   = "generated/"
+        , defaultDPI         = 80
+        , defaultWithLinks   = True
+        , defaultSaveFormat  = PNG
+        , pythonInterpreter  = defaultPythonInterpreter
+    }
 
 -- | Generated figure file format supported by pandoc-plot.
 -- Note: all formats are supported by Matplotlib, but not all
@@ -102,3 +124,12 @@ saveFormatFromString s
 -- | Save format file extension
 extension :: SaveFormat -> String
 extension fmt = mconcat [".", fmap toLower . show $ fmt]
+
+-- | Default interpreter should be Python 3, which has a different
+-- name on Windows ("python") vs Unix ("python3")
+defaultPythonInterpreter :: String
+#if defined(mingw32_HOST_OS)
+defaultPythonInterpreter = "python"
+#else
+defaultPythonInterpreter = "python3"
+#endif
