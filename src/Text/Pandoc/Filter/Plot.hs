@@ -5,7 +5,7 @@
 Module      : $header$
 Description : Pandoc filter to create Matplotlib/Plotly figures from code blocks
 Copyright   : (c) Laurent P René de Cotret, 2019
-License     : MIT
+License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
 Stability   : stable
 Portability : portable
