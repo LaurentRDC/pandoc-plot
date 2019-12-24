@@ -44,6 +44,7 @@ import           Text.Pandoc.Definition               (Block (..), Inline,
 import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Parse        (captionReader)
 
+
 -- Run script as described by the spec
 runTempScript :: FigureSpec -> PlotM ScriptResult
 runTempScript spec@FigureSpec{..} = do
@@ -60,6 +61,7 @@ runTempScript spec@FigureSpec{..} = do
     where
         scriptWithCapture = (capture figureRenderer) spec (figurePath spec)
 
+        
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
 runScriptIfNecessary spec = do

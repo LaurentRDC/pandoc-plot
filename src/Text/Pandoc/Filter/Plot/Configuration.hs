@@ -70,7 +70,6 @@ data ConfigPrecursor
         , defaultWithLinks_   :: Bool
         , defaultDPI_         :: Int
         , defaultSaveFormat_  :: String
-        , pythonInterpreter_  :: String
         }
 
 instance FromJSON ConfigPrecursor where
@@ -83,3 +82,15 @@ instance FromJSON ConfigPrecursor where
             <*> v .:? "python_interpreter"  .!= defaultPythonInterpreter
 
     parseJSON _ = fail "Could not parse the configuration"
+
+renderConfiguration :: ConfigPrecursor -> IO Configuration
+renderConfiguration prec = do
+    includeScript <- fromMaybe mempty $ TIO.readFile <$> defaultIncludePath_ prec
+    let saveFormat' = fromString $ defaultSaveFormat_ prec
+    return $ Configuration
+        { defaultDirectory     = defaultDirectory_ prec
+        , defaultIncludeScript = includeScript
+        , defaultSaveFormat    = saveFormat'
+        , defaultWithLinks     = defaultWithLinks_ prec
+        , defaultDPI           = defaultDPI_ prec
+        }
