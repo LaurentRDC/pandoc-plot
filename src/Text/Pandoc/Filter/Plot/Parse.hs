@@ -14,7 +14,8 @@ This module defines types and functions that help
 with keeping track of figure specifications
 -}
 module Text.Pandoc.Filter.Plot.Parse ( 
-    parseFigureSpec 
+      parseFigureSpec 
+    , captionReader
 ) where
 
 import           Control.Monad                   (join)
@@ -58,7 +59,13 @@ import           Text.Pandoc.Filter.Plot.Configuration
 -- Note that the @".pyplot"@ OR @.plotly@ class is required, but all other
 -- parameters are optional.
 parseFigureSpec :: Block -> PlotM (Maybe FigureSpec)
-parseFigureSpec (CodeBlock (id', cls, attrs) content) = figureSpec <$> renderer
+parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
+    let renderer = listToMaybe $ filter (\r -> rendererName r `elem` cls) renderers
+    case renderer of
+        Nothing -> return Nothing
+        Just r -> do
+            spec <- figureSpec r
+            return (Just spec)
     where
         renderer      = listToMaybe $ filter (\r -> rendererName r `elem` cls) renderers
         attrs'        = Map.fromList attrs
@@ -79,7 +86,7 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = figureSpec <$> renderer
                     , directory      = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory config) directoryKey attrs'
                     , dpi            = fromMaybe (defaultDPI config) $ (read . unpack) <$> Map.lookup dpiKey attrs'
                     , figureRenderer = renderer
-                    , extraAttrs     = mempty
+                    , extraAttrs     = mempty -- TODO: parse this
                     , blockAttrs     = (id', filter (\c -> c `notElem` (rendererName <$> renderers)) cls, filteredAttrs)
                     }
 
@@ -100,8 +107,8 @@ readerOptions = def
 
 -- | Read a figure caption in Markdown format. LaTeX math @$...$@ is supported,
 -- as are Markdown subscripts and superscripts.
-captionReader :: String -> Maybe [Inline]
-captionReader t = either (const Nothing) (Just . extractFromBlocks) $ runPure $ readMarkdown' (pack t)
+captionReader :: Text -> Maybe [Inline]
+captionReader t = either (const Nothing) (Just . extractFromBlocks) $ runPure $ readMarkdown' t
     where
         readMarkdown' = readMarkdown readerOptions
 

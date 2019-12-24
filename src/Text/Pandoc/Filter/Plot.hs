@@ -21,7 +21,7 @@ of the figure and the source code used to generate the figure.
 
 To trigger pandoc-plot, one of the following is __required__:
 
-    * @.plot@: Trigger pandoc-plot, rendering via the Matplotlib library
+    * @.matplotlib@: Trigger pandoc-plot, rendering via the Matplotlib library
     * @.plotly@: Trigger pandoc-plot, rendering via the Plotly library
 
 Here are the possible attributes what pandoc-plot understands:
@@ -53,25 +53,46 @@ import           Text.Pandoc.Walk                   (walkM)
 
 import           Text.Pandoc.Filter.Plot.Internal
 import           Text.Pandoc.Filter.Plot.Renderers
+import           Text.Pandoc.Filter.Plot.Scripting
+import           Text.Pandoc.Filter.Plot.Parse
 
-type PandocPlotError = ()
+-- | Possible errors returned by the filter
+data PandocPlotError
+    = ScriptError Int                 -- ^ Running script has yielded an error
+    | ScriptChecksFailedError String  -- ^ Script did not pass all checks
+    deriving (Eq)
+
+instance Show PandocPlotError where
+    show (ScriptError exitcode)        = "Script error: plot could not be generated. Exit code " <> (show exitcode)
+    show (ScriptChecksFailedError msg) = "Script did not pass all checks: " <> msg
+
 
 
 -- | Main routine to include plots.
 -- Code blocks containing the attributes @.plot@ or @.plotly@ are considered
 -- Python plotting scripts. All other possible blocks are ignored.
-makePlot' :: Block -> PlotM (Either (PandocPlotError) Block)
-makePlot' block = undefined
+makePlot' :: Block -> PlotM (Either PandocPlotError Block)
+makePlot' block = do
+    parsed <- parseFigureSpec block
+    maybe 
+        (return $ Right block)
+        (\s -> handleResult s <$> runScriptIfNecessary s)
+        parsed
+    where
+        handleResult _ (ScriptChecksFailed msg) = Left  $ ScriptChecksFailedError msg
+        handleResult _ (ScriptFailure code)     = Left  $ ScriptError code
+        handleResult spec ScriptSuccess         = Right $ toImage spec
 
 
 -- | Highest-level function that can be walked over a Pandoc tree.
 -- All code blocks that have the @.plot@ / @.plotly@ class will be considered
 -- figures.
-makePlot :: Block -> IO Block
-makePlot = undefined
+makePlot :: Configuration -> Block -> IO Block
+makePlot config block =
+    runReaderT (makePlot' block >>= either (fail . show) return) config 
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
 -- into figures. Default configuration is used.
-plotTransform :: Pandoc -> IO Pandoc
-plotTransform = walkM makePlot
+plotTransform :: Configuration -> Pandoc -> IO Pandoc
+plotTransform = walkM . makePlot

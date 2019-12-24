@@ -45,7 +45,4 @@ embedManual fmt = do
 
 embedManualHtml :: Q Exp
 embedManualHtml = do
-    t <- runIO $ fmap (either (error . show) id) $ P.runIO $ P.getDefaultTemplate "html5"
-    embedManual $ P.writeHtml5String P.def { P.writerTemplate = Just t
-                                           , P.writerHighlightStyle = Just pygments
-                                           }
+    embedManual $ P.writeHtml5String P.def { P.writerHighlightStyle = Just pygments }

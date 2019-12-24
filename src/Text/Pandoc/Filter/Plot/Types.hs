@@ -19,7 +19,9 @@ import           Control.Monad.Reader
 import           Data.Char              (toLower)
 import           Data.Default.Class     (Default, def)
 import           Data.Hashable          (Hashable(..))
+import           Data.List              (intersperse)
 import           Data.Text              (Text)
+import           Data.String            (IsString(..))
 
 import           GHC.Generics           (Generic)
 
@@ -32,6 +34,12 @@ type PlotM a = ReaderT Configuration IO a
 
 
 type Script = Text
+
+-- | Possible result of running a script
+data ScriptResult
+    = ScriptSuccess
+    | ScriptChecksFailed String
+    | ScriptFailure Int
 
 
 type InclusionKey = Text
@@ -60,6 +68,7 @@ data Renderer = Renderer
     { rendererName         :: Text
     , rendererSaveFormats  :: [SaveFormat]
     , allowedInclusionKeys :: [InclusionKey]
+    , command              :: FigureSpec -> String              -- Rendering command
     , capture              :: FigureSpec -> FilePath -> Script
     }
 
@@ -99,27 +108,25 @@ data SaveFormat
 
 instance Hashable SaveFormat -- From Generic
 
--- | Parse an image save format string
---
--- >>> saveFormatFromString ".png"
--- Just PNG
---
--- >>> saveFormatFromString "jpeg"
--- Just JPEG
---
--- >>> SaveFormatFromString "arbitrary"
--- Nothing
-saveFormatFromString :: String -> Maybe SaveFormat
-saveFormatFromString s
-    | s `elem` ["png", "PNG", ".png"] = Just PNG
-    | s `elem` ["pdf", "PDF", ".pdf"] = Just PDF
-    | s `elem` ["svg", "SVG", ".svg"] = Just SVG
-    | s `elem` ["eps", "EPS", ".eps"] = Just EPS
-    | s `elem` ["gif", "GIF", ".gif"] = Just GIF
-    | s `elem` ["jpg", "jpeg", "JPG", "JPEG", ".jpg", ".jpeg"] = Just JPG
-    | s `elem` ["tif", "tiff", "TIF", "TIFF", ".tif", ".tiff"] = Just TIF
-    | s `elem` ["webp", ".webp", "WebP", "WEBP"] = Just WEBP
-    | otherwise = Nothing
+
+instance IsString SaveFormat where
+    -- | An error is thrown if the save format cannot be parsed.
+    fromString s
+        | s `elem` ["png", "PNG", ".png"] = PNG
+        | s `elem` ["pdf", "PDF", ".pdf"] = PDF
+        | s `elem` ["svg", "SVG", ".svg"] = SVG
+        | s `elem` ["eps", "EPS", ".eps"] = EPS
+        | s `elem` ["gif", "GIF", ".gif"] = GIF
+        | s `elem` ["jpg", "jpeg", "JPG", "JPEG", ".jpg", ".jpeg"] = JPG
+        | s `elem` ["tif", "tiff", "TIF", "TIFF", ".tif", ".tiff"] = TIF
+        | s `elem` ["webp", "WEBP", ".webp"] = WEBP
+        | otherwise = error $ 
+                mconcat [ s
+                        , " is not one of valid save format : "
+                        , mconcat $ intersperse ", " $ show <$> saveFormats
+                        ]
+        where
+            saveFormats =  (enumFromTo minBound maxBound) :: [SaveFormat]
 
 -- | Save format file extension
 extension :: SaveFormat -> String
