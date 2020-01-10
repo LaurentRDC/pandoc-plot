@@ -55,7 +55,7 @@ runTempScript spec@FigureSpec{..} = do
         captureFragment <- capture spec (figurePath spec)
         return $ mconcat [script, "\n", captureFragment]
     liftIO $ T.writeFile scriptPath scriptWithCapture
-    command_ <- T.unpack <$> command spec
+    command_ <- T.unpack <$> command spec scriptPath
 
     ec <- liftIO $ runProcess . shell $ command_
     case ec of
@@ -64,7 +64,7 @@ runTempScript spec@FigureSpec{..} = do
 
         
 -- Run script as described by the spec, only if necessary
-runScriptIfNecessary :: RendererM m =>FigureSpec -> m ScriptResult
+runScriptIfNecessary :: RendererM m => FigureSpec -> m ScriptResult
 runScriptIfNecessary spec = do
     liftIO $ createDirectoryIfMissing True . takeDirectory $ figurePath spec
 
@@ -105,11 +105,14 @@ figurePath spec = normalise $ directory spec </> stem spec
     stem = flip addExtension ext . show . hash
     ext  = extension . saveFormat $ spec
 
-
+-- | Determine the temp script path from Figure specifications
+-- Note that for certain renderers, the appropriate file extension
+-- is important.
 tempScriptPath :: RendererM m => FigureSpec -> m FilePath
-tempScriptPath FigureSpec{..} = liftIO $ (</> hashedPath) <$> getCanonicalTemporaryDirectory
-    where
-        hashedPath = show . hash $ script
+tempScriptPath FigureSpec{..} = do
+    ext <- scriptExtension
+    let hashedPath = (show . hash $ script) <> ext
+    liftIO $ (</> hashedPath) <$> getCanonicalTemporaryDirectory
 
 
 -- | Determine the path to the source code that generated the figure.

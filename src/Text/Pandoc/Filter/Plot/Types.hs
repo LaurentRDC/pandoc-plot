@@ -40,6 +40,9 @@ class (Monad m, MonadIO m, MonadReader Configuration m) => RendererM m where
     -- parsing.
     name :: m Text
 
+    -- Extension for script files
+    scriptExtension :: m String
+
     -- | Save formats supported by this renderer.
     supportedSaveFormats :: m [SaveFormat]
 
@@ -55,10 +58,14 @@ class (Monad m, MonadIO m, MonadReader Configuration m) => RendererM m where
     parseExtraAttrs _ = return mempty
 
     -- | Generate the appropriate command-line command to generate a figure.
-    command :: FigureSpec -> m Text
+    command :: FigureSpec 
+            -> FilePath     -- ^ Location of the temporary script
+            -> m Text
 
     -- | Script fragment required to capture a figure.
-    capture :: FigureSpec -> FilePath -> m Script
+    capture :: FigureSpec 
+            -> FilePath     -- ^ Final location of the figure
+            -> m Script
 
 
 type Script = Text
