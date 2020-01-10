@@ -4,7 +4,7 @@
 {-|
 Module      : $header$
 Description : Pandoc filter to create Matplotlib/Plotly figures from code blocks
-Copyright   : (c) Laurent P René de Cotret, 2019
+Copyright   : (c) Laurent P René de Cotret, 2020
 License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
 Stability   : stable
@@ -52,7 +52,6 @@ import           Text.Pandoc.Definition
 import           Text.Pandoc.Walk                   (walkM)
 
 import           Text.Pandoc.Filter.Plot.Internal
-import           Text.Pandoc.Filter.Plot.Renderers
 import           Text.Pandoc.Filter.Plot.Scripting
 import           Text.Pandoc.Filter.Plot.Parse
 
@@ -67,11 +66,26 @@ instance Show PandocPlotError where
     show (ScriptChecksFailedError msg) = "Script did not pass all checks: " <> msg
 
 
+-- | Highest-level function that can be walked over a Pandoc tree.
+-- All code blocks that have the @.plot@ / @.plotly@ class will be considered
+-- figures.
+makePlot :: Configuration -> Block -> IO Block
+makePlot config block =
+    compose [ ((makeMatplotlib config) =<<)
+            , ((makePlotly config) =<<) ] 
+            (return block)
+
+
+-- | Walk over an entire Pandoc document, changing appropriate code blocks
+-- into figures. Default configuration is used.
+plotTransform :: Configuration -> Pandoc -> IO Pandoc
+plotTransform = walkM . makePlot
+
 
 -- | Main routine to include plots.
 -- Code blocks containing the attributes @.plot@ or @.plotly@ are considered
 -- Python plotting scripts. All other possible blocks are ignored.
-makePlot' :: Block -> PlotM (Either PandocPlotError Block)
+makePlot' :: RendererM m => Block -> m (Either PandocPlotError Block)
 makePlot' block = do
     parsed <- parseFigureSpec block
     maybe 
@@ -84,15 +98,18 @@ makePlot' block = do
         handleResult spec ScriptSuccess         = Right $ toImage spec
 
 
--- | Highest-level function that can be walked over a Pandoc tree.
--- All code blocks that have the @.plot@ / @.plotly@ class will be considered
--- figures.
-makePlot :: Configuration -> Block -> IO Block
-makePlot config block =
-    runReaderT (makePlot' block >>= either (fail . show) return) config 
+makeMatplotlib :: Configuration -> Block -> IO Block
+makeMatplotlib config block = 
+    runMatplotlib config (makePlot' block)
+    >>= either (fail . show) return
 
 
--- | Walk over an entire Pandoc document, changing appropriate code blocks
--- into figures. Default configuration is used.
-plotTransform :: Configuration -> Pandoc -> IO Pandoc
-plotTransform = walkM . makePlot
+makePlotly :: Configuration -> Block -> IO Block
+makePlotly config block = 
+    runPlotly config (makePlot' block)
+    >>= either (fail . show) return
+
+
+-- Compose a list of functions
+compose :: [r -> r] -> r -> r
+compose = flip (foldl (flip id))

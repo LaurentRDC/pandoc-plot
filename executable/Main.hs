@@ -18,16 +18,13 @@ import qualified Options.Applicative.Help.Pretty    as P
 import           System.Directory                   (doesFileExist)
 import           System.IO.Temp                     (writeSystemTempFile)
 
-import           Text.Pandoc.Filter.Plot          (SaveFormat (..),
-                                                     configuration,
-                                                     plotTransformWithConfig)
-import           Text.Pandoc.Filter.Plot.Internal (writeConfig)
+import           Text.Pandoc.Filter.Plot            (plotTransform)
 import           Text.Pandoc.JSON                   (toJSONFilter)
 
 import           Web.Browser                        (openBrowser)
 
 import qualified Data.Version                       as V
-import           Paths_pandoc_plot                (version)
+import           Paths_pandoc_plot                  (version)
 
 import           ManPage                            (embedManualHtml)
 
@@ -45,16 +42,12 @@ main = join $ execParser opts
 toJSONFilterWithConfig :: IO ()
 toJSONFilterWithConfig = do
     configExists <- doesFileExist ".pandoc-plot.yml"
-    config <- if configExists
-                then configuration ".pandoc-plot.yml"
-                else def
-    toJSONFilter (plotTransformWithConfig config)
+    config <- def
+    toJSONFilter (plotTransform config)
 
 
 data Flag = Version
-          | Formats
           | Manual
-          | Config
     deriving (Eq)
 
 
@@ -63,33 +56,18 @@ run = do
     versionP <- flag Nothing (Just Version) (long "version" <> short 'v'
                     <> help "Show version number and exit.")
 
-    formatsP <- flag Nothing (Just Formats) (long "formats" <> short 'f'
-                    <> help "Show supported output figure formats and exit.")
-
     manualP  <- flag Nothing (Just Manual)  (long "manual"  <> short 'm'
                     <> help "Open the manual page in the default web browser and exit.")
 
-    configP  <- flag Nothing (Just Config)  (long "write-example-config"
-                    <> help "Write the default configuration in '.pandoc-plot.yml', \
-                            \which you can subsequently customize, and exit. If '.pandoc-plot.yml' \
-                            \already exists, an error will be thrown. ")
-
     input    <- optional $ strArgument (metavar "AST")
-    return $ go (versionP <|> formatsP <|> manualP <|> configP) input
+    return $ go (versionP <|> manualP) input
     where
         go :: Maybe Flag -> Maybe String -> IO ()
         go (Just Version) _ = putStrLn (V.showVersion version)
-        go (Just Formats) _ = putStrLn . mconcat . intersperse ", " . fmap show $ supportedSaveFormats
         go (Just Manual)  _ = writeSystemTempFile "pandoc-plot-manual.html" (T.unpack manualHtml)
                                 >>= \fp -> openBrowser ("file:///" <> fp)
                                 >> return ()
-        go (Just Config) _  = writeConfig ".pandoc-plot.yml" def
         go Nothing _ = toJSONFilterWithConfig
-
-
-supportedSaveFormats :: [SaveFormat]
-supportedSaveFormats = enumFromTo minBound maxBound
-
 
 manualHtml :: T.Text
 manualHtml = T.pack $(embedManualHtml)

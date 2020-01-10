@@ -1,7 +1,7 @@
 
 {-|
 Module      : $header$
-Copyright   : (c) Laurent P René de Cotret, 2019
+Copyright   : (c) Laurent P René de Cotret, 2020
 License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
@@ -13,7 +13,9 @@ This module re-exports internal pandoc-plot functionality.
 module Text.Pandoc.Filter.Plot.Internal (
       module Text.Pandoc.Filter.Plot.Types
     , module Text.Pandoc.Filter.Plot.Configuration 
+    , module Text.Pandoc.Filter.Plot.Renderers
  ) where
 
 import Text.Pandoc.Filter.Plot.Types
 import Text.Pandoc.Filter.Plot.Configuration
+import Text.Pandoc.Filter.Plot.Renderers

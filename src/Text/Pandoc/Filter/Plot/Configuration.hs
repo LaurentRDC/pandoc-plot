@@ -2,7 +2,7 @@
 {-# LANGUAGE CPP               #-}
 {-|
 Module      : $header$
-Copyright   : (c) Laurent P René de Cotret, 2019
+Copyright   : (c) Laurent P René de Cotret, 2020
 License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
@@ -23,17 +23,18 @@ module Text.Pandoc.Filter.Plot.Configuration (
 ) where
 
 import Text.Pandoc.Filter.Plot.Types
-import Text.Pandoc.Filter.Plot.Renderers
 
 import           Data.Default.Class              (Default, def)
-import           Data.String                     (IsString)
+import           Data.String                     (IsString(..))
 import           Data.Text                       (Text)
 import qualified Data.Text                       as T
+import qualified Data.Text.IO                    as TIO
 import           Data.Yaml
 import           Data.Yaml.Config                (ignoreEnv, loadYamlSettings)
 
 
--- | Keys that pandoc-plot will look for in code blocks. These are only exported for testing purposes.
+-- | Keys that pandoc-plot will look for in code blocks. 
+-- These are only exported for testing purposes.
 directoryKey, captionKey, includePathKey, saveFormatKey, withLinksKey, dpiKey :: Text
 directoryKey     = "directory"
 captionKey       = "caption"
@@ -79,17 +80,14 @@ instance FromJSON ConfigPrecursor where
             <*> v .:? withLinksKey   .!= (defaultWithLinks def)
             <*> v .:? dpiKey         .!= (defaultDPI def)
             <*> v .:? saveFormatKey  .!= (extension $ defaultSaveFormat def)
-            <*> v .:? "python_interpreter"  .!= defaultPythonInterpreter
 
     parseJSON _ = fail "Could not parse the configuration"
 
 renderConfiguration :: ConfigPrecursor -> IO Configuration
 renderConfiguration prec = do
-    includeScript <- fromMaybe mempty $ TIO.readFile <$> defaultIncludePath_ prec
     let saveFormat' = fromString $ defaultSaveFormat_ prec
     return $ Configuration
         { defaultDirectory     = defaultDirectory_ prec
-        , defaultIncludeScript = includeScript
         , defaultSaveFormat    = saveFormat'
         , defaultWithLinks     = defaultWithLinks_ prec
         , defaultDPI           = defaultDPI_ prec

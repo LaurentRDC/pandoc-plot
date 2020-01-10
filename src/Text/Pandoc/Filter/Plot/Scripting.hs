@@ -2,7 +2,7 @@
 {-# LANGUAGE RecordWildCards   #-}
 {-|
 Module      : $header$
-Copyright   : (c) Laurent P René de Cotret, 2019
+Copyright   : (c) Laurent P René de Cotret, 2020
 License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
@@ -46,24 +46,25 @@ import           Text.Pandoc.Filter.Plot.Parse        (captionReader)
 
 
 -- Run script as described by the spec
-runTempScript :: FigureSpec -> PlotM ScriptResult
+runTempScript :: RendererM m => FigureSpec -> m ScriptResult
 runTempScript spec@FigureSpec{..} = do
     -- We involve the script hash as a temporary filename
     -- so that there is never any collision
     scriptPath <- tempScriptPath spec
+    scriptWithCapture <- do
+        captureFragment <- capture spec (figurePath spec)
+        return $ mconcat [script, "\n", captureFragment]
     liftIO $ T.writeFile scriptPath scriptWithCapture
-    let command_ = (command figureRenderer) spec
+    command_ <- T.unpack <$> command spec
 
     ec <- liftIO $ runProcess . shell $ command_
     case ec of
         ExitSuccess      -> return   ScriptSuccess
         ExitFailure code -> return $ ScriptFailure code
-    where
-        scriptWithCapture = (capture figureRenderer) spec (figurePath spec)
 
         
 -- Run script as described by the spec, only if necessary
-runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
+runScriptIfNecessary :: RendererM m =>FigureSpec -> m ScriptResult
 runScriptIfNecessary spec = do
     liftIO $ createDirectoryIfMissing True . takeDirectory $ figurePath spec
 
@@ -105,13 +106,7 @@ figurePath spec = normalise $ directory spec </> stem spec
     ext  = extension . saveFormat $ spec
 
 
-scriptWithCapture :: FigureSpec -> Script
-scriptWithCapture spec = captureFunc spec (figurePath spec)
-    where
-        captureFunc = capture (figureRenderer spec)
-
-
-tempScriptPath :: FigureSpec -> PlotM FilePath
+tempScriptPath :: RendererM m => FigureSpec -> m FilePath
 tempScriptPath FigureSpec{..} = liftIO $ (</> hashedPath) <$> getCanonicalTemporaryDirectory
     where
         hashedPath = show . hash $ script

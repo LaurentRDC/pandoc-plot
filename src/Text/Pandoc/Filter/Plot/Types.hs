@@ -1,9 +1,11 @@
 {-# LANGUAGE CPP               #-}
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts  #-}
+
 {-|
 Module      : $header$
-Copyright   : (c) Laurent P René de Cotret, 2019
+Copyright   : (c) Laurent P René de Cotret, 2020
 License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
@@ -14,14 +16,17 @@ This module defines types in use in pandoc-plot
 
 module Text.Pandoc.Filter.Plot.Types where
 
-import           Control.Monad.Reader
+import           Control.Monad.Reader            (MonadIO)
+import           Control.Monad.Reader.Class      (MonadReader)
 
 import           Data.Char              (toLower)
 import           Data.Default.Class     (Default, def)
 import           Data.Hashable          (Hashable(..))
 import           Data.List              (intersperse)
-import           Data.Text              (Text)
+import qualified Data.Map.Strict        as Map
+import qualified Data.Semigroup         as Sem
 import           Data.String            (IsString(..))
+import           Data.Text              (Text)
 
 import           GHC.Generics           (Generic)
 
@@ -29,8 +34,31 @@ import           Text.Pandoc.Definition (Attr)
 
 
 
--- | Monad in which to run pandoc-plot computations
-type PlotM a = ReaderT Configuration IO a
+class (Monad m, MonadIO m, MonadReader Configuration m) => RendererM m where
+
+    -- Name of the renderer. This is the string which will activate
+    -- parsing.
+    name :: m Text
+
+    -- | Save formats supported by this renderer.
+    supportedSaveFormats :: m [SaveFormat]
+
+    -- Checks to perform before running a script. If ANY check fails,
+    -- the figure is not rendered. This is to prevent, for example,
+    -- blocking operations to occur.
+    scriptChecks :: m [Script -> CheckResult]
+    scriptChecks = return mempty
+
+    -- | Parse code block headers for extra attributes that are specific
+    -- to this renderer. By default, no extra attributes are parsed.
+    parseExtraAttrs :: Map.Map Text Text -> m (Map.Map Text Text)
+    parseExtraAttrs _ = return mempty
+
+    -- | Generate the appropriate command-line command to generate a figure.
+    command :: FigureSpec -> m Text
+
+    -- | Script fragment required to capture a figure.
+    capture :: FigureSpec -> FilePath -> m Script
 
 
 type Script = Text
@@ -41,6 +69,23 @@ data ScriptResult
     | ScriptChecksFailed String
     | ScriptFailure Int
 
+-- | Result of checking scripts for problems
+data CheckResult
+    = CheckPassed
+    | CheckFailed String
+    deriving (Eq)
+
+instance Sem.Semigroup CheckResult where
+    (<>) CheckPassed a                         = a
+    (<>) a CheckPassed                         = a
+    (<>) (CheckFailed msg1) (CheckFailed msg2) = CheckFailed (msg1 <> msg2)
+
+instance Monoid CheckResult where
+    mempty = CheckPassed
+
+#if !(MIN_VERSION_base(4,11,0))
+    mappend = (<>)
+#endif
 
 type InclusionKey = Text
 
@@ -56,24 +101,11 @@ data FigureSpec = FigureSpec
     , saveFormat     :: SaveFormat     -- ^ Save format of the figure.
     , directory      :: FilePath       -- ^ Directory where to save the file.
     , dpi            :: Int            -- ^ Dots-per-inch of figure.
-    , figureRenderer :: Renderer       -- ^ Rendering library.
     , extraAttrs     :: [(Text, Text)] -- ^ Renderer-specific extra attributes.
     , blockAttrs     :: Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
     } deriving Generic
 
 instance Hashable FigureSpec -- From Generic
-
-
-data Renderer = Renderer 
-    { rendererName         :: Text
-    , rendererSaveFormats  :: [SaveFormat]
-    , allowedInclusionKeys :: [InclusionKey]
-    , command              :: FigureSpec -> String              -- Rendering command
-    , capture              :: FigureSpec -> FilePath -> Script
-    }
-
-instance Hashable Renderer where
-    hashWithSalt s = hashWithSalt s . rendererName
 
 data Configuration = Configuration
     { defaultDirectory    :: FilePath
