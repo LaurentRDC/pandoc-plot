@@ -72,7 +72,8 @@ instance Show PandocPlotError where
 makePlot :: Configuration -> Block -> IO Block
 makePlot config block =
     compose [ ((makeMatplotlib config) =<<)
-            , ((makePlotly config) =<<) ] 
+            , ((makePlotly config) =<<)
+            , ((makeMatlab config) =<<) ] 
             (return block)
 
 
@@ -107,6 +108,12 @@ makeMatplotlib config block =
 makePlotly :: Configuration -> Block -> IO Block
 makePlotly config block = 
     runPlotly config (makePlot' block)
+    >>= either (fail . show) return
+
+
+makeMatlab :: Configuration -> Block -> IO Block
+makeMatlab config block = 
+    runMatlab config (makePlot' block)
     >>= either (fail . show) return
 
 
