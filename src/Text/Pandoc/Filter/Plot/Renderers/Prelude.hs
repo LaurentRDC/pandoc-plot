@@ -18,13 +18,14 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , MonadIO
     , Text
     , runReaderT
+    , unpack
     , st
 ) where
 
 import Control.Monad.Reader            (ReaderT, MonadIO, runReaderT)
 import Control.Monad.Reader.Class      (MonadReader)
 
-import Data.Text                       (Text)
+import Data.Text                       (Text, unpack)
 import Text.Shakespeare.Text           (st)
 
 import Text.Pandoc.Filter.Plot.Types

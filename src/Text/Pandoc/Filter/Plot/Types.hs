@@ -40,7 +40,7 @@ class (Monad m, MonadIO m, MonadReader Configuration m) => RendererM m where
     -- parsing.
     name :: m Text
 
-    -- Extension for script files
+    -- Extension for script files. A string without periods, e.g. "py", or "m".
     scriptExtension :: m String
 
     -- | Save formats supported by this renderer.

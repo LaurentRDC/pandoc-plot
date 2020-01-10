@@ -18,12 +18,10 @@ module Text.Pandoc.Filter.Plot.Scripting
     ) where
 
 import           Control.Monad.IO.Class
-import           Control.Monad.Reader.Class
 
 import           Data.Hashable                        (hash)
-import           Data.List                            (intersperse)
 import           Data.Maybe                           (fromMaybe)
-import           Data.Monoid                          (Any (..), (<>))
+import           Data.Monoid                          ((<>))
 import qualified Data.Text                            as T
 import qualified Data.Text.IO                         as T
 
@@ -31,36 +29,17 @@ import           System.Directory                     (createDirectoryIfMissing,
                                                        doesFileExist)
 import           System.Exit                          (ExitCode (..))
 import           System.FilePath                      (FilePath, addExtension,
-                                                       makeValid, normalise, takeDirectory,
+                                                       normalise, takeDirectory,
                                                        replaceExtension, (</>))
 import           System.IO.Temp                       (getCanonicalTemporaryDirectory)
 import           System.Process.Typed                 (runProcess, shell)
 
 import           Text.Pandoc.Builder                  (fromList, imageWith, link,
                                                        para, toList)
-import           Text.Pandoc.Definition               (Block (..), Inline,
-                                                       Pandoc (..))
+import           Text.Pandoc.Definition               (Block (..))
 
 import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Parse        (captionReader)
-
-
--- Run script as described by the spec
-runTempScript :: RendererM m => FigureSpec -> m ScriptResult
-runTempScript spec@FigureSpec{..} = do
-    -- We involve the script hash as a temporary filename
-    -- so that there is never any collision
-    scriptPath <- tempScriptPath spec
-    scriptWithCapture <- do
-        captureFragment <- capture spec (figurePath spec)
-        return $ mconcat [script, "\n", captureFragment]
-    liftIO $ T.writeFile scriptPath scriptWithCapture
-    command_ <- T.unpack <$> command spec scriptPath
-
-    ec <- liftIO $ runProcess . shell $ command_
-    case ec of
-        ExitSuccess      -> return   ScriptSuccess
-        ExitFailure code -> return $ ScriptFailure code
 
         
 -- Run script as described by the spec, only if necessary
@@ -77,6 +56,30 @@ runScriptIfNecessary spec = do
         ScriptSuccess      -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
         ScriptFailure code -> return $ ScriptFailure code
         ScriptChecksFailed msg -> return $ ScriptChecksFailed msg
+
+
+-- Run script as described by the spec
+-- Checks are performed, according to the renderer
+runTempScript :: RendererM m => FigureSpec -> m ScriptResult
+runTempScript spec@FigureSpec{..} = do
+    checks <- scriptChecks
+    let checkResult = mconcat $ checks <*> [script]
+    case checkResult of
+        CheckFailed msg -> return $ ScriptChecksFailed msg
+        CheckPassed -> do
+            -- We involve the script hash as a temporary filename
+            -- so that there is never any collision
+            scriptPath <- tempScriptPath spec
+            scriptWithCapture <- do
+                captureFragment <- capture spec (figurePath spec)
+                return $ mconcat [script, "\n", captureFragment]
+            liftIO $ T.writeFile scriptPath scriptWithCapture
+            command_ <- T.unpack <$> command spec scriptPath
+
+            ec <- liftIO $ runProcess . shell $ command_
+            case ec of
+                ExitSuccess      -> return   ScriptSuccess
+                ExitFailure code -> return $ ScriptFailure code
 
 
 -- | Convert a @FigureSpec@ to a Pandoc block component.
@@ -104,6 +107,7 @@ figurePath spec = normalise $ directory spec </> stem spec
   where
     stem = flip addExtension ext . show . hash
     ext  = extension . saveFormat $ spec
+
 
 -- | Determine the temp script path from Figure specifications
 -- Note that for certain renderers, the appropriate file extension

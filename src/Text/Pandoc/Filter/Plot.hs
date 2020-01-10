@@ -44,8 +44,6 @@ module Text.Pandoc.Filter.Plot (
     , plotTransform
     ) where
 
-import           Control.Monad.Reader
-
 import           Data.Default.Class                 (def)
 
 import           Text.Pandoc.Definition
