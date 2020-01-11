@@ -40,6 +40,9 @@ functions @plotTransformWithConfig@ and @makePlotWithConfig@.
 module Text.Pandoc.Filter.Plot (
     -- * Operating on single Pandoc blocks
       makePlot
+    , makeMatplotlib
+    , makePlotly
+    , makeMatlab
     -- * Operating on whole Pandoc documents
     , plotTransform
     ) where
@@ -65,7 +68,7 @@ instance Show PandocPlotError where
 -- | Highest-level function that can be walked over a Pandoc tree.
 -- All code blocks that have the @.plot@ / @.plotly@ class will be considered
 -- figures.
-makePlot :: FilePath -> Block -> IO Block
+makePlot :: Maybe FilePath -> Block -> IO Block
 makePlot configpath block =
     compose [ ((makeMatplotlib configpath) =<<)
             , ((makePlotly configpath) =<<)
@@ -78,7 +81,7 @@ makePlot configpath block =
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
 -- into figures. Default configuration is used.
-plotTransform :: FilePath -> Pandoc -> IO Pandoc
+plotTransform :: Maybe FilePath -> Pandoc -> IO Pandoc
 plotTransform = walkM . makePlot
 
 
@@ -88,7 +91,7 @@ type Final = Either PandocPlotError Block
 -- | Main routine to include plots.
 -- Code blocks containing the attributes @.plot@ or @.plotly@ are considered
 -- Python plotting scripts. All other possible blocks are ignored.
-makePlot' :: (PlotConfig c, RendererM c m) => Block -> m Final
+makePlot' :: (RendererConfig c, RendererM c m) => Block -> m Final
 makePlot' block = do
     parsed <- parseFigureSpec block
     maybe 
@@ -101,24 +104,19 @@ makePlot' block = do
         handleResult spec ScriptSuccess         = Right $ toImage spec
 
 
-makeMatplotlib :: FilePath -> Block -> IO Block
+makeMatplotlib :: Maybe FilePath -> Block -> IO Block
 makeMatplotlib configpath block = 
     run configpath (makePlot' block :: MatplotlibM Final)
     >>= either (fail . show) return
 
 
-makePlotly :: FilePath -> Block -> IO Block
+makePlotly :: Maybe FilePath -> Block -> IO Block
 makePlotly configpath block = 
     run configpath (makePlot' block :: PlotlyM Final)
     >>= either (fail . show) return
 
 
-makeMatlab :: FilePath -> Block -> IO Block
+makeMatlab :: Maybe FilePath -> Block -> IO Block
 makeMatlab configpath block = 
     run configpath (makePlot' block :: MatlabM Final)
     >>= either (fail . show) return
-
-
--- Compose a list of functions
-compose :: [r -> r] -> r -> r
-compose = flip (foldl (flip id))

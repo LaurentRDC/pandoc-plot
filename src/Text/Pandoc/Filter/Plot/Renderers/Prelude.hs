@@ -43,18 +43,18 @@ import Text.Pandoc.Filter.Plot.Types
 
 
 -- | Lens-like access to base configuration. 
--- This makes writing instances of PlotConfig trivial.
+-- This makes writing instances of RendererConfig trivial.
 class HasBaseConfig c where
     baseConfig :: c -> BaseConfig
 
 
 -- | Lens-like access to base configuration. 
--- This makes writing instances of PlotConfig trivial.
+-- This makes writing instances of RendererConfig trivial.
 class HasPreamble c where
     ppreamble :: c -> Script
 
 
-instance (FromJSON c, Default c, HasBaseConfig c, HasPreamble c) => PlotConfig c where
+instance (FromJSON c, Default c, HasBaseConfig c, HasPreamble c) => RendererConfig c where
     defaultDirectory    = bdefaultDirectory  . baseConfig
     defaultWithLinks    = bdefaultWithLinks  . baseConfig
     defaultDPI          = bdefaultDPI        . baseConfig
@@ -63,5 +63,7 @@ instance (FromJSON c, Default c, HasBaseConfig c, HasPreamble c) => PlotConfig c
     preamble            = ppreamble
 
 
-loadConfig :: PlotConfig c => FilePath -> IO c
-loadConfig fp = loadYamlSettings [fp] [] ignoreEnv
+loadConfig :: RendererConfig c => Maybe FilePath -> IO c
+loadConfig fp = case fp of
+    Nothing -> return def
+    Just f  ->loadYamlSettings [f] [] ignoreEnv

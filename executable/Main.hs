@@ -42,8 +42,10 @@ main = join $ execParser opts
 toJSONFilterWithConfig :: IO ()
 toJSONFilterWithConfig = do
     configExists <- doesFileExist ".pandoc-plot.yml"
-    config <- def
-    toJSONFilter (plotTransform config)
+    let configpath = if configExists
+        then Just ".pandoc-plot.yml"
+        else Nothing
+    toJSONFilter (plotTransform configpath)
 
 
 data Flag = Version

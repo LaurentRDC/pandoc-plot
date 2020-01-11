@@ -35,11 +35,11 @@ import           GHC.Generics           (Generic)
 
 import           Text.Pandoc.Definition (Attr)
 
-class ( PlotConfig c , Monad m , MonadIO m , MonadReader c m) 
+class ( RendererConfig c , Monad m , MonadIO m , MonadReader c m) 
       => RendererM c m where
     
     -- | Run the renderer, provided a filepath to a config YAML file.
-    run :: FilePath -> m a -> IO a
+    run :: Maybe FilePath -> m a -> IO a
 
     -- Name of the renderer. This is the string which will activate
     -- parsing.
@@ -73,7 +73,7 @@ class ( PlotConfig c , Monad m , MonadIO m , MonadReader c m)
             -> m Script
 
 -- | Minimum configuration required to run ANY renderer
-class (FromJSON c, Default c) => PlotConfig c where
+class (FromJSON c, Default c) => RendererConfig c where
     defaultDirectory    :: c -> FilePath   -- ^ The default directory where figures will be saved.
     defaultWithLinks    :: c -> Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     defaultDPI          :: c -> Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
@@ -159,7 +159,7 @@ data BaseConfig = BaseConfig
     , bpythonInterpreter   :: String
     } deriving (Generic)
 
-instance PlotConfig BaseConfig where
+instance RendererConfig BaseConfig where
     defaultDirectory    = bdefaultDirectory
     defaultWithLinks    = bdefaultWithLinks    
     defaultDPI          = bdefaultDPI    
