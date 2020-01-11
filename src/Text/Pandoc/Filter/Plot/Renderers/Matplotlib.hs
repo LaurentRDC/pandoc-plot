@@ -38,7 +38,7 @@ instance RendererM MatplotlibConfig MatplotlibM where
         config <- loadConfig cp 
         runReaderT (unMatplotlibM ma) config
 
-    name = return "pyplot"
+    name = return "matplotlib"
     scriptExtension = return "py"
     supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
     parseExtraAttrs = matplotlibExtraAttrs

@@ -44,7 +44,7 @@ main =
 testFileCreation :: TestTree
 testFileCreation =
     testCase "writes output files in appropriate directory" $ do
-        tempDir <- (</> "test-file-creation") <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-file-creation") <$> return "" --getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let codeBlock = (addDirectory tempDir $ plotCodeBlock "import matplotlib.pyplot as plt\n")
