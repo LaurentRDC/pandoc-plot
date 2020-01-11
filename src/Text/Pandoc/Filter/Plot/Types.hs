@@ -1,7 +1,9 @@
-{-# LANGUAGE CPP               #-}
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE CPP                   #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts      #-}
+
 
 {-|
 Module      : $header$
@@ -24,17 +26,20 @@ import           Data.Default.Class     (Default, def)
 import           Data.Hashable          (Hashable(..))
 import           Data.List              (intersperse)
 import qualified Data.Map.Strict        as Map
-import qualified Data.Semigroup         as Sem
+import           Data.Semigroup         (Semigroup(..))
 import           Data.String            (IsString(..))
 import           Data.Text              (Text)
+import           Data.Yaml
 
 import           GHC.Generics           (Generic)
 
 import           Text.Pandoc.Definition (Attr)
 
-
-
-class (Monad m, MonadIO m, MonadReader Configuration m) => RendererM m where
+class ( PlotConfig c , Monad m , MonadIO m , MonadReader c m) 
+      => RendererM c m where
+    
+    -- | Run the renderer, provided a filepath to a config YAML file.
+    run :: FilePath -> m a -> IO a
 
     -- Name of the renderer. This is the string which will activate
     -- parsing.
@@ -67,6 +72,16 @@ class (Monad m, MonadIO m, MonadReader Configuration m) => RendererM m where
             -> FilePath     -- ^ Final location of the figure
             -> m Script
 
+-- | Minimum configuration required to run ANY renderer
+class (FromJSON c, Default c) => PlotConfig c where
+    defaultDirectory    :: c -> FilePath   -- ^ The default directory where figures will be saved.
+    defaultWithLinks    :: c -> Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    defaultDPI          :: c -> Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
+    defaultSaveFormat   :: c -> SaveFormat -- ^ The default save format of generated figures.
+    -- Python-specific
+    pythonInterpreter   :: c -> String     -- ^ The default Python interpreter to use for Python-based renderers.
+    preamble            :: c -> Script     -- ^ Script preamble that is inserted at the beginning of the code block. This is renderer-specific.
+
 
 type Script = Text
 
@@ -82,7 +97,7 @@ data CheckResult
     | CheckFailed String
     deriving (Eq)
 
-instance Sem.Semigroup CheckResult where
+instance Semigroup CheckResult where
     (<>) CheckPassed a                         = a
     (<>) a CheckPassed                         = a
     (<>) (CheckFailed msg1) (CheckFailed msg2) = CheckFailed (msg1 <> msg2)
@@ -94,7 +109,28 @@ instance Monoid CheckResult where
     mappend = (<>)
 #endif
 
-type InclusionKey = Text
+
+-- | Keys that pandoc-plot will look for in code blocks. 
+-- These are only exported for testing purposes.
+directoryKey, captionKey, saveFormatKey, withLinksKey, preambleKey, dpiKey, pyInterpreterKey :: Text
+directoryKey     = "directory"
+captionKey       = "caption"
+saveFormatKey    = "format"
+withLinksKey     = "links"
+preambleKey   = "preamble"
+dpiKey           = "dpi"
+pyInterpreterKey = "python_interpreter"
+
+-- | list of all keys related to pandoc-plot that
+-- can be specified in source material.
+inclusionKeys :: [Text]
+inclusionKeys = [ directoryKey
+                , captionKey
+                , saveFormatKey
+                , withLinksKey
+                , dpiKey
+                , pyInterpreterKey
+                ]
 
 
 -- | Datatype containing all parameters required to run pandoc-plot.
@@ -114,21 +150,31 @@ data FigureSpec = FigureSpec
 
 instance Hashable FigureSpec -- From Generic
 
-data Configuration = Configuration
-    { defaultDirectory    :: FilePath
-    , defaultWithLinks    :: Bool
-    , defaultDPI          :: Int
-    , defaultSaveFormat   :: SaveFormat
-    , pythonInterpreter   :: String
-    }
+data BaseConfig = BaseConfig
+    { bdefaultDirectory    :: FilePath   -- ^ The default directory where figures will be saved.
+    , bdefaultWithLinks    :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    , bdefaultDPI          :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
+    , bdefaultSaveFormat   :: SaveFormat -- ^ The default save format of generated figures.
+    -- Python-specific
+    , bpythonInterpreter   :: String
+    } deriving (Generic)
 
-instance Default Configuration where
-    def = Configuration
-        { defaultDirectory   = "generated/"
-        , defaultDPI         = 80
-        , defaultWithLinks   = True
-        , defaultSaveFormat  = PNG
-        , pythonInterpreter  = defaultPythonInterpreter
+instance PlotConfig BaseConfig where
+    defaultDirectory    = bdefaultDirectory
+    defaultWithLinks    = bdefaultWithLinks    
+    defaultDPI          = bdefaultDPI    
+    defaultSaveFormat   = bdefaultSaveFormat
+    pythonInterpreter   = bpythonInterpreter
+    -- Base config has trivial preamble
+    preamble            = const mempty
+
+instance Default BaseConfig where
+    def = BaseConfig
+        { bdefaultDirectory   = "generated/"
+        , bdefaultDPI         = 80
+        , bdefaultWithLinks   = True
+        , bdefaultSaveFormat  = PNG
+        , bpythonInterpreter  = defaultPythonInterpreter
     }
 
 -- | Generated figure file format supported by pandoc-plot.
@@ -146,6 +192,7 @@ data SaveFormat
     deriving (Bounded, Enum, Eq, Show, Generic)
 
 instance Hashable SaveFormat -- From Generic
+instance FromJSON SaveFormat -- from Generic
 
 
 instance IsString SaveFormat where
@@ -179,3 +226,16 @@ defaultPythonInterpreter = "python"
 #else
 defaultPythonInterpreter = "python3"
 #endif
+
+instance FromJSON BaseConfig where
+    parseJSON (Object v) =
+        BaseConfig 
+            <$> v .:? directoryKey .!= (defaultDirectory d)
+            <*> v .:? withLinksKey .!= (defaultWithLinks d)
+            <*> v .:? dpiKey       .!= (defaultDPI d)
+            <*> v .:? saveFormatKey .!= (defaultSaveFormat d)
+            <*> v .:? pyInterpreterKey .!= (pythonInterpreter d)
+        where
+            d = (def::BaseConfig)
+
+    parseJSON _ = fail "Could not parse the configuration"

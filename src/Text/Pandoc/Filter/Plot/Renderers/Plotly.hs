@@ -4,6 +4,7 @@
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -16,27 +17,49 @@ Rendering Plotly code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Plotly (
-      runPlotly
-    , PlotlyM(..)
+    PlotlyM
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
-runPlotly :: Configuration -> PlotlyM a -> IO a
-runPlotly config ma = runReaderT (unPlotlyM ma) config
-
 newtype PlotlyM a 
-    = PlotlyM { unPlotlyM :: ReaderT Configuration IO a } 
-    deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
+    = PlotlyM { unPlotlyM :: ReaderT PlotlyConfig IO a } 
+    deriving (Functor, Applicative, Monad, MonadIO, MonadReader PlotlyConfig)
 
+instance RendererM PlotlyConfig PlotlyM where
+    run cp ma = do
+        config <- loadConfig cp
+        runReaderT (unPlotlyM ma) config
 
-instance RendererM PlotlyM where
     name = return "plotly"
     scriptExtension = return "py"
     supportedSaveFormats = return [PNG, JPG, WEBP, PDF, SVG, EPS]
     command _ fp = return [st|python #{fp}|]
     capture = plotlyCapture
+
+data PlotlyConfig = PlotlyConfig
+    { plotlyBaseConfig :: BaseConfig 
+    , plotlyPreamble :: Script     -- ^ Include script integrated at the beginning of every @plotly@ code block.
+    }
+
+instance HasBaseConfig PlotlyConfig where
+    baseConfig = plotlyBaseConfig
+
+instance HasPreamble PlotlyConfig where
+    ppreamble = plotlyPreamble
+
+instance Default PlotlyConfig where
+    def = PlotlyConfig
+        { plotlyBaseConfig = def
+        , plotlyPreamble = mempty
+        }
+
+instance FromJSON PlotlyConfig where
+    parseJSON = withObject "plotly" $ \o -> do
+        let plotlyBaseConfig = (def::BaseConfig)
+        plotlyPreamble <- o .:? "preamble" .!= mempty
+        return PlotlyConfig{..}
         
         
 plotlyCapture :: FigureSpec -> FilePath -> PlotlyM Script

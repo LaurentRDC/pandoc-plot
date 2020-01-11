@@ -4,6 +4,7 @@
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -20,8 +21,7 @@ Note that the MatplotlibM renderer supports two extra arguments:
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (
-      runMatplotlib
-    , MatplotlibM
+    MatplotlibM
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -29,16 +29,15 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 import qualified Data.Map.Strict  as M
 
 
-runMatplotlib :: Configuration -> MatplotlibM a -> IO a
-runMatplotlib config ma = runReaderT (unMatplotlibM ma) config
-
-
 newtype MatplotlibM a 
-    = MatplotlibM { unMatplotlibM :: ReaderT Configuration IO a } 
-    deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
+    = MatplotlibM { unMatplotlibM :: ReaderT MatplotlibConfig IO a } 
+    deriving (Functor, Applicative, Monad, MonadIO, MonadReader MatplotlibConfig)
 
+instance RendererM MatplotlibConfig MatplotlibM where
+    run cp ma = do
+        config <- loadConfig cp 
+        runReaderT (unMatplotlibM ma) config
 
-instance RendererM MatplotlibM where
     name = return "pyplot"
     scriptExtension = return "py"
     supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
@@ -46,11 +45,40 @@ instance RendererM MatplotlibM where
     command _ fp = return [st|python #{fp}|]
     capture = matplotlibCapture
 
+data MatplotlibConfig = MatplotlibConfig 
+    { matplotlibBaseConfig :: BaseConfig
+    , isTightBbox          :: Bool   -- ^ Whether the figures should be saved with @bbox_inches="tight"@ or not. Useful for larger figures with subplots.
+    , isTransparent        :: Bool   -- ^ If True, figures will be saved with transparent background rather than solid color.
+    , matplotlibPreamble   :: Script -- ^ Include script integrated at the beginning of every @matplotlib@ code block.
+    }
+
+instance HasBaseConfig MatplotlibConfig where
+    baseConfig = matplotlibBaseConfig
+
+instance HasPreamble MatplotlibConfig where
+    ppreamble = matplotlibPreamble
+
+instance Default MatplotlibConfig where
+    def = MatplotlibConfig
+        { matplotlibBaseConfig    = def
+        , isTightBbox             = False
+        , isTransparent           = False
+        , matplotlibPreamble      = mempty
+        }
+
+instance FromJSON MatplotlibConfig where
+    parseJSON = withObject "matplotlib" $ \v -> do
+        let matplotlibBaseConfig = def
+        isTightBox         <- v .:? "tight" .!= False
+        isTransparent      <- v .:? "transparent" .!= False
+        matplotlibPreamble <- v .:? "preamble" .!= mempty
+        return MatplotlibConfig{..}
+
 
 matplotlibCapture :: FigureSpec -> FilePath -> MatplotlibM Script
 matplotlibCapture FigureSpec{..} fname = do
     let attrs        = M.fromList extraAttrs
-        tight_       = readBool $ M.findWithDefault "False" "tight_bbox"  attrs
+        tight_       = readBool $ M.findWithDefault "False" "tight"  attrs
         transparent_ = readBool $ M.findWithDefault "False" "transparent" attrs
         tightBox     = if tight_ then ("'tight'"::Text) else ("None"::Text) 
         transparent  = if transparent_ then ("True"::Text) else ("False"::Text)

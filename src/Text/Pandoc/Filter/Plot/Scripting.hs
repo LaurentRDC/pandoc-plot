@@ -1,5 +1,6 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -41,9 +42,13 @@ import           Text.Pandoc.Definition               (Block (..))
 import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Parse        (captionReader)
 
+
+
+
         
 -- Run script as described by the spec, only if necessary
-runScriptIfNecessary :: RendererM m => FigureSpec -> m ScriptResult
+runScriptIfNecessary :: (PlotConfig c, RendererM c m) 
+                     => FigureSpec -> m ScriptResult
 runScriptIfNecessary spec = do
     liftIO $ createDirectoryIfMissing True . takeDirectory $ figurePath spec
 
@@ -60,7 +65,8 @@ runScriptIfNecessary spec = do
 
 -- Run script as described by the spec
 -- Checks are performed, according to the renderer
-runTempScript :: RendererM m => FigureSpec -> m ScriptResult
+runTempScript :: (PlotConfig c, RendererM c m) 
+                 => FigureSpec -> m ScriptResult
 runTempScript spec@FigureSpec{..} = do
     checks <- scriptChecks
     let checkResult = mconcat $ checks <*> [script]
@@ -112,7 +118,8 @@ figurePath spec = normalise $ directory spec </> stem spec
 -- | Determine the temp script path from Figure specifications
 -- Note that for certain renderers, the appropriate file extension
 -- is important.
-tempScriptPath :: RendererM m => FigureSpec -> m FilePath
+tempScriptPath :: (PlotConfig c, RendererM c m) 
+               => FigureSpec -> m FilePath
 tempScriptPath FigureSpec{..} = do
     ext <- scriptExtension
     let hashedPath = (show . hash $ script) <> ext
