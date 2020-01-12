@@ -64,11 +64,14 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
         figureSpec = do
             config <- ask
             extraAttrs' <- parseExtraAttrs attrs'
+            -- Note that the default preamble changes based on the RendererM
+            -- which is why we use @preambleSelector@ as the default value
             includeScript <- fromMaybe
                                 preambleSelector
                                 ((liftIO . TIO.readFile) <$> preamblePath)
             let -- Filtered attributes that are not relevant to pandoc-plot
-                -- Note that certain Renderers have extra attrs,
+                -- Note that certain Renderers have extra attrs, so we need
+                -- to check those keys as well.
                 filteredAttrs = filter (\(k, _) -> k `notElem` inclusionKeys && (Map.notMember k extraAttrs')) attrs
                 defWithSource = defaultWithSource config
                 defSaveFmt = defaultSaveFormat config
