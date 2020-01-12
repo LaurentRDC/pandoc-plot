@@ -13,7 +13,8 @@ Scripting
 -}
 
 module Text.Pandoc.Filter.Plot.Scripting
-    ( runTempScript
+    ( ScriptResult(..)
+    , runTempScript
     , runScriptIfNecessary
     , toImage
     ) where

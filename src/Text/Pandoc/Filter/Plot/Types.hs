@@ -72,6 +72,7 @@ class ( RendererConfig c , Monad m , MonadIO m , MonadReader c m)
             -> FilePath     -- ^ Final location of the figure
             -> m Script
 
+
 -- | Minimum configuration required to run ANY renderer
 class (FromJSON c, Default c) => RendererConfig c where
     defaultDirectory    :: c -> FilePath   -- ^ The default directory where figures will be saved.
@@ -84,12 +85,6 @@ class (FromJSON c, Default c) => RendererConfig c where
 
 
 type Script = Text
-
--- | Possible result of running a script
-data ScriptResult
-    = ScriptSuccess
-    | ScriptChecksFailed String
-    | ScriptFailure Int
 
 -- | Result of checking scripts for problems
 data CheckResult
