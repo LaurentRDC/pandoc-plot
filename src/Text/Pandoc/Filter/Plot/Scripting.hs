@@ -43,8 +43,11 @@ import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Parse        (captionReader)
 
 
-
-
+-- | Possible result of running a script
+data ScriptResult
+    = ScriptSuccess
+    | ScriptChecksFailed String
+    | ScriptFailure Int
         
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: (RendererConfig c, RendererM c m) 
