@@ -17,7 +17,8 @@ Rendering Matlab code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Matlab (
-    MatlabM
+      MatlabM
+    , MatlabConfig
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude

@@ -21,7 +21,8 @@ Note that the MatplotlibM renderer supports two extra arguments:
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (
-    MatplotlibM
+      MatplotlibM
+    , MatplotlibConfig
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude

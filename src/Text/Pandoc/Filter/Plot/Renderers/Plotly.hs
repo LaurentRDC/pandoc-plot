@@ -17,7 +17,8 @@ Rendering Plotly code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Plotly (
-    PlotlyM
+      PlotlyM
+    , PlotlyConfig
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
