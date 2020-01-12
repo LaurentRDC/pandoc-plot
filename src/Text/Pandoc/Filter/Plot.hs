@@ -48,7 +48,6 @@ module Text.Pandoc.Filter.Plot (
     ) where
 
 import           Control.Monad.Reader               (runReaderT)
-import           Data.Default.Class                 (def)
 
 import           Text.Pandoc.Definition
 import           Text.Pandoc.Walk                   (walkM)

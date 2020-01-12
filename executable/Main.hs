@@ -8,7 +8,6 @@ import           Control.Applicative                ((<|>))
 import           Control.Monad                      (join)
 
 import           Data.Default.Class                 (def)
-import           Data.List                          (intersperse)
 import           Data.Monoid                        ((<>))
 import qualified Data.Text                          as T
 

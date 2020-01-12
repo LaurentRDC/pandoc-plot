@@ -48,7 +48,7 @@ testFileCreation =
         ensureDirectoryExistsAndEmpty tempDir
 
         let codeBlock = (addDirectory tempDir $ matplotlibCodeBlock "import matplotlib.pyplot as plt\n")
-        _ <- makeMatplotlib Nothing codeBlock
+        _ <- makeMatplotlib def codeBlock
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
 
