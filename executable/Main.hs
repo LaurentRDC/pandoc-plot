@@ -33,7 +33,7 @@ main = join $ execParser opts
         opts = info (run <**> helper)
             (fullDesc
             <> progDesc "This pandoc filter generates plots from code blocks using a multitude of possible renderers. This allows to keep documentation and figures in perfect synchronicity."
-            <> header "pandoc-plot - generate Matplotlib figures directly in documents."
+            <> header "pandoc-plot - generate figures directly in documents using your plotting toolkit of choice."
             <> footerDoc (Just footer')
             )
 
