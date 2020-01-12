@@ -21,49 +21,19 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , MonadIO
     , Text
     , Default
-    , HasBaseConfig(..)
-    , HasPreamble(..)
-    , loadConfig
+    , asks
     , def
     , runReaderT
     , unpack
     , st
 ) where
 
-import Control.Monad.Reader            (ReaderT, MonadIO, runReaderT)
+import Control.Monad.Reader            (ReaderT, MonadIO, runReaderT, asks)
 import Control.Monad.Reader.Class      (MonadReader)
 
 import Data.Default.Class              (Default, def)
 import Data.Text                       (Text, unpack)
 import Data.Yaml                        
-import Data.Yaml.Config                (ignoreEnv, loadYamlSettings)
 import Text.Shakespeare.Text           (st)
 
 import Text.Pandoc.Filter.Plot.Types
-
-
--- | Lens-like access to base configuration. 
--- This makes writing instances of RendererConfig trivial.
-class HasBaseConfig c where
-    baseConfig :: c -> BaseConfig
-
-
--- | Lens-like access to base configuration. 
--- This makes writing instances of RendererConfig trivial.
-class HasPreamble c where
-    ppreamble :: c -> Script
-
-
-instance (FromJSON c, Default c, HasBaseConfig c, HasPreamble c) => RendererConfig c where
-    defaultDirectory    = bdefaultDirectory  . baseConfig
-    defaultWithSource   = bdefaultWithSource . baseConfig
-    defaultDPI          = bdefaultDPI        . baseConfig
-    defaultSaveFormat   = bdefaultSaveFormat . baseConfig
-    pythonInterpreter   = bpythonInterpreter . baseConfig
-    preamble            = ppreamble
-
-
-loadConfig :: RendererConfig c => Maybe FilePath -> IO c
-loadConfig fp = case fp of
-    Nothing -> return def
-    Just f  ->loadYamlSettings [f] [] ignoreEnv

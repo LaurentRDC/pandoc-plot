@@ -35,11 +35,8 @@ import           GHC.Generics           (Generic)
 
 import           Text.Pandoc.Definition (Attr)
 
-class ( RendererConfig c , Monad m , MonadIO m , MonadReader c m) 
-      => RendererM c m where
-    
-    -- | Run the renderer, provided a filepath to a config YAML file.
-    run :: Maybe FilePath -> m a -> IO a
+class (Monad m , MonadIO m , MonadReader Configuration m) 
+      => RendererM m where
 
     -- Name of the renderer. This is the string which will activate
     -- parsing.
@@ -47,6 +44,9 @@ class ( RendererConfig c , Monad m , MonadIO m , MonadReader c m)
 
     -- Extension for script files. A string without periods, e.g. "py", or "m".
     scriptExtension :: m String
+
+    -- The function that maps from configuration to the preamble.
+    preambleSelector :: m Script
 
     -- | Save formats supported by this renderer.
     supportedSaveFormats :: m [SaveFormat]
@@ -73,15 +73,38 @@ class ( RendererConfig c , Monad m , MonadIO m , MonadReader c m)
             -> m Script
 
 
--- | Minimum configuration required to run ANY renderer
-class (FromJSON c, Default c) => RendererConfig c where
-    defaultDirectory    :: c -> FilePath   -- ^ The default directory where figures will be saved.
-    defaultWithSource   :: c -> Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
-    defaultDPI          :: c -> Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
-    defaultSaveFormat   :: c -> SaveFormat -- ^ The default save format of generated figures.
-    -- Python-specific
-    pythonInterpreter   :: c -> String     -- ^ The default Python interpreter to use for Python-based renderers.
-    preamble            :: c -> Script     -- ^ Script preamble that is inserted at the beginning of the code block. This is renderer-specific.
+data Configuration = Configuration
+    { defaultDirectory    :: FilePath   -- ^ The default directory where figures will be saved.
+    , defaultWithSource   :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    , defaultDPI          :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
+    , defaultSaveFormat   :: SaveFormat -- ^ The default save format of generated figures.
+    , pythonInterpreter   :: String     -- ^ The default Python interpreter to use for Python-based renderers.
+
+    , matplotlibTightBBox :: Bool
+    , matplotlibTransparent :: Bool
+    , matplotlibPreamble  :: Script
+
+    , plotlyPreamble      :: Script
+
+    , matlabPreamble      :: Script
+    }
+
+instance Default Configuration where
+    def = Configuration 
+          { defaultDirectory  = "plots/"
+          , defaultWithSource = False
+          , defaultDPI        = 80
+          , defaultSaveFormat = PNG
+          , pythonInterpreter = defaultPythonInterpreter
+          
+          , matplotlibTightBBox   = False
+          , matplotlibTransparent = False
+          , matplotlibPreamble = mempty
+
+          , plotlyPreamble    = mempty
+          
+          , matlabPreamble    = mempty
+          }
 
 
 type Script = Text
@@ -133,44 +156,17 @@ inclusionKeys = [ directoryKey
 -- It is assumed that once a @FigureSpec@ has been created, no configuration
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
-    { caption        :: Text           -- ^ Figure caption.
-    , withSource      :: Bool          -- ^ Append link to source code in caption.
-    , script         :: Script         -- ^ Source code for the figure.
-    , saveFormat     :: SaveFormat     -- ^ Save format of the figure.
-    , directory      :: FilePath       -- ^ Directory where to save the file.
-    , dpi            :: Int            -- ^ Dots-per-inch of figure.
-    , extraAttrs     :: [(Text, Text)] -- ^ Renderer-specific extra attributes.
-    , blockAttrs     :: Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
+    { caption    :: Text           -- ^ Figure caption.
+    , withSource :: Bool          -- ^ Append link to source code in caption.
+    , script     :: Script         -- ^ Source code for the figure.
+    , saveFormat :: SaveFormat     -- ^ Save format of the figure.
+    , directory  :: FilePath       -- ^ Directory where to save the file.
+    , dpi        :: Int            -- ^ Dots-per-inch of figure.
+    , extraAttrs :: [(Text, Text)] -- ^ Renderer-specific extra attributes.
+    , blockAttrs :: Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
     } deriving Generic
 
 instance Hashable FigureSpec -- From Generic
-
-data BaseConfig = BaseConfig
-    { bdefaultDirectory    :: FilePath   -- ^ The default directory where figures will be saved.
-    , bdefaultWithSource    :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
-    , bdefaultDPI          :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
-    , bdefaultSaveFormat   :: SaveFormat -- ^ The default save format of generated figures.
-    -- Python-specific
-    , bpythonInterpreter   :: String
-    } deriving (Generic)
-
-instance RendererConfig BaseConfig where
-    defaultDirectory    = bdefaultDirectory
-    defaultWithSource   = bdefaultWithSource    
-    defaultDPI          = bdefaultDPI    
-    defaultSaveFormat   = bdefaultSaveFormat
-    pythonInterpreter   = bpythonInterpreter
-    -- Base config has trivial preamble
-    preamble            = const mempty
-
-instance Default BaseConfig where
-    def = BaseConfig
-        { bdefaultDirectory   = "generated/"
-        , bdefaultDPI         = 80
-        , bdefaultWithSource  = False
-        , bdefaultSaveFormat  = PNG
-        , bpythonInterpreter  = defaultPythonInterpreter
-    }
 
 -- | Generated figure file format supported by pandoc-plot.
 -- Note: all formats are supported by Matplotlib, but not all
@@ -221,16 +217,3 @@ defaultPythonInterpreter = "python"
 #else
 defaultPythonInterpreter = "python3"
 #endif
-
-instance FromJSON BaseConfig where
-    parseJSON (Object v) =
-        BaseConfig 
-            <$> v .:? directoryKey  .!= (defaultDirectory d)
-            <*> v .:? withSourceKey .!= (defaultWithSource d)
-            <*> v .:? dpiKey        .!= (defaultDPI d)
-            <*> v .:? saveFormatKey .!= (defaultSaveFormat d)
-            <*> v .:? pyInterpreterKey .!= (pythonInterpreter d)
-        where
-            d = (def::BaseConfig)
-
-    parseJSON _ = fail "Could not parse the configuration"

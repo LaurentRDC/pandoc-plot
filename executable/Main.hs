@@ -45,7 +45,7 @@ toJSONFilterWithConfig = do
     let configpath = if configExists
         then Just ".pandoc-plot.yml"
         else Nothing
-    toJSONFilter (plotTransform configpath)
+    toJSONFilter (plotTransform def)
 
 
 data Flag = Version

@@ -47,6 +47,7 @@ module Text.Pandoc.Filter.Plot (
     , plotTransform
     ) where
 
+import           Control.Monad.Reader               (runReaderT)
 import           Data.Default.Class                 (def)
 
 import           Text.Pandoc.Definition
@@ -68,11 +69,11 @@ instance Show PandocPlotError where
 -- | Highest-level function that can be walked over a Pandoc tree.
 -- All code blocks that have the @.plot@ / @.plotly@ class will be considered
 -- figures.
-makePlot :: Maybe FilePath -> Block -> IO Block
-makePlot configpath block =
-    compose [ ((makeMatplotlib configpath) =<<)
-            , ((makePlotly configpath) =<<)
-            , ((makeMatlab configpath) =<<) ] 
+makePlot :: Configuration -> Block -> IO Block
+makePlot config block =
+    compose [ ((makeMatplotlib config) =<<)
+            , ((makePlotly config) =<<)
+            , ((makeMatlab config) =<<) ] 
             (return block)
     where
         compose :: [r -> r] -> r -> r
@@ -81,7 +82,7 @@ makePlot configpath block =
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
 -- into figures. Default configuration is used.
-plotTransform :: Maybe FilePath -> Pandoc -> IO Pandoc
+plotTransform :: Configuration -> Pandoc -> IO Pandoc
 plotTransform = walkM . makePlot
 
 
@@ -91,7 +92,7 @@ type Final = Either PandocPlotError Block
 -- | Main routine to include plots.
 -- Code blocks containing the attributes @.plot@ or @.plotly@ are considered
 -- Python plotting scripts. All other possible blocks are ignored.
-makePlot' :: (RendererConfig c, RendererM c m) => Block -> m Final
+makePlot' :: RendererM m => Block -> m Final
 makePlot' block = do
     parsed <- parseFigureSpec block
     maybe 
@@ -103,20 +104,19 @@ makePlot' block = do
         handleResult _ (ScriptFailure code)     = Left  $ ScriptError code
         handleResult spec ScriptSuccess         = Right $ toImage spec
 
-
-makeMatplotlib :: Maybe FilePath -> Block -> IO Block
-makeMatplotlib configpath block = 
-    run configpath (makePlot' block :: MatplotlibM Final)
+makeMatplotlib :: Configuration -> Block -> IO Block
+makeMatplotlib config block = 
+    runReaderT (unMatplotlibM $ makePlot' block) config
     >>= either (fail . show) return
 
 
-makePlotly :: Maybe FilePath -> Block -> IO Block
-makePlotly configpath block = 
-    run configpath (makePlot' block :: PlotlyM Final)
+makePlotly :: Configuration -> Block -> IO Block
+makePlotly config block = 
+    runReaderT (unPlotlyM $ makePlot' block) config
     >>= either (fail . show) return
 
 
-makeMatlab :: Maybe FilePath -> Block -> IO Block
-makeMatlab configpath block = 
-    run configpath (makePlot' block :: MatlabM Final)
+makeMatlab :: Configuration -> Block -> IO Block
+makeMatlab config block = 
+    runReaderT (unMatlabM $ makePlot' block) config
     >>= either (fail . show) return

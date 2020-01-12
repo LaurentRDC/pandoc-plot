@@ -51,7 +51,7 @@ data ScriptResult
     | ScriptFailure Int
         
 -- Run script as described by the spec, only if necessary
-runScriptIfNecessary :: (RendererConfig c, RendererM c m) 
+runScriptIfNecessary :: RendererM m 
                      => FigureSpec -> m ScriptResult
 runScriptIfNecessary spec = do
     liftIO $ createDirectoryIfMissing True . takeDirectory $ figurePath spec
@@ -69,8 +69,8 @@ runScriptIfNecessary spec = do
 
 -- Run script as described by the spec
 -- Checks are performed, according to the renderer
-runTempScript :: (RendererConfig c, RendererM c m) 
-                 => FigureSpec -> m ScriptResult
+runTempScript :: RendererM m 
+              => FigureSpec -> m ScriptResult
 runTempScript spec@FigureSpec{..} = do
     checks <- scriptChecks
     let checkResult = mconcat $ checks <*> [script]
@@ -113,7 +113,7 @@ toImage spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig:" c
 -- | Determine the temp script path from Figure specifications
 -- Note that for certain renderers, the appropriate file extension
 -- is important.
-tempScriptPath :: (RendererConfig c, RendererM c m) 
+tempScriptPath :: RendererM m 
                => FigureSpec -> m FilePath
 tempScriptPath FigureSpec{..} = do
     ext <- scriptExtension
