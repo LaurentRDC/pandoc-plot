@@ -56,7 +56,7 @@ class HasPreamble c where
 
 instance (FromJSON c, Default c, HasBaseConfig c, HasPreamble c) => RendererConfig c where
     defaultDirectory    = bdefaultDirectory  . baseConfig
-    defaultWithLinks    = bdefaultWithLinks  . baseConfig
+    defaultWithSource   = bdefaultWithSource . baseConfig
     defaultDPI          = bdefaultDPI        . baseConfig
     defaultSaveFormat   = bdefaultSaveFormat . baseConfig
     pythonInterpreter   = bpythonInterpreter . baseConfig

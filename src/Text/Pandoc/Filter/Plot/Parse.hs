@@ -67,14 +67,14 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
                 -- Filtered attributes that are not relevant to pandoc-plot
                 -- Note that certain Renderers have extra attrs,
                 filteredAttrs = filter (\(k, _) -> k `notElem` inclusionKeys && (Map.notMember k extraAttrs')) attrs
-                defWithLinks = defaultWithLinks config
+                defWithSource = defaultWithSource config
                 defSaveFmt = defaultSaveFormat config
                 defDPI = defaultDPI config
             
             return $
                 FigureSpec
                     { caption        = Map.findWithDefault mempty captionKey attrs'
-                    , withLinks      = fromMaybe defWithLinks $ readBool <$> Map.lookup withLinksKey attrs'
+                    , withSource     = fromMaybe defWithSource $ readBool <$> Map.lookup withSourceKey attrs'
                     , script         = mconcat $ intersperse "\n" [header, includeScript, content]
                     , saveFormat     = fromMaybe defSaveFmt $ (fromString . unpack) <$> Map.lookup saveFormatKey attrs'
                     , directory      = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory config) directoryKey attrs'

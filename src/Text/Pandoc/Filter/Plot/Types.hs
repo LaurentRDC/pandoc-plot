@@ -75,7 +75,7 @@ class ( RendererConfig c , Monad m , MonadIO m , MonadReader c m)
 -- | Minimum configuration required to run ANY renderer
 class (FromJSON c, Default c) => RendererConfig c where
     defaultDirectory    :: c -> FilePath   -- ^ The default directory where figures will be saved.
-    defaultWithLinks    :: c -> Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    defaultWithSource   :: c -> Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     defaultDPI          :: c -> Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     defaultSaveFormat   :: c -> SaveFormat -- ^ The default save format of generated figures.
     -- Python-specific
@@ -112,12 +112,12 @@ instance Monoid CheckResult where
 
 -- | Keys that pandoc-plot will look for in code blocks. 
 -- These are only exported for testing purposes.
-directoryKey, captionKey, saveFormatKey, withLinksKey, preambleKey, dpiKey, pyInterpreterKey :: Text
+directoryKey, captionKey, saveFormatKey, withSourceKey, preambleKey, dpiKey, pyInterpreterKey :: Text
 directoryKey     = "directory"
 captionKey       = "caption"
 saveFormatKey    = "format"
-withLinksKey     = "links"
-preambleKey   = "preamble"
+withSourceKey    = "source"
+preambleKey      = "preamble"
 dpiKey           = "dpi"
 pyInterpreterKey = "python_interpreter"
 
@@ -127,7 +127,7 @@ inclusionKeys :: [Text]
 inclusionKeys = [ directoryKey
                 , captionKey
                 , saveFormatKey
-                , withLinksKey
+                , withSourceKey
                 , dpiKey
                 , pyInterpreterKey
                 ]
@@ -139,7 +139,7 @@ inclusionKeys = [ directoryKey
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
     { caption        :: Text           -- ^ Figure caption.
-    , withLinks      :: Bool           -- ^ Append links to source code and high-dpi figure to caption.
+    , withSource      :: Bool          -- ^ Append link to source code in caption.
     , script         :: Script         -- ^ Source code for the figure.
     , saveFormat     :: SaveFormat     -- ^ Save format of the figure.
     , directory      :: FilePath       -- ^ Directory where to save the file.
@@ -152,7 +152,7 @@ instance Hashable FigureSpec -- From Generic
 
 data BaseConfig = BaseConfig
     { bdefaultDirectory    :: FilePath   -- ^ The default directory where figures will be saved.
-    , bdefaultWithLinks    :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    , bdefaultWithSource    :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , bdefaultDPI          :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , bdefaultSaveFormat   :: SaveFormat -- ^ The default save format of generated figures.
     -- Python-specific
@@ -161,7 +161,7 @@ data BaseConfig = BaseConfig
 
 instance RendererConfig BaseConfig where
     defaultDirectory    = bdefaultDirectory
-    defaultWithLinks    = bdefaultWithLinks    
+    defaultWithSource   = bdefaultWithSource    
     defaultDPI          = bdefaultDPI    
     defaultSaveFormat   = bdefaultSaveFormat
     pythonInterpreter   = bpythonInterpreter
@@ -172,7 +172,7 @@ instance Default BaseConfig where
     def = BaseConfig
         { bdefaultDirectory   = "generated/"
         , bdefaultDPI         = 80
-        , bdefaultWithLinks   = True
+        , bdefaultWithSource  = False
         , bdefaultSaveFormat  = PNG
         , bpythonInterpreter  = defaultPythonInterpreter
     }
@@ -230,9 +230,9 @@ defaultPythonInterpreter = "python3"
 instance FromJSON BaseConfig where
     parseJSON (Object v) =
         BaseConfig 
-            <$> v .:? directoryKey .!= (defaultDirectory d)
-            <*> v .:? withLinksKey .!= (defaultWithLinks d)
-            <*> v .:? dpiKey       .!= (defaultDPI d)
+            <$> v .:? directoryKey  .!= (defaultDirectory d)
+            <*> v .:? withSourceKey .!= (defaultWithSource d)
+            <*> v .:? dpiKey        .!= (defaultDPI d)
             <*> v .:? saveFormatKey .!= (defaultSaveFormat d)
             <*> v .:? pyInterpreterKey .!= (pythonInterpreter d)
         where

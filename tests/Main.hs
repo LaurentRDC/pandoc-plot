@@ -44,18 +44,16 @@ main =
 testFileCreation :: TestTree
 testFileCreation =
     testCase "writes output files in appropriate directory" $ do
-        tempDir <- (</> "test-file-creation") <$> return "" --getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-file-creation") <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
-        let codeBlock = (addDirectory tempDir $ plotCodeBlock "import matplotlib.pyplot as plt\n")
+        let codeBlock = (addDirectory tempDir $ matplotlibCodeBlock "import matplotlib.pyplot as plt\n")
         _ <- makeMatplotlib Nothing codeBlock
         filesCreated <- length <$> listDirectory tempDir
-        assertEqual "" 3 filesCreated
+        assertEqual "" 2 filesCreated
 
-
-
-plotCodeBlock :: Script -> Block
-plotCodeBlock script = CodeBlock (mempty, ["matplotlib"], mempty) script
+matplotlibCodeBlock :: Script -> Block
+matplotlibCodeBlock script = CodeBlock (mempty, ["matplotlib"], mempty) script
 
 
 addCaption :: String -> Block -> Block
@@ -83,9 +81,9 @@ addDPI dpi (CodeBlock (id', cls, attrs) script) =
     CodeBlock (id', cls, attrs ++ [(dpiKey, pack . show $ dpi)]) script
 
 
-addWithLinks :: Bool -> Block -> Block
-addWithLinks yn (CodeBlock (id', cls, attrs) script) =
-    CodeBlock (id', cls, attrs ++ [(withLinksKey, pack . show $ yn)]) script
+addWithSource :: Bool -> Block -> Block
+addWithSource yn (CodeBlock (id', cls, attrs) script) =
+    CodeBlock (id', cls, attrs ++ [(withSourceKey, pack . show $ yn)]) script
 
 
 -- | Assert that a file exists

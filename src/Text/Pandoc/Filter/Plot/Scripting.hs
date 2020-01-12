@@ -99,20 +99,11 @@ toImage spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig:" c
     where
         attrs'       = blockAttrs spec
         target'      = figurePath spec
-        withLinks'   = withLinks spec
+        withSource'  = withSource spec
         srcLink      = link (T.pack $ replaceExtension target' ".txt") mempty "Source code"
-        hiresLink    = link (T.pack $ hiresFigurePath spec) mempty "high res."
         captionText  = fromList $ fromMaybe mempty (captionReader $ caption spec)
-        captionLinks = mconcat [" (", srcLink, ", ", hiresLink, ")"]
-        caption'     = if withLinks' then captionText <> captionLinks else captionText
-
-
--- | Determine the path a figure should have.
-figurePath :: FigureSpec -> FilePath
-figurePath spec = normalise $ directory spec </> stem spec
-  where
-    stem = flip addExtension ext . show . hash
-    ext  = extension . saveFormat $ spec
+        captionLinks = mconcat [" (", srcLink, ")"]
+        caption'     = if withSource' then captionText <> captionLinks else captionText
 
 
 -- | Determine the temp script path from Figure specifications
@@ -131,8 +122,9 @@ sourceCodePath :: FigureSpec -> FilePath
 sourceCodePath = normalise . flip replaceExtension ".txt" . figurePath
 
 
--- | The path to the high-resolution figure.
-hiresFigurePath :: FigureSpec -> FilePath
-hiresFigurePath spec = normalise $ flip replaceExtension (".hires" <> ext) . figurePath $ spec
+-- | Determine the path a figure should have.
+figurePath :: FigureSpec -> FilePath
+figurePath spec = normalise $ directory spec </> stem spec
   where
-    ext = extension . saveFormat $ spec
+    stem = flip addExtension ext . show . hash
+    ext  = extension . saveFormat $ spec
