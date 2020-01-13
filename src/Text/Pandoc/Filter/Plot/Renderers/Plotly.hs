@@ -30,7 +30,8 @@ newtype PlotlyM a
 
 instance RendererM PlotlyM where
     name = return "plotly"
-    scriptExtension = return "py"
+    scriptExtension = return ".py"
+    commentChar = return "#"
     preambleSelector = asks plotlyPreamble
     supportedSaveFormats = return [PNG, JPG, WEBP, PDF, SVG, EPS]
     command _ fp = return [st|python #{fp}|]
@@ -41,5 +42,5 @@ plotlyCapture :: FigureSpec -> FilePath -> PlotlyM Script
 plotlyCapture _ fname = return [st|
 import plotly.graph_objects as go
 __current_plotly_figure = next(obj for obj in globals().values() if type(obj) == go.Figure)
-__current_plotly_figure.write_image("#{fname}")
+__current_plotly_figure.write_image(r"#{fname}")
 |]

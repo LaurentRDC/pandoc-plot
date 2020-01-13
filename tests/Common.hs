@@ -32,23 +32,35 @@ import           System.FilePath                    (takeExtensions, (</>))
 import           System.IO.Temp                     (getCanonicalTemporaryDirectory)
 
 
+type RendererFunc = Configuration -> Block -> IO Block
+type RendererName = Text
+
+renderFunc :: RendererName -> RendererFunc
+renderFunc "matplotlib" = makeMatplotlib
+renderFunc "plotly"     = makePlotly
+renderFunc "matlabplot" = makeMatlab
+renderFunc other        = error $ "Unknown renderer: " <> (unpack other)
 
 
 -------------------------------------------------------------------------------
 -- Test that plot files and source files are created when the filter is run
-testFileCreation :: TestTree
-testFileCreation =
+testFileCreation :: RendererName -> TestTree
+testFileCreation name =
     testCase "writes output files in appropriate directory" $ do
         tempDir <- (</> "test-file-creation") <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
-        let codeBlock = (addDirectory tempDir $ matplotlibCodeBlock "import matplotlib.pyplot as plt\n")
-        _ <- makeMatplotlib def codeBlock
+        let cb = (addDirectory tempDir $ codeBlock name (content name))
+        _ <- (renderFunc name) def cb
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
+    where
+        content "matplotlib" = "import matplotlib.pyplot as plt\n"
+        content "plotly"     = "import plotly.graph_objects as go; fit = go.Figure()\n"
+        content "matlabplot" = "figure('visible', 'off')"
 
-matplotlibCodeBlock :: Script -> Block
-matplotlibCodeBlock script = CodeBlock (mempty, ["matplotlib"], mempty) script
+codeBlock :: RendererName -> Script -> Block
+codeBlock name script = CodeBlock (mempty, [name], mempty) script
 
 
 addCaption :: String -> Block -> Block

@@ -29,10 +29,11 @@ newtype MatlabM a
 
 instance RendererM MatlabM where
     name = return "matlabplot"
-    scriptExtension = return "m"
+    scriptExtension = return ".m"
+    commentChar = return "%"
     preambleSelector = asks matlabPreamble
     supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
-    command _ fp = return [st|matlab -batch -r "try, run(#{fp}), catch, exit, end, exit"|]
+    command _ fp = return [st|matlab -batch "run('#{fp}')"|]
     capture = matlabCapture
 
 

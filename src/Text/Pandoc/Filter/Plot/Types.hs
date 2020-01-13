@@ -42,8 +42,11 @@ class (Monad m , MonadIO m , MonadReader Configuration m)
     -- parsing.
     name :: m Text
 
-    -- Extension for script files. A string without periods, e.g. "py", or "m".
+    -- Extension for script files, e.g. ".py", or ".m".
     scriptExtension :: m String
+
+    -- The character that precedes comments
+    commentChar :: m Text
 
     -- The function that maps from configuration to the preamble.
     preambleSelector :: m Script
