@@ -2,6 +2,7 @@
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TemplateHaskell       #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 {-|
 Module      : $header$
@@ -19,7 +20,7 @@ module Text.Pandoc.Filter.Plot.Parse (
     , captionReader
 ) where
 
-import           Control.Monad                   (join)
+import           Control.Monad                   (join, when)
 import           Control.Monad.Reader            (ask, liftIO)
 
 import           Data.Default.Class              (def)
@@ -48,6 +49,8 @@ import           Text.Pandoc.Readers             (readMarkdown)
 import           Text.Pandoc.Filter.Plot.Types
 
 -- | Determine inclusion specifications from @Block@ attributes.
+-- If an environment is detected, but the save format is incompatible,
+-- an error will be thrown.
 parseFigureSpec :: RendererM m => Block -> m (Maybe FigureSpec)
 parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
     rendererName <- name
@@ -76,18 +79,22 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
                 defWithSource = defaultWithSource config
                 defSaveFmt = defaultSaveFormat config
                 defDPI = defaultDPI config
+
+            let caption        = Map.findWithDefault mempty (tshow CaptionK) attrs'
+                withSource     = fromMaybe defWithSource $ readBool <$> Map.lookup (tshow WithSourceK) attrs'
+                script         = mconcat $ intersperse "\n" [header, includeScript, content]
+                saveFormat     = fromMaybe defSaveFmt $ (fromString . unpack) <$> Map.lookup (tshow SaveFormatK) attrs'
+                directory      = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory config) (tshow DirectoryK) attrs'
+                dpi            = fromMaybe defDPI $ (read . unpack) <$> Map.lookup (tshow DpiK) attrs'
+                extraAttrs     = Map.toList extraAttrs'
+                blockAttrs     = (id', cls, filteredAttrs)
             
-            return $
-                FigureSpec
-                    { caption        = Map.findWithDefault mempty (tshow CaptionK) attrs'
-                    , withSource     = fromMaybe defWithSource $ readBool <$> Map.lookup (tshow WithSourceK) attrs'
-                    , script         = mconcat $ intersperse "\n" [header, includeScript, content]
-                    , saveFormat     = fromMaybe defSaveFmt $ (fromString . unpack) <$> Map.lookup (tshow SaveFormatK) attrs'
-                    , directory      = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory config) (tshow DirectoryK) attrs'
-                    , dpi            = fromMaybe defDPI $ (read . unpack) <$> Map.lookup (tshow DpiK) attrs'
-                    , extraAttrs     = Map.toList extraAttrs'
-                    , blockAttrs     = (id', cls, filteredAttrs)
-                    }
+            -- This is the first opportunity to check save format compatibility
+            saveFormatSupported <- (elem saveFormat <$> supportedSaveFormats)
+            when (not saveFormatSupported) $ do
+                rendererName <- name
+                (error $ mconcat ["Save format ", show saveFormat, " not supported by ", unpack rendererName ])
+            return FigureSpec{..}
 
 parseFigureSpec _ = return Nothing
 
