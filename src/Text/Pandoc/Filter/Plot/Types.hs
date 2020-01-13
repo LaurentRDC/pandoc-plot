@@ -28,7 +28,7 @@ import           Data.List              (intersperse)
 import qualified Data.Map.Strict        as Map
 import           Data.Semigroup         (Semigroup(..))
 import           Data.String            (IsString(..))
-import           Data.Text              (Text)
+import           Data.Text              (Text, pack)
 import           Data.Yaml
 
 import           GHC.Generics           (Generic)
@@ -74,19 +74,19 @@ class (Monad m , MonadIO m , MonadReader Configuration m)
 
 
 data Configuration = Configuration
-    { defaultDirectory    :: FilePath   -- ^ The default directory where figures will be saved.
-    , defaultWithSource   :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
-    , defaultDPI          :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
-    , defaultSaveFormat   :: SaveFormat -- ^ The default save format of generated figures.
-    , pythonInterpreter   :: String     -- ^ The default Python interpreter to use for Python-based renderers.
+    { defaultDirectory      :: FilePath   -- ^ The default directory where figures will be saved.
+    , defaultWithSource     :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    , defaultDPI            :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
+    , defaultSaveFormat     :: SaveFormat -- ^ The default save format of generated figures.
+    , pythonInterpreter     :: String     -- ^ The default Python interpreter to use for Python-based renderers.
 
-    , matplotlibTightBBox :: Bool
+    , matplotlibTightBBox   :: Bool
     , matplotlibTransparent :: Bool
-    , matplotlibPreamble  :: Script
+    , matplotlibPreamble    :: Script
 
-    , plotlyPreamble      :: Script
+    , plotlyPreamble        :: Script
 
-    , matlabPreamble      :: Script
+    , matlabPreamble        :: Script
     }
 
 instance Default Configuration where
@@ -95,7 +95,11 @@ instance Default Configuration where
           , defaultWithSource = False
           , defaultDPI        = 80
           , defaultSaveFormat = PNG
-          , pythonInterpreter = defaultPythonInterpreter
+#if defined(mingw32_HOST_OS)
+          , pythonInterpreter = "python"
+#else
+          , pythonInterpreter = "python3"
+#endif
           
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False
@@ -127,28 +131,44 @@ instance Monoid CheckResult where
     mappend = (<>)
 #endif
 
+-- | Description of any possible inclusion key, both in documents
+-- and in configuration files.
+data InclusionKey 
+    = DirectoryK
+    | CaptionK
+    | SaveFormatK
+    | WithSourceK
+    | PreambleK
+    | DpiK
+    | PyInterpreterK
+    | MatplotlibTightBBoxK
+    | MatplotlibTransparentK
+    | MatplotlibPreambleK
+    | PlotlyPreambleK
+    | MatlabPreambleK
+    deriving (Bounded, Eq, Enum)
 
 -- | Keys that pandoc-plot will look for in code blocks. 
 -- These are only exported for testing purposes.
-directoryKey, captionKey, saveFormatKey, withSourceKey, preambleKey, dpiKey, pyInterpreterKey :: Text
-directoryKey     = "directory"
-captionKey       = "caption"
-saveFormatKey    = "format"
-withSourceKey    = "source"
-preambleKey      = "preamble"
-dpiKey           = "dpi"
-pyInterpreterKey = "python_interpreter"
+instance Show InclusionKey where
+    show DirectoryK      = "directory"
+    show CaptionK        = "caption"
+    show SaveFormatK     = "format"
+    show WithSourceK     = "source"
+    show PreambleK       = "preamble"
+    show DpiK            = "dpi"
+    show PyInterpreterK  = "python_interpreter"
+    show MatplotlibTightBBoxK = "tight_bbox"
+    show MatplotlibTransparentK = "transparent"
+    show MatplotlibPreambleK = show PreambleK
+    show PlotlyPreambleK = show PreambleK
+    show MatlabPreambleK = show PreambleK
 
--- | list of all keys related to pandoc-plot that
+
+-- | List of all keys related to pandoc-plot that
 -- can be specified in source material.
-inclusionKeys :: [Text]
-inclusionKeys = [ directoryKey
-                , captionKey
-                , saveFormatKey
-                , withSourceKey
-                , dpiKey
-                , pyInterpreterKey
-                ]
+inclusionKeys :: [InclusionKey]
+inclusionKeys = enumFromTo (minBound::InclusionKey) maxBound
 
 
 -- | Datatype containing all parameters required to run pandoc-plot.
@@ -157,7 +177,7 @@ inclusionKeys = [ directoryKey
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
     { caption    :: Text           -- ^ Figure caption.
-    , withSource :: Bool          -- ^ Append link to source code in caption.
+    , withSource :: Bool           -- ^ Append link to source code in caption.
     , script     :: Script         -- ^ Source code for the figure.
     , saveFormat :: SaveFormat     -- ^ Save format of the figure.
     , directory  :: FilePath       -- ^ Directory where to save the file.
@@ -183,11 +203,11 @@ data SaveFormat
     deriving (Bounded, Enum, Eq, Show, Generic)
 
 instance Hashable SaveFormat -- From Generic
-instance FromJSON SaveFormat -- from Generic
-
 
 instance IsString SaveFormat where
-    -- | An error is thrown if the save format cannot be parsed.
+    -- An error is thrown if the save format cannot be parsed. That's OK
+    -- since pandoc-plot is a command-line tool and isn't expected to run
+    -- long.
     fromString s
         | s `elem` ["png", "PNG", ".png"] = PNG
         | s `elem` ["pdf", "PDF", ".pdf"] = PDF
@@ -205,15 +225,10 @@ instance IsString SaveFormat where
         where
             saveFormats =  (enumFromTo minBound maxBound) :: [SaveFormat]
 
+instance FromJSON SaveFormat where
+    parseJSON (Object v) = fromString <$> v .: (pack . show $ SaveFormatK)
+    parseJSON _ = error "Coult not parse save format"
+
 -- | Save format file extension
 extension :: SaveFormat -> String
 extension fmt = mconcat [".", fmap toLower . show $ fmt]
-
--- | Default interpreter should be Python 3, which has a different
--- name on Windows ("python") vs Unix ("python3")
-defaultPythonInterpreter :: String
-#if defined(mingw32_HOST_OS)
-defaultPythonInterpreter = "python"
-#else
-defaultPythonInterpreter = "python3"
-#endif

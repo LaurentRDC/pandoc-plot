@@ -8,7 +8,7 @@ import           Control.Monad.Reader
 import           Data.Default.Class                 (def)
 import           Data.List                          (isInfixOf, isSuffixOf)
 import           Data.Monoid                        ((<>))
-import           Data.Text                          (unpack, pack)
+import           Data.Text                          (Text, unpack, pack)
 
 import           Test.Tasty
 import           Test.Tasty.HUnit
@@ -58,32 +58,32 @@ matplotlibCodeBlock script = CodeBlock (mempty, ["matplotlib"], mempty) script
 
 addCaption :: String -> Block -> Block
 addCaption caption (CodeBlock (id', cls, attrs) script) =
-    CodeBlock (id', cls, attrs ++ [(captionKey, pack caption)]) script
+    CodeBlock (id', cls, attrs ++ [(tshow CaptionK, pack caption)]) script
 
 
 addDirectory :: FilePath -> Block -> Block
 addDirectory dir (CodeBlock (id', cls, attrs) script) =
-    CodeBlock (id', cls, attrs ++ [(directoryKey, pack dir)]) script
+    CodeBlock (id', cls, attrs ++ [(tshow DirectoryK, pack dir)]) script
 
 
 addInclusion :: FilePath -> Block -> Block
 addInclusion inclusionPath (CodeBlock (id', cls, attrs) script) =
-    CodeBlock (id', cls, attrs ++ [(preambleKey, pack inclusionPath)]) script
+    CodeBlock (id', cls, attrs ++ [(tshow PreambleK, pack inclusionPath)]) script
 
 
 addSaveFormat :: SaveFormat -> Block -> Block
 addSaveFormat saveFormat (CodeBlock (id', cls, attrs) script) =
-    CodeBlock (id', cls, attrs ++ [(saveFormatKey, pack . extension $ saveFormat)]) script
+    CodeBlock (id', cls, attrs ++ [(tshow SaveFormatK, pack . extension $ saveFormat)]) script
 
 
 addDPI :: Int -> Block -> Block
 addDPI dpi (CodeBlock (id', cls, attrs) script) =
-    CodeBlock (id', cls, attrs ++ [(dpiKey, pack . show $ dpi)]) script
+    CodeBlock (id', cls, attrs ++ [(tshow DpiK, pack . show $ dpi)]) script
 
 
 addWithSource :: Bool -> Block -> Block
 addWithSource yn (CodeBlock (id', cls, attrs) script) =
-    CodeBlock (id', cls, attrs ++ [(withSourceKey, pack . show $ yn)]) script
+    CodeBlock (id', cls, attrs ++ [(tshow WithSourceK, pack . show $ yn)]) script
 
 
 -- | Assert that a file exists
@@ -118,3 +118,6 @@ ensureDirectoryExistsAndEmpty dir = do
         then removePathForcibly dir
         else return ()
     createDirectory dir
+
+tshow :: Show a => a -> Text
+tshow = pack . show
