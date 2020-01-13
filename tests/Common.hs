@@ -74,6 +74,7 @@ testFileInclusion name =
         include "matplotlib" = "tests/includes/matplotlib.py"
         include "plotly"     = "tests/includes/plotly.py"
         include "matlabplot" = "tests/includes/matlabplot.m"
+        include n            = error $ "Unknown renderer: " <> (unpack n)
 
 
 codeBlock :: RendererName -> Script -> Block
@@ -84,6 +85,7 @@ trivialContent :: RendererName -> Script
 trivialContent "matplotlib" = "import matplotlib.pyplot as plt\n"
 trivialContent "plotly"     = "import plotly.graph_objects as go; fit = go.Figure()\n"
 trivialContent "matlabplot" = "figure('visible', 'off')"
+trivialContent n            = error $ "Unknown renderer: " <> (unpack n)
 
 
 addCaption :: String -> Block -> Block
