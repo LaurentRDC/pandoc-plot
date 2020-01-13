@@ -71,8 +71,9 @@ instance Show PandocPlotError where
 makePlot :: Configuration -> Block -> IO Block
 makePlot config block =
     compose [ ((makeMatplotlib config) =<<)
-            , ((makePlotly config) =<<)
-            , ((makeMatlab config) =<<) ] 
+            , ((makePlotly     config) =<<)
+            , ((makeMatlab     config) =<<) 
+            ] 
             (return block)
     where
         compose :: [r -> r] -> r -> r
@@ -85,8 +86,8 @@ plotTransform :: Configuration -> Pandoc -> IO Pandoc
 plotTransform = walkM . makePlot
 
 
-
 type Final = Either PandocPlotError Block
+
 
 -- | Main routine to include plots.
 -- Code blocks containing the attributes @.plot@ or @.plotly@ are considered
@@ -102,6 +103,7 @@ makePlot' block = do
         handleResult _ (ScriptChecksFailed msg) = Left  $ ScriptChecksFailedError msg
         handleResult _ (ScriptFailure code)     = Left  $ ScriptError code
         handleResult spec ScriptSuccess         = Right $ toImage spec
+
 
 makeMatplotlib :: Configuration -> Block -> IO Block
 makeMatplotlib config block = 

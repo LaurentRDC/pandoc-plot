@@ -50,17 +50,40 @@ testFileCreation name =
         tempDir <- (</> "test-file-creation") <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
-        let cb = (addDirectory tempDir $ codeBlock name (content name))
+        let cb = (addDirectory tempDir $ codeBlock name (trivialContent name))
         _ <- (renderFunc name) def cb
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
+
+-------------------------------------------------------------------------------
+-- Test that included files are found within the source
+testFileInclusion :: RendererName -> TestTree
+testFileInclusion name =
+    testCase "includes plot inclusions" $ do
+        tempDir <- (</> "test-file-inclusion") <$> getCanonicalTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        let cb = (addInclusion (include name) $
+                    addDirectory tempDir $ codeBlock name (trivialContent name))
+        _ <- (renderFunc name) def cb
+        inclusion <- readFile (include name)
+        sourcePath <- head . filter (isExtensionOf "txt") <$> listDirectory tempDir
+        src <- readFile (tempDir </> sourcePath)
+        assertIsInfix inclusion src
     where
-        content "matplotlib" = "import matplotlib.pyplot as plt\n"
-        content "plotly"     = "import plotly.graph_objects as go; fit = go.Figure()\n"
-        content "matlabplot" = "figure('visible', 'off')"
+        include "matplotlib" = "tests/includes/matplotlib.py"
+        include "plotly"     = "tests/includes/plotly.py"
+        include "matlabplot" = "tests/includes/matlabplot.m"
+
 
 codeBlock :: RendererName -> Script -> Block
 codeBlock name script = CodeBlock (mempty, [name], mempty) script
+
+
+trivialContent :: RendererName -> Script
+trivialContent "matplotlib" = "import matplotlib.pyplot as plt\n"
+trivialContent "plotly"     = "import plotly.graph_objects as go; fit = go.Figure()\n"
+trivialContent "matlabplot" = "figure('visible', 'off')"
 
 
 addCaption :: String -> Block -> Block

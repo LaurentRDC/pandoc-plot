@@ -23,4 +23,5 @@ generalSuite :: RendererName -> TestTree
 generalSuite name = 
     testGroup (unpack name) $ 
         [ testFileCreation
+        , testFileInclusion
         ] <*> [name]
