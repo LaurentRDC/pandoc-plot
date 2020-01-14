@@ -35,7 +35,7 @@ newtype MatplotlibM a
     deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
 
 instance RendererM MatplotlibM where
-    name = return Matplotlib
+    toolkit = return Matplotlib
     scriptExtension = return ".py"
     commentChar = return "#"
     preambleSelector = asks matplotlibPreamble

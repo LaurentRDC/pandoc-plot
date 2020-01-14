@@ -54,15 +54,13 @@ instance Show Toolkit where
 instance IsString Toolkit where
     fromString t = if t `elem` (show <$> toolkits)
                     then error $ "unknown toolkit " <> t
-                    else head $ filter (\toolkit -> (show toolkit == t)) toolkits
+                    else head $ filter (\tk -> (show tk == t)) toolkits
 
 
 class (Monad m , MonadIO m , MonadReader Configuration m) 
       => RendererM m where
 
-    -- Name of the renderer. This is the string which will activate
-    -- parsing.
-    name :: m Toolkit
+    toolkit :: m Toolkit
 
     -- Extension for script files, e.g. ".py", or ".m".
     scriptExtension :: m String

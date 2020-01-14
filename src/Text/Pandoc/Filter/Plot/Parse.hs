@@ -56,7 +56,7 @@ tshow = pack . show
 -- an error will be thrown.
 parseFigureSpec :: RendererM m => Block -> m (Maybe FigureSpec)
 parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
-    rendererName <- tshow <$> name
+    rendererName <- tshow <$> toolkit
     if not (rendererName `elem` cls)
         then return Nothing 
         else Just <$> figureSpec
@@ -95,7 +95,7 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
             -- This is the first opportunity to check save format compatibility
             saveFormatSupported <- (elem saveFormat <$> supportedSaveFormats)
             when (not saveFormatSupported) $ do
-                tk <- name
+                tk <- toolkit
                 (error $ mconcat ["Save format ", show saveFormat, " not supported by ", show tk ])
             return FigureSpec{..}
 

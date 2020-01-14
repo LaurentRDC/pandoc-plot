@@ -28,7 +28,7 @@ newtype MatlabM a
     deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
 
 instance RendererM MatlabM where
-    name = return Matlab
+    toolkit = return Matlab
     scriptExtension = return ".m"
     commentChar = return "%"
     preambleSelector = asks matlabPreamble
