@@ -117,10 +117,9 @@ tempScriptPath :: RendererM m
                => FigureSpec -> m FilePath
 tempScriptPath FigureSpec{..} = do
     ext <- scriptExtension
-    n <- T.unpack <$> name
     -- Note that matlab will refuse to process files that don't start with
     -- a letter... so we append the renderer name
-    let hashedPath = n <> (show . abs . hash $ script) <> ext
+    let hashedPath = "pandocplot" <> (show . abs . hash $ script) <> ext
     liftIO $ (</> hashedPath) <$> getCanonicalTemporaryDirectory
 
 

@@ -32,60 +32,48 @@ import           System.FilePath                    (takeExtensions, (</>))
 import           System.IO.Temp                     (getCanonicalTemporaryDirectory)
 
 
-type RendererFunc = Configuration -> Block -> IO Block
-type RendererName = Text
-
-renderFunc :: RendererName -> RendererFunc
-renderFunc "matplotlib"    = makeMatplotlib
-renderFunc "plotly_python" = makePlotly
-renderFunc "matlabplot"    = makeMatlab
-renderFunc other           = error $ "Unknown renderer: " <> (unpack other)
-
-
 -------------------------------------------------------------------------------
 -- Test that plot files and source files are created when the filter is run
-testFileCreation :: RendererName -> TestTree
-testFileCreation name =
+testFileCreation :: Toolkit -> TestTree
+testFileCreation tk =
     testCase "writes output files in appropriate directory" $ do
         tempDir <- (</> "test-file-creation") <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
-        let cb = (addDirectory tempDir $ codeBlock name (trivialContent name))
-        _ <- (renderFunc name) def cb
+        let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
+        _ <- (make tk) def cb
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
 
 -------------------------------------------------------------------------------
 -- Test that included files are found within the source
-testFileInclusion :: RendererName -> TestTree
-testFileInclusion name =
+testFileInclusion :: Toolkit -> TestTree
+testFileInclusion tk =
     testCase "includes plot inclusions" $ do
         tempDir <- (</> "test-file-inclusion") <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
-        let cb = (addInclusion (include name) $
-                    addDirectory tempDir $ codeBlock name (trivialContent name))
-        _ <- (renderFunc name) def cb
-        inclusion <- readFile (include name)
+        let cb = (addInclusion (include tk) $
+                    addDirectory tempDir $ codeBlock tk (trivialContent tk))
+        _ <- (make tk) def cb
+        inclusion <- readFile (include tk)
         sourcePath <- head . filter (isExtensionOf "txt") <$> listDirectory tempDir
         src <- readFile (tempDir </> sourcePath)
         assertIsInfix inclusion src
     where
-        include "matplotlib"    = "tests/includes/matplotlib.py"
-        include "plotly_python" = "tests/includes/plotly-python.py"
-        include "matlabplot"    = "tests/includes/matlabplot.m"
-        include n               = error $ "Unknown renderer: " <> (unpack n)
+        include Matplotlib   = "tests/includes/matplotlib.py"
+        include PlotlyPython = "tests/includes/plotly-python.py"
+        include Matlab       = "tests/includes/matlabplot.m"
 
 
-codeBlock :: RendererName -> Script -> Block
-codeBlock name script = CodeBlock (mempty, [name], mempty) script
+codeBlock :: Toolkit -> Script -> Block
+codeBlock tk script = CodeBlock (mempty, [tshow tk], mempty) script
 
 
-trivialContent :: RendererName -> Script
-trivialContent "matplotlib"    = "import matplotlib.pyplot as plt\n"
-trivialContent "plotly_python" = "import plotly.graph_objects as go; fit = go.Figure()\n"
-trivialContent "matlabplot"    = "figure('visible', 'off')"
-trivialContent n               = error $ "Unknown renderer: " <> (unpack n)
+trivialContent :: Toolkit -> Script
+trivialContent Matplotlib   = "import matplotlib.pyplot as plt\n"
+trivialContent PlotlyPython = "import plotly.graph_objects as go; fit = go.Figure()\n"
+trivialContent Matlab       = "figure('visible', 'off')"
 
 
 addCaption :: String -> Block -> Block

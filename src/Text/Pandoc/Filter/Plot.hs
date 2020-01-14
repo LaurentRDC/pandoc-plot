@@ -37,11 +37,11 @@ Default values for the above attributes are stored in the @Configuration@ dataty
 module Text.Pandoc.Filter.Plot (
     -- * Operating on single Pandoc blocks
       makePlot
-    , makeMatplotlib
-    , makePlotly
-    , makeMatlab
     -- * Operating on whole Pandoc documents
     , plotTransform
+    
+    -- * For testing purposes ONLY
+    , make
     ) where
 
 import           Control.Monad.Reader               (runReaderT)
@@ -66,15 +66,13 @@ instance Show PandocPlotError where
 -- All code blocks that have the @.plot@ / @.plotly@ class will be considered
 -- figures.
 makePlot :: Configuration -> Block -> IO Block
-makePlot config block =
-    compose [ ((makeMatplotlib config) =<<)
-            , ((makePlotly     config) =<<)
-            , ((makeMatlab     config) =<<) 
-            ] 
-            (return block)
+makePlot config block = compose makeFuncs (return block)
     where
         compose :: [r -> r] -> r -> r
         compose = flip (foldl (flip id))
+
+        makeFuncs :: [IO Block -> IO Block]
+        makeFuncs = [((make tk config) =<<) | tk <- toolkits ]
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
@@ -102,14 +100,20 @@ makePlot' block = do
         handleResult spec ScriptSuccess         = Right $ toImage spec
 
 
+make :: Toolkit -> (Configuration -> Block -> IO Block)
+make Matplotlib   = makeMatplotlib
+make PlotlyPython = makePlotlyPython
+make Matlab       = makeMatlab
+
+
 makeMatplotlib :: Configuration -> Block -> IO Block
 makeMatplotlib config block = 
     runReaderT (unMatplotlibM $ makePlot' block) config
     >>= either (fail . show) return
 
 
-makePlotly :: Configuration -> Block -> IO Block
-makePlotly config block = 
+makePlotlyPython :: Configuration -> Block -> IO Block
+makePlotlyPython config block = 
     runReaderT (unPlotlyPythonM $ makePlot' block) config
     >>= either (fail . show) return
 

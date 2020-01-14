@@ -29,7 +29,7 @@ newtype PlotlyPythonM a
 
 
 instance RendererM PlotlyPythonM where
-    name = return "plotly_python"
+    name = return PlotlyPython
     scriptExtension = return ".py"
     commentChar = return "#"
     preambleSelector = asks plotlyPreamble
