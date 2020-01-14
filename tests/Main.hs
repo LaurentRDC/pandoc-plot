@@ -14,7 +14,7 @@ main =
     testGroup
         "General tests"
         [ generalSuite "matplotlib"
-        , generalSuite "plotly"
+        , generalSuite "plotly_python"
         , generalSuite "matlabplot"
         ]
 

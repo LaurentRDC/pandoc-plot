@@ -18,7 +18,7 @@ The syntax for code blocks is simple, Code blocks with the appripriate class
 attribute will trigger the filter. For example:
 
 *   @.matplotlib@ for matplotlib-based Python plots;
-*   @.plotly@ for Plotly-based Python plots;
+*   @.plotly_python@ for Plotly-based Python plots;
 *   @.matlabplot@ for MATLAB plots;
 
 The code block will be reworked into a script and the output figure will be captured, possible the source code
@@ -110,7 +110,7 @@ makeMatplotlib config block =
 
 makePlotly :: Configuration -> Block -> IO Block
 makePlotly config block = 
-    runReaderT (unPlotlyM $ makePlot' block) config
+    runReaderT (unPlotlyPythonM $ makePlot' block) config
     >>= either (fail . show) return
 
 

@@ -36,10 +36,10 @@ type RendererFunc = Configuration -> Block -> IO Block
 type RendererName = Text
 
 renderFunc :: RendererName -> RendererFunc
-renderFunc "matplotlib" = makeMatplotlib
-renderFunc "plotly"     = makePlotly
-renderFunc "matlabplot" = makeMatlab
-renderFunc other        = error $ "Unknown renderer: " <> (unpack other)
+renderFunc "matplotlib"    = makeMatplotlib
+renderFunc "plotly_python" = makePlotly
+renderFunc "matlabplot"    = makeMatlab
+renderFunc other           = error $ "Unknown renderer: " <> (unpack other)
 
 
 -------------------------------------------------------------------------------
@@ -71,10 +71,10 @@ testFileInclusion name =
         src <- readFile (tempDir </> sourcePath)
         assertIsInfix inclusion src
     where
-        include "matplotlib" = "tests/includes/matplotlib.py"
-        include "plotly"     = "tests/includes/plotly.py"
-        include "matlabplot" = "tests/includes/matlabplot.m"
-        include n            = error $ "Unknown renderer: " <> (unpack n)
+        include "matplotlib"    = "tests/includes/matplotlib.py"
+        include "plotly_python" = "tests/includes/plotly-python.py"
+        include "matlabplot"    = "tests/includes/matlabplot.m"
+        include n               = error $ "Unknown renderer: " <> (unpack n)
 
 
 codeBlock :: RendererName -> Script -> Block
@@ -82,10 +82,10 @@ codeBlock name script = CodeBlock (mempty, [name], mempty) script
 
 
 trivialContent :: RendererName -> Script
-trivialContent "matplotlib" = "import matplotlib.pyplot as plt\n"
-trivialContent "plotly"     = "import plotly.graph_objects as go; fit = go.Figure()\n"
-trivialContent "matlabplot" = "figure('visible', 'off')"
-trivialContent n            = error $ "Unknown renderer: " <> (unpack n)
+trivialContent "matplotlib"    = "import matplotlib.pyplot as plt\n"
+trivialContent "plotly_python" = "import plotly.graph_objects as go; fit = go.Figure()\n"
+trivialContent "matlabplot"    = "figure('visible', 'off')"
+trivialContent n               = error $ "Unknown renderer: " <> (unpack n)
 
 
 addCaption :: String -> Block -> Block
