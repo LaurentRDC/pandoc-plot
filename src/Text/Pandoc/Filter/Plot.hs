@@ -3,7 +3,7 @@
 
 {-|
 Module      : $header$
-Description : Pandoc filter to create Matplotlib/Plotly figures from code blocks
+Description : Pandoc filter to create figures from code blocks using your plotting toolkit of choice
 Copyright   : (c) Laurent P René de Cotret, 2020
 License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
@@ -12,30 +12,27 @@ Portability : portable
 
 This module defines a Pandoc filter @makePlot@ and related functions
 that can be used to walk over a Pandoc document and generate figures from
-Python code blocks.
+a multitude of plotting toolkits.
 
-The syntax for code blocks is simple, Code blocks with the @.plot@ or @.plotly@
-attribute will trigger the filter. The code block will be reworked into a Python
-script and the output figure will be captured, along with a high-resolution version
-of the figure and the source code used to generate the figure.
+The syntax for code blocks is simple, Code blocks with the appripriate class
+attribute will trigger the filter. For example:
 
-To trigger pandoc-plot, one of the following is __required__:
+*   @.matplotlib@ for matplotlib-based Python plots;
+*   @.plotly@ for Plotly-based Python plots;
+*   @.matlabplot@ for MATLAB plots;
 
-    * @.matplotlib@: Trigger pandoc-plot, rendering via the Matplotlib library
-    * @.plotly@: Trigger pandoc-plot, rendering via the Plotly library
+The code block will be reworked into a script and the output figure will be captured, possible the source code
+ used to generate the figure.
 
-Here are the possible attributes what pandoc-plot understands:
+Here are the possible attributes what pandoc-plot understands for ALL toolkits:
 
     * @directory=...@ : Directory where to save the figure.
     * @format=...@: Format of the generated figure. This can be an extension or an acronym, e.g. @format=png@.
     * @caption="..."@: Specify a plot caption (or alternate text). Captions support Markdown formatting and LaTeX math (@$...$@).
-    * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Default is 80DPI. (Matplotlib only, ignored otherwise)
-    * @include=...@: Path to a Python script to include before the code block. Ideal to avoid repetition over many figures.
-    * @links=true|false@: Add links to source code and high-resolution version of this figure.
-      This is @true@ by default, but you may wish to disable this for PDF output.
+    * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.
+    * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
 
-Custom configurations are possible via the @Configuration@ type and the filter
-functions @plotTransformWithConfig@ and @makePlotWithConfig@.
+Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a YAML file.
 -}
 module Text.Pandoc.Filter.Plot (
     -- * Operating on single Pandoc blocks
