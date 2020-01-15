@@ -35,7 +35,9 @@ pandoc --filter pandoc-plot input.md --output output.html
 
 * `matplotlib`: plots using the [matplotlib](https://matplotlib.org/) Python library;
 * `plotly` : plots using the [plotly](https://plot.ly/python/) Python library;
-* `matlabplot`: plots using the [MATLAB](https://www.mathworks.com/) plotting environment;
+* `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
+* `mathplot` : plots using [Mathematica](https://www.wolfram.com/mathematica/);
+* `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
 
 ### In progress
 
@@ -44,6 +46,5 @@ Support for the following plotting toolkits is coming:
 * [gnuplot](http://www.gnuplot.info/)
 * [Plotly R](https://plot.ly/r/)
 * [ggplot2](https://ggplot2.tidyverse.org/)
-* [Mathematica](https://www.wolfram.com/mathematica)
 
 Wish your plotting toolkit of choice was available? Please [raise an issue](https://github.com/LaurentRDC/pandoc-plot/issues)!
