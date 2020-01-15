@@ -19,9 +19,11 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , module Text.Pandoc.Filter.Plot.Renderers.Plotly
     , module Text.Pandoc.Filter.Plot.Renderers.Matlab
     , module Text.Pandoc.Filter.Plot.Renderers.Mathematica
+    , module Text.Pandoc.Filter.Plot.Renderers.Octave
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import Text.Pandoc.Filter.Plot.Renderers.Plotly
 import Text.Pandoc.Filter.Plot.Renderers.Matlab
 import Text.Pandoc.Filter.Plot.Renderers.Mathematica
+import Text.Pandoc.Filter.Plot.Renderers.Octave

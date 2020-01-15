@@ -105,6 +105,7 @@ make Matplotlib   = makeMatplotlib
 make PlotlyPython = makePlotlyPython
 make Matlab       = makeMatlab
 make Mathematica  = makeMathematica
+make Octave       = makeOctave
 
 
 makeMatplotlib :: Configuration -> Block -> IO Block
@@ -127,4 +128,9 @@ makeMatlab config block =
 makeMathematica :: Configuration -> Block -> IO Block
 makeMathematica config block = 
     runReaderT (unMathematicaM $ makePlot' block) config
+    >>= either (fail . show) return
+
+makeOctave :: Configuration -> Block -> IO Block
+makeOctave config block = 
+    runReaderT (unOctaveM $ makePlot' block) config
     >>= either (fail . show) return

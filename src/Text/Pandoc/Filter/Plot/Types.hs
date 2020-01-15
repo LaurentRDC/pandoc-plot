@@ -44,6 +44,7 @@ data Toolkit
     | Matlab
     | PlotlyPython
     | Mathematica
+    | Octave
     deriving (Bounded, Eq, Enum, Generic)
 
 -- |
@@ -52,6 +53,7 @@ instance Show Toolkit where
     show Matlab          = "matlabplot"
     show PlotlyPython    = "plotly_python"
     show Mathematica     = "mathplot"
+    show Octave          = "octaveplot"
 
 
 class (Monad m , MonadIO m , MonadReader Configuration m) 
@@ -111,6 +113,8 @@ data Configuration = Configuration
     , matlabPreamble        :: Script
 
     , mathematicaPreamble   :: Script
+
+    , octavePreamble        :: Script
     }
 
 instance Default Configuration where
@@ -134,6 +138,8 @@ instance Default Configuration where
           , matlabPreamble      = mempty
 
           , mathematicaPreamble = mempty
+
+          , octavePreamble      = mempty
           }
 
 
@@ -173,6 +179,7 @@ data InclusionKey
     | PlotlyPreambleK
     | MatlabPreambleK
     | MathematicaPreambleK
+    | OctavePreambleK
     deriving (Bounded, Eq, Enum)
 
 -- | Keys that pandoc-plot will look for in code blocks. 
@@ -191,6 +198,7 @@ instance Show InclusionKey where
     show PlotlyPreambleK      = show PreambleK
     show MatlabPreambleK      = show PreambleK
     show MathematicaPreambleK = show PreambleK
+    show OctavePreambleK      = show PreambleK
 
 
 -- | List of all keys related to pandoc-plot that
