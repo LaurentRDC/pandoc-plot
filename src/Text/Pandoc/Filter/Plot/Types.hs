@@ -94,6 +94,8 @@ class (Monad m , MonadIO m , MonadReader Configuration m)
     capture :: FigureSpec 
             -> FilePath     -- ^ Final location of the figure
             -> m Script
+    
+
 
 
 data Configuration = Configuration
