@@ -14,7 +14,21 @@ Portability : portable
 This module defines types in use in pandoc-plot
 -}
 
-module Text.Pandoc.Filter.Plot.Types where
+module Text.Pandoc.Filter.Plot.Types (
+      Toolkit(..)
+    , PlotM
+    , PlotEnv(..)
+    , Configuration(..) 
+    , Script
+    , CheckResult(..)
+    , InclusionKey(..)
+    , FigureSpec(..)
+    , SaveFormat(..)
+    , cls
+    , extension
+    , toolkits
+    , inclusionKeys
+) where
 
 import           Control.Monad.Reader            
 
@@ -43,13 +57,21 @@ data Toolkit
     | Octave
     deriving (Bounded, Eq, Enum, Generic)
 
--- |
+-- | This instance should only be used to display toolkit names
 instance Show Toolkit where
-    show Matplotlib      = "matplotlib"
-    show Matlab          = "matlabplot"
-    show PlotlyPython    = "plotly_python"
-    show Mathematica     = "mathplot"
-    show Octave          = "octaveplot"
+    show Matplotlib   = "Python/Matplotlib"
+    show Matlab       = "MATLAB"
+    show PlotlyPython = "Python/Plotly"
+    show Mathematica  = "Mathematica"
+    show Octave       = "GNU Octave"
+
+-- | Class name which will trigger the filter
+cls :: Toolkit -> Text
+cls Matplotlib   = "matplotlib"
+cls Matlab       = "matlabplot"
+cls PlotlyPython = "plotly_python"
+cls Mathematica  = "mathplot"
+cls Octave       = "octaveplot"
 
 
 type PlotM a = ReaderT PlotEnv IO a

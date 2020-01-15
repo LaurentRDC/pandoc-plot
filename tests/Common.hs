@@ -67,7 +67,7 @@ testFileInclusion tk =
 
 
 codeBlock :: Toolkit -> Script -> Block
-codeBlock tk script = CodeBlock (mempty, [tshow tk], mempty) script
+codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
 
 
 trivialContent :: Toolkit -> Script

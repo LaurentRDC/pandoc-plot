@@ -82,10 +82,10 @@ make tk conf block = do
     let runEnv = PlotEnv tk conf
     runReaderT (makePlot' block >>= either (fail . show) return) runEnv
     where
-        makePlot' block = do
-            parsed <- parseFigureSpec block
+        makePlot' blk = do
+            parsed <- parseFigureSpec blk
             maybe 
-                (return $ Right block)
+                (return $ Right blk)
                 (\s -> handleResult s <$> runScriptIfNecessary s)
                 parsed
             where

@@ -57,10 +57,9 @@ tshow = pack . show
 -- If an environment is detected, but the save format is incompatible,
 -- an error will be thrown.
 parseFigureSpec :: Block -> PlotM (Maybe FigureSpec)
-parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
+parseFigureSpec (CodeBlock (id', classes, attrs) content) = do
     toolkit <- asks toolkit
-    let rendererName = tshow toolkit
-    if not (rendererName `elem` cls)
+    if not (cls toolkit `elem` classes)
         then return Nothing 
         else Just <$> figureSpec
 
@@ -94,7 +93,7 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
                 directory      = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory conf) (tshow DirectoryK) attrs'
                 dpi            = fromMaybe defDPI $ (read . unpack) <$> Map.lookup (tshow DpiK) attrs'
                 extraAttrs     = Map.toList extraAttrs'
-                blockAttrs     = (id', cls, filteredAttrs)
+                blockAttrs     = (id', classes, filteredAttrs)
             
             -- This is the first opportunity to check save format compatibility
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
@@ -108,8 +107,9 @@ parseFigureSpec _ = return Nothing
 -- | Determine which toolkit should be used to render the plot
 -- from a code block, if any.
 plotToolkit :: Block -> Maybe Toolkit
-plotToolkit (CodeBlock (id', cls, attrs) content) = 
-    listToMaybe $ filter (\tk->tshow tk `elem` cls) toolkits
+plotToolkit (CodeBlock (_, classes, _) _) = 
+    listToMaybe $ filter (\tk->cls tk `elem` classes) toolkits
+plotToolkit _ = Nothing
 
 
 -- | Reader options for captions.

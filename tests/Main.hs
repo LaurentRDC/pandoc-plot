@@ -46,7 +46,7 @@ availableToolkits = filterM toolkitAvailable toolkits
             Sh.which (toolkitExecutable tk) >>= (fmap isJust . return)
 
         -- The @which@ function from Turtle only works on
-        -- windows is the executable extension is included.
+        -- windows if the executable extension is included.
         whichExt :: Text
 #if defined(mingw32_HOST_OS)
         whichExt = ".exe"
@@ -58,5 +58,5 @@ availableToolkits = filterM toolkitAvailable toolkits
         toolkitExecutable Matplotlib    = Sh.fromText $ "python" <> whichExt
         toolkitExecutable PlotlyPython  = Sh.fromText $ "python" <> whichExt
         toolkitExecutable Matlab        = Sh.fromText $ "matlab" <> whichExt
-        toolkitExecutable Mathematica   = Sh.fromText $ "math" <> whichExt
+        toolkitExecutable Mathematica   = Sh.fromText $ "math"   <> whichExt
         toolkitExecutable Octave        = Sh.fromText $ "octave" <> whichExt
