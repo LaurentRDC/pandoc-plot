@@ -1,5 +1,4 @@
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE UndecidableInstances  #-}
+
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -15,25 +14,12 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
 
       module Prelude
     , module Text.Pandoc.Filter.Plot.Types
-    , module Data.Yaml
-    , MonadReader
-    , ReaderT
-    , MonadIO
     , Text
-    , Default
-    , asks
-    , def
-    , runReaderT
-    , unpack
     , st
+    , unpack
 ) where
 
-import Control.Monad.Reader            (ReaderT, MonadIO, runReaderT, asks)
-import Control.Monad.Reader.Class      (MonadReader)
-
-import Data.Default.Class              (Default, def)
 import Data.Text                       (Text, unpack)
-import Data.Yaml                        
 import Text.Shakespeare.Text           (st)
 
 import Text.Pandoc.Filter.Plot.Types

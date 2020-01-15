@@ -1,8 +1,6 @@
 {-# LANGUAGE CPP                   #-}
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleContexts      #-}
 
 
 {-|
@@ -72,7 +70,7 @@ data Configuration = Configuration
     , matplotlibTransparent :: Bool
     , matplotlibPreamble    :: Script
 
-    , plotlyPreamble        :: Script
+    , plotlyPythonPreamble        :: Script
 
     , matlabPreamble        :: Script
 
@@ -97,7 +95,7 @@ instance Default Configuration where
           , matplotlibTransparent = False
           , matplotlibPreamble  = mempty
 
-          , plotlyPreamble      = mempty
+          , plotlyPythonPreamble= mempty
           
           , matlabPreamble      = mempty
 

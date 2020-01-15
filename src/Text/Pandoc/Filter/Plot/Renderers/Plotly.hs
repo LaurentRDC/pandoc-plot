@@ -1,10 +1,7 @@
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
-{-# LANGUAGE MultiParamTypeClasses      #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020

@@ -52,7 +52,7 @@ comment Octave       = mappend "% "
 -- The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
 preambleSelector Matplotlib   = matplotlibPreamble
-preambleSelector PlotlyPython = plotlyPreamble
+preambleSelector PlotlyPython = plotlyPythonPreamble
 preambleSelector Matlab       = matlabPreamble
 preambleSelector Mathematica  = mathematicaPreamble
 preambleSelector Octave       = octavePreamble 
