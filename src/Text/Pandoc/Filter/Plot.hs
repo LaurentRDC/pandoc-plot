@@ -39,7 +39,6 @@ module Text.Pandoc.Filter.Plot (
       makePlot
     -- * Operating on whole Pandoc documents
     , plotTransform
-    
     -- * For testing purposes ONLY
     , make
     ) where
@@ -66,13 +65,9 @@ instance Show PandocPlotError where
 -- All code blocks that have the @.plot@ / @.plotly@ class will be considered
 -- figures.
 makePlot :: Configuration -> Block -> IO Block
-makePlot config block = compose makeFuncs (return block)
-    where
-        compose :: [r -> r] -> r -> r
-        compose = flip (foldl (flip id))
-
-        makeFuncs :: [IO Block -> IO Block]
-        makeFuncs = [((make tk config) =<<) | tk <- toolkits ]
+makePlot conf block = case plotToolkit block of
+    Just tk -> make tk conf block
+    Nothing -> return block
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
@@ -81,26 +76,19 @@ plotTransform :: Configuration -> Pandoc -> IO Pandoc
 plotTransform = walkM . makePlot
 
 
-type Final = Either PandocPlotError Block
-
-
--- | Main routine to include plots.
--- Code blocks containing the attributes @.plot@ or @.plotly@ are considered
--- Python plotting scripts. All other possible blocks are ignored.
-makePlot' :: Block -> PlotM Final
-makePlot' block = do
-    parsed <- parseFigureSpec block
-    maybe 
-        (return $ Right block)
-        (\s -> handleResult s <$> runScriptIfNecessary s)
-        parsed
-    where
-        handleResult _ (ScriptChecksFailed msg) = Left  $ ScriptChecksFailedError msg
-        handleResult _ (ScriptFailure code)     = Left  $ ScriptError code
-        handleResult spec ScriptSuccess         = Right $ toImage spec
-
-
+-- | Force to use a particular toolkit to render appropriate code blocks.
 make :: Toolkit -> Configuration -> Block -> IO Block
 make tk conf block = do
     let runEnv = PlotEnv tk conf
     runReaderT (makePlot' block >>= either (fail . show) return) runEnv
+    where
+        makePlot' block = do
+            parsed <- parseFigureSpec block
+            maybe 
+                (return $ Right block)
+                (\s -> handleResult s <$> runScriptIfNecessary s)
+                parsed
+            where
+                handleResult _ (ScriptChecksFailed msg) = Left  $ ScriptChecksFailedError msg
+                handleResult _ (ScriptFailure code)     = Left  $ ScriptError code
+                handleResult spec ScriptSuccess         = Right $ toImage spec

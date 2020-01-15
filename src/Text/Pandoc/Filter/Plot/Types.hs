@@ -65,18 +65,15 @@ data Configuration = Configuration
     , defaultDPI            :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , defaultSaveFormat     :: SaveFormat -- ^ The default save format of generated figures.
     , pythonInterpreter     :: String     -- ^ The default Python interpreter to use for Python-based renderers.
-
+    -- Default preambles
+    , matplotlibPreamble    :: Script
+    , plotlyPythonPreamble  :: Script
+    , matlabPreamble        :: Script
+    , mathematicaPreamble   :: Script
+    , octavePreamble        :: Script
+    -- Toolkit-specific options
     , matplotlibTightBBox   :: Bool
     , matplotlibTransparent :: Bool
-    , matplotlibPreamble    :: Script
-
-    , plotlyPythonPreamble        :: Script
-
-    , matlabPreamble        :: Script
-
-    , mathematicaPreamble   :: Script
-
-    , octavePreamble        :: Script
     }
 
 instance Default Configuration where

@@ -16,7 +16,8 @@ This module defines types and functions that help
 with keeping track of figure specifications
 -}
 module Text.Pandoc.Filter.Plot.Parse ( 
-      parseFigureSpec 
+      plotToolkit
+    , parseFigureSpec 
     , captionReader
 ) where
 
@@ -26,7 +27,7 @@ import           Control.Monad.Reader            (asks, liftIO)
 import           Data.Default.Class              (def)
 import           Data.List                       (intersperse)
 import qualified Data.Map.Strict                 as Map
-import           Data.Maybe                      (fromMaybe)
+import           Data.Maybe                      (fromMaybe, listToMaybe)
 import           Data.Monoid                     ((<>))
 import           Data.String                     (fromString)
 import           Data.Text                       (Text, pack, unpack)
@@ -102,6 +103,14 @@ parseFigureSpec (CodeBlock (id', cls, attrs) content) = do
             return FigureSpec{..}
 
 parseFigureSpec _ = return Nothing
+
+
+-- | Determine which toolkit should be used to render the plot
+-- from a code block, if any.
+plotToolkit :: Block -> Maybe Toolkit
+plotToolkit (CodeBlock (id', cls, attrs) content) = 
+    listToMaybe $ filter (\tk->tshow tk `elem` cls) toolkits
+
 
 -- | Reader options for captions.
 readerOptions :: ReaderOptions
