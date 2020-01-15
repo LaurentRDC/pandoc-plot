@@ -19,7 +19,7 @@ module Text.Pandoc.Filter.Plot.Scripting
     , toImage
     ) where
 
-import           Control.Monad.IO.Class
+import           Control.Monad.Reader
 
 import           Data.Hashable                        (hash)
 import           Data.Maybe                           (fromMaybe)
@@ -42,6 +42,7 @@ import           Text.Pandoc.Definition               (Block (..))
 
 import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Parse        (captionReader)
+import           Text.Pandoc.Filter.Plot.Renderers
 
 
 -- | Possible result of running a script
@@ -51,8 +52,7 @@ data ScriptResult
     | ScriptFailure Int
         
 -- Run script as described by the spec, only if necessary
-runScriptIfNecessary :: RendererM m 
-                     => FigureSpec -> m ScriptResult
+runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
 runScriptIfNecessary spec = do
     liftIO $ createDirectoryIfMissing True . takeDirectory $ figurePath spec
 
@@ -69,22 +69,21 @@ runScriptIfNecessary spec = do
 
 -- Run script as described by the spec
 -- Checks are performed, according to the renderer
-runTempScript :: RendererM m 
-              => FigureSpec -> m ScriptResult
+runTempScript :: FigureSpec -> PlotM ScriptResult
 runTempScript spec@FigureSpec{..} = do
-    checks <- scriptChecks
-    let checkResult = mconcat $ checks <*> [script]
+    tk <- asks toolkit
+    let checks = scriptChecks tk
+        checkResult = mconcat $ checks <*> [script]
     case checkResult of
         CheckFailed msg -> return $ ScriptChecksFailed msg
         CheckPassed -> do
             -- We involve the script hash as a temporary filename
             -- so that there is never any collision
             scriptPath <- tempScriptPath spec
-            scriptWithCapture <- do
-                captureFragment <- capture spec (figurePath spec)
-                return $ mconcat [script, "\n", captureFragment]
+            let captureFragment = (capture tk) spec (figurePath spec)
+                scriptWithCapture = mconcat [script, "\n", captureFragment]
             liftIO $ T.writeFile scriptPath scriptWithCapture
-            command_ <- T.unpack <$> command spec scriptPath
+            let command_ = T.unpack $ command tk spec scriptPath
 
             ec <- liftIO $ runProcess . shell $ command_
             case ec of
@@ -113,13 +112,13 @@ toImage spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig:" c
 -- | Determine the temp script path from Figure specifications
 -- Note that for certain renderers, the appropriate file extension
 -- is important.
-tempScriptPath :: RendererM m 
-               => FigureSpec -> m FilePath
+tempScriptPath :: FigureSpec -> PlotM FilePath
 tempScriptPath FigureSpec{..} = do
-    ext <- scriptExtension
+    tk <- asks toolkit
     -- Note that matlab will refuse to process files that don't start with
     -- a letter... so we append the renderer name
-    let hashedPath = "pandocplot" <> (show . abs . hash $ script) <> ext
+    let ext = scriptExtension tk
+        hashedPath = "pandocplot" <> (show . abs . hash $ script) <> ext
     liftIO $ (</> hashedPath) <$> getCanonicalTemporaryDirectory
 
 

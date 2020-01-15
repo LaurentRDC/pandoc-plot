@@ -18,14 +18,12 @@ This module defines types in use in pandoc-plot
 
 module Text.Pandoc.Filter.Plot.Types where
 
-import           Control.Monad.Reader            (MonadIO)
-import           Control.Monad.Reader.Class      (MonadReader)
+import           Control.Monad.Reader            
 
 import           Data.Char              (toLower)
 import           Data.Default.Class     (Default, def)
 import           Data.Hashable          (Hashable(..))
 import           Data.List              (intersperse)
-import qualified Data.Map.Strict        as Map
 import           Data.Semigroup         (Semigroup(..))
 import           Data.String            (IsString(..))
 import           Data.Text              (Text, pack)
@@ -56,46 +54,12 @@ instance Show Toolkit where
     show Octave          = "octaveplot"
 
 
-class (Monad m , MonadIO m , MonadReader Configuration m) 
-      => RendererM m where
+type PlotM a = ReaderT PlotEnv IO a
 
-    toolkit :: m Toolkit
-
-    -- Extension for script files, e.g. ".py", or ".m".
-    scriptExtension :: m String
-
-    -- Make a string into a comment
-    comment :: Text -> m Text
-
-    -- The function that maps from configuration to the preamble.
-    preambleSelector :: m Script
-
-    -- | Save formats supported by this renderer.
-    supportedSaveFormats :: m [SaveFormat]
-
-    -- Checks to perform before running a script. If ANY check fails,
-    -- the figure is not rendered. This is to prevent, for example,
-    -- blocking operations to occur.
-    scriptChecks :: m [Script -> CheckResult]
-    scriptChecks = return mempty
-
-    -- | Parse code block headers for extra attributes that are specific
-    -- to this renderer. By default, no extra attributes are parsed.
-    parseExtraAttrs :: Map.Map Text Text -> m (Map.Map Text Text)
-    parseExtraAttrs _ = return mempty
-
-    -- | Generate the appropriate command-line command to generate a figure.
-    command :: FigureSpec 
-            -> FilePath     -- ^ Location of the temporary script
-            -> m Text
-
-    -- | Script fragment required to capture a figure.
-    capture :: FigureSpec 
-            -> FilePath     -- ^ Final location of the figure
-            -> m Script
-    
-
-
+data PlotEnv 
+    = PlotEnv { toolkit :: Toolkit
+              , config  :: Configuration
+              }
 
 data Configuration = Configuration
     { defaultDirectory      :: FilePath   -- ^ The default directory where figures will be saved.

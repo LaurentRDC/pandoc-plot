@@ -87,7 +87,7 @@ type Final = Either PandocPlotError Block
 -- | Main routine to include plots.
 -- Code blocks containing the attributes @.plot@ or @.plotly@ are considered
 -- Python plotting scripts. All other possible blocks are ignored.
-makePlot' :: RendererM m => Block -> m Final
+makePlot' :: Block -> PlotM Final
 makePlot' block = do
     parsed <- parseFigureSpec block
     maybe 
@@ -100,37 +100,7 @@ makePlot' block = do
         handleResult spec ScriptSuccess         = Right $ toImage spec
 
 
-make :: Toolkit -> (Configuration -> Block -> IO Block)
-make Matplotlib   = makeMatplotlib
-make PlotlyPython = makePlotlyPython
-make Matlab       = makeMatlab
-make Mathematica  = makeMathematica
-make Octave       = makeOctave
-
-
-makeMatplotlib :: Configuration -> Block -> IO Block
-makeMatplotlib config block = 
-    runReaderT (unMatplotlibM $ makePlot' block) config
-    >>= either (fail . show) return
-
-
-makePlotlyPython :: Configuration -> Block -> IO Block
-makePlotlyPython config block = 
-    runReaderT (unPlotlyPythonM $ makePlot' block) config
-    >>= either (fail . show) return
-
-
-makeMatlab :: Configuration -> Block -> IO Block
-makeMatlab config block = 
-    runReaderT (unMatlabM $ makePlot' block) config
-    >>= either (fail . show) return
-
-makeMathematica :: Configuration -> Block -> IO Block
-makeMathematica config block = 
-    runReaderT (unMathematicaM $ makePlot' block) config
-    >>= either (fail . show) return
-
-makeOctave :: Configuration -> Block -> IO Block
-makeOctave config block = 
-    runReaderT (unOctaveM $ makePlot' block) config
-    >>= either (fail . show) return
+make :: Toolkit -> Configuration -> Block -> IO Block
+make tk conf block = do
+    let runEnv = PlotEnv tk conf
+    runReaderT (makePlot' block >>= either (fail . show) return) runEnv

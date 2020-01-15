@@ -1,8 +1,5 @@
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE FlexibleContexts           #-}
-{-# LANGUAGE QuasiQuotes                #-}
-{-# LANGUAGE RecordWildCards            #-}
+
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -15,15 +12,83 @@ Specification of renderers.
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers (
-      module Text.Pandoc.Filter.Plot.Renderers.Matplotlib
-    , module Text.Pandoc.Filter.Plot.Renderers.Plotly
-    , module Text.Pandoc.Filter.Plot.Renderers.Matlab
-    , module Text.Pandoc.Filter.Plot.Renderers.Mathematica
-    , module Text.Pandoc.Filter.Plot.Renderers.Octave
+      scriptExtension
+    , comment
+    , preambleSelector
+    , supportedSaveFormats
+    , scriptChecks
+    , parseExtraAttrs
+    , command
+    , capture
 ) where
+
+import Data.Text (Text)
+import Data.Map.Strict (Map)
 
 import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import Text.Pandoc.Filter.Plot.Renderers.Plotly
 import Text.Pandoc.Filter.Plot.Renderers.Matlab
 import Text.Pandoc.Filter.Plot.Renderers.Mathematica
 import Text.Pandoc.Filter.Plot.Renderers.Octave
+
+import Text.Pandoc.Filter.Plot.Types
+
+-- Extension for script files, e.g. ".py", or ".m".
+scriptExtension :: Toolkit -> String
+scriptExtension Matplotlib   = ".py"
+scriptExtension PlotlyPython = ".py"
+scriptExtension Matlab       = ".m"
+scriptExtension Mathematica  = ".m"
+scriptExtension Octave       = ".m"
+
+-- Make a string into a comment
+comment :: Toolkit -> (Text -> Text)
+comment Matplotlib   = mappend "# "
+comment PlotlyPython = mappend "# "
+comment Matlab       = mappend "% "
+comment Mathematica  = \t -> mconcat ["(*", t, "*)"]
+comment Octave       = mappend "% "
+
+-- The function that maps from configuration to the preamble.
+preambleSelector :: Toolkit -> (Configuration -> Script)
+preambleSelector Matplotlib   = matplotlibPreamble
+preambleSelector PlotlyPython = plotlyPreamble
+preambleSelector Matlab       = matlabPreamble
+preambleSelector Mathematica  = mathematicaPreamble
+preambleSelector Octave       = octavePreamble 
+
+-- | Save formats supported by this renderer.
+supportedSaveFormats :: Toolkit -> [SaveFormat]
+supportedSaveFormats Matplotlib   = matplotlibSupportedSaveFormats
+supportedSaveFormats PlotlyPython = plotlyPythonSupportedSaveFormats
+supportedSaveFormats Matlab       = matlabSupportedSaveFormats
+supportedSaveFormats Mathematica  = mathematicaSupportedSaveFormats
+supportedSaveFormats Octave       = octaveSupportedSaveFormats
+
+-- Checks to perform before running a script. If ANY check fails,
+-- the figure is not rendered. This is to prevent, for example,
+-- blocking operations to occur.
+scriptChecks :: Toolkit -> [Script -> CheckResult]
+scriptChecks = const mempty
+
+-- | Parse code block headers for extra attributes that are specific
+-- to this renderer. By default, no extra attributes are parsed.
+parseExtraAttrs :: Toolkit -> Map Text Text -> Map Text Text
+parseExtraAttrs Matplotlib = matplotlibExtraAttrs
+parseExtraAttrs _ = return mempty
+
+-- | Generate the appropriate command-line command to generate a figure.
+command :: Toolkit -> (FigureSpec -> FilePath -> Text)
+command Matplotlib   = matplotlibCommand
+command PlotlyPython = plotlyPythonCommand
+command Matlab       = matlabCommand
+command Mathematica  = mathematicaCommand
+command Octave       = octaveCommand
+
+-- | Script fragment required to capture a figure.
+capture :: Toolkit -> (FigureSpec -> FilePath -> Script)
+capture Matplotlib   = matplotlibCapture
+capture PlotlyPython = plotlyPythonCapture
+capture Matlab       = matlabCapture
+capture Mathematica  = mathematicaCapture
+capture Octave       = octaveCapture

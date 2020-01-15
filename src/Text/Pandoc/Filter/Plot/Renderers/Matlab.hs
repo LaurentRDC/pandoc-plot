@@ -17,27 +17,23 @@ Rendering Matlab code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Matlab (
-      MatlabM(..)
+      matlabSupportedSaveFormats
+    , matlabCommand
+    , matlabCapture
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
-newtype MatlabM a 
-    = MatlabM { unMatlabM :: ReaderT Configuration IO a } 
-    deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
-
-instance RendererM MatlabM where
-    toolkit = return Matlab
-    scriptExtension = return ".m"
-    comment t = return $ "% " <> t
-    preambleSelector = asks matlabPreamble
-    supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
-    command _ fp = return [st|matlab -batch "run('#{fp}')"|]
-    capture = matlabCapture
+matlabSupportedSaveFormats :: [SaveFormat]
+matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-matlabCapture :: FigureSpec -> FilePath -> MatlabM Script
-matlabCapture FigureSpec{..} fname = return [st|
+matlabCommand :: FigureSpec -> FilePath -> Text
+matlabCommand _ fp = [st|matlab -batch "run('#{fp}')"|]
+
+
+matlabCapture :: FigureSpec -> FilePath -> Script
+matlabCapture FigureSpec{..} fname = [st|
 saveas(gcf, '#{fname}')
 |]

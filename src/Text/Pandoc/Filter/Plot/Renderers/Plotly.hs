@@ -17,29 +17,22 @@ Rendering Plotly code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Plotly (
-      PlotlyPythonM(..)
+      plotlyPythonSupportedSaveFormats
+    , plotlyPythonCommand
+    , plotlyPythonCapture
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
-newtype PlotlyPythonM a 
-    = PlotlyPythonM { unPlotlyPythonM :: ReaderT Configuration IO a } 
-    deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
+plotlyPythonSupportedSaveFormats :: [SaveFormat]
+plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
-
-instance RendererM PlotlyPythonM where
-    toolkit = return PlotlyPython
-    scriptExtension = return ".py"
-    comment t = return $ "# " <> t
-    preambleSelector = asks plotlyPreamble
-    supportedSaveFormats = return [PNG, JPG, WEBP, PDF, SVG, EPS]
-    command _ fp = return [st|python #{fp}|]
-    capture = plotlyPythonCapture
+plotlyPythonCommand :: FigureSpec -> FilePath -> Text
+plotlyPythonCommand _ fp = [st|python #{fp}|]
         
-        
-plotlyPythonCapture :: FigureSpec -> FilePath -> PlotlyPythonM Script
-plotlyPythonCapture _ fname = return [st|
+plotlyPythonCapture :: FigureSpec -> FilePath -> Script
+plotlyPythonCapture _ fname = [st|
 import plotly.graph_objects as go
 __current_plotly_figure = next(obj for obj in globals().values() if type(obj) == go.Figure)
 __current_plotly_figure.write_image(r"#{fname}")

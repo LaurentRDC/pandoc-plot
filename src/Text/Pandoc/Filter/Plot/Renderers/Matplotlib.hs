@@ -22,7 +22,10 @@ Note that the MatplotlibM renderer supports two extra arguments:
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (
-      MatplotlibM(..)
+      matplotlibSupportedSaveFormats
+    , matplotlibCommand
+    , matplotlibCapture
+    , matplotlibExtraAttrs
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -30,36 +33,27 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 import qualified Data.Map.Strict  as M
 
 
-newtype MatplotlibM a 
-    = MatplotlibM { unMatplotlibM :: ReaderT Configuration IO a } 
-    deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
+matplotlibSupportedSaveFormats :: [SaveFormat]
+matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-instance RendererM MatplotlibM where
-    toolkit = return Matplotlib
-    scriptExtension = return ".py"
-    comment t = return $ "# " <> t
-    preambleSelector = asks matplotlibPreamble
-    supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
-    parseExtraAttrs = matplotlibExtraAttrs
-    command _ fp = return [st|python #{fp}|]
-    capture = matplotlibCapture
+matplotlibCommand :: FigureSpec -> FilePath -> Text
+matplotlibCommand _ fp = [st|python #{fp}|] 
 
 
-matplotlibCapture :: FigureSpec -> FilePath -> MatplotlibM Script
-matplotlibCapture FigureSpec{..} fname = do
-    let attrs        = M.fromList extraAttrs
-        tight_       = readBool $ M.findWithDefault "False" "tight"  attrs
-        transparent_ = readBool $ M.findWithDefault "False" "transparent" attrs
-        tightBox     = if tight_ then ("'tight'"::Text) else ("None"::Text) 
-        transparent  = if transparent_ then ("True"::Text) else ("False"::Text)
-    return [st|
+matplotlibCapture :: FigureSpec -> FilePath -> Script
+matplotlibCapture FigureSpec{..} fname = [st|
 import matplotlib.pyplot as plt
 plt.savefig(r"#{fname}", dpi=#{dpi}, transparent=#{transparent}, bbox_inches=#{tightBox})
 |]
+    where attrs        = M.fromList extraAttrs
+          tight_       = readBool $ M.findWithDefault "False" "tight"  attrs
+          transparent_ = readBool $ M.findWithDefault "False" "transparent" attrs
+          tightBox     = if tight_ then ("'tight'"::Text) else ("None"::Text) 
+          transparent  = if transparent_ then ("True"::Text) else ("False"::Text)
 
 
-matplotlibExtraAttrs :: M.Map Text Text -> MatplotlibM (M.Map Text Text)
-matplotlibExtraAttrs kv = return $ M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "transparent"]) kv
+matplotlibExtraAttrs :: M.Map Text Text -> (M.Map Text Text)
+matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "transparent"]) kv
 
 
 -- | Flexible boolean parsing

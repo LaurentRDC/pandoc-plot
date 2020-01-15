@@ -17,28 +17,20 @@ Rendering Mathematica plots code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Mathematica (
-      MathematicaM(..)
+      mathematicaSupportedSaveFormats
+    , mathematicaCommand
+    , mathematicaCapture
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
+mathematicaSupportedSaveFormats :: [SaveFormat]
+mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-newtype MathematicaM a 
-    = MathematicaM { unMathematicaM :: ReaderT Configuration IO a } 
-    deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
+mathematicaCommand :: FigureSpec -> FilePath -> Text
+mathematicaCommand _ fp = [st|math -script #{fp}|]  
 
-instance RendererM MathematicaM where
-    toolkit = return Mathematica
-    scriptExtension = return ".m"
-    comment t = return $ mconcat ["(*", t, "*)"]
-    preambleSelector = asks mathematicaPreamble
-    supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
-    -- It seems that math.exe and wolfram.exe are the same program. What gives?
-    command _ fp = return [st|math -script #{fp}|]
-    capture = mathematicaCapture
-
-
-mathematicaCapture :: FigureSpec -> FilePath -> MathematicaM Script
-mathematicaCapture FigureSpec{..} fname = return [st|
+mathematicaCapture :: FigureSpec -> FilePath -> Script
+mathematicaCapture FigureSpec{..} fname = [st|
 Export["#{fname}", %, show saveFormat]
 |]
