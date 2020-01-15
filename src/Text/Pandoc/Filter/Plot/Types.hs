@@ -51,12 +51,7 @@ instance Show Toolkit where
     show Matplotlib      = "matplotlib"
     show Matlab          = "matlabplot"
     show PlotlyPython    = "plotly_python"
-    show Mathematica     = "mathematicaplot" -- TODO: long and ugly
-
-instance IsString Toolkit where
-    fromString t = if t `elem` (show <$> toolkits)
-                    then error $ "unknown toolkit " <> t
-                    else head $ filter (\tk -> (show tk == t)) toolkits
+    show Mathematica     = "mathplot"
 
 
 class (Monad m , MonadIO m , MonadReader Configuration m) 

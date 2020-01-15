@@ -29,11 +29,12 @@ newtype MathematicaM a
 
 instance RendererM MathematicaM where
     toolkit = return Mathematica
-    scriptExtension = return ".wl"
-    comment t = return $ mconcat ["(*", t,"*)"]
+    scriptExtension = return ".m"
+    comment t = return $ mconcat ["(*", t, "*)"]
     preambleSelector = asks mathematicaPreamble
     supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
-    command _ fp = return [st|wolfram -script #{fp}|]
+    -- It seems that math.exe and wolfram.exe are the same program. What gives?
+    command _ fp = return [st|math -script #{fp}|]
     capture = mathematicaCapture
 
 
