@@ -8,6 +8,7 @@ import           Control.Applicative                ((<|>))
 import           Control.Monad                      (join)
 
 import           Data.Default.Class                 (def)
+import           Data.List                          (intersperse)
 import           Data.Monoid                        ((<>))
 import qualified Data.Text                          as T
 
@@ -17,7 +18,9 @@ import qualified Options.Applicative.Help.Pretty    as P
 import           System.Directory                   (doesFileExist)
 import           System.IO.Temp                     (writeSystemTempFile)
 
-import           Text.Pandoc.Filter.Plot            (plotTransform)
+import           Text.Pandoc.Filter.Plot            (plotTransform, availableToolkits)
+import           Text.Pandoc.Filter.Plot.Internal   (Toolkit(..), cls, supportedSaveFormats)
+
 import           Text.Pandoc.JSON                   (toJSONFilter)
 
 import           Web.Browser                        (openBrowser)
@@ -49,29 +52,50 @@ toJSONFilterWithConfig = do
 
 data Flag = Version
           | Manual
+          | Toolkits
     deriving (Eq)
 
 
 run :: Parser (IO ())
 run = do
-    versionP <- flag Nothing (Just Version) (long "version" <> short 'v'
-                    <> help "Show version number and exit.")
+    versionP <- flag Nothing (Just Version) (mconcat 
+        [ long "version"
+        , short 'v'
+        , help "Show version number and exit."
+        ])
 
-    manualP  <- flag Nothing (Just Manual)  (long "manual"  <> short 'm'
-                    <> help "Open the manual page in the default web browser and exit.")
+    manualP  <- flag Nothing (Just Manual) (mconcat 
+        [ long "manual"
+        , short 'm'
+        , help "Open the manual page in the default web browser and exit."
+        ])
+
+    toolkitsP <- flag Nothing (Just Toolkits) (mconcat 
+        [ long "toolkits"
+        , short 't'
+        , help "Show toolkits available on this computer and exit."
+        ])
 
     input    <- optional $ strArgument (metavar "AST")
-    return $ go (versionP <|> manualP) input
+    return $ go (versionP <|> manualP <|> toolkitsP) input
     where
         go :: Maybe Flag -> Maybe String -> IO ()
-        go (Just Version) _ = putStrLn (V.showVersion version)
-        go (Just Manual)  _ = writeSystemTempFile "pandoc-plot-manual.html" (T.unpack manualHtml)
+        go (Just Version)  _ = putStrLn (V.showVersion version)
+        go (Just Manual)   _ = writeSystemTempFile "pandoc-plot-manual.html" (T.unpack manualHtml)
                                 >>= \fp -> openBrowser ("file:///" <> fp)
                                 >> return ()
-        go Nothing _ = toJSONFilterWithConfig
+        go (Just Toolkits) _ = availableToolkits >>= mapM_ toolkitInfo
+        go Nothing         _ = toJSONFilterWithConfig
 
 manualHtml :: T.Text
 manualHtml = T.pack $(embedManualHtml)
+
+toolkitInfo :: Toolkit -> IO ()
+toolkitInfo tk = do
+    putStrLn $ "Toolkit: " <> show tk
+    putStrLn $ "    Code block trigger: " <> (T.unpack . cls $ tk)
+    putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
+    putStrLn mempty
 
 
 -- | Use Doc type directly because of newline formatting

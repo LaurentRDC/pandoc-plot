@@ -52,6 +52,7 @@ library
         , shakespeare        >= 2.0   && < 3
         , temporary
         , text               >= 1     && < 2
+        , turtle             >= 1     && < 2
         , typed-process      >= 0.2.1 && < 1
         , yaml               >= 0.8   && < 1
         , mtl                >= 2.2   && < 2.3
@@ -101,6 +102,5 @@ test-suite tests
                    , temporary
                    , text
                    , mtl                >= 2.2   && < 2.3
-                   , turtle
     default-language: Haskell2010
   

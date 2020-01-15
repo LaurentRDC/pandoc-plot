@@ -1,4 +1,5 @@
-{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE CPP                #-}
 
 {-|
 Module      : $header$
@@ -20,10 +21,17 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , parseExtraAttrs
     , command
     , capture
+    , availableToolkits
 ) where
 
-import Data.Text (Text)
-import Data.Map.Strict (Map)
+import Control.Monad    (filterM)
+
+import Data.Map.Strict  (Map)
+import Data.Maybe       (isJust)
+import Data.Text        (Text)
+
+
+import qualified Turtle as Sh
 
 import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import Text.Pandoc.Filter.Plot.Renderers.Plotly
@@ -92,3 +100,27 @@ capture PlotlyPython = plotlyPythonCapture
 capture Matlab       = matlabCapture
 capture Mathematica  = mathematicaCapture
 capture Octave       = octaveCapture
+
+
+availableToolkits :: IO [Toolkit]
+availableToolkits = filterM toolkitAvailable toolkits
+    where
+        toolkitAvailable :: Toolkit -> IO Bool
+        toolkitAvailable tk = 
+            Sh.which (toolkitExecutable tk) >>= (fmap isJust . return)
+
+        -- The @which@ function from Turtle only works on
+        -- windows if the executable extension is included.
+        whichExt :: Text
+#if defined(mingw32_HOST_OS)
+        whichExt = ".exe"
+#else
+        whichExt = mempty
+#endif
+
+        toolkitExecutable :: Toolkit -> Sh.FilePath
+        toolkitExecutable Matplotlib    = Sh.fromText $ "python" <> whichExt
+        toolkitExecutable PlotlyPython  = Sh.fromText $ "python" <> whichExt
+        toolkitExecutable Matlab        = Sh.fromText $ "matlab" <> whichExt
+        toolkitExecutable Mathematica   = Sh.fromText $ "math"   <> whichExt
+        toolkitExecutable Octave        = Sh.fromText $ "octave" <> whichExt
