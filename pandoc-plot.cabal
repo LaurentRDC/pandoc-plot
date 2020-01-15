@@ -35,6 +35,7 @@ library
         Text.Pandoc.Filter.Plot.Renderers.Matplotlib
         Text.Pandoc.Filter.Plot.Renderers.Plotly
         Text.Pandoc.Filter.Plot.Renderers.Matlab
+        Text.Pandoc.Filter.Plot.Renderers.Mathematica
     hs-source-dirs:
         src
     ghc-options: -Wall -Wcompat

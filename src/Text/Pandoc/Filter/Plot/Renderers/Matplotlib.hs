@@ -37,7 +37,7 @@ newtype MatplotlibM a
 instance RendererM MatplotlibM where
     toolkit = return Matplotlib
     scriptExtension = return ".py"
-    commentChar = return "#"
+    comment t = return $ "# " <> t
     preambleSelector = asks matplotlibPreamble
     supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
     parseExtraAttrs = matplotlibExtraAttrs

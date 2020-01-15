@@ -58,3 +58,4 @@ availableToolkits = filterM toolkitAvailable toolkits
         toolkitExecutable Matplotlib    = Sh.fromText $ "python" <> whichExt
         toolkitExecutable PlotlyPython  = Sh.fromText $ "python" <> whichExt
         toolkitExecutable Matlab        = Sh.fromText $ "matlab" <> whichExt
+        toolkitExecutable Mathematica   = Sh.fromText $ "wolfram" <> whichExt

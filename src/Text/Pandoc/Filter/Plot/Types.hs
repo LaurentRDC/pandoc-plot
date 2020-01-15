@@ -43,13 +43,15 @@ data Toolkit
     = Matplotlib
     | Matlab
     | PlotlyPython
+    | Mathematica
     deriving (Bounded, Eq, Enum, Generic)
 
 -- |
 instance Show Toolkit where
-    show Matplotlib   = "matplotlib"
-    show Matlab       = "matlabplot"
-    show PlotlyPython = "plotly_python"
+    show Matplotlib      = "matplotlib"
+    show Matlab          = "matlabplot"
+    show PlotlyPython    = "plotly_python"
+    show Mathematica     = "mathematicaplot" -- TODO: long and ugly
 
 instance IsString Toolkit where
     fromString t = if t `elem` (show <$> toolkits)
@@ -65,8 +67,8 @@ class (Monad m , MonadIO m , MonadReader Configuration m)
     -- Extension for script files, e.g. ".py", or ".m".
     scriptExtension :: m String
 
-    -- The character that precedes comments
-    commentChar :: m Text
+    -- Make a string into a comment
+    comment :: Text -> m Text
 
     -- The function that maps from configuration to the preamble.
     preambleSelector :: m Script
@@ -112,6 +114,8 @@ data Configuration = Configuration
     , plotlyPreamble        :: Script
 
     , matlabPreamble        :: Script
+
+    , mathematicaPreamble   :: Script
     }
 
 instance Default Configuration where
@@ -128,11 +132,13 @@ instance Default Configuration where
           
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False
-          , matplotlibPreamble = mempty
+          , matplotlibPreamble  = mempty
 
-          , plotlyPreamble    = mempty
+          , plotlyPreamble      = mempty
           
-          , matlabPreamble    = mempty
+          , matlabPreamble      = mempty
+
+          , mathematicaPreamble = mempty
           }
 
 
@@ -171,6 +177,7 @@ data InclusionKey
     | MatplotlibPreambleK
     | PlotlyPreambleK
     | MatlabPreambleK
+    | MathematicaPreambleK
     deriving (Bounded, Eq, Enum)
 
 -- | Keys that pandoc-plot will look for in code blocks. 
@@ -185,9 +192,10 @@ instance Show InclusionKey where
     show PyInterpreterK  = "python_interpreter"
     show MatplotlibTightBBoxK = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
-    show MatplotlibPreambleK = show PreambleK
-    show PlotlyPreambleK = show PreambleK
-    show MatlabPreambleK = show PreambleK
+    show MatplotlibPreambleK  = show PreambleK
+    show PlotlyPreambleK      = show PreambleK
+    show MatlabPreambleK      = show PreambleK
+    show MathematicaPreambleK = show PreambleK
 
 
 -- | List of all keys related to pandoc-plot that

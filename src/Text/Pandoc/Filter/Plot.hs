@@ -104,6 +104,7 @@ make :: Toolkit -> (Configuration -> Block -> IO Block)
 make Matplotlib   = makeMatplotlib
 make PlotlyPython = makePlotlyPython
 make Matlab       = makeMatlab
+make Mathematica  = makeMathematica
 
 
 makeMatplotlib :: Configuration -> Block -> IO Block
@@ -121,4 +122,9 @@ makePlotlyPython config block =
 makeMatlab :: Configuration -> Block -> IO Block
 makeMatlab config block = 
     runReaderT (unMatlabM $ makePlot' block) config
+    >>= either (fail . show) return
+
+makeMathematica :: Configuration -> Block -> IO Block
+makeMathematica config block = 
+    runReaderT (unMathematicaM $ makePlot' block) config
     >>= either (fail . show) return

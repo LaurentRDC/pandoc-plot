@@ -31,7 +31,7 @@ newtype PlotlyPythonM a
 instance RendererM PlotlyPythonM where
     toolkit = return PlotlyPython
     scriptExtension = return ".py"
-    commentChar = return "#"
+    comment t = return $ "# " <> t
     preambleSelector = asks plotlyPreamble
     supportedSaveFormats = return [PNG, JPG, WEBP, PDF, SVG, EPS]
     command _ fp = return [st|python #{fp}|]

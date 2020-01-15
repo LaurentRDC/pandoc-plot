@@ -13,31 +13,31 @@ Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
 Portability : portable
 
-Rendering Matlab code blocks
+Rendering Mathematica plots code blocks
 -}
 
-module Text.Pandoc.Filter.Plot.Renderers.Matlab (
-      MatlabM(..)
+module Text.Pandoc.Filter.Plot.Renderers.Mathematica (
+      MathematicaM(..)
 ) where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
-newtype MatlabM a 
-    = MatlabM { unMatlabM :: ReaderT Configuration IO a } 
+newtype MathematicaM a 
+    = MathematicaM { unMathematicaM :: ReaderT Configuration IO a } 
     deriving (Functor, Applicative, Monad, MonadIO, MonadReader Configuration)
 
-instance RendererM MatlabM where
-    toolkit = return Matlab
-    scriptExtension = return ".m"
-    comment t = return $ "% " <> t
-    preambleSelector = asks matlabPreamble
+instance RendererM MathematicaM where
+    toolkit = return Mathematica
+    scriptExtension = return ".wl"
+    comment t = return $ mconcat ["(*", t,"*)"]
+    preambleSelector = asks mathematicaPreamble
     supportedSaveFormats = return [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
-    command _ fp = return [st|matlab -batch "run('#{fp}')"|]
-    capture = matlabCapture
+    command _ fp = return [st|wolfram -script #{fp}|]
+    capture = mathematicaCapture
 
 
-matlabCapture :: FigureSpec -> FilePath -> MatlabM Script
-matlabCapture FigureSpec{..} fname = return [st|
-saveas(gcf, '#{fname}')
+mathematicaCapture :: FigureSpec -> FilePath -> MathematicaM Script
+mathematicaCapture FigureSpec{..} fname = return [st|
+Export["#{fname}", %, show saveFormat]
 |]
