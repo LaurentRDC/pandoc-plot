@@ -42,6 +42,7 @@ module Text.Pandoc.Filter.Plot (
     -- * For testing purposes ONLY
     , make
     , availableToolkits
+    , unavailableToolkits
     ) where
 
 import           Control.Monad.Reader               (runReaderT)

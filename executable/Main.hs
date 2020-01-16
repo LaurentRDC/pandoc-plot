@@ -18,7 +18,7 @@ import qualified Options.Applicative.Help.Pretty    as P
 import           System.Directory                   (doesFileExist)
 import           System.IO.Temp                     (writeSystemTempFile)
 
-import           Text.Pandoc.Filter.Plot            (plotTransform, availableToolkits)
+import           Text.Pandoc.Filter.Plot            (plotTransform, availableToolkits, unavailableToolkits)
 import           Text.Pandoc.Filter.Plot.Internal   (Toolkit(..), cls, supportedSaveFormats)
 
 import           Text.Pandoc.JSON                   (toJSONFilter)
@@ -73,7 +73,7 @@ run = do
     toolkitsP <- flag Nothing (Just Toolkits) (mconcat 
         [ long "toolkits"
         , short 't'
-        , help "Show toolkits available on this computer and exit."
+        , help "Show information on toolkits and exit."
         ])
 
     input    <- optional $ strArgument (metavar "AST")
@@ -84,7 +84,12 @@ run = do
         go (Just Manual)   _ = writeSystemTempFile "pandoc-plot-manual.html" (T.unpack manualHtml)
                                 >>= \fp -> openBrowser ("file:///" <> fp)
                                 >> return ()
-        go (Just Toolkits) _ = availableToolkits >>= mapM_ toolkitInfo
+        go (Just Toolkits) _ = do
+            putStrLn "\nAVAILABLE TOOLKITS\n"
+            availableToolkits >>= mapM_ toolkitInfo
+            putStrLn "\nUNAVAILABLE TOOLKITS\n"
+            unavailableToolkits >>= mapM_ toolkitInfo
+
         go Nothing         _ = toJSONFilterWithConfig
 
 manualHtml :: T.Text

@@ -22,10 +22,12 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , command
     , capture
     , availableToolkits
+    , unavailableToolkits
 ) where
 
 import Control.Monad    (filterM)
 
+import Data.List        ((\\))
 import Data.Map.Strict  (Map)
 import Data.Maybe       (isJust)
 import Data.Text        (Text)
@@ -102,6 +104,7 @@ capture Mathematica  = mathematicaCapture
 capture Octave       = octaveCapture
 
 
+-- | List of toolkits available on this machine.
 availableToolkits :: IO [Toolkit]
 availableToolkits = filterM toolkitAvailable toolkits
     where
@@ -124,3 +127,6 @@ availableToolkits = filterM toolkitAvailable toolkits
         toolkitExecutable Matlab        = Sh.fromText $ "matlab" <> whichExt
         toolkitExecutable Mathematica   = Sh.fromText $ "math"   <> whichExt
         toolkitExecutable Octave        = Sh.fromText $ "octave" <> whichExt
+
+unavailableToolkits :: IO [Toolkit]
+unavailableToolkits = ((\\) toolkits) <$> availableToolkits
