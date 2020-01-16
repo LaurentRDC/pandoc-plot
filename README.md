@@ -39,6 +39,12 @@ pandoc --filter pandoc-plot input.md --output output.html
 * `mathplot` : plots using [Mathematica](https://www.wolfram.com/mathematica/);
 * `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
 
+To know which toolkits are useable on *your machine*, you can check with the `--toolkits/-t` flag:
+
+```bash
+pandoc-plot --toolkits
+```
+
 ### In progress
 
 Support for the following plotting toolkits is coming:
