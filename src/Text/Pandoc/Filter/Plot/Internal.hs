@@ -18,7 +18,7 @@ module Text.Pandoc.Filter.Plot.Internal (
     , module Text.Pandoc.Filter.Plot.Parse
  ) where
 
-import Text.Pandoc.Filter.Plot.Types
-import Text.Pandoc.Filter.Plot.Renderers
-import Text.Pandoc.Filter.Plot.Scripting
-import Text.Pandoc.Filter.Plot.Parse
+import           Text.Pandoc.Filter.Plot.Parse
+import           Text.Pandoc.Filter.Plot.Renderers
+import           Text.Pandoc.Filter.Plot.Scripting
+import           Text.Pandoc.Filter.Plot.Types

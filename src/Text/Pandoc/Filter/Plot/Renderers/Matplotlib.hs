@@ -1,7 +1,7 @@
-{-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE QuasiQuotes                #-}
-{-# LANGUAGE RecordWildCards            #-}
-{-# LANGUAGE NoImplicitPrelude          #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -24,16 +24,16 @@ module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (
     , matplotlibExtraAttrs
 ) where
 
-import Text.Pandoc.Filter.Plot.Renderers.Prelude
+import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-import qualified Data.Map.Strict  as M
+import qualified Data.Map.Strict                           as M
 
 
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 matplotlibCommand :: FigureSpec -> FilePath -> Text
-matplotlibCommand _ fp = [st|python #{fp}|] 
+matplotlibCommand _ fp = [st|python #{fp}|]
 
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script
@@ -44,7 +44,7 @@ plt.savefig(r"#{fname}", dpi=#{dpi}, transparent=#{transparent}, bbox_inches=#{t
     where attrs        = M.fromList extraAttrs
           tight_       = readBool $ M.findWithDefault "False" "tight"  attrs
           transparent_ = readBool $ M.findWithDefault "False" "transparent" attrs
-          tightBox     = if tight_ then ("'tight'"::Text) else ("None"::Text) 
+          tightBox     = if tight_ then ("'tight'"::Text) else ("None"::Text)
           transparent  = if transparent_ then ("True"::Text) else ("False"::Text)
 
 

@@ -1,6 +1,6 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -21,28 +21,28 @@ module Text.Pandoc.Filter.Plot.Scripting
 
 import           Control.Monad.Reader
 
-import           Data.Hashable                        (hash)
-import           Data.Maybe                           (fromMaybe)
-import           Data.Monoid                          ((<>))
-import qualified Data.Text                            as T
-import qualified Data.Text.IO                         as T
+import           Data.Hashable                     (hash)
+import           Data.Maybe                        (fromMaybe)
+import           Data.Monoid                       ((<>))
+import qualified Data.Text                         as T
+import qualified Data.Text.IO                      as T
 
-import           System.Directory                     (createDirectoryIfMissing,
-                                                       doesFileExist)
-import           System.Exit                          (ExitCode (..))
-import           System.FilePath                      (FilePath, addExtension,
-                                                       normalise, takeDirectory,
-                                                       replaceExtension, (</>))
-import           System.IO.Temp                       (getCanonicalTemporaryDirectory)
-import           System.Process.Typed                 (runProcess, shell)
+import           System.Directory                  (createDirectoryIfMissing,
+                                                    doesFileExist)
+import           System.Exit                       (ExitCode (..))
+import           System.FilePath                   (FilePath, addExtension,
+                                                    normalise, replaceExtension,
+                                                    takeDirectory, (</>))
+import           System.IO.Temp                    (getCanonicalTemporaryDirectory)
+import           System.Process.Typed              (runProcess, shell)
 
-import           Text.Pandoc.Builder                  (fromList, imageWith, link,
-                                                       para, toList)
-import           Text.Pandoc.Definition               (Block (..))
+import           Text.Pandoc.Builder               (fromList, imageWith, link,
+                                                    para, toList)
+import           Text.Pandoc.Definition            (Block (..))
 
-import           Text.Pandoc.Filter.Plot.Types
-import           Text.Pandoc.Filter.Plot.Parse        (captionReader)
+import           Text.Pandoc.Filter.Plot.Parse     (captionReader)
 import           Text.Pandoc.Filter.Plot.Renderers
+import           Text.Pandoc.Filter.Plot.Types
 
 
 -- | Possible result of running a script
@@ -50,7 +50,7 @@ data ScriptResult
     = ScriptSuccess
     | ScriptChecksFailed String
     | ScriptFailure Int
-        
+
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
 runScriptIfNecessary spec = do

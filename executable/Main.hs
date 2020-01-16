@@ -4,31 +4,34 @@
 
 module Main where
 
-import           Control.Applicative                ((<|>))
-import           Control.Monad                      (join)
+import           Control.Applicative              ((<|>))
+import           Control.Monad                    (join)
 
-import           Data.Default.Class                 (def)
-import           Data.List                          (intersperse)
-import           Data.Monoid                        ((<>))
-import qualified Data.Text                          as T
+import           Data.Default.Class               (def)
+import           Data.List                        (intersperse)
+import           Data.Monoid                      ((<>))
+import qualified Data.Text                        as T
 
 import           Options.Applicative
-import qualified Options.Applicative.Help.Pretty    as P
+import qualified Options.Applicative.Help.Pretty  as P
 
-import           System.Directory                   (doesFileExist)
-import           System.IO.Temp                     (writeSystemTempFile)
+import           System.Directory                 (doesFileExist)
+import           System.IO.Temp                   (writeSystemTempFile)
 
-import           Text.Pandoc.Filter.Plot            (plotTransform, availableToolkits, unavailableToolkits)
-import           Text.Pandoc.Filter.Plot.Internal   (Toolkit(..), cls, supportedSaveFormats)
+import           Text.Pandoc.Filter.Plot          (availableToolkits,
+                                                   plotTransform,
+                                                   unavailableToolkits)
+import           Text.Pandoc.Filter.Plot.Internal (Toolkit (..), cls,
+                                                   supportedSaveFormats)
 
-import           Text.Pandoc.JSON                   (toJSONFilter)
+import           Text.Pandoc.JSON                 (toJSONFilter)
 
-import           Web.Browser                        (openBrowser)
+import           Web.Browser                      (openBrowser)
 
-import qualified Data.Version                       as V
-import           Paths_pandoc_plot                  (version)
+import qualified Data.Version                     as V
+import           Paths_pandoc_plot                (version)
 
-import           ManPage                            (embedManualHtml)
+import           ManPage                          (embedManualHtml)
 
 main :: IO ()
 main = join $ execParser opts
@@ -58,19 +61,19 @@ data Flag = Version
 
 run :: Parser (IO ())
 run = do
-    versionP <- flag Nothing (Just Version) (mconcat 
+    versionP <- flag Nothing (Just Version) (mconcat
         [ long "version"
         , short 'v'
         , help "Show version number and exit."
         ])
 
-    manualP  <- flag Nothing (Just Manual) (mconcat 
+    manualP  <- flag Nothing (Just Manual) (mconcat
         [ long "manual"
         , short 'm'
         , help "Open the manual page in the default web browser and exit."
         ])
 
-    toolkitsP <- flag Nothing (Just Toolkits) (mconcat 
+    toolkitsP <- flag Nothing (Just Toolkits) (mconcat
         [ long "toolkits"
         , short 't'
         , help "Show information on toolkits and exit."

@@ -19,7 +19,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , unpack
 ) where
 
-import Data.Text                       (Text, unpack)
-import Text.Shakespeare.Text           (st)
+import           Data.Text                     (Text, unpack)
+import           Text.Shakespeare.Text         (st)
 
-import Text.Pandoc.Filter.Plot.Types
+import           Text.Pandoc.Filter.Plot.Types

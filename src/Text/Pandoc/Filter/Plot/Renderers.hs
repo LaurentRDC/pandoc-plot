@@ -1,5 +1,5 @@
-{-# LANGUAGE OverloadedStrings  #-}
-{-# LANGUAGE CPP                #-}
+{-# LANGUAGE CPP               #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 {-|
 Module      : $header$
@@ -25,23 +25,23 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , unavailableToolkits
 ) where
 
-import Control.Monad    (filterM)
+import           Control.Monad                                 (filterM)
 
-import Data.List        ((\\))
-import Data.Map.Strict  (Map)
-import Data.Maybe       (isJust)
-import Data.Text        (Text)
+import           Data.List                                     ((\\))
+import           Data.Map.Strict                               (Map)
+import           Data.Maybe                                    (isJust)
+import           Data.Text                                     (Text)
 
 
-import qualified Turtle as Sh
+import qualified Turtle                                        as Sh
 
-import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
-import Text.Pandoc.Filter.Plot.Renderers.Plotly
-import Text.Pandoc.Filter.Plot.Renderers.Matlab
-import Text.Pandoc.Filter.Plot.Renderers.Mathematica
-import Text.Pandoc.Filter.Plot.Renderers.Octave
+import           Text.Pandoc.Filter.Plot.Renderers.Mathematica
+import           Text.Pandoc.Filter.Plot.Renderers.Matlab
+import           Text.Pandoc.Filter.Plot.Renderers.Matplotlib
+import           Text.Pandoc.Filter.Plot.Renderers.Octave
+import           Text.Pandoc.Filter.Plot.Renderers.Plotly
 
-import Text.Pandoc.Filter.Plot.Types
+import           Text.Pandoc.Filter.Plot.Types
 
 -- Extension for script files, e.g. ".py", or ".m".
 scriptExtension :: Toolkit -> String
@@ -65,7 +65,7 @@ preambleSelector Matplotlib   = matplotlibPreamble
 preambleSelector PlotlyPython = plotlyPythonPreamble
 preambleSelector Matlab       = matlabPreamble
 preambleSelector Mathematica  = mathematicaPreamble
-preambleSelector Octave       = octavePreamble 
+preambleSelector Octave       = octavePreamble
 
 -- | Save formats supported by this renderer.
 supportedSaveFormats :: Toolkit -> [SaveFormat]
@@ -85,7 +85,7 @@ scriptChecks = const mempty
 -- to this renderer. By default, no extra attributes are parsed.
 parseExtraAttrs :: Toolkit -> Map Text Text -> Map Text Text
 parseExtraAttrs Matplotlib = matplotlibExtraAttrs
-parseExtraAttrs _ = return mempty
+parseExtraAttrs _          = return mempty
 
 -- | Generate the appropriate command-line command to generate a figure.
 command :: Toolkit -> (FigureSpec -> FilePath -> Text)
@@ -109,7 +109,7 @@ availableToolkits :: IO [Toolkit]
 availableToolkits = filterM toolkitAvailable toolkits
     where
         toolkitAvailable :: Toolkit -> IO Bool
-        toolkitAvailable tk = 
+        toolkitAvailable tk =
             Sh.which (toolkitExecutable tk) >>= (fmap isJust . return)
 
         -- The @which@ function from Turtle only works on
@@ -122,11 +122,11 @@ availableToolkits = filterM toolkitAvailable toolkits
 #endif
 
         toolkitExecutable :: Toolkit -> Sh.FilePath
-        toolkitExecutable Matplotlib    = Sh.fromText $ "python" <> whichExt
-        toolkitExecutable PlotlyPython  = Sh.fromText $ "python" <> whichExt
-        toolkitExecutable Matlab        = Sh.fromText $ "matlab" <> whichExt
-        toolkitExecutable Mathematica   = Sh.fromText $ "math"   <> whichExt
-        toolkitExecutable Octave        = Sh.fromText $ "octave" <> whichExt
+        toolkitExecutable Matplotlib   = Sh.fromText $ "python" <> whichExt
+        toolkitExecutable PlotlyPython = Sh.fromText $ "python" <> whichExt
+        toolkitExecutable Matlab       = Sh.fromText $ "matlab" <> whichExt
+        toolkitExecutable Mathematica  = Sh.fromText $ "math"   <> whichExt
+        toolkitExecutable Octave       = Sh.fromText $ "octave" <> whichExt
 
 unavailableToolkits :: IO [Toolkit]
 unavailableToolkits = ((\\) toolkits) <$> availableToolkits

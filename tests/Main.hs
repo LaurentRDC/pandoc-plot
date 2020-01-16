@@ -1,16 +1,16 @@
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE CPP               #-}
 
-import Control.Monad (forM_)
+import           Control.Monad                    (forM_)
 
-import Data.Text (unpack, Text)
+import           Data.Text                        (Text, unpack)
 
-import Test.Tasty
-import Test.Tasty.HUnit
+import           Test.Tasty
+import           Test.Tasty.HUnit
 
-import Common
-import Text.Pandoc.Filter.Plot.Internal
+import           Common
+import           Text.Pandoc.Filter.Plot.Internal
 
 main :: IO ()
 main = do
@@ -26,8 +26,8 @@ main = do
 
 -- | Suite of tests that every renderer should pass
 toolkitSuite :: Toolkit -> TestTree
-toolkitSuite tk = 
-    testGroup (show tk) $ 
+toolkitSuite tk =
+    testGroup (show tk) $
         [ testFileCreation
         , testFileInclusion
         ] <*> [tk]

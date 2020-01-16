@@ -45,10 +45,10 @@ module Text.Pandoc.Filter.Plot (
     , unavailableToolkits
     ) where
 
-import           Control.Monad.Reader               (runReaderT)
+import           Control.Monad.Reader             (runReaderT)
 
 import           Text.Pandoc.Definition
-import           Text.Pandoc.Walk                   (walkM)
+import           Text.Pandoc.Walk                 (walkM)
 
 import           Text.Pandoc.Filter.Plot.Internal
 
@@ -86,7 +86,7 @@ make tk conf block = do
     where
         makePlot' blk = do
             parsed <- parseFigureSpec blk
-            maybe 
+            maybe
                 (return $ Right blk)
                 (\s -> handleResult s <$> runScriptIfNecessary s)
                 parsed

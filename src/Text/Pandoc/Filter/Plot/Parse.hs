@@ -1,8 +1,8 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TemplateHaskell       #-}
 
 {-|
 Module      : $header$
@@ -15,40 +15,40 @@ Portability : portable
 This module defines types and functions that help
 with keeping track of figure specifications
 -}
-module Text.Pandoc.Filter.Plot.Parse ( 
+module Text.Pandoc.Filter.Plot.Parse (
       plotToolkit
-    , parseFigureSpec 
+    , parseFigureSpec
     , captionReader
 ) where
 
-import           Control.Monad                   (join, when)
-import           Control.Monad.Reader            (asks, liftIO)
+import           Control.Monad                     (join, when)
+import           Control.Monad.Reader              (asks, liftIO)
 
-import           Data.Default.Class              (def)
-import           Data.List                       (intersperse)
-import qualified Data.Map.Strict                 as Map
-import           Data.Maybe                      (fromMaybe, listToMaybe)
-import           Data.Monoid                     ((<>))
-import           Data.String                     (fromString)
-import           Data.Text                       (Text, pack, unpack)
-import qualified Data.Text.IO                    as TIO
-import           Data.Version                    (showVersion)
+import           Data.Default.Class                (def)
+import           Data.List                         (intersperse)
+import qualified Data.Map.Strict                   as Map
+import           Data.Maybe                        (fromMaybe, listToMaybe)
+import           Data.Monoid                       ((<>))
+import           Data.String                       (fromString)
+import           Data.Text                         (Text, pack, unpack)
+import qualified Data.Text.IO                      as TIO
+import           Data.Version                      (showVersion)
 
-import           Paths_pandoc_plot               (version)
+import           Paths_pandoc_plot                 (version)
 
-import           System.FilePath                 (makeValid)
+import           System.FilePath                   (makeValid)
 
-import           Text.Pandoc.Definition          (Block (..), Inline,
+import           Text.Pandoc.Definition            (Block (..), Inline,
                                                     Pandoc (..))
 
-import           Text.Pandoc.Class               (runPure)
-import           Text.Pandoc.Extensions          (Extension (..),
+import           Text.Pandoc.Class                 (runPure)
+import           Text.Pandoc.Extensions            (Extension (..),
                                                     extensionsFromList)
-import           Text.Pandoc.Options             (ReaderOptions (..))
-import           Text.Pandoc.Readers             (readMarkdown)
+import           Text.Pandoc.Options               (ReaderOptions (..))
+import           Text.Pandoc.Readers               (readMarkdown)
 
-import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Renderers
+import           Text.Pandoc.Filter.Plot.Types
 
 tshow :: Show a => a -> Text
 tshow = pack . show
@@ -60,7 +60,7 @@ parseFigureSpec :: Block -> PlotM (Maybe FigureSpec)
 parseFigureSpec (CodeBlock (id', classes, attrs) content) = do
     toolkit <- asks toolkit
     if not (cls toolkit `elem` classes)
-        then return Nothing 
+        then return Nothing
         else Just <$> figureSpec
 
     where
@@ -76,7 +76,7 @@ parseFigureSpec (CodeBlock (id', classes, attrs) content) = do
                 defaultPreamble = preambleSelector toolkit conf
             -- Note that the default preamble changes based on the RendererM
             -- which is why we use @preambleSelector@ as the default value
-            includeScript <- fromMaybe 
+            includeScript <- fromMaybe
                                 (return defaultPreamble)
                                 ((liftIO . TIO.readFile) <$> preamblePath)
             let -- Filtered attributes that are not relevant to pandoc-plot
@@ -94,7 +94,7 @@ parseFigureSpec (CodeBlock (id', classes, attrs) content) = do
                 dpi            = fromMaybe defDPI $ (read . unpack) <$> Map.lookup (tshow DpiK) attrs'
                 extraAttrs     = Map.toList extraAttrs'
                 blockAttrs     = (id', classes, filteredAttrs)
-            
+
             -- This is the first opportunity to check save format compatibility
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
             when (not saveFormatSupported) $ do
@@ -107,7 +107,7 @@ parseFigureSpec _ = return Nothing
 -- | Determine which toolkit should be used to render the plot
 -- from a code block, if any.
 plotToolkit :: Block -> Maybe Toolkit
-plotToolkit (CodeBlock (_, classes, _) _) = 
+plotToolkit (CodeBlock (_, classes, _) _) =
     listToMaybe $ filter (\tk->cls tk `elem` classes) toolkits
 plotToolkit _ = Nothing
 

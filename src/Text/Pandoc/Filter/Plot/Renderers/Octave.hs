@@ -1,7 +1,7 @@
-{-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE QuasiQuotes                #-}
-{-# LANGUAGE RecordWildCards            #-}
-{-# LANGUAGE NoImplicitPrelude          #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -19,7 +19,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Octave (
     , octaveCapture
 ) where
 
-import Text.Pandoc.Filter.Plot.Renderers.Prelude
+import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
 octaveSupportedSaveFormats :: [SaveFormat]

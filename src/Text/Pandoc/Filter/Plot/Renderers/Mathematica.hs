@@ -1,7 +1,7 @@
-{-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE QuasiQuotes                #-}
-{-# LANGUAGE RecordWildCards            #-}
-{-# LANGUAGE NoImplicitPrelude          #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -19,13 +19,13 @@ module Text.Pandoc.Filter.Plot.Renderers.Mathematica (
     , mathematicaCapture
 ) where
 
-import Text.Pandoc.Filter.Plot.Renderers.Prelude
+import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 mathematicaCommand :: FigureSpec -> FilePath -> Text
-mathematicaCommand _ fp = [st|math -script #{fp}|]  
+mathematicaCommand _ fp = [st|math -script #{fp}|]
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script
 mathematicaCapture FigureSpec{..} fname = [st|

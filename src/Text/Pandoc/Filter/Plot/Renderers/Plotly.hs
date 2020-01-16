@@ -1,7 +1,7 @@
-{-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE QuasiQuotes                #-}
-{-# LANGUAGE RecordWildCards            #-}
-{-# LANGUAGE NoImplicitPrelude          #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -19,7 +19,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Plotly (
     , plotlyPythonCapture
 ) where
 
-import Text.Pandoc.Filter.Plot.Renderers.Prelude
+import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
 plotlyPythonSupportedSaveFormats :: [SaveFormat]
@@ -27,7 +27,7 @@ plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
 plotlyPythonCommand :: FigureSpec -> FilePath -> Text
 plotlyPythonCommand _ fp = [st|python #{fp}|]
-        
+
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
 plotlyPythonCapture _ fname = [st|
 import plotly.graph_objects as go

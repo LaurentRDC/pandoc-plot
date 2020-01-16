@@ -3,13 +3,13 @@
 
 module Common where
 
-import           Control.Monad                      (unless)
+import           Control.Monad                    (unless)
 import           Control.Monad.Reader
 
-import           Data.Default.Class                 (def)
-import           Data.List                          (isInfixOf, isSuffixOf)
-import           Data.Monoid                        ((<>))
-import           Data.Text                          (Text, unpack, pack)
+import           Data.Default.Class               (def)
+import           Data.List                        (isInfixOf, isSuffixOf)
+import           Data.Monoid                      ((<>))
+import           Data.Text                        (Text, pack, unpack)
 
 import           Test.Tasty
 import           Test.Tasty.HUnit
@@ -17,19 +17,18 @@ import           Test.Tasty.HUnit
 import           Text.Pandoc.Filter.Plot
 import           Text.Pandoc.Filter.Plot.Internal
 
-import qualified Text.Pandoc.Builder                as B
-import qualified Text.Pandoc.Definition             as B
+import qualified Text.Pandoc.Builder              as B
+import qualified Text.Pandoc.Definition           as B
 import           Text.Pandoc.JSON
 
-import           System.Directory                   (createDirectory,
-                                                     createDirectoryIfMissing,
-                                                     doesDirectoryExist,
-                                                     doesFileExist,
-                                                     listDirectory,
-                                                     removeDirectoryRecursive,
-                                                     removePathForcibly)
-import           System.FilePath                    (takeExtensions, (</>))
-import           System.IO.Temp                     (getCanonicalTemporaryDirectory)
+import           System.Directory                 (createDirectory,
+                                                   createDirectoryIfMissing,
+                                                   doesDirectoryExist,
+                                                   doesFileExist, listDirectory,
+                                                   removeDirectoryRecursive,
+                                                   removePathForcibly)
+import           System.FilePath                  (takeExtensions, (</>))
+import           System.IO.Temp                   (getCanonicalTemporaryDirectory)
 
 
 -------------------------------------------------------------------------------

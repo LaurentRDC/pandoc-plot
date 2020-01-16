@@ -1,6 +1,6 @@
-{-# LANGUAGE CPP                   #-}
-{-# LANGUAGE DeriveGeneric         #-}
-{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE CPP               #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 
 {-|
@@ -18,7 +18,7 @@ module Text.Pandoc.Filter.Plot.Types (
       Toolkit(..)
     , PlotM
     , PlotEnv(..)
-    , Configuration(..) 
+    , Configuration(..)
     , Script
     , CheckResult(..)
     , InclusionKey(..)
@@ -30,14 +30,14 @@ module Text.Pandoc.Filter.Plot.Types (
     , inclusionKeys
 ) where
 
-import           Control.Monad.Reader            
+import           Control.Monad.Reader
 
 import           Data.Char              (toLower)
 import           Data.Default.Class     (Default, def)
-import           Data.Hashable          (Hashable(..))
+import           Data.Hashable          (Hashable (..))
 import           Data.List              (intersperse)
-import           Data.Semigroup         (Semigroup(..))
-import           Data.String            (IsString(..))
+import           Data.Semigroup         (Semigroup (..))
+import           Data.String            (IsString (..))
 import           Data.Text              (Text, pack)
 import           Data.Yaml
 
@@ -76,7 +76,7 @@ cls Octave       = "octaveplot"
 
 type PlotM a = ReaderT PlotEnv IO a
 
-data PlotEnv 
+data PlotEnv
     = PlotEnv { toolkit :: Toolkit
               , config  :: Configuration
               }
@@ -99,7 +99,7 @@ data Configuration = Configuration
     }
 
 instance Default Configuration where
-    def = Configuration 
+    def = Configuration
           { defaultDirectory  = "plots/"
           , defaultWithSource = False
           , defaultDPI        = 80
@@ -109,13 +109,13 @@ instance Default Configuration where
 #else
           , pythonInterpreter = "python3"
 #endif
-          
+
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False
           , matplotlibPreamble  = mempty
 
           , plotlyPythonPreamble= mempty
-          
+
           , matlabPreamble      = mempty
 
           , mathematicaPreamble = mempty
@@ -146,7 +146,7 @@ instance Monoid CheckResult where
 
 -- | Description of any possible inclusion key, both in documents
 -- and in configuration files.
-data InclusionKey 
+data InclusionKey
     = DirectoryK
     | CaptionK
     | SaveFormatK
@@ -163,23 +163,23 @@ data InclusionKey
     | OctavePreambleK
     deriving (Bounded, Eq, Enum)
 
--- | Keys that pandoc-plot will look for in code blocks. 
+-- | Keys that pandoc-plot will look for in code blocks.
 -- These are only exported for testing purposes.
 instance Show InclusionKey where
-    show DirectoryK      = "directory"
-    show CaptionK        = "caption"
-    show SaveFormatK     = "format"
-    show WithSourceK     = "source"
-    show PreambleK       = "preamble"
-    show DpiK            = "dpi"
-    show PyInterpreterK  = "python_interpreter"
-    show MatplotlibTightBBoxK = "tight_bbox"
+    show DirectoryK             = "directory"
+    show CaptionK               = "caption"
+    show SaveFormatK            = "format"
+    show WithSourceK            = "source"
+    show PreambleK              = "preamble"
+    show DpiK                   = "dpi"
+    show PyInterpreterK         = "python_interpreter"
+    show MatplotlibTightBBoxK   = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
-    show MatplotlibPreambleK  = show PreambleK
-    show PlotlyPreambleK      = show PreambleK
-    show MatlabPreambleK      = show PreambleK
-    show MathematicaPreambleK = show PreambleK
-    show OctavePreambleK      = show PreambleK
+    show MatplotlibPreambleK    = show PreambleK
+    show PlotlyPreambleK        = show PreambleK
+    show MatlabPreambleK        = show PreambleK
+    show MathematicaPreambleK   = show PreambleK
+    show OctavePreambleK        = show PreambleK
 
 
 -- | List of all keys related to pandoc-plot that
@@ -234,7 +234,7 @@ instance IsString SaveFormat where
         | s `elem` ["jpg", "jpeg", "JPG", "JPEG", ".jpg", ".jpeg"] = JPG
         | s `elem` ["tif", "tiff", "TIF", "TIFF", ".tif", ".tiff"] = TIF
         | s `elem` ["webp", "WEBP", ".webp"] = WEBP
-        | otherwise = error $ 
+        | otherwise = error $
                 mconcat [ s
                         , " is not one of valid save format : "
                         , mconcat $ intersperse ", " $ show <$> saveFormats
@@ -244,7 +244,7 @@ instance IsString SaveFormat where
 
 instance FromJSON SaveFormat where
     parseJSON (Object v) = fromString <$> v .: (pack . show $ SaveFormatK)
-    parseJSON _ = error "Coult not parse save format"
+    parseJSON _          = error "Coult not parse save format"
 
 -- | Save format file extension
 extension :: SaveFormat -> String
