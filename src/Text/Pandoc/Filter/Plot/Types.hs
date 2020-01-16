@@ -47,11 +47,6 @@ import           System.Info            (os)
 
 import           Text.Pandoc.Definition (Attr)
 
-
-isWindows :: Bool
-isWindows = os == "mingw32"
-
-
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
 
@@ -245,3 +240,7 @@ instance FromJSON SaveFormat where
 -- | Save format file extension
 extension :: SaveFormat -> String
 extension fmt = mconcat [".", fmap toLower . show $ fmt]
+
+
+isWindows :: Bool
+isWindows = os == "mingw32"
