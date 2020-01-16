@@ -22,7 +22,8 @@ import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform,
                                                    unavailableToolkits)
 import           Text.Pandoc.Filter.Plot.Internal (Toolkit (..), cls,
-                                                   supportedSaveFormats)
+                                                   supportedSaveFormats, 
+                                                   configuration)
 
 import           Text.Pandoc.JSON                 (toJSONFilter)
 
@@ -47,10 +48,10 @@ main = join $ execParser opts
 toJSONFilterWithConfig :: IO ()
 toJSONFilterWithConfig = do
     configExists <- doesFileExist ".pandoc-plot.yml"
-    let configpath = if configExists
-        then Just ".pandoc-plot.yml"
-        else Nothing
-    toJSONFilter (plotTransform def)
+    config <- if configExists
+                then configuration ".pandoc-plot.yml" 
+                else def
+    toJSONFilter (plotTransform config)
 
 
 data Flag = Version

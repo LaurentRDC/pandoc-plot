@@ -157,7 +157,7 @@ data InclusionKey
     | MatplotlibTightBBoxK
     | MatplotlibTransparentK
     | MatplotlibPreambleK
-    | PlotlyPreambleK
+    | PlotlyPythonPreambleK
     | MatlabPreambleK
     | MathematicaPreambleK
     | OctavePreambleK
@@ -176,7 +176,7 @@ instance Show InclusionKey where
     show MatplotlibTightBBoxK   = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
     show MatplotlibPreambleK    = show PreambleK
-    show PlotlyPreambleK        = show PreambleK
+    show PlotlyPythonPreambleK  = show PreambleK
     show MatlabPreambleK        = show PreambleK
     show MathematicaPreambleK   = show PreambleK
     show OctavePreambleK        = show PreambleK

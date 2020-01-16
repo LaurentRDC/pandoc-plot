@@ -39,6 +39,10 @@ module Text.Pandoc.Filter.Plot (
       makePlot
     -- * Operating on whole Pandoc documents
     , plotTransform
+    -- * Runtime configuration
+    , configuration
+    , Configuration(..)
+    , SaveFormat(..)
     -- * For testing purposes ONLY
     , make
     , availableToolkits
@@ -51,16 +55,6 @@ import           Text.Pandoc.Definition
 import           Text.Pandoc.Walk                 (walkM)
 
 import           Text.Pandoc.Filter.Plot.Internal
-
--- | Possible errors returned by the filter
-data PandocPlotError
-    = ScriptError Int                 -- ^ Running script has yielded an error
-    | ScriptChecksFailedError String  -- ^ Script did not pass all checks
-    deriving (Eq)
-
-instance Show PandocPlotError where
-    show (ScriptError exitcode)        = "Script error: plot could not be generated. Exit code " <> (show exitcode)
-    show (ScriptChecksFailedError msg) = "Script did not pass all checks: " <> msg
 
 
 -- | Highest-level function that can be walked over a Pandoc tree.
@@ -94,3 +88,14 @@ make tk conf block = do
                 handleResult _ (ScriptChecksFailed msg) = Left  $ ScriptChecksFailedError msg
                 handleResult _ (ScriptFailure code)     = Left  $ ScriptError code
                 handleResult spec ScriptSuccess         = Right $ toImage spec
+
+
+-- | Possible errors returned by the filter
+data PandocPlotError
+    = ScriptError Int                 -- ^ Running script has yielded an error
+    | ScriptChecksFailedError String  -- ^ Script did not pass all checks
+    deriving (Eq)
+
+instance Show PandocPlotError where
+    show (ScriptError exitcode)        = "Script error: plot could not be generated. Exit code " <> (show exitcode)
+    show (ScriptChecksFailedError msg) = "Script did not pass all checks: " <> msg
