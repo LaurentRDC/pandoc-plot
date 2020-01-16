@@ -29,4 +29,5 @@ toolkitSuite tk =
     testGroup (show tk) $
         [ testFileCreation
         , testFileInclusion
+        , testSaveFormat
         ] <*> [tk]

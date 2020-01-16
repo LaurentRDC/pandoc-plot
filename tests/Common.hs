@@ -63,6 +63,25 @@ testFileInclusion tk =
         include Matplotlib   = "tests/includes/matplotlib.py"
         include PlotlyPython = "tests/includes/plotly-python.py"
         include Matlab       = "tests/includes/matlabplot.m"
+        include Mathematica  = "tests/includes/mathplot.m"
+        include Octave       = "tests/includes/octave.m"
+
+-------------------------------------------------------------------------------
+-- Test that the files are saved in the appropriate format
+testSaveFormat :: Toolkit -> TestTree
+testSaveFormat tk =
+    testCase "saves in the appropriate format" $ do
+        tempDir <- (</> "test-safe-format") <$> getCanonicalTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+        let fmt = head (supportedSaveFormats tk)
+            cb = (addSaveFormat fmt $
+                 addDirectory tempDir $ codeBlock tk (trivialContent tk))
+        _ <- (make tk) def cb
+        numberjpgFiles <-
+            length <$> filter (isExtensionOf (extension fmt)) <$>
+            listDirectory tempDir
+        assertEqual "" numberjpgFiles 1
+
 
 
 codeBlock :: Toolkit -> Script -> Block
@@ -73,6 +92,8 @@ trivialContent :: Toolkit -> Script
 trivialContent Matplotlib   = "import matplotlib.pyplot as plt\n"
 trivialContent PlotlyPython = "import plotly.graph_objects as go; fit = go.Figure()\n"
 trivialContent Matlab       = "figure('visible', 'off')"
+trivialContent Mathematica  = ""
+trivialContent Octave       = "figure('visible', 'off')"
 
 
 addCaption :: String -> Block -> Block
