@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP               #-}
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -28,6 +27,8 @@ module Text.Pandoc.Filter.Plot.Types (
     , extension
     , toolkits
     , inclusionKeys
+    -- Utilities
+    , isWindows
 ) where
 
 import           Control.Monad.Reader
@@ -42,8 +43,14 @@ import           Data.Text              (Text, pack)
 import           Data.Yaml
 
 import           GHC.Generics           (Generic)
+import           System.Info            (os)
 
 import           Text.Pandoc.Definition (Attr)
+
+
+isWindows :: Bool
+isWindows = os == "mingw32"
+
 
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
@@ -104,23 +111,16 @@ instance Default Configuration where
           , defaultWithSource = False
           , defaultDPI        = 80
           , defaultSaveFormat = PNG
-#if defined(mingw32_HOST_OS)
-          , pythonInterpreter = "python"
-#else
-          , pythonInterpreter = "python3"
-#endif
-
+          , pythonInterpreter = if isWindows then "python" else "python3"
+          -- toolkit-specific default preambles
+          , matplotlibPreamble  = mempty
+          , plotlyPythonPreamble= mempty
+          , matlabPreamble      = mempty
+          , mathematicaPreamble = mempty
+          , octavePreamble      = mempty
+          -- Toolkit-specific
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False
-          , matplotlibPreamble  = mempty
-
-          , plotlyPythonPreamble= mempty
-
-          , matlabPreamble      = mempty
-
-          , mathematicaPreamble = mempty
-
-          , octavePreamble      = mempty
           }
 
 
@@ -139,10 +139,6 @@ instance Semigroup CheckResult where
 
 instance Monoid CheckResult where
     mempty = CheckPassed
-
-#if !(MIN_VERSION_base(4,11,0))
-    mappend = (<>)
-#endif
 
 -- | Description of any possible inclusion key, both in documents
 -- and in configuration files.

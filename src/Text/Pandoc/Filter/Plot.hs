@@ -43,6 +43,7 @@ module Text.Pandoc.Filter.Plot (
     , configuration
     , Configuration(..)
     , SaveFormat(..)
+    , Script
     -- * For testing purposes ONLY
     , make
     , availableToolkits

@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -31,7 +30,6 @@ import           Data.List                                     ((\\))
 import           Data.Map.Strict                               (Map)
 import           Data.Maybe                                    (isJust)
 import           Data.Text                                     (Text)
-
 
 import qualified Turtle                                        as Sh
 
@@ -115,11 +113,7 @@ availableToolkits = filterM toolkitAvailable toolkits
         -- The @which@ function from Turtle only works on
         -- windows if the executable extension is included.
         whichExt :: Text
-#if defined(mingw32_HOST_OS)
-        whichExt = ".exe"
-#else
-        whichExt = mempty
-#endif
+        whichExt = if isWindows then ".exe" else mempty
 
         toolkitExecutable :: Toolkit -> Sh.FilePath
         toolkitExecutable Matplotlib   = Sh.fromText $ "python" <> whichExt
