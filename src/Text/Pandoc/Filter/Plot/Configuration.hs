@@ -52,6 +52,21 @@ data ConfigPrecursor = ConfigPrecursor
     , _octavePrec        :: OctavePrecursor
     }
 
+instance Default ConfigPrecursor where
+    def = ConfigPrecursor
+        { _defaultDirectory  = defaultDirectory def
+        , _defaultWithSource = defaultWithSource def
+        , _defaultDPI        = defaultDPI def
+        , _defaultSaveFormat = defaultSaveFormat def
+        , _pythonInterpreter = pythonInterpreter def
+        
+        , _matplotlibPrec    = def
+        , _matlabPrec        = def
+        , _plotlyPythonPrec  = def
+        , _mathematicaPrec   = def
+        , _octavePrec        = def
+        }
+
 
 -- Separate YAML clauses have their own types.
 data MatplotlibPrecursor = MatplotlibPrecursor
@@ -100,13 +115,14 @@ instance FromJSON OctavePrecursor where
 
 
 instance FromJSON ConfigPrecursor where
+    parseJSON (Null) = return def -- In case of empty file
     parseJSON (Object v) = do
         
-        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (defaultDirectory def)
-        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (defaultWithSource def)
-        _defaultDPI        <- v .:? (tshow DpiK)           .!= (defaultDPI def)
-        _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (defaultSaveFormat def)
-        _pythonInterpreter <- v .:? (tshow PyInterpreterK) .!= (pythonInterpreter def)
+        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory def)
+        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource def)
+        _defaultDPI        <- v .:? (tshow DpiK)           .!= (_defaultDPI def)
+        _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat def)
+        _pythonInterpreter <- v .:? (tshow PyInterpreterK) .!= (_pythonInterpreter def)
 
         _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
         _matlabPrec        <- v .:? (cls Matlab)           .!= def
@@ -115,7 +131,7 @@ instance FromJSON ConfigPrecursor where
         _octavePrec        <- v .:? (cls Octave)           .!= def
 
         return $ ConfigPrecursor{..}
-    parseJSON _          = fail "Could not parse basic configuration."
+    parseJSON _          = fail "Could not parse configuration."
 
 
 renderConfig :: ConfigPrecursor -> IO Configuration

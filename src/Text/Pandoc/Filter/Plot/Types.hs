@@ -98,7 +98,7 @@ data Configuration = Configuration
     -- Toolkit-specific options
     , matplotlibTightBBox   :: Bool
     , matplotlibTransparent :: Bool
-    }
+    } deriving (Eq, Show)
 
 instance Default Configuration where
     def = Configuration

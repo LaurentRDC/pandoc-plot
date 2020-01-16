@@ -3,6 +3,7 @@
 
 import           Control.Monad                    (forM_)
 
+import           Data.Default.Class               (Default, def)
 import           Data.Text                        (Text, unpack)
 
 import           Test.Tasty
@@ -18,10 +19,15 @@ main = do
     forM_ unavailable $ \tk -> do
         putStrLn $ show tk <> " is not availble. Its tests will be skipped."
 
-    defaultMain $
-        testGroup
-            "General tests"
+    defaultMain $ testGroup "All tests"
+        [ testGroup
+            "Configuration tests"
+            [testBuildConfiguration]        
+        , testGroup
+            "Toolkit tests"
             (toolkitSuite <$> available)
+        ]
+
 
 -- | Suite of tests that every renderer should pass
 toolkitSuite :: Toolkit -> TestTree
@@ -31,3 +37,12 @@ toolkitSuite tk =
         , testFileInclusion
         , testSaveFormat
         ] <*> [tk]
+
+
+testBuildConfiguration :: TestTree
+testBuildConfiguration = 
+    testCase "configuration is correctly parsed" $ do
+        let config = def
+
+        parsedConfig <- configuration "tests/fixtures/.pandoc-plot.yml"
+        assertEqual "" config parsedConfig
