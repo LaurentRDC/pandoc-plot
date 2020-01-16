@@ -35,7 +35,7 @@ configuration :: FilePath -> IO Configuration
 configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
 
 
--- We define a precursor type because preambles are best specified as files,
+-- We define a precursor type because preambles are best specified as file paths,
 -- but we want to read those files before building a full
 -- @Configuration@ value.
 data ConfigPrecursor = ConfigPrecursor
@@ -52,16 +52,18 @@ data ConfigPrecursor = ConfigPrecursor
     , _octavePrec        :: OctavePrecursor
     }
 
+
+-- Separate YAML clauses have their own types.
 data MatplotlibPrecursor = MatplotlibPrecursor
         { _matplotlibPreamble    :: Maybe FilePath
         , _matplotlibTightBBox   :: Bool
         , _matplotlibTransparent :: Bool
         }
-
 data MatlabPrecursor        = MatlabPrecursor {_matlabPreamble :: Maybe FilePath}
 data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: Maybe FilePath}
 data MathematicaPrecursor   = MathematicaPrecursor {_mathematicaPreamble :: Maybe FilePath}
 data OctavePrecursor        = OctavePrecursor {_octavePreamble :: Maybe FilePath}
+
 
 instance Default MatplotlibPrecursor where
     def = MatplotlibPrecursor Nothing (matplotlibTightBBox def) (matplotlibTransparent def)
