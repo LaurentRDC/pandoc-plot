@@ -96,8 +96,10 @@ run = do
 
         go Nothing         _ = toJSONFilterWithConfig
 
+
 manualHtml :: T.Text
 manualHtml = T.pack $(embedManualHtml)
+
 
 toolkitInfo :: Toolkit -> IO ()
 toolkitInfo tk = do
