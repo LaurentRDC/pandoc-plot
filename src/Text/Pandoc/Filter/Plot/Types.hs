@@ -243,4 +243,4 @@ extension fmt = mconcat [".", fmap toLower . show $ fmt]
 
 
 isWindows :: Bool
-isWindows = os == "mingw32"
+isWindows = os `elem` ["mingw32", "win32", "cygwin32"] -- Aliases taken from cabal's Distribution.System module
