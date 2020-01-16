@@ -113,7 +113,6 @@ instance FromJSON OctavePrecursor where
     parseJSON _ = fail $ mconcat ["Could not parse ", show Octave, " configuration."]
 
 
-
 instance FromJSON ConfigPrecursor where
     parseJSON (Null) = return def -- In case of empty file
     parseJSON (Object v) = do
@@ -156,24 +155,5 @@ renderConfig ConfigPrecursor{..} = do
         readPreamble fp = fromMaybe mempty $ TIO.readFile <$> fp
 
 
-
 tshow :: Show a => a -> Text
 tshow = pack . show
-
--- data Configuration = Configuration
---     { defaultDirectory      :: FilePath   -- ^ The default directory where figures will be saved.
---     , defaultWithSource     :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
---     , defaultDPI            :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
---     , defaultSaveFormat     :: SaveFormat -- ^ The default save format of generated figures.
---     , pythonInterpreter     :: String     -- ^ The default Python interpreter to use for Python-based renderers.
---     -- Default preambles
---     , matplotlibPreamble    :: Script
---     , plotlyPythonPreamble  :: Script
---     , matlabPreamble        :: Script
---     , mathematicaPreamble   :: Script
---     , octavePreamble        :: Script
---     -- Toolkit-specific options
---     , matplotlibTightBBox   :: Bool
---     , matplotlibTransparent :: Bool
---     }
-
