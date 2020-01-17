@@ -12,6 +12,8 @@
     * [Compatibility with pandoc-crossref](#compatibility-with-pandoc-crossref)
 * [Configuration](#configuration)
     * [Toolkit-specific options](#toolkit-specific-options)
+* [Installation](#installation)
+* [Warning](#warning)
 
 ## Usage
 
@@ -189,4 +191,76 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 
 ## Configuration
 
+To avoid repetition, `pandoc-plot` can be configured using simple YAML files. `pandoc-plot` will look for a `.pandoc-plot.yml` file in the current working directory. Here are **all** the possible parameters:
+
+```yaml
+# The following parameters affect all toolkits
+directory: plots/
+source: false
+dpi: 80
+format: PNG
+python_interpreter: python
+
+# The possible parameters for the Matplotlib toolkit
+matplotlib:
+  preamble: matplotlib.py
+  tight_bbox: false
+  transparent: false
+
+# The possible parameters for the MATLAB toolkit
+matlabplot:
+  preamble: matlab.m
+
+# The possible parameters for the Plotly/Python toolkit
+plotly_python:
+  preamble: plotly-python.py
+
+# The possible parameters for the Mathematica toolkit
+mathplot:
+  preamble: mathematica.m
+
+# the possible parameters for the GNU Octave toolkit
+octaveplot:
+  preamble: octave.m
+```
+
+A file like the above sets the **default** values; you can still override them in documents directly.
+
+Using `pandoc-plot --write-example-config` will write the default configuration to a file which you can then customize.
+
 ### Toolkit-specific options
+
+#### Matplotlib
+
+* `tight_bbox` is a boolean that determines whether to use `bbox_inches="tight"` or not when saving Matplotlib figures. For example, `tight_bbox: true`. See [here](https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html) for details.
+* `transparent` is a boolean that determines whether to make Matplotlib figure background transparent or not. This is useful, for example, for displaying a plot on top of a colored background on a web page. High-resolution figures are not affected. For example, `transparent: true`.
+
+## Installation
+
+### Binaries
+
+Windows binaries are available on [GitHub](https://github.com/LaurentRDC/pandoc-plot/releases). Place the executable in a location that is in your PATH to be able to call it.
+
+If you can show me how to generate binaries for other platform using e.g. Azure Pipelines, let me know!
+
+### Installers (Windows)
+
+Windows installers are made available thanks to [Inno Setup](http://www.jrsoftware.org/isinfo.php). You can download them from the [release page](https://github.com/LaurentRDC/pandoc-plot/releases/latest).
+
+### From Hackage/Stackage
+
+*Coming soon*
+
+### From source
+
+Building from source can be done using [`stack`](https://docs.haskellstack.org/en/stable/README/) or [`cabal`](https://www.haskell.org/cabal/):
+
+```bash
+git clone https://github.com/LaurentRDC/pandoc-plot
+cd pandoc-plot
+stack install # Alternatively, `cabal install`
+```
+
+## Warning
+
+Do not run this filter on unknown documents. There is nothing in `pandoc-plot` that can stop a script from performing **evil actions**.
