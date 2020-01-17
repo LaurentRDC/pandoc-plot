@@ -72,24 +72,26 @@ You can also specify a caption for your image. This is done using the optional `
 __Markdown__:
 
 ~~~markdown
-```{.matplotlib caption="This is a simple figure"}
-import matplotlib.pyplot as plt
+```{.matlabplot caption="This is a simple figure"}
+x  = 0: .1 : 2*pi;
+y1 = cos(x);
+y2 = sin(x);
 
-plt.figure()
-plt.plot([0,1,2,3,4], [1,2,3,4,5])
-plt.title('This is an example figure')
+figure
+plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 ```
 ~~~
 
 __LaTex__:
 
 ```latex
-\begin{minted}[caption=This is a simple figure]{matplotlib}
-import matplotlib.pyplot as plt
+\begin{minted}[caption=This is a simple figure]{matlabplot}
+x  = 0: .1 : 2*pi;
+y1 = cos(x);
+y2 = sin(x);
 
-plt.figure()
-plt.plot([0,1,2,3,4], [1,2,3,4,5])
-plt.title('This is an example figure')
+figure
+plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 \end{minted}
 ```
 
@@ -104,7 +106,7 @@ You can turn this off via the `source=true` key:
 __Markdown__:
 
 ~~~markdown
-```{.matplotlib source=true}
+```{.mathplot source=true}
 ...
 ```
 ~~~
@@ -112,7 +114,7 @@ __Markdown__:
 __LaTex__:
 
 ```latex
-\begin{minted}[source=true]{matplotlib}
+\begin{minted}[source=true]{mathplot}
 ...
 \end{minted}
 ```
@@ -172,7 +174,7 @@ This `preamble` parameter is perfect for longer documents with many plots. Simpl
 You can use `pandoc-crossref` in conjunction with `pandoc-plot` for the ultimate figure-making pipeline. You can combine both in a figure like so:
 
 ~~~markdown
-```{#fig:myexample .matplotlib caption="This is a caption"}
+```{#fig:myexample .plotly_python caption="This is a caption"}
 # Insert figure script here
 ```
 
