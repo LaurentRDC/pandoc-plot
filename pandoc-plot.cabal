@@ -1,8 +1,8 @@
 name:           pandoc-plot
-version:        1.0.0.0
+version:        0.1.0.0
 cabal-version:  >= 1.12
-synopsis:       A Pandoc filter to include figures generated from code blocks
-description:    A Pandoc filter to include figures generated from code blocks. Keep the document and Python code in the same location. Output is captured and included as a figure.
+synopsis:       A Pandoc filter to include figures generated from code blocks using your plotting toolkit of choice.
+description:    A Pandoc filter to include figures generated from code blocks. Keep the document and code in the same location. Output is captured and included as a figure.
 category:       Documentation
 homepage:       https://github.com/LaurentRDC/pandoc-plot#readme
 bug-reports:    https://github.com/LaurentRDC/pandoc-plot/issues
