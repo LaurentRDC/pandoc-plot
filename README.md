@@ -63,7 +63,7 @@ Support for the following plotting toolkits is coming:
 * [Plotly R](https://plot.ly/r/)
 * [ggplot2](https://ggplot2.tidyverse.org/)
 
-Wish your plotting toolkit of choice was available? Please [raise an issue](https://github.com/LaurentRDC/pandoc-plot/issues)!
+**Wish your plotting toolkit of choice was available? Please [raise an issue](https://github.com/LaurentRDC/pandoc-plot/issues)!**
 
 ## Features
 
