@@ -1,6 +1,6 @@
 # pandoc-plot - A pandoc filter to generate figures directly from documents
 
-[![Build status](https://ci.appveyor.com/api/projects/status/mmgiuk52j356e6jp?svg=true)](https://ci.appveyor.com/project/LaurentRDC/pandoc-plot)[![Build Status](https://dev.azure.com/laurentdecotret/pandoc-plot/_apis/build/status/LaurentRDC.pandoc-plot?branchName=master)](https://dev.azure.com/laurentdecotret/pandoc-plot/_build/latest?definitionId=5&branchName=master)![GitHub](https://img.shields.io/github/license/LaurentRDC/pandoc-plot)
+[![Build status](https://ci.appveyor.com/api/projects/status/mmgiuk52j356e6jp?svg=true)](https://ci.appveyor.com/project/LaurentRDC/pandoc-plot) [![Build Status](https://dev.azure.com/laurentdecotret/pandoc-plot/_apis/build/status/LaurentRDC.pandoc-plot?branchName=master)](https://dev.azure.com/laurentdecotret/pandoc-plot/_build/latest?definitionId=5&branchName=master) ![GitHub](https://img.shields.io/github/license/LaurentRDC/pandoc-plot)
 
 `pandoc-plot` turns code blocks present in your documents into embedded figures, using your plotting toolkit of choice.
 
@@ -46,7 +46,7 @@ pandoc --filter pandoc-plot input.md --output output.html
 `pandoc-plot` currently supports the following plotting toolkits (installed separately):
 
 * `matplotlib`: plots using the [matplotlib](https://matplotlib.org/) Python library;
-* `plotly` : plots using the [plotly](https://plot.ly/python/) Python library;
+* `plotly_python` : plots using the [plotly](https://plot.ly/python/) Python library;
 * `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
 * `mathplot` : plots using [Mathematica](https://www.wolfram.com/mathematica/);
 * `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
