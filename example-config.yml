@@ -9,7 +9,7 @@
 directory: plots/
 source: false
 dpi: 80
-format: .png
+format: PNG
 python_interpreter: python
 
 # The possible parameters for the Matplotlib toolkit
@@ -24,7 +24,7 @@ matlabplot:
 
 # The possible parameters for the Plotly/Python toolkit
 plotly_python:
-  preamble: plotpy-python.py
+  preamble: plotly-python.py
 
 # The possible parameters for the Mathematica toolkit
 mathplot:

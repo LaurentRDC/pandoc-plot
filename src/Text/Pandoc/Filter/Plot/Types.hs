@@ -39,7 +39,7 @@ import           Data.Hashable          (Hashable (..))
 import           Data.List              (intersperse)
 import           Data.Semigroup         (Semigroup (..))
 import           Data.String            (IsString (..))
-import           Data.Text              (Text, pack)
+import           Data.Text              (Text, pack, unpack)
 import           Data.Yaml
 
 import           GHC.Generics           (Generic)
@@ -232,9 +232,7 @@ instance IsString SaveFormat where
         where
             saveFormats =  (enumFromTo minBound maxBound) :: [SaveFormat]
 
-instance FromJSON SaveFormat where
-    parseJSON (Object v) = fromString <$> v .: (pack . show $ SaveFormatK)
-    parseJSON _          = error "Coult not parse save format"
+instance FromJSON SaveFormat -- TODO: test this parsing
 
 instance ToJSON SaveFormat where
     toJSON = toJSON . extension
