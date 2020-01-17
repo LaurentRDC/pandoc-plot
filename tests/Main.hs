@@ -23,7 +23,7 @@ main = do
         [ testGroup
             "Configuration tests"
             [ testEmptyConfiguration
-            --, testExampleConfiguration
+            , testExampleConfiguration
             ]        
         , testGroup
             "Toolkit tests"
@@ -56,12 +56,7 @@ testEmptyConfiguration =
 testExampleConfiguration :: TestTree
 testExampleConfiguration = 
     testCase "example configuration is correctly parsed" $ do
-        let config = def { matplotlibPreamble   = "matplotlib.py" 
-                         , matlabPreamble       = "matlab.m"
-                         , plotlyPythonPreamble = "plotly-python.py"
-                         , mathematicaPreamble  = "mathematica.m"
-                         , octavePreamble       = "octave.m"
-                         }
+        let config = def
 
         parsedConfig <- configuration "example-config.yml"
         assertEqual "" config parsedConfig

@@ -14,22 +14,22 @@ python_interpreter: python
 
 # The possible parameters for the Matplotlib toolkit
 matplotlib:
-  preamble: matplotlib.py
+  # preamble: matplotlib.py
   tight_bbox: false
   transparent: false
 
 # The possible parameters for the MATLAB toolkit
 matlabplot:
-  preamble: matlab.m
+  # preamble: matlab.m
 
 # The possible parameters for the Plotly/Python toolkit
 plotly_python:
-  preamble: plotly-python.py
+  # preamble: plotly-python.py
 
 # The possible parameters for the Mathematica toolkit
 mathplot:
-  preamble: mathematica.m
+  # preamble: mathematica.m
 
 # the possible parameters for the GNU Octave toolkit
 octaveplot:
-  preamble: octave.m
+  # preamble: octave.m
