@@ -56,6 +56,9 @@ testEmptyConfiguration =
 testExampleConfiguration :: TestTree
 testExampleConfiguration = 
     testCase "example configuration is correctly parsed" $ do
+        -- The example config reflects the Windows default
+        -- Therefore, we need to test against the Windows default,
+        -- even on other OSes
         let config = def {pythonInterpreter = "python"}
 
         parsedConfig <- configuration "example-config.yml"
