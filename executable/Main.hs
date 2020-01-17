@@ -11,6 +11,7 @@ import           Data.Default.Class               (def)
 import           Data.List                        (intersperse)
 import           Data.Monoid                      ((<>))
 import qualified Data.Text                        as T
+import qualified Data.Text.IO                     as T
 
 import           Options.Applicative
 import qualified Options.Applicative.Help.Pretty  as P
@@ -33,6 +34,7 @@ import qualified Data.Version                     as V
 import           Paths_pandoc_plot                (version)
 
 import           ManPage                          (embedManualHtml)
+import           ExampleConfig                    (embedExampleConfig)
 
 main :: IO ()
 main = join $ execParser opts
@@ -57,6 +59,7 @@ toJSONFilterWithConfig = do
 data Flag = Version
           | Manual
           | Toolkits
+          | Config
     deriving (Eq)
 
 
@@ -79,9 +82,15 @@ run = do
         , short 't'
         , help "Show information on toolkits and exit."
         ])
+    
+    configP <- flag Nothing (Just Config) (mconcat
+        [ long "write-example-config"
+        , help "Write an example configuration in '.pandoc-plot.yml', \
+               \which you can subsequently customize, and exit. If '.pandoc-plot.yml' \
+               \already exists, an error will be thrown. "])
 
     input    <- optional $ strArgument (metavar "AST")
-    return $ go (versionP <|> manualP <|> toolkitsP) input
+    return $ go (versionP <|> manualP <|> toolkitsP <|> configP) input
     where
         go :: Maybe Flag -> Maybe String -> IO ()
         go (Just Version)  _ = putStrLn (V.showVersion version)
@@ -93,12 +102,17 @@ run = do
             availableToolkits >>= mapM_ toolkitInfo
             putStrLn "\nUNAVAILABLE TOOLKITS\n"
             unavailableToolkits >>= mapM_ toolkitInfo
+        go (Just Config)   _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
 
         go Nothing         _ = toJSONFilterWithConfig
 
 
 manualHtml :: T.Text
 manualHtml = T.pack $(embedManualHtml)
+
+
+exampleConfig :: T.Text
+exampleConfig = T.pack $(embedExampleConfig)
 
 
 toolkitInfo :: Toolkit -> IO ()

@@ -118,7 +118,6 @@ instance Default Configuration where
           , matplotlibTransparent = False
           }
 
-
 type Script = Text
 
 -- | Result of checking scripts for problems
@@ -236,6 +235,9 @@ instance IsString SaveFormat where
 instance FromJSON SaveFormat where
     parseJSON (Object v) = fromString <$> v .: (pack . show $ SaveFormatK)
     parseJSON _          = error "Coult not parse save format"
+
+instance ToJSON SaveFormat where
+    toJSON = toJSON . extension
 
 -- | Save format file extension
 extension :: SaveFormat -> String

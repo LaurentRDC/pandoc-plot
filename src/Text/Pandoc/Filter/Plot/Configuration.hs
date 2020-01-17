@@ -14,7 +14,7 @@ Reading configuration from file
 -}
 
 module Text.Pandoc.Filter.Plot.Configuration (
-    configuration
+      configuration
 ) where
 
 import           Data.Default.Class     (Default, def)

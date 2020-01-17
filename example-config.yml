@@ -1,0 +1,35 @@
+
+# This is an example configuration. Everything in this file is optional.
+# Please refer to the documentation to know about the parameters herein.
+#
+# Note that this file should be re-named to ".pandoc-plot.yml" before pandoc-plot 
+# notices it.
+
+# The following parameters affect all toolkits
+directory: plots/
+source: false
+dpi: 80
+format: .png
+python_interpreter: python
+
+# The possible parameters for the Matplotlib toolkit
+matplotlib:
+  preamble: matplotlib.py
+  tight_bbox: false
+  transparent: false
+
+# The possible parameters for the MATLAB toolkit
+matlabplot:
+  preamble: matlab.m
+
+# The possible parameters for the Plotly/Python toolkit
+plotly_python:
+  preamble: plotpy-python.py
+
+# The possible parameters for the Mathematica toolkit
+mathplot:
+  preamble: mathematica.m
+
+# the possible parameters for the GNU Octave toolkit
+octaveplot:
+  preamble: octave.m
