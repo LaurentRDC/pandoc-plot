@@ -23,7 +23,7 @@ main = do
         [ testGroup
             "Configuration tests"
             [ testEmptyConfiguration
-            , testExampleConfiguration
+            --, testExampleConfiguration
             ]        
         , testGroup
             "Toolkit tests"
