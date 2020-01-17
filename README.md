@@ -1,5 +1,7 @@
 # pandoc-plot - A pandoc filter to generate figures directly from documents
 
+![GitHub](https://img.shields.io/github/license/LaurentRDC/pandoc-plot.svg)
+
 `pandoc-plot` turns code blocks present in your documents into embedded figures, using your plotting toolkit of choice.
 
 * [Usage](#usage)
