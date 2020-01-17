@@ -39,7 +39,7 @@ import           Data.Hashable          (Hashable (..))
 import           Data.List              (intersperse)
 import           Data.Semigroup         (Semigroup (..))
 import           Data.String            (IsString (..))
-import           Data.Text              (Text, pack, unpack)
+import           Data.Text              (Text)
 import           Data.Yaml
 
 import           GHC.Generics           (Generic)
