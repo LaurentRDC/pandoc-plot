@@ -25,8 +25,10 @@ import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 plotlyPythonSupportedSaveFormats :: [SaveFormat]
 plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
-plotlyPythonCommand :: FigureSpec -> FilePath -> Text
-plotlyPythonCommand _ fp = [st|python #{fp}|]
+
+plotlyPythonCommand :: Configuration -> FigureSpec -> FilePath -> Text
+plotlyPythonCommand Configuration{..} _ fp = [st|#{pythonInterpreter} #{fp}|]
+
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
 plotlyPythonCapture _ fname = [st|

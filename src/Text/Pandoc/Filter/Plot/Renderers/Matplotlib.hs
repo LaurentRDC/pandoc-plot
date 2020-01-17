@@ -32,8 +32,9 @@ import qualified Data.Map.Strict                           as M
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-matplotlibCommand :: FigureSpec -> FilePath -> Text
-matplotlibCommand _ fp = [st|python #{fp}|]
+
+matplotlibCommand :: Configuration -> FigureSpec -> FilePath -> Text
+matplotlibCommand Configuration{..} _ fp = [st|#{pythonInterpreter} #{fp}|]
 
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script

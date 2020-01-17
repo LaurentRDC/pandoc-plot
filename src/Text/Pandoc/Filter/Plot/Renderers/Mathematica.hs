@@ -24,8 +24,10 @@ import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-mathematicaCommand :: FigureSpec -> FilePath -> Text
-mathematicaCommand _ fp = [st|math -script #{fp}|]
+
+mathematicaCommand :: Configuration -> FigureSpec -> FilePath -> Text
+mathematicaCommand _ _ fp = [st|math -script #{fp}|]
+
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script
 mathematicaCapture FigureSpec{..} fname = [st|

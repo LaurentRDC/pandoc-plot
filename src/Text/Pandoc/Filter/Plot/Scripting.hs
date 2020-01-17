@@ -72,6 +72,7 @@ runScriptIfNecessary spec = do
 runTempScript :: FigureSpec -> PlotM ScriptResult
 runTempScript spec@FigureSpec{..} = do
     tk <- asks toolkit
+    conf <- asks config
     let checks = scriptChecks tk
         checkResult = mconcat $ checks <*> [script]
     case checkResult of
@@ -83,7 +84,7 @@ runTempScript spec@FigureSpec{..} = do
             let captureFragment = (capture tk) spec (figurePath spec)
                 scriptWithCapture = mconcat [script, "\n", captureFragment]
             liftIO $ T.writeFile scriptPath scriptWithCapture
-            let command_ = T.unpack $ command tk spec scriptPath
+            let command_ = T.unpack $ command tk conf spec scriptPath
 
             ec <- liftIO $ runProcess . shell $ command_
             case ec of

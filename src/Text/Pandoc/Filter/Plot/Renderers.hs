@@ -86,7 +86,7 @@ parseExtraAttrs Matplotlib = matplotlibExtraAttrs
 parseExtraAttrs _          = return mempty
 
 -- | Generate the appropriate command-line command to generate a figure.
-command :: Toolkit -> (FigureSpec -> FilePath -> Text)
+command :: Toolkit -> (Configuration -> FigureSpec -> FilePath -> Text)
 command Matplotlib   = matplotlibCommand
 command PlotlyPython = plotlyPythonCommand
 command Matlab       = matlabCommand
