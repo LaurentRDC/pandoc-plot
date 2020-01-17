@@ -56,7 +56,7 @@ testEmptyConfiguration =
 testExampleConfiguration :: TestTree
 testExampleConfiguration = 
     testCase "example configuration is correctly parsed" $ do
-        let config = def
+        let config = def {pythonInterpreter = "python"}
 
         parsedConfig <- configuration "example-config.yml"
         assertEqual "" config parsedConfig
