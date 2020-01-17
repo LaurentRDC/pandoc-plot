@@ -87,16 +87,19 @@ make tk conf block = do
                 parsed
             where
                 handleResult _ (ScriptChecksFailed msg) = Left  $ ScriptChecksFailedError msg
-                handleResult _ (ScriptFailure code)     = Left  $ ScriptError code
+                handleResult _ (ScriptFailure cmd code) = Left  $ ScriptError cmd code
                 handleResult spec ScriptSuccess         = Right $ toImage spec
 
 
 -- | Possible errors returned by the filter
 data PandocPlotError
-    = ScriptError Int                 -- ^ Running script has yielded an error
+    = ScriptError String Int          -- ^ Running script has yielded an error
     | ScriptChecksFailedError String  -- ^ Script did not pass all checks
     deriving (Eq)
 
 instance Show PandocPlotError where
-    show (ScriptError exitcode)        = "Script error: plot could not be generated. Exit code " <> (show exitcode)
+    show (ScriptError cmd exitcode)   = mconcat [ "Script error: plot could not be generated.\n"
+                                                , "    Command: ", cmd, "\n"
+                                                , "    Exit code " <> (show exitcode)
+                                                ]
     show (ScriptChecksFailedError msg) = "Script did not pass all checks: " <> msg

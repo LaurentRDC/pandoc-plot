@@ -48,8 +48,8 @@ import           Text.Pandoc.Filter.Plot.Types
 -- | Possible result of running a script
 data ScriptResult
     = ScriptSuccess
-    | ScriptChecksFailed String
-    | ScriptFailure Int
+    | ScriptChecksFailed String -- Message
+    | ScriptFailure String Int  -- Command and exit code
 
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
@@ -63,7 +63,7 @@ runScriptIfNecessary spec = do
 
     case result of
         ScriptSuccess      -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
-        ScriptFailure code -> return $ ScriptFailure code
+        ScriptFailure cmd code -> return $ ScriptFailure cmd code
         ScriptChecksFailed msg -> return $ ScriptChecksFailed msg
 
 
@@ -88,7 +88,7 @@ runTempScript spec@FigureSpec{..} = do
             ec <- liftIO $ runProcess . shell $ command_
             case ec of
                 ExitSuccess      -> return   ScriptSuccess
-                ExitFailure code -> return $ ScriptFailure code
+                ExitFailure code -> return $ ScriptFailure command_ code
 
 
 -- | Convert a @FigureSpec@ to a Pandoc block component.
