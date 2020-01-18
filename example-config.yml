@@ -2,6 +2,13 @@
 # This is an example configuration. Everything in this file is optional.
 # Please refer to the documentation to know about the parameters herein.
 #
+# The `executable` parameter for all toolkits can be either the
+# executable name (if it is present on the PATH), or
+# the full path to the executable.
+# E.g.:
+#  executable: python3
+#  executable: "C:\Python37\Scripts\python.exe"
+#
 # Note that this file should be re-named to ".pandoc-plot.yml" before pandoc-plot 
 # notices it.
 

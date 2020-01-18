@@ -237,6 +237,22 @@ A file like the above sets the **default** values; you can still override them i
 
 Using `pandoc-plot --write-example-config` will write the default configuration to a file which you can then customize.
 
+### Executables
+
+The `executable` parameter for all toolkits can be either the executable name (if it is present on the PATH), or the full path to the executable.
+
+Examples:
+
+```yaml
+matplotlib:
+  executable: python3
+```
+
+```yaml
+matlabplot:
+  executable: "C:\Program Files\Matlab\R2019b\bin\matlab.exe"
+```
+
 ### Toolkit-specific options
 
 #### Matplotlib
