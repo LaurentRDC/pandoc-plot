@@ -49,6 +49,7 @@ data ConfigPrecursor = ConfigPrecursor
     , _plotlyPythonPrec  :: PlotlyPythonPrecursor
     , _mathematicaPrec   :: MathematicaPrecursor
     , _octavePrec        :: OctavePrecursor
+    , _ggplot2Prec       :: GGPlot2Precursor
     }
 
 instance Default ConfigPrecursor where
@@ -63,6 +64,7 @@ instance Default ConfigPrecursor where
         , _plotlyPythonPrec  = def
         , _mathematicaPrec   = def
         , _octavePrec        = def
+        , _ggplot2Prec       = def
         }
 
 
@@ -77,6 +79,7 @@ data MatlabPrecursor        = MatlabPrecursor {_matlabPreamble :: Maybe FilePath
 data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: Maybe FilePath, _plotlyPythonExe :: FilePath}
 data MathematicaPrecursor   = MathematicaPrecursor {_mathematicaPreamble :: Maybe FilePath, _mathematicaExe :: FilePath}
 data OctavePrecursor        = OctavePrecursor {_octavePreamble :: Maybe FilePath, _octaveExe :: FilePath}
+data GGPlot2Precursor       = GGPlot2Precursor {_ggplot2Preamble :: Maybe FilePath, _ggplot2Exe :: FilePath}
 
 
 instance Default MatplotlibPrecursor where
@@ -86,6 +89,7 @@ instance Default MatlabPrecursor        where def = MatlabPrecursor Nothing (mat
 instance Default PlotlyPythonPrecursor  where def = PlotlyPythonPrecursor Nothing (plotlyPythonExe def)
 instance Default MathematicaPrecursor   where def = MathematicaPrecursor Nothing (mathematicaExe def)
 instance Default OctavePrecursor        where def = OctavePrecursor Nothing (octaveExe def)
+instance Default GGPlot2Precursor       where def = GGPlot2Precursor Nothing (ggplot2Exe def)
 
 instance FromJSON MatplotlibPrecursor where
     parseJSON (Object v) = 
@@ -112,6 +116,10 @@ instance FromJSON OctavePrecursor where
     parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow OctavePreambleK) <*> v .:? (tshow OctaveExecutableK) .!= (octaveExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Octave, " configuration."]
 
+instance FromJSON GGPlot2Precursor where
+    parseJSON (Object v) = GGPlot2Precursor <$> v .:? (tshow GGPlot2PreambleK) <*> v .:? (tshow GGPlot2ExecutableK) .!= (ggplot2Exe def)
+    parseJSON _ = fail $ mconcat ["Could not parse ", show GGPlot2, " configuration."]
+
 
 instance FromJSON ConfigPrecursor where
     parseJSON (Null) = return def -- In case of empty file
@@ -127,6 +135,7 @@ instance FromJSON ConfigPrecursor where
         _plotlyPythonPrec  <- v .:? (cls PlotlyPython)     .!= def
         _mathematicaPrec   <- v .:? (cls Mathematica)      .!= def
         _octavePrec        <- v .:? (cls Octave)           .!= def
+        _ggplot2Prec       <- v .:? (cls GGPlot2)          .!= def
 
         return $ ConfigPrecursor{..}
     parseJSON _          = fail "Could not parse configuration."
@@ -147,12 +156,14 @@ renderConfig ConfigPrecursor{..} = do
         plotlyPythonExe = _plotlyPythonExe _plotlyPythonPrec
         mathematicaExe  = _mathematicaExe _mathematicaPrec
         octaveExe       = _octaveExe _octavePrec
+        ggplot2Exe      = _ggplot2Exe _ggplot2Prec
     
     matplotlibPreamble   <- readPreamble (_matplotlibPreamble _matplotlibPrec)
     matlabPreamble       <- readPreamble (_matlabPreamble _matlabPrec)
     plotlyPythonPreamble <- readPreamble (_plotlyPythonPreamble _plotlyPythonPrec)
     mathematicaPreamble  <- readPreamble (_mathematicaPreamble _mathematicaPrec)
     octavePreamble       <- readPreamble (_octavePreamble _octavePrec)
+    ggplot2Preamble      <- readPreamble (_ggplot2Preamble _ggplot2Prec)
 
     return Configuration{..}
     where

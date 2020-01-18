@@ -52,6 +52,7 @@ pandoc --filter pandoc-plot input.md --output output.html
 * `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
 * `mathplot` : plots using [Mathematica](https://www.wolfram.com/mathematica/);
 * `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
+* `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
 
 To know which toolkits are useable on *your machine* (and which ones are not available), you can check with the `--toolkits/-t` flag:
 
@@ -65,7 +66,6 @@ Support for the following plotting toolkits is coming:
 
 * [gnuplot](http://www.gnuplot.info/)
 * [Plotly R](https://plot.ly/r/)
-* [ggplot2](https://ggplot2.tidyverse.org/)
 
 **Wish your plotting toolkit of choice was available? Please [raise an issue](https://github.com/LaurentRDC/pandoc-plot/issues)!**
 
@@ -227,10 +227,15 @@ mathplot:
   preamble: mathematica.m
   executable: math
 
-# the possible parameters for the GNU Octave toolkit
+# The possible parameters for the GNU Octave toolkit
 octaveplot:
   preamble: octave.m
   executable: octave
+
+# The possible parameters for the ggplot2 toolkit
+ggplot2:
+  preamble: ggplot2.r
+  executable: Rscript
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.

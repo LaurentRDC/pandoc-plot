@@ -40,7 +40,12 @@ mathplot:
   # preamble: mathematica.m
   executable: math
 
-# the possible parameters for the GNU Octave toolkit
+# The possible parameters for the GNU Octave toolkit
 octaveplot:
   # preamble: octave.m
   executable: octave
+
+# The possible parameters for the ggplot2 toolkit
+ggplot2:
+  # preamble: ggplot2.r
+  executable: Rscript

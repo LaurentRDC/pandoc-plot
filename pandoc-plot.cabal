@@ -38,6 +38,7 @@ library
         Text.Pandoc.Filter.Plot.Renderers.Matlab
         Text.Pandoc.Filter.Plot.Renderers.Mathematica
         Text.Pandoc.Filter.Plot.Renderers.Octave
+        Text.Pandoc.Filter.Plot.Renderers.GGPlot2
     hs-source-dirs:
         src
     ghc-options: -Wall -Wcompat

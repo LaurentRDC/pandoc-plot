@@ -38,6 +38,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.Matlab
 import           Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import           Text.Pandoc.Filter.Plot.Renderers.Octave
 import           Text.Pandoc.Filter.Plot.Renderers.Plotly
+import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 
 import           Text.Pandoc.Filter.Plot.Types
 
@@ -48,6 +49,7 @@ scriptExtension PlotlyPython = ".py"
 scriptExtension Matlab       = ".m"
 scriptExtension Mathematica  = ".m"
 scriptExtension Octave       = ".m"
+scriptExtension GGPlot2      = ".r"
 
 -- Make a string into a comment
 comment :: Toolkit -> (Text -> Text)
@@ -56,6 +58,7 @@ comment PlotlyPython = mappend "# "
 comment Matlab       = mappend "% "
 comment Mathematica  = \t -> mconcat ["(*", t, "*)"]
 comment Octave       = mappend "% "
+comment GGPlot2      = mappend "# "
 
 -- | The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
@@ -64,6 +67,7 @@ preambleSelector PlotlyPython = plotlyPythonPreamble
 preambleSelector Matlab       = matlabPreamble
 preambleSelector Mathematica  = mathematicaPreamble
 preambleSelector Octave       = octavePreamble
+preambleSelector GGPlot2      = ggplot2Preamble
 
 
 -- | Save formats supported by this renderer.
@@ -73,6 +77,7 @@ supportedSaveFormats PlotlyPython = plotlyPythonSupportedSaveFormats
 supportedSaveFormats Matlab       = matlabSupportedSaveFormats
 supportedSaveFormats Mathematica  = mathematicaSupportedSaveFormats
 supportedSaveFormats Octave       = octaveSupportedSaveFormats
+supportedSaveFormats GGPlot2      = ggplot2SupportedSaveFormats
 
 -- Checks to perform before running a script. If ANY check fails,
 -- the figure is not rendered. This is to prevent, for example,
@@ -93,6 +98,7 @@ command PlotlyPython = plotlyPythonCommand
 command Matlab       = matlabCommand
 command Mathematica  = mathematicaCommand
 command Octave       = octaveCommand
+command GGPlot2      = ggplot2Command
 
 -- | Script fragment required to capture a figure.
 capture :: Toolkit -> (FigureSpec -> FilePath -> Script)
@@ -101,9 +107,10 @@ capture PlotlyPython = plotlyPythonCapture
 capture Matlab       = matlabCapture
 capture Mathematica  = mathematicaCapture
 capture Octave       = octaveCapture
-
+capture GGPlot2      = ggplot2Capture
 
 -- | List of toolkits available on this machine.
+-- TODO: use configuration
 availableToolkits :: IO [Toolkit]
 availableToolkits = filterM toolkitAvailable toolkits
     where
@@ -122,6 +129,7 @@ availableToolkits = filterM toolkitAvailable toolkits
         toolkitExecutable Matlab       = Sh.fromText $ "matlab" <> whichExt
         toolkitExecutable Mathematica  = Sh.fromText $ "math"   <> whichExt
         toolkitExecutable Octave       = Sh.fromText $ "octave" <> whichExt
+        toolkitExecutable GGPlot2      = Sh.fromText $ "R"      <> whichExt
 
 unavailableToolkits :: IO [Toolkit]
 unavailableToolkits = ((\\) toolkits) <$> availableToolkits
