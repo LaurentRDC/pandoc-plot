@@ -43,7 +43,6 @@ data ConfigPrecursor = ConfigPrecursor
     , _defaultWithSource :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , _defaultDPI        :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , _defaultSaveFormat :: SaveFormat -- ^ The default save format of generated figures.
-    , _pythonInterpreter :: String     -- ^ The default Python interpreter to use for Python-based renderers.
     
     , _matplotlibPrec    :: MatplotlibPrecursor
     , _matlabPrec        :: MatlabPrecursor
@@ -58,7 +57,6 @@ instance Default ConfigPrecursor where
         , _defaultWithSource = defaultWithSource def
         , _defaultDPI        = defaultDPI def
         , _defaultSaveFormat = defaultSaveFormat def
-        , _pythonInterpreter = pythonInterpreter def
         
         , _matplotlibPrec    = def
         , _matlabPrec        = def
@@ -73,43 +71,45 @@ data MatplotlibPrecursor = MatplotlibPrecursor
         { _matplotlibPreamble    :: Maybe FilePath
         , _matplotlibTightBBox   :: Bool
         , _matplotlibTransparent :: Bool
+        , _matplotlibExe         :: FilePath
         }
-data MatlabPrecursor        = MatlabPrecursor {_matlabPreamble :: Maybe FilePath}
-data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: Maybe FilePath}
-data MathematicaPrecursor   = MathematicaPrecursor {_mathematicaPreamble :: Maybe FilePath}
-data OctavePrecursor        = OctavePrecursor {_octavePreamble :: Maybe FilePath}
+data MatlabPrecursor        = MatlabPrecursor {_matlabPreamble :: Maybe FilePath, _matlabExe :: FilePath}
+data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: Maybe FilePath, _plotlyPythonExe :: FilePath}
+data MathematicaPrecursor   = MathematicaPrecursor {_mathematicaPreamble :: Maybe FilePath, _mathematicaExe :: FilePath}
+data OctavePrecursor        = OctavePrecursor {_octavePreamble :: Maybe FilePath, _octaveExe :: FilePath}
 
 
 instance Default MatplotlibPrecursor where
-    def = MatplotlibPrecursor Nothing (matplotlibTightBBox def) (matplotlibTransparent def)
+    def = MatplotlibPrecursor Nothing (matplotlibTightBBox def) (matplotlibTransparent def) (matplotlibExe def)
 
-instance Default MatlabPrecursor        where def = MatlabPrecursor Nothing
-instance Default PlotlyPythonPrecursor  where def = PlotlyPythonPrecursor Nothing
-instance Default MathematicaPrecursor   where def = MathematicaPrecursor Nothing
-instance Default OctavePrecursor        where def = OctavePrecursor Nothing
+instance Default MatlabPrecursor        where def = MatlabPrecursor Nothing (matlabExe def)
+instance Default PlotlyPythonPrecursor  where def = PlotlyPythonPrecursor Nothing (plotlyPythonExe def)
+instance Default MathematicaPrecursor   where def = MathematicaPrecursor Nothing (mathematicaExe def)
+instance Default OctavePrecursor        where def = OctavePrecursor Nothing (octaveExe def)
 
 instance FromJSON MatplotlibPrecursor where
     parseJSON (Object v) = 
         MatplotlibPrecursor
             <$> v .:? (tshow MatplotlibPreambleK)
-            <*> v .:? (tshow MatplotlibTightBBoxK)   .!= (_matplotlibTightBBox def) 
-            <*> v .:? (tshow MatplotlibTransparentK) .!= (_matplotlibTransparent def)
+            <*> v .:? (tshow MatplotlibTightBBoxK)   .!= (matplotlibTightBBox def) 
+            <*> v .:? (tshow MatplotlibTransparentK) .!= (matplotlibTransparent def)
+            <*> v .:? (tshow MatplotlibExecutableK)  .!= (matplotlibExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Matplotlib, " configuration."]
 
 instance FromJSON MatlabPrecursor where
-    parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow MatlabPreambleK)
+    parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow MatlabPreambleK) <*> v .:? (tshow MatlabExecutableK) .!= (matlabExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Matlab, " configuration."]
 
 instance FromJSON PlotlyPythonPrecursor where
-    parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PlotlyPythonPreambleK)
+    parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PlotlyPythonPreambleK) <*> v .:? (tshow PlotlyPythonExecutableK) .!= (plotlyPythonExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyPython, " configuration."]
 
 instance FromJSON MathematicaPrecursor where
-    parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow MathematicaPreambleK)
+    parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow MathematicaPreambleK) <*> v .:? (tshow MathematicaExecutableK) .!= (mathematicaExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Mathematica, " configuration."]
 
 instance FromJSON OctavePrecursor where
-    parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow OctavePreambleK)
+    parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow OctavePreambleK) <*> v .:? (tshow OctaveExecutableK) .!= (octaveExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Octave, " configuration."]
 
 
@@ -117,11 +117,10 @@ instance FromJSON ConfigPrecursor where
     parseJSON (Null) = return def -- In case of empty file
     parseJSON (Object v) = do
         
-        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory def)
-        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource def)
-        _defaultDPI        <- v .:? (tshow DpiK)           .!= (_defaultDPI def)
+        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (defaultDirectory def)
+        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (defaultWithSource def)
+        _defaultDPI        <- v .:? (tshow DpiK)           .!= (defaultDPI def)
         _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat def)
-        _pythonInterpreter <- v .:? (tshow PyInterpreterK) .!= (_pythonInterpreter def)
 
         _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
         _matlabPrec        <- v .:? (cls Matlab)           .!= def
@@ -139,10 +138,15 @@ renderConfig ConfigPrecursor{..} = do
         defaultWithSource = _defaultWithSource
         defaultDPI        = _defaultDPI
         defaultSaveFormat = _defaultSaveFormat
-        pythonInterpreter = _pythonInterpreter
 
         matplotlibTightBBox   = _matplotlibTightBBox _matplotlibPrec
         matplotlibTransparent = _matplotlibTransparent _matplotlibPrec
+
+        matplotlibExe   = _matplotlibExe _matplotlibPrec
+        matlabExe       = _matlabExe _matlabPrec
+        plotlyPythonExe = _plotlyPythonExe _plotlyPythonPrec
+        mathematicaExe  = _mathematicaExe _mathematicaPrec
+        octaveExe       = _octaveExe _octavePrec
     
     matplotlibPreamble   <- readPreamble (_matplotlibPreamble _matplotlibPrec)
     matlabPreamble       <- readPreamble (_matlabPreamble _matlabPrec)

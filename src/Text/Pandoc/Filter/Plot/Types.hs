@@ -88,13 +88,18 @@ data Configuration = Configuration
     , defaultWithSource     :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , defaultDPI            :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , defaultSaveFormat     :: SaveFormat -- ^ The default save format of generated figures.
-    , pythonInterpreter     :: String     -- ^ The default Python interpreter to use for Python-based renderers.
     -- Default preambles
     , matplotlibPreamble    :: Script
     , plotlyPythonPreamble  :: Script
     , matlabPreamble        :: Script
     , mathematicaPreamble   :: Script
     , octavePreamble        :: Script
+    -- Toolkit executables
+    , matplotlibExe         :: FilePath
+    , matlabExe             :: FilePath
+    , plotlyPythonExe       :: FilePath
+    , mathematicaExe        :: FilePath
+    , octaveExe             :: FilePath
     -- Toolkit-specific options
     , matplotlibTightBBox   :: Bool
     , matplotlibTransparent :: Bool
@@ -106,13 +111,19 @@ instance Default Configuration where
           , defaultWithSource = False
           , defaultDPI        = 80
           , defaultSaveFormat = PNG
-          , pythonInterpreter = if isWindows then "python" else "python3"
           -- toolkit-specific default preambles
           , matplotlibPreamble  = mempty
           , plotlyPythonPreamble= mempty
           , matlabPreamble      = mempty
           , mathematicaPreamble = mempty
           , octavePreamble      = mempty
+          -- Toolkit executables
+          -- Default values are executable names as if on the PATH
+          , matplotlibExe       = if isWindows then "python" else "python3"
+          , matlabExe           = "matlab"
+          , plotlyPythonExe     = if isWindows then "python" else "python3"
+          , mathematicaExe      = "math"
+          , octaveExe           = "octave"
           -- Toolkit-specific
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False
@@ -143,14 +154,19 @@ data InclusionKey
     | WithSourceK
     | PreambleK
     | DpiK
-    | PyInterpreterK
+    | ExecutableK
     | MatplotlibTightBBoxK
     | MatplotlibTransparentK
     | MatplotlibPreambleK
+    | MatplotlibExecutableK
     | PlotlyPythonPreambleK
+    | PlotlyPythonExecutableK
     | MatlabPreambleK
+    | MatlabExecutableK
     | MathematicaPreambleK
+    | MathematicaExecutableK
     | OctavePreambleK
+    | OctaveExecutableK
     deriving (Bounded, Eq, Enum)
 
 -- | Keys that pandoc-plot will look for in code blocks.
@@ -162,7 +178,7 @@ instance Show InclusionKey where
     show WithSourceK            = "source"
     show PreambleK              = "preamble"
     show DpiK                   = "dpi"
-    show PyInterpreterK         = "python_interpreter"
+    show ExecutableK            = "executable"
     show MatplotlibTightBBoxK   = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
     show MatplotlibPreambleK    = show PreambleK
@@ -170,6 +186,11 @@ instance Show InclusionKey where
     show MatlabPreambleK        = show PreambleK
     show MathematicaPreambleK   = show PreambleK
     show OctavePreambleK        = show PreambleK
+    show MatplotlibExecutableK  = show ExecutableK
+    show MatlabExecutableK      = show ExecutableK
+    show PlotlyPythonExecutableK = show ExecutableK
+    show MathematicaExecutableK = show ExecutableK
+    show OctaveExecutableK      = show ExecutableK
 
 
 -- | List of all keys related to pandoc-plot that

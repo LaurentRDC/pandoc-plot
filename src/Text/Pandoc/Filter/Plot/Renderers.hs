@@ -57,13 +57,14 @@ comment Matlab       = mappend "% "
 comment Mathematica  = \t -> mconcat ["(*", t, "*)"]
 comment Octave       = mappend "% "
 
--- The function that maps from configuration to the preamble.
+-- | The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
 preambleSelector Matplotlib   = matplotlibPreamble
 preambleSelector PlotlyPython = plotlyPythonPreamble
 preambleSelector Matlab       = matlabPreamble
 preambleSelector Mathematica  = mathematicaPreamble
 preambleSelector Octave       = octavePreamble
+
 
 -- | Save formats supported by this renderer.
 supportedSaveFormats :: Toolkit -> [SaveFormat]

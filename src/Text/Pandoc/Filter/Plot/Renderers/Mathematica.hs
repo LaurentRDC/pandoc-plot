@@ -26,7 +26,7 @@ mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 mathematicaCommand :: Configuration -> FigureSpec -> FilePath -> Text
-mathematicaCommand _ _ fp = [st|math -script #{fp}|]
+mathematicaCommand Configuration{..} _ fp = [st|#{mathematicaExe} -script #{fp}|]
 
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script

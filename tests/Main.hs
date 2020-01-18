@@ -59,7 +59,9 @@ testExampleConfiguration =
         -- The example config reflects the Windows default
         -- Therefore, we need to test against the Windows default,
         -- even on other OSes
-        let config = def {pythonInterpreter = "python"}
+        let config = def { matplotlibExe = "python"
+                         , plotlyPythonExe = "python"
+                         }
 
         parsedConfig <- configuration "example-config.yml"
         assertEqual "" config parsedConfig

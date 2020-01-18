@@ -210,22 +210,27 @@ matplotlib:
   preamble: matplotlib.py
   tight_bbox: false
   transparent: false
+  executable: python
 
 # The possible parameters for the MATLAB toolkit
 matlabplot:
   preamble: matlab.m
+  executable: matlab
 
 # The possible parameters for the Plotly/Python toolkit
 plotly_python:
   preamble: plotly-python.py
+  executable: python
 
 # The possible parameters for the Mathematica toolkit
 mathplot:
   preamble: mathematica.m
+  executable: math
 
 # the possible parameters for the GNU Octave toolkit
 octaveplot:
   preamble: octave.m
+  executable: octave
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.

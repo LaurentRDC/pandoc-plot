@@ -27,7 +27,7 @@ matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 matlabCommand :: Configuration -> FigureSpec -> FilePath -> Text
-matlabCommand _ _ fp = [st|matlab -batch "run('#{fp}')"|]
+matlabCommand Configuration{..} _ fp = [st|#{matlabExe} -batch "run('#{fp}')"|]
 
 
 matlabCapture :: FigureSpec -> FilePath -> Script

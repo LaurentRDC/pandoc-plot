@@ -27,7 +27,7 @@ octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 octaveCommand :: Configuration -> FigureSpec -> FilePath -> Text
-octaveCommand _ _ fp = [st|octave --no-window-system #{fp}|]
+octaveCommand Configuration{..} _ fp = [st|#{octaveExe} --no-window-system #{fp}|]
 
 
 octaveCapture :: FigureSpec -> FilePath -> Script

@@ -27,7 +27,7 @@ plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
 
 plotlyPythonCommand :: Configuration -> FigureSpec -> FilePath -> Text
-plotlyPythonCommand Configuration{..} _ fp = [st|#{pythonInterpreter} #{fp}|]
+plotlyPythonCommand Configuration{..} _ fp = [st|#{plotlyPythonExe} #{fp}|]
 
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
