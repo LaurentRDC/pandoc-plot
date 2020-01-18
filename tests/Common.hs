@@ -65,6 +65,7 @@ testFileInclusion tk =
         include Matlab       = "tests/includes/matlabplot.m"
         include Mathematica  = "tests/includes/mathplot.m"
         include Octave       = "tests/includes/octave.m"
+        include GGPlot2      = "tests/includes/ggplot2.r"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -91,9 +92,10 @@ codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
 trivialContent :: Toolkit -> Script
 trivialContent Matplotlib   = "import matplotlib.pyplot as plt\n"
 trivialContent PlotlyPython = "import plotly.graph_objects as go; fit = go.Figure()\n"
-trivialContent Matlab       = "figure('visible', 'off')"
-trivialContent Mathematica  = ""
-trivialContent Octave       = "figure('visible', 'off')"
+trivialContent Matlab       = "figure('visible', 'off')\n"
+trivialContent Mathematica  = "\n"
+trivialContent Octave       = "figure('visible', 'off')\n"
+trivialContent GGPlot2      = "ggplot()\n"
 
 
 addCaption :: String -> Block -> Block
