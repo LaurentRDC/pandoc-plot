@@ -17,8 +17,8 @@ jobs:
     vmImage: ubuntu-latest
     os: linux
 
-- template: ./.azure/azure-osx-template.yml
-  parameters:
-    name: macOS
-    vmImage: macOS-latest
-    os: osx
+# - template: ./.azure/azure-osx-template.yml
+#   parameters:
+#     name: macOS
+#     vmImage: macOS-latest
+#     os: osx
