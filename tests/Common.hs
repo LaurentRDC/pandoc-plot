@@ -94,7 +94,7 @@ trivialContent Matplotlib   = "import matplotlib.pyplot as plt\n"
 trivialContent PlotlyPython = "import plotly.graph_objects as go; fit = go.Figure()\n"
 trivialContent Matlab       = "figure('visible', 'off')\n"
 trivialContent Mathematica  = "\n"
-trivialContent Octave       = "figure('visible', 'off')\n"
+trivialContent Octave       = "figure('visible', 'off')\nplot (-10:0.1:10);"
 trivialContent GGPlot2      = "ggplot()\n"
 
 
