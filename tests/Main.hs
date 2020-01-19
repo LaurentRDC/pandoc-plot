@@ -14,8 +14,8 @@ import           Text.Pandoc.Filter.Plot.Internal
 
 main :: IO ()
 main = do
-    available <- availableToolkits
-    unavailable <- unavailableToolkits
+    available <- availableToolkits def
+    unavailable <- unavailableToolkits def
     forM_ unavailable $ \tk -> do
         putStrLn $ show tk <> " is not availble. Its tests will be skipped."
 
