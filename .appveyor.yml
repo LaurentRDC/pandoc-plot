@@ -62,7 +62,7 @@ before_test:
 
 # Install GNU Octave
 - choco install --yes octave
-
+- stack exec -- where octave
 test_script:
 
 # Install toolchain, but do it silently due to lots of output
