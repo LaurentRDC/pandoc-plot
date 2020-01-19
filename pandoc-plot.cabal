@@ -43,10 +43,10 @@ library
         src
     ghc-options: -Wall -Wcompat
     build-depends:
-          base               >=4.11 && <5
+          base               >= 4.11  && <5
         , containers
         , directory
-        , data-default-class >= 0.1.2
+        , data-default-class >= 0.1.2 && < 0.2
         , filepath           >= 1.4   && < 2
         , hashable           >= 1     && < 2
         , pandoc             >= 2.8   && < 3

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 {-|
 Module      : $header$
@@ -110,9 +111,9 @@ capture Octave       = octaveCapture
 capture GGPlot2      = ggplot2Capture
 
 -- | List of toolkits available on this machine.
--- TODO: use configuration
-availableToolkits :: IO [Toolkit]
-availableToolkits = filterM toolkitAvailable toolkits
+-- The executables to look for are taken from the configuration.
+availableToolkits :: Configuration -> IO [Toolkit]
+availableToolkits Configuration{..} = filterM toolkitAvailable toolkits
     where
         toolkitAvailable :: Toolkit -> IO Bool
         toolkitAvailable tk =
@@ -120,16 +121,16 @@ availableToolkits = filterM toolkitAvailable toolkits
 
         -- The @which@ function from Turtle only works on
         -- windows if the executable extension is included.
-        whichExt :: Text
+        whichExt :: FilePath
         whichExt = if isWindows then ".exe" else mempty
 
         toolkitExecutable :: Toolkit -> Sh.FilePath
-        toolkitExecutable Matplotlib   = Sh.fromText $ "python" <> whichExt
-        toolkitExecutable PlotlyPython = Sh.fromText $ "python" <> whichExt
-        toolkitExecutable Matlab       = Sh.fromText $ "matlab" <> whichExt
-        toolkitExecutable Mathematica  = Sh.fromText $ "math"   <> whichExt
-        toolkitExecutable Octave       = Sh.fromText $ "octave" <> whichExt
-        toolkitExecutable GGPlot2      = Sh.fromText $ "R"      <> whichExt
+        toolkitExecutable Matplotlib   = Sh.fromString $ matplotlibExe   <> whichExt
+        toolkitExecutable PlotlyPython = Sh.fromString $ plotlyPythonExe <> whichExt
+        toolkitExecutable Matlab       = Sh.fromString $ matlabExe       <> whichExt
+        toolkitExecutable Mathematica  = Sh.fromString $ mathematicaExe  <> whichExt
+        toolkitExecutable Octave       = Sh.fromString $ octaveExe       <> whichExt
+        toolkitExecutable GGPlot2      = Sh.fromString $ ggplot2Exe      <> whichExt
 
-unavailableToolkits :: IO [Toolkit]
-unavailableToolkits = ((\\) toolkits) <$> availableToolkits
+unavailableToolkits :: Configuration -> IO [Toolkit]
+unavailableToolkits conf = ((\\) toolkits) <$> availableToolkits conf

@@ -22,7 +22,7 @@ import           System.IO.Temp                   (writeSystemTempFile)
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform,
                                                    unavailableToolkits)
-import           Text.Pandoc.Filter.Plot.Internal (Toolkit (..), cls,
+import           Text.Pandoc.Filter.Plot.Internal (Toolkit (..), cls, Configuration(..),
                                                    supportedSaveFormats, 
                                                    configuration)
 
@@ -49,11 +49,16 @@ main = join $ execParser opts
 
 toJSONFilterWithConfig :: IO ()
 toJSONFilterWithConfig = do
+    c <- config
+    toJSONFilter (plotTransform c)
+
+
+config :: IO Configuration
+config = do 
     configExists <- doesFileExist ".pandoc-plot.yml"
-    config <- if configExists
-                then configuration ".pandoc-plot.yml" 
-                else def
-    toJSONFilter (plotTransform config)
+    if configExists
+        then configuration ".pandoc-plot.yml" 
+        else return def
 
 
 data Flag = Version
@@ -80,7 +85,8 @@ run = do
     toolkitsP <- flag Nothing (Just Toolkits) (mconcat
         [ long "toolkits"
         , short 't'
-        , help "Show information on toolkits and exit."
+        , help "Show information on toolkits and exit. Executables from the configuration \
+               \file will be used, if a '.pandoc-plot.yml' file is in the current directory."
         ])
     
     configP <- flag Nothing (Just Config) (mconcat
@@ -98,10 +104,11 @@ run = do
                                 >>= \fp -> openBrowser ("file:///" <> fp)
                                 >> return ()
         go (Just Toolkits) _ = do
+            c <- config
             putStrLn "\nAVAILABLE TOOLKITS\n"
-            availableToolkits >>= mapM_ toolkitInfo
+            availableToolkits c >>= mapM_ toolkitInfo
             putStrLn "\nUNAVAILABLE TOOLKITS\n"
-            unavailableToolkits >>= mapM_ toolkitInfo
+            unavailableToolkits c >>= mapM_ toolkitInfo
         go (Just Config)   _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
 
         go Nothing         _ = toJSONFilterWithConfig
