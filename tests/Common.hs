@@ -95,7 +95,7 @@ trivialContent PlotlyPython = "import plotly.graph_objects as go; fit = go.Figur
 trivialContent Matlab       = "figure('visible', 'off')\n"
 trivialContent Mathematica  = "\n"
 trivialContent Octave       = "figure('visible', 'off')\nplot (-10:0.1:10);"
-trivialContent GGPlot2      = "ggplot()\n"
+trivialContent GGPlot2      = "library(ggplot2)\nggplot()\n"
 
 
 addCaption :: String -> Block -> Block
