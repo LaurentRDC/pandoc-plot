@@ -17,6 +17,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Mathematica (
       mathematicaSupportedSaveFormats
     , mathematicaCommand
     , mathematicaCapture
+    , mathematicaAvailable
 ) where
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -27,6 +28,10 @@ mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 mathematicaCommand :: Configuration -> FigureSpec -> FilePath -> Text
 mathematicaCommand Configuration{..} _ fp = [st|#{mathematicaExe} -script #{fp}|]
+
+
+mathematicaAvailable :: Configuration -> IO Bool
+mathematicaAvailable Configuration{..} = commandSuccess [st|#{mathematicaExe} -h|] -- TODO: test this
 
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script

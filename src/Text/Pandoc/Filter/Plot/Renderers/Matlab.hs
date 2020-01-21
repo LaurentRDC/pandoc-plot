@@ -17,6 +17,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Matlab (
       matlabSupportedSaveFormats
     , matlabCommand
     , matlabCapture
+    , matlabAvailable
 ) where
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -29,6 +30,9 @@ matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 matlabCommand :: Configuration -> FigureSpec -> FilePath -> Text
 matlabCommand Configuration{..} _ fp = [st|#{matlabExe} -batch "run('#{fp}')"|]
 
+
+matlabAvailable :: Configuration -> IO Bool
+matlabAvailable Configuration{..} = commandSuccess [st|#{matlabExe} -h|]
 
 matlabCapture :: FigureSpec -> FilePath -> Script
 matlabCapture FigureSpec{..} fname = [st|

@@ -22,6 +22,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (
     , matplotlibCommand
     , matplotlibCapture
     , matplotlibExtraAttrs
+    , matplotlibAvailable
 ) where
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -51,6 +52,10 @@ plt.savefig(r"#{fname}", dpi=#{dpi}, transparent=#{transparent}, bbox_inches=#{t
 
 matplotlibExtraAttrs :: M.Map Text Text -> (M.Map Text Text)
 matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "transparent"]) kv
+
+
+matplotlibAvailable :: Configuration -> IO Bool
+matplotlibAvailable Configuration{..} = commandSuccess [st|#{matplotlibExe} -c "import matplotlib"|]
 
 
 -- | Flexible boolean parsing

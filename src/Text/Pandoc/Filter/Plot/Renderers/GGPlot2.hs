@@ -17,6 +17,7 @@ module Text.Pandoc.Filter.Plot.Renderers.GGPlot2 (
       ggplot2SupportedSaveFormats
     , ggplot2Command
     , ggplot2Capture
+    , ggplot2Available
 ) where
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -27,6 +28,10 @@ ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
 ggplot2Command :: Configuration -> FigureSpec -> FilePath -> Text
 ggplot2Command Configuration{..} _ fp = [st|#{ggplot2Exe} #{fp}|]
+
+
+ggplot2Available :: Configuration -> IO Bool
+ggplot2Available Configuration{..} = commandSuccess [st|#{ggplot2Exe} -e 'library("ggplot2")'|]
 
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script

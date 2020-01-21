@@ -17,9 +17,21 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , Text
     , st
     , unpack
+    , commandSuccess
 ) where
 
 import           Data.Text                     (Text, unpack)
+import           System.Exit                   (ExitCode(..))
+import           System.Process.Typed          (runProcess, shell)
 import           Text.Shakespeare.Text         (st)
 
+
 import           Text.Pandoc.Filter.Plot.Types
+
+
+-- | Check that the supplied command results in
+-- an exit code of 0 (i.e. no errors)
+commandSuccess :: Text -> IO Bool
+commandSuccess s = do
+    ec <- runProcess $ shell (unpack s)
+    return $ ec == ExitSuccess

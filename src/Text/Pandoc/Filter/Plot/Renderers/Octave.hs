@@ -17,6 +17,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Octave (
       octaveSupportedSaveFormats
     , octaveCommand
     , octaveCapture
+    , octaveAvailable
 ) where
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -28,6 +29,10 @@ octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 octaveCommand :: Configuration -> FigureSpec -> FilePath -> Text
 octaveCommand Configuration{..} _ fp = [st|#{octaveExe} --no-gui --no-window-system #{fp}|]
+
+
+octaveAvailable :: Configuration -> IO Bool
+octaveAvailable Configuration{..} = commandSuccess [st|#{octaveExe} -h|]
 
 
 octaveCapture :: FigureSpec -> FilePath -> Script

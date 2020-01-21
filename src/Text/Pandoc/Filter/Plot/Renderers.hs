@@ -29,10 +29,7 @@ import           Control.Monad                                 (filterM)
 
 import           Data.List                                     ((\\))
 import           Data.Map.Strict                               (Map)
-import           Data.Maybe                                    (isJust)
 import           Data.Text                                     (Text)
-
-import qualified Turtle                                        as Sh
 
 import           Text.Pandoc.Filter.Plot.Renderers.Mathematica
 import           Text.Pandoc.Filter.Plot.Renderers.Matlab
@@ -110,27 +107,24 @@ capture Mathematica  = mathematicaCapture
 capture Octave       = octaveCapture
 capture GGPlot2      = ggplot2Capture
 
+
+-- | Check if a toolkit is available, based on the current configuration
+toolkitAvailable :: Toolkit -> Configuration -> IO Bool
+toolkitAvailable Matplotlib   = matplotlibAvailable
+toolkitAvailable PlotlyPython = plotlyPythonAvailable
+toolkitAvailable Matlab       = matlabAvailable
+toolkitAvailable Mathematica  = mathematicaAvailable
+toolkitAvailable Octave       = octaveAvailable
+toolkitAvailable GGPlot2      = ggplot2Available
+
+
 -- | List of toolkits available on this machine.
 -- The executables to look for are taken from the configuration.
 availableToolkits :: Configuration -> IO [Toolkit]
-availableToolkits Configuration{..} = filterM toolkitAvailable toolkits
-    where
-        toolkitAvailable :: Toolkit -> IO Bool
-        toolkitAvailable tk =
-            Sh.which (toolkitExecutable tk) >>= (fmap isJust . return)
+availableToolkits conf = filterM (\tk -> toolkitAvailable tk conf) toolkits
+    
 
-        -- The @which@ function from Turtle only works on
-        -- windows if the executable extension is included.
-        whichExt :: FilePath
-        whichExt = if isWindows then ".exe" else mempty
-
-        toolkitExecutable :: Toolkit -> Sh.FilePath
-        toolkitExecutable Matplotlib   = Sh.fromString $ matplotlibExe   <> whichExt
-        toolkitExecutable PlotlyPython = Sh.fromString $ plotlyPythonExe <> whichExt
-        toolkitExecutable Matlab       = Sh.fromString $ matlabExe       <> whichExt
-        toolkitExecutable Mathematica  = Sh.fromString $ mathematicaExe  <> whichExt
-        toolkitExecutable Octave       = Sh.fromString $ octaveExe       <> whichExt
-        toolkitExecutable GGPlot2      = Sh.fromString $ ggplot2Exe      <> whichExt
-
+-- | List of toolkits not available on this machine.
+-- The executables to look for are taken from the configuration.
 unavailableToolkits :: Configuration -> IO [Toolkit]
 unavailableToolkits conf = ((\\) toolkits) <$> availableToolkits conf

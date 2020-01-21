@@ -17,6 +17,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Plotly (
       plotlyPythonSupportedSaveFormats
     , plotlyPythonCommand
     , plotlyPythonCapture
+    , plotlyPythonAvailable
 ) where
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
@@ -28,6 +29,10 @@ plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
 plotlyPythonCommand :: Configuration -> FigureSpec -> FilePath -> Text
 plotlyPythonCommand Configuration{..} _ fp = [st|#{plotlyPythonExe} #{fp}|]
+
+
+plotlyPythonAvailable :: Configuration -> IO Bool
+plotlyPythonAvailable Configuration{..} = commandSuccess [st|#{plotlyPythonExe} -c "import plotly.graph_objects"|]
 
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
