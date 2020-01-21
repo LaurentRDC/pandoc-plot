@@ -66,9 +66,8 @@ import           Text.Pandoc.Filter.Plot.Internal
 -- All code blocks that have the @.plot@ / @.plotly@ class will be considered
 -- figures.
 makePlot :: Configuration -> Block -> IO Block
-makePlot conf block = case plotToolkit block of
-    Just tk -> make tk conf block
-    Nothing -> return block
+makePlot conf block = 
+    maybe (return block) (\tk -> make tk conf block) (plotToolkit block)
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
