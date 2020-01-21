@@ -8,7 +8,7 @@ import           Control.Applicative              ((<|>))
 import           Control.Monad                    (join)
 
 import           Data.Default.Class               (def)
-import           Data.List                        (intersperse)
+import           Data.List                        (intersperse, (\\))
 import           Data.Monoid                      ((<>))
 import qualified Data.Text                        as T
 import qualified Data.Text.IO                     as T
@@ -20,11 +20,10 @@ import           System.Directory                 (doesFileExist)
 import           System.IO.Temp                   (writeSystemTempFile)
 
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
-                                                   plotTransform,
-                                                   unavailableToolkits)
+                                                   plotTransform)
 import           Text.Pandoc.Filter.Plot.Internal (Toolkit (..), cls, Configuration(..),
                                                    supportedSaveFormats, 
-                                                   configuration)
+                                                   configuration, toolkits)
 
 import           Text.Pandoc.JSON                 (toJSONFilter)
 
@@ -106,9 +105,13 @@ run = do
         go (Just Toolkits) _ = do
             c <- config
             putStrLn "\nAVAILABLE TOOLKITS\n"
-            availableToolkits c >>= mapM_ toolkitInfo
+            available <- availableToolkits c
+            return available >>= mapM_ toolkitInfo
             putStrLn "\nUNAVAILABLE TOOLKITS\n"
-            unavailableToolkits c >>= mapM_ toolkitInfo
+            -- We don't use unavailableToolkits because this would force
+            -- more IO actions
+            let unavailable = toolkits \\ available
+            return unavailable >>= mapM_ toolkitInfo
         go (Just Config)   _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
 
         go Nothing         _ = toJSONFilterWithConfig

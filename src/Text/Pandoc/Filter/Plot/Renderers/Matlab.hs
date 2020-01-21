@@ -34,6 +34,7 @@ matlabCommand Configuration{..} _ fp = [st|#{matlabExe} -batch "run('#{fp}')"|]
 matlabAvailable :: Configuration -> IO Bool
 matlabAvailable Configuration{..} = commandSuccess [st|#{matlabExe} -h|]
 
+
 matlabCapture :: FigureSpec -> FilePath -> Script
 matlabCapture FigureSpec{..} fname = [st|
 saveas(gcf, '#{fname}')
