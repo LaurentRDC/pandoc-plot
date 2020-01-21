@@ -49,7 +49,7 @@ pandoc --filter pandoc-plot input.md --output output.html
 
 ## Supported toolkits
 
-`pandoc-plot` currently supports the following plotting toolkits (installed separately):
+`pandoc-plot` currently supports the following plotting toolkits (**installed separately**):
 
 * `matplotlib`: plots using the [matplotlib](https://matplotlib.org/) Python library;
 * `plotly_python` : plots using the [plotly](https://plot.ly/python/) Python library;
@@ -57,6 +57,7 @@ pandoc --filter pandoc-plot input.md --output output.html
 * `mathplot` : plots using [Mathematica](https://www.wolfram.com/mathematica/);
 * `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
 * `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
+
 
 To know which toolkits are useable on *your machine* (and which ones are not available), you can check with the `--toolkits/-t` flag:
 
@@ -273,17 +274,20 @@ matlabplot:
 
 ### Binaries
 
-Windows binaries are available on [GitHub](https://github.com/LaurentRDC/pandoc-plot/releases). Place the executable in a location that is in your PATH to be able to call it.
-
-If you can show me how to generate binaries for other platform using e.g. Azure Pipelines, let me know!
+*Coming soon*
 
 ### Installers (Windows)
 
-Windows installers are made available thanks to [Inno Setup](http://www.jrsoftware.org/isinfo.php). You can download them from the [release page](https://github.com/LaurentRDC/pandoc-plot/releases/latest).
-
-### From Hackage/Stackage
-
 *Coming soon*
+
+### From Hackage
+
+`pandoc-plot` is available on [Hackage](http://hackage.haskell.org/package/pandoc-plot). Using the [`cabal-install`](https://www.haskell.org/cabal/) tool:
+
+```bash
+cabal update
+cabal install pandoc-plot
+```
 
 ### From source
 
