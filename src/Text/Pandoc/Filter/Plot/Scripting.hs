@@ -34,7 +34,7 @@ import           System.FilePath                   (FilePath, addExtension,
                                                     normalise, replaceExtension,
                                                     takeDirectory, (</>))
 import           System.IO.Temp                    (getCanonicalTemporaryDirectory)
-import           System.Process.Typed              (runProcess, shell)
+import           System.Process.Typed              (runProcess, shell, setStdout, nullStream)
 
 import           Text.Pandoc.Builder               (fromList, imageWith, link,
                                                     para, toList)
@@ -69,6 +69,8 @@ runScriptIfNecessary spec = do
 
 -- Run script as described by the spec
 -- Checks are performed, according to the renderer
+-- Note that stdout from the script is suppressed, but not
+-- stderr.
 runTempScript :: FigureSpec -> PlotM ScriptResult
 runTempScript spec@FigureSpec{..} = do
     tk <- asks toolkit
@@ -86,7 +88,10 @@ runTempScript spec@FigureSpec{..} = do
             liftIO $ T.writeFile scriptPath scriptWithCapture
             let command_ = T.unpack $ command tk conf spec scriptPath
 
-            ec <- liftIO $ runProcess . shell $ command_
+            ec <- liftIO 
+                    $ runProcess 
+                    $ setStdout nullStream
+                    $ shell command_
             case ec of
                 ExitSuccess      -> return   ScriptSuccess
                 ExitFailure code -> return $ ScriptFailure command_ code
