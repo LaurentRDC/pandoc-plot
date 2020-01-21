@@ -75,21 +75,21 @@ data MatplotlibPrecursor = MatplotlibPrecursor
         , _matplotlibTransparent :: !Bool
         , _matplotlibExe         :: !FilePath
         }
-data MatlabPrecursor        = MatlabPrecursor {_matlabPreamble :: !(Maybe FilePath), _matlabExe :: !FilePath}
+data MatlabPrecursor        = MatlabPrecursor       {_matlabPreamble       :: !(Maybe FilePath), _matlabExe       :: !FilePath}
 data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: !(Maybe FilePath), _plotlyPythonExe :: !FilePath}
-data MathematicaPrecursor   = MathematicaPrecursor {_mathematicaPreamble :: !(Maybe FilePath), _mathematicaExe :: !FilePath}
-data OctavePrecursor        = OctavePrecursor {_octavePreamble :: !(Maybe FilePath), _octaveExe :: !FilePath}
-data GGPlot2Precursor       = GGPlot2Precursor {_ggplot2Preamble :: !(Maybe FilePath), _ggplot2Exe :: !FilePath}
+data MathematicaPrecursor   = MathematicaPrecursor  {_mathematicaPreamble  :: !(Maybe FilePath), _mathematicaExe  :: !FilePath}
+data OctavePrecursor        = OctavePrecursor       {_octavePreamble       :: !(Maybe FilePath), _octaveExe       :: !FilePath}
+data GGPlot2Precursor       = GGPlot2Precursor      {_ggplot2Preamble      :: !(Maybe FilePath), _ggplot2Exe      :: !FilePath}
 
 
 instance Default MatplotlibPrecursor where
     def = MatplotlibPrecursor Nothing (matplotlibTightBBox def) (matplotlibTransparent def) (matplotlibExe def)
 
-instance Default MatlabPrecursor        where def = MatlabPrecursor Nothing (matlabExe def)
+instance Default MatlabPrecursor        where def = MatlabPrecursor       Nothing (matlabExe def)
 instance Default PlotlyPythonPrecursor  where def = PlotlyPythonPrecursor Nothing (plotlyPythonExe def)
-instance Default MathematicaPrecursor   where def = MathematicaPrecursor Nothing (mathematicaExe def)
-instance Default OctavePrecursor        where def = OctavePrecursor Nothing (octaveExe def)
-instance Default GGPlot2Precursor       where def = GGPlot2Precursor Nothing (ggplot2Exe def)
+instance Default MathematicaPrecursor   where def = MathematicaPrecursor  Nothing (mathematicaExe def)
+instance Default OctavePrecursor        where def = OctavePrecursor       Nothing (octaveExe def)
+instance Default GGPlot2Precursor       where def = GGPlot2Precursor      Nothing (ggplot2Exe def)
 
 instance FromJSON MatplotlibPrecursor where
     parseJSON (Object v) = 
