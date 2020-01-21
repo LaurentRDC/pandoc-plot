@@ -7,26 +7,30 @@ Description : Pandoc filter to create figures from code blocks using your plotti
 Copyright   : (c) Laurent P René de Cotret, 2020
 License     : GNU GPL, version 2 or above
 Maintainer  : laurent.decotret@outlook.com
-Stability   : stable
+Stability   : unstable
 Portability : portable
 
 This module defines a Pandoc filter @makePlot@ and related functions
 that can be used to walk over a Pandoc document and generate figures from
-a multitude of plotting toolkits.
+code blocks using a multitude of plotting toolkits.
 
-The syntax for code blocks is simple, Code blocks with the appripriate class
+The syntax for code blocks is simple, Code blocks with the appropriate class
 attribute will trigger the filter. For example:
 
 *   @.matplotlib@ for matplotlib-based Python plots;
 *   @.plotly_python@ for Plotly-based Python plots;
 *   @.matlabplot@ for MATLAB plots;
+*   @.mathplot@ for Mathematica plots;
+*   @.octaveplot@ for GNU Octave plots;
+*   @.ggplot2@ for ggplot2-based R plots;
 
-The code block will be reworked into a script and the output figure will be captured, possible the source code
- used to generate the figure.
+The code block will be reworked into a script and the output figure will be captured. Optionally, the source code
+ used to generate the figure will be linked in the caption.
 
 Here are the possible attributes what pandoc-plot understands for ALL toolkits:
 
     * @directory=...@ : Directory where to save the figure.
+    * @source=true|false@ : Whether or not to link the source code of this figure in the caption. Ideal for web pages, for example. Default is false.
     * @format=...@: Format of the generated figure. This can be an extension or an acronym, e.g. @format=png@.
     * @caption="..."@: Specify a plot caption (or alternate text). Captions support Markdown formatting and LaTeX math (@$...$@).
     * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.

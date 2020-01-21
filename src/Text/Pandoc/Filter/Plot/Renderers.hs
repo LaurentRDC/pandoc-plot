@@ -40,6 +40,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 
 import           Text.Pandoc.Filter.Plot.Types
 
+
 -- Extension for script files, e.g. ".py", or ".m".
 scriptExtension :: Toolkit -> String
 scriptExtension Matplotlib   = ".py"
@@ -49,6 +50,7 @@ scriptExtension Mathematica  = ".m"
 scriptExtension Octave       = ".m"
 scriptExtension GGPlot2      = ".r"
 
+
 -- Make a string into a comment
 comment :: Toolkit -> (Text -> Text)
 comment Matplotlib   = mappend "# "
@@ -57,6 +59,7 @@ comment Matlab       = mappend "% "
 comment Mathematica  = \t -> mconcat ["(*", t, "*)"]
 comment Octave       = mappend "% "
 comment GGPlot2      = mappend "# "
+
 
 -- | The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
@@ -77,17 +80,20 @@ supportedSaveFormats Mathematica  = mathematicaSupportedSaveFormats
 supportedSaveFormats Octave       = octaveSupportedSaveFormats
 supportedSaveFormats GGPlot2      = ggplot2SupportedSaveFormats
 
+
 -- Checks to perform before running a script. If ANY check fails,
 -- the figure is not rendered. This is to prevent, for example,
 -- blocking operations to occur.
 scriptChecks :: Toolkit -> [Script -> CheckResult]
 scriptChecks = const mempty
 
+
 -- | Parse code block headers for extra attributes that are specific
 -- to this renderer. By default, no extra attributes are parsed.
 parseExtraAttrs :: Toolkit -> Map Text Text -> Map Text Text
 parseExtraAttrs Matplotlib = matplotlibExtraAttrs
 parseExtraAttrs _          = return mempty
+
 
 -- | Generate the appropriate command-line command to generate a figure.
 command :: Toolkit -> (Configuration -> FigureSpec -> FilePath -> Text)
@@ -97,6 +103,7 @@ command Matlab       = matlabCommand
 command Mathematica  = mathematicaCommand
 command Octave       = octaveCommand
 command GGPlot2      = ggplot2Command
+
 
 -- | Script fragment required to capture a figure.
 capture :: Toolkit -> (FigureSpec -> FilePath -> Script)
