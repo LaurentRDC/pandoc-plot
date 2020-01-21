@@ -82,32 +82,32 @@ cls GGPlot2      = "ggplot2"
 type PlotM a = ReaderT PlotEnv IO a
 
 data PlotEnv
-    = PlotEnv { toolkit :: Toolkit
-              , config  :: Configuration
+    = PlotEnv { toolkit :: !Toolkit
+              , config  :: !Configuration
               }
 
 data Configuration = Configuration
-    { defaultDirectory      :: FilePath   -- ^ The default directory where figures will be saved.
-    , defaultWithSource     :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
-    , defaultDPI            :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
-    , defaultSaveFormat     :: SaveFormat -- ^ The default save format of generated figures.
+    { defaultDirectory      :: !FilePath   -- ^ The default directory where figures will be saved.
+    , defaultWithSource     :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    , defaultDPI            :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
+    , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
     -- Default preambles
-    , matplotlibPreamble    :: Script
-    , plotlyPythonPreamble  :: Script
-    , matlabPreamble        :: Script
-    , mathematicaPreamble   :: Script
-    , octavePreamble        :: Script
-    , ggplot2Preamble       :: Script
+    , matplotlibPreamble    :: !Script
+    , plotlyPythonPreamble  :: !Script
+    , matlabPreamble        :: !Script
+    , mathematicaPreamble   :: !Script
+    , octavePreamble        :: !Script
+    , ggplot2Preamble       :: !Script
     -- Toolkit executables
-    , matplotlibExe         :: FilePath
-    , matlabExe             :: FilePath
-    , plotlyPythonExe       :: FilePath
-    , mathematicaExe        :: FilePath
-    , octaveExe             :: FilePath
-    , ggplot2Exe            :: FilePath
+    , matplotlibExe         :: !FilePath
+    , matlabExe             :: !FilePath
+    , plotlyPythonExe       :: !FilePath
+    , mathematicaExe        :: !FilePath
+    , octaveExe             :: !FilePath
+    , ggplot2Exe            :: !FilePath
     -- Toolkit-specific options
-    , matplotlibTightBBox   :: Bool
-    , matplotlibTransparent :: Bool
+    , matplotlibTightBBox   :: !Bool
+    , matplotlibTransparent :: !Bool
     } deriving (Eq, Show)
 
 instance Default Configuration where
@@ -215,14 +215,14 @@ inclusionKeys = enumFromTo (minBound::InclusionKey) maxBound
 -- It is assumed that once a @FigureSpec@ has been created, no configuration
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
-    { caption    :: Text           -- ^ Figure caption.
-    , withSource :: Bool           -- ^ Append link to source code in caption.
-    , script     :: Script         -- ^ Source code for the figure.
-    , saveFormat :: SaveFormat     -- ^ Save format of the figure.
-    , directory  :: FilePath       -- ^ Directory where to save the file.
-    , dpi        :: Int            -- ^ Dots-per-inch of figure.
-    , extraAttrs :: [(Text, Text)] -- ^ Renderer-specific extra attributes.
-    , blockAttrs :: Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
+    { caption    :: !Text           -- ^ Figure caption.
+    , withSource :: !Bool           -- ^ Append link to source code in caption.
+    , script     :: !Script         -- ^ Source code for the figure.
+    , saveFormat :: !SaveFormat     -- ^ Save format of the figure.
+    , directory  :: !FilePath       -- ^ Directory where to save the file.
+    , dpi        :: !Int            -- ^ Dots-per-inch of figure.
+    , extraAttrs :: ![(Text, Text)] -- ^ Renderer-specific extra attributes.
+    , blockAttrs :: !Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
     } deriving Generic
 
 instance Hashable FigureSpec -- From Generic

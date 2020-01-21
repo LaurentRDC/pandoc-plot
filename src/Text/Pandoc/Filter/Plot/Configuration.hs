@@ -29,8 +29,8 @@ import Text.Pandoc.Filter.Plot.Types
 -- | Read configuration from a YAML file. The
 -- keys are exactly the same as for code blocks.
 --
--- If a key is either not present or unreadable, its value will be set
--- to the default value.
+-- If a key is either not present, its value will be set
+-- to the default value. Parsing errors result in thrown exceptions.
 configuration :: FilePath -> IO Configuration
 configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
 
@@ -39,17 +39,17 @@ configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
 -- but we want to read those files before building a full
 -- @Configuration@ value.
 data ConfigPrecursor = ConfigPrecursor
-    { _defaultDirectory  :: FilePath   -- ^ The default directory where figures will be saved.
-    , _defaultWithSource :: Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
-    , _defaultDPI        :: Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
-    , _defaultSaveFormat :: SaveFormat -- ^ The default save format of generated figures.
+    { _defaultDirectory  :: !FilePath   -- ^ The default directory where figures will be saved.
+    , _defaultWithSource :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
+    , _defaultDPI        :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
+    , _defaultSaveFormat :: !SaveFormat -- ^ The default save format of generated figures.
     
-    , _matplotlibPrec    :: MatplotlibPrecursor
-    , _matlabPrec        :: MatlabPrecursor
-    , _plotlyPythonPrec  :: PlotlyPythonPrecursor
-    , _mathematicaPrec   :: MathematicaPrecursor
-    , _octavePrec        :: OctavePrecursor
-    , _ggplot2Prec       :: GGPlot2Precursor
+    , _matplotlibPrec    :: !MatplotlibPrecursor
+    , _matlabPrec        :: !MatlabPrecursor
+    , _plotlyPythonPrec  :: !PlotlyPythonPrecursor
+    , _mathematicaPrec   :: !MathematicaPrecursor
+    , _octavePrec        :: !OctavePrecursor
+    , _ggplot2Prec       :: !GGPlot2Precursor
     }
 
 instance Default ConfigPrecursor where
@@ -70,16 +70,16 @@ instance Default ConfigPrecursor where
 
 -- Separate YAML clauses have their own types.
 data MatplotlibPrecursor = MatplotlibPrecursor
-        { _matplotlibPreamble    :: Maybe FilePath
-        , _matplotlibTightBBox   :: Bool
-        , _matplotlibTransparent :: Bool
-        , _matplotlibExe         :: FilePath
+        { _matplotlibPreamble    :: !(Maybe FilePath)
+        , _matplotlibTightBBox   :: !Bool
+        , _matplotlibTransparent :: !Bool
+        , _matplotlibExe         :: !FilePath
         }
-data MatlabPrecursor        = MatlabPrecursor {_matlabPreamble :: Maybe FilePath, _matlabExe :: FilePath}
-data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: Maybe FilePath, _plotlyPythonExe :: FilePath}
-data MathematicaPrecursor   = MathematicaPrecursor {_mathematicaPreamble :: Maybe FilePath, _mathematicaExe :: FilePath}
-data OctavePrecursor        = OctavePrecursor {_octavePreamble :: Maybe FilePath, _octaveExe :: FilePath}
-data GGPlot2Precursor       = GGPlot2Precursor {_ggplot2Preamble :: Maybe FilePath, _ggplot2Exe :: FilePath}
+data MatlabPrecursor        = MatlabPrecursor {_matlabPreamble :: !(Maybe FilePath), _matlabExe :: !FilePath}
+data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: !(Maybe FilePath), _plotlyPythonExe :: !FilePath}
+data MathematicaPrecursor   = MathematicaPrecursor {_mathematicaPreamble :: !(Maybe FilePath), _mathematicaExe :: !FilePath}
+data OctavePrecursor        = OctavePrecursor {_octavePreamble :: !(Maybe FilePath), _octaveExe :: !FilePath}
+data GGPlot2Precursor       = GGPlot2Precursor {_ggplot2Preamble :: !(Maybe FilePath), _ggplot2Exe :: !FilePath}
 
 
 instance Default MatplotlibPrecursor where
