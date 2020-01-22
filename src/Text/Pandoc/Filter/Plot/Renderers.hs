@@ -25,10 +25,11 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , unavailableToolkits
 ) where
 
-import           Control.Monad                                 (filterM)
+import           Control.Concurrent.ParallelIO.Local
 
 import           Data.List                                     ((\\))
 import           Data.Map.Strict                               (Map)
+import           Data.Maybe                                    (catMaybes)
 import           Data.Text                                     (Text)
 
 import           Text.Pandoc.Filter.Plot.Renderers.Mathematica
@@ -128,9 +129,22 @@ toolkitAvailable GGPlot2      = ggplot2Available
 -- | List of toolkits available on this machine.
 -- The executables to look for are taken from the configuration.
 availableToolkits :: Configuration -> IO [Toolkit]
-availableToolkits conf = filterM (\tk -> toolkitAvailable tk conf) toolkits
-    
+availableToolkits conf = do
+    -- Certain toolkits (e.g. Python-based toolkits)
+    -- may take a long time to startup.
+    -- Therefore, we check for available of toolkits in parallel.
+    -- TODO: benchmark. Is this overkill?
+    maybeToolkits <- withPool (length toolkits) $ 
+        \pool -> parallel pool (maybeToolkit <$> toolkits)
+    return $ catMaybes maybeToolkits
+    where
+        maybeToolkit tk = do
+            available <- toolkitAvailable tk conf
+            if available
+                then return $ Just tk
+                else return Nothing
 
+    
 -- | List of toolkits not available on this machine.
 -- The executables to look for are taken from the configuration.
 unavailableToolkits :: Configuration -> IO [Toolkit]
