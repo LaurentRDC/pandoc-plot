@@ -37,7 +37,8 @@ import           System.IO.Temp                   (getCanonicalTemporaryDirector
 testFileCreation :: Toolkit -> TestTree
 testFileCreation tk =
     testCase "writes output files in appropriate directory" $ do
-        tempDir <- (</> "test-file-creation-" <> show tk) <$> getCanonicalTemporaryDirectory
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-file-creation-" <> postfix) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
@@ -50,7 +51,8 @@ testFileCreation tk =
 testFileInclusion :: Toolkit -> TestTree
 testFileInclusion tk =
     testCase "includes plot inclusions" $ do
-        tempDir <- (</> "test-file-inclusion-" <> show tk) <$> getCanonicalTemporaryDirectory
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-file-inclusion-" <> postfix) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addInclusion (include tk) $
@@ -74,7 +76,8 @@ testFileInclusion tk =
 testSaveFormat :: Toolkit -> TestTree
 testSaveFormat tk =
     testCase "saves in the appropriate format" $ do
-        tempDir <- (</> "test-safe-format-" <> show tk) <$> getCanonicalTemporaryDirectory
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-safe-format-" <> postfix) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
         let fmt = head (supportedSaveFormats tk)
             cb = (addSaveFormat fmt $
@@ -90,7 +93,8 @@ testSaveFormat tk =
 testWithSource :: Toolkit -> TestTree
 testWithSource tk =
     testCase "appropriately omits links to source code" $ do
-        tempDir <- (</> "test-caption-links-" <> show tk) <$> getCanonicalTemporaryDirectory
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-caption-links-" <> postfix) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let expected = "caption content"
@@ -106,7 +110,8 @@ testWithSource tk =
         blockWithSource <- (make tk) def withSource
 
         -- In the case where source=false, the caption is used verbatim.
-        -- This is what this test is checking.
+        -- Otherwise, links will be appended to the caption; hence, the caption
+        -- is no longer equal to the initial value
         assertEqual    "" (B.toList $ fromString expected) (extractCaption blockNoSource)
         assertNotEqual "" (B.toList $ fromString expected) (extractCaption blockWithSource)
 
