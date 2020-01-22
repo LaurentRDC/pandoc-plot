@@ -31,8 +31,16 @@ matlabCommand :: Configuration -> FigureSpec -> FilePath -> Text
 matlabCommand Configuration{..} _ fp = [st|#{matlabExe} -batch "run('#{fp}')"|]
 
 
+-- On Windows at least, "matlab -help"  actually returns -1, even though the
+-- help text is shown successfully!
+-- Therefore, we cannot rely on this behavior to know if matlab is present, 
+-- like other toolkits.
 matlabAvailable :: Configuration -> IO Bool
-matlabAvailable Configuration{..} = commandSuccess [st|#{matlabExe} -h|]
+matlabAvailable Configuration{..} = existsOnPath (matlabExe <> ext)
+    where
+        -- The @which@ function from Turtle only works on
+        -- windows if the executable extension is included.
+        ext = if isWindows then ".exe" else mempty
 
 
 matlabCapture :: FigureSpec -> FilePath -> Script

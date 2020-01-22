@@ -18,8 +18,10 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , st
     , unpack
     , commandSuccess
+    , existsOnPath
 ) where
 
+import           Data.Maybe                    (isJust)
 import           Data.Text                     (Text, unpack)
 import           System.Exit                   (ExitCode(..))
 import           System.Process.Typed          (runProcess, shell, 
@@ -27,6 +29,7 @@ import           System.Process.Typed          (runProcess, shell,
                                                 nullStream)
 import           Text.Shakespeare.Text         (st)
 
+import qualified Turtle                         as Sh
 
 import           Text.Pandoc.Filter.Plot.Types
 
@@ -40,3 +43,8 @@ commandSuccess s = do
             $ setStderr nullStream 
             $ shell (unpack s)
     return $ ec == ExitSuccess
+
+
+-- | Checks that an executable is available on path, at all.
+existsOnPath :: FilePath -> IO Bool
+existsOnPath fp = Sh.which (Sh.fromString fp) >>= fmap isJust . return
