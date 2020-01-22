@@ -45,7 +45,7 @@ import           Data.Yaml
 import           GHC.Generics           (Generic)
 import           System.Info            (os)
 
-import           Text.Pandoc.Definition (Attr)
+import           Text.Pandoc.Definition (Attr, Format)
 
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
@@ -85,8 +85,9 @@ cls GNUPlot      = "gnuplot"
 type PlotM a = ReaderT PlotEnv IO a
 
 data PlotEnv
-    = PlotEnv { toolkit :: !Toolkit
-              , config  :: !Configuration
+    = PlotEnv { toolkit   :: !Toolkit
+              , config    :: !Configuration
+              , docformat :: !Format
               }
 
 data Configuration = Configuration

@@ -57,6 +57,8 @@ module Text.Pandoc.Filter.Plot (
 import           Control.Monad.IO.Class           (liftIO)
 import           Control.Monad.Reader             (runReaderT)
 
+import           Data.Maybe                       (fromMaybe)
+
 import           System.IO                        (hPutStrLn, stderr)
 
 import           Text.Pandoc.Definition
@@ -68,15 +70,25 @@ import           Text.Pandoc.Filter.Plot.Internal
 -- | Highest-level function that can be walked over a Pandoc tree.
 -- All code blocks that have the @.plot@ / @.plotly@ class will be considered
 -- figures.
-makePlot :: Configuration -> Block -> IO Block
-makePlot conf block = 
-    maybe (return block) (\tk -> make tk conf block) (plotToolkit block)
+--
+-- The target document format determines how the figure captions should be parsed.
+-- By default (i.e. if Nothing), captions will be parsed as Markdown with LaTeX math @$...$@,
+makePlot :: Configuration -- ^ Configuration for default values
+         -> Maybe Format  -- ^ Target document format
+         -> Block 
+         -> IO Block
+makePlot conf mfmt block = 
+    let fmt = fromMaybe (Format "markdown+tex_math_dollars") mfmt
+    in maybe (return block) (\tk -> make tk conf fmt block) (plotToolkit block)
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
 -- into figures. Default configuration is used.
-plotTransform :: Configuration -> Pandoc -> IO Pandoc
-plotTransform = walkM . makePlot
+plotTransform :: Configuration -- ^ Configuration for default values
+              -> Maybe Format  -- ^ Target document format
+              -> Pandoc 
+              -> IO Pandoc
+plotTransform conf mfmt = walkM $ makePlot conf mfmt
 
 
 -- | Force to use a particular toolkit to render appropriate code blocks.
@@ -84,8 +96,12 @@ plotTransform = walkM . makePlot
 -- Failing to render a figure does not stop the filter, so that you may run the filter
 -- on documents without having all necessary toolkits installed. In this case, error
 -- messages are printed to stderr, and blocks are left unchanged.
-make :: Toolkit -> Configuration -> Block -> IO Block
-make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
+make :: Toolkit 
+     -> Configuration -- ^ Configuration for default values
+     -> Format        -- ^ Target document format
+     -> Block 
+     -> IO Block
+make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf fmt)
     where
         makePlot' :: Block -> PlotM Block
         makePlot' blk 
@@ -102,7 +118,6 @@ make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
                     liftIO $ hPutStrLn stderr $ "pandoc-plot: The script failed with exit code " <> show code 
                     return blk
                 
-
 
 -- | Possible errors returned by the filter
 data PandocPlotError
