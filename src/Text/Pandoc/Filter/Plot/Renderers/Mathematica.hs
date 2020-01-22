@@ -36,5 +36,5 @@ mathematicaAvailable Configuration{..} = commandSuccess [st|#{mathematicaExe} -h
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script
 mathematicaCapture FigureSpec{..} fname = [st|
-Export["#{fname}", %, show saveFormat]
+Export["#{fname}", %, #{show saveFormat}]
 |]
