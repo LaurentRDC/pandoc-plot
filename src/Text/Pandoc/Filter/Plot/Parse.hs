@@ -39,13 +39,11 @@ import           Paths_pandoc_plot                 (version)
 import           System.FilePath                   (makeValid)
 
 import           Text.Pandoc.Definition            (Block (..), Inline,
-                                                    Pandoc (..))
+                                                    Pandoc (..), Format(..))
 
 import           Text.Pandoc.Class                 (runPure)
-import           Text.Pandoc.Extensions            (Extension (..),
-                                                    extensionsFromList)
 import           Text.Pandoc.Options               (ReaderOptions (..))
-import           Text.Pandoc.Readers               (readMarkdown)
+import           Text.Pandoc.Readers               (getReader, Reader(..))
 
 import           Text.Pandoc.Filter.Plot.Renderers
 import           Text.Pandoc.Filter.Plot.Types
@@ -111,26 +109,16 @@ plotToolkit (CodeBlock (_, classes, _) _) =
 plotToolkit _ = Nothing
 
 
--- | Reader options for captions.
-readerOptions :: ReaderOptions
-readerOptions = def
-    {readerExtensions =
-        extensionsFromList
-            [ Ext_tex_math_dollars
-            , Ext_superscript
-            , Ext_subscript
-            , Ext_raw_tex
-            ]
-    }
-
-
--- | Read a figure caption in Markdown format. LaTeX math @$...$@ is supported,
--- as are Markdown subscripts and superscripts.
-captionReader :: Text -> Maybe [Inline]
-captionReader t = either (const Nothing) (Just . extractFromBlocks) $ runPure $ readMarkdown' t
+-- | Reader a caption, based on input document format
+captionReader :: Format -> Text -> Maybe [Inline]
+captionReader (Format f) t = either (const Nothing) (Just . extractFromBlocks) $ runPure $ do
+    (reader, exts) <- getReader f
+    let readerOpts = def {readerExtensions = exts}
+    -- Assuming no ByteString readers...
+    case reader of
+        TextReader fct -> fct readerOpts t
+        _              -> return mempty
     where
-        readMarkdown' = readMarkdown readerOptions
-
         extractFromBlocks (Pandoc _ blocks) = mconcat $ extractInlines <$> blocks
 
         extractInlines (Plain inlines)          = inlines

@@ -45,7 +45,7 @@ import           Data.Yaml
 import           GHC.Generics           (Generic)
 import           System.Info            (os)
 
-import           Text.Pandoc.Definition (Attr, Format)
+import           Text.Pandoc.Definition (Attr)
 
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
@@ -87,7 +87,6 @@ type PlotM a = ReaderT PlotEnv IO a
 data PlotEnv
     = PlotEnv { toolkit   :: !Toolkit
               , config    :: !Configuration
-              , docformat :: !Format
               }
 
 data Configuration = Configuration

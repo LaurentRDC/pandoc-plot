@@ -74,7 +74,7 @@ import           Text.Pandoc.Filter.Plot.Internal
 -- The target document format determines how the figure captions should be parsed.
 -- By default (i.e. if Nothing), captions will be parsed as Markdown with LaTeX math @$...$@,
 makePlot :: Configuration -- ^ Configuration for default values
-         -> Maybe Format  -- ^ Target document format
+         -> Maybe Format  -- ^ Input document format
          -> Block 
          -> IO Block
 makePlot conf mfmt block = 
@@ -85,7 +85,7 @@ makePlot conf mfmt block =
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
 -- into figures. Default configuration is used.
 plotTransform :: Configuration -- ^ Configuration for default values
-              -> Maybe Format  -- ^ Target document format
+              -> Maybe Format  -- ^ Input document format
               -> Pandoc 
               -> IO Pandoc
 plotTransform conf mfmt = walkM $ makePlot conf mfmt
@@ -98,10 +98,10 @@ plotTransform conf mfmt = walkM $ makePlot conf mfmt
 -- messages are printed to stderr, and blocks are left unchanged.
 make :: Toolkit 
      -> Configuration -- ^ Configuration for default values
-     -> Format        -- ^ Target document format
+     -> Format        -- ^ Input document format
      -> Block 
      -> IO Block
-make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf fmt)
+make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf)
     where
         makePlot' :: Block -> PlotM Block
         makePlot' blk 
@@ -110,7 +110,7 @@ make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf fmt)
                     (return blk) 
                     (\s -> runScriptIfNecessary s >>= handleResult s)
             where
-                handleResult spec ScriptSuccess         = return $ toImage spec
+                handleResult spec ScriptSuccess         = return $ toImage fmt spec
                 handleResult _ (ScriptChecksFailed msg) = do
                     liftIO $ hPutStrLn stderr $ "pandoc-plot: The script check failed with message: " <> msg 
                     return blk

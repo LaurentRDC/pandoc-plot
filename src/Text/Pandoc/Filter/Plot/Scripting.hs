@@ -38,7 +38,7 @@ import           System.Process.Typed              (runProcess, shell, setStdout
 
 import           Text.Pandoc.Builder               (fromList, imageWith, link,
                                                     para, toList)
-import           Text.Pandoc.Definition            (Block (..))
+import           Text.Pandoc.Definition            (Block (..), Format)
 
 import           Text.Pandoc.Filter.Plot.Parse     (captionReader)
 import           Text.Pandoc.Filter.Plot.Renderers
@@ -105,8 +105,10 @@ runTempScript spec@FigureSpec{..} = do
 -- | Convert a @FigureSpec@ to a Pandoc block component.
 -- Note that the script to generate figure files must still
 -- be run in another function.
-toImage :: FigureSpec -> Block
-toImage spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig:" caption'
+toImage :: Format       -- ^ text format of the caption
+        -> FigureSpec 
+        -> Block
+toImage fmt spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig:" caption'
     -- To render images as figures with captions, the target title
     -- must be "fig:"
     -- Janky? yes
@@ -115,7 +117,7 @@ toImage spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig:" c
         target'      = figurePath spec
         withSource'  = withSource spec
         srcLink      = link (T.pack $ replaceExtension target' ".txt") mempty "Source code"
-        captionText  = fromList $ fromMaybe mempty (captionReader $ caption spec)
+        captionText  = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
         captionLinks = mconcat [" (", srcLink, ")"]
         caption'     = if withSource' then captionText <> captionLinks else captionText
 
