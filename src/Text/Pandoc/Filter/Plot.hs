@@ -54,7 +54,10 @@ module Text.Pandoc.Filter.Plot (
     , unavailableToolkits
     ) where
 
+import           Control.Monad.IO.Class           (liftIO)
 import           Control.Monad.Reader             (runReaderT)
+
+import           System.IO                        (hPutStrLn, stderr)
 
 import           Text.Pandoc.Definition
 import           Text.Pandoc.Walk                 (walkM)
@@ -77,21 +80,28 @@ plotTransform = walkM . makePlot
 
 
 -- | Force to use a particular toolkit to render appropriate code blocks.
+--
+-- Failing to render a figure does not stop the filter, so that you may run the filter
+-- on documents without having all necessary toolkits installed. In this case, error
+-- messages are printed to stderr, and blocks are left unchanged.
 make :: Toolkit -> Configuration -> Block -> IO Block
-make tk conf block = do
-    let runEnv = PlotEnv tk conf
-    runReaderT (makePlot' block >>= either (fail . show) return) runEnv
+make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
     where
-        makePlot' blk = do
-            parsed <- parseFigureSpec blk
-            maybe
-                (return $ Right blk)
-                (\s -> handleResult s <$> runScriptIfNecessary s)
-                parsed
+        makePlot' :: Block -> PlotM Block
+        makePlot' blk 
+            = parseFigureSpec blk 
+            >>= maybe 
+                    (return blk) 
+                    (\s -> runScriptIfNecessary s >>= handleResult s)
             where
-                handleResult _ (ScriptChecksFailed msg) = Left  $ ScriptChecksFailedError msg
-                handleResult _ (ScriptFailure cmd code) = Left  $ ScriptError cmd code
-                handleResult spec ScriptSuccess         = Right $ toImage spec
+                handleResult spec ScriptSuccess         = return $ toImage spec
+                handleResult _ (ScriptChecksFailed msg) = do
+                    liftIO $ hPutStrLn stderr $ "pandoc-plot: The script check failed with message: " <> msg 
+                    return blk
+                handleResult _ (ScriptFailure _ code) = do
+                    liftIO $ hPutStrLn stderr $ "pandoc-plot: The script failed with exit code " <> show code 
+                    return blk
+                
 
 
 -- | Possible errors returned by the filter
