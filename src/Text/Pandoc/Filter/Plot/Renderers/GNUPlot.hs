@@ -37,5 +37,5 @@ gnuplotAvailable Configuration{..} = commandSuccess [st|#{gnuplotExe} -h|] -- TO
 gnuplotCapture :: FigureSpec -> FilePath -> Script
 gnuplotCapture FigureSpec{..} fname = [st|
 set term png
-set output #{fname}
+set output '#{fname}'
 |]
