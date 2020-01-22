@@ -84,7 +84,12 @@ runTempScript spec@FigureSpec{..} = do
             -- so that there is never any collision
             scriptPath <- tempScriptPath spec
             let captureFragment = (capture tk) spec (figurePath spec)
-                scriptWithCapture = mconcat [script, "\n", captureFragment]
+                -- Note: for gnuplot, the capture string must be placed
+                --       BEFORE plotting happens. Since this is only really an
+                --       issue for gnuplot, we have a special case.
+                scriptWithCapture = if (tk == GNUPlot)
+                                        then mconcat [captureFragment, "\n", script]
+                                        else mconcat [script, "\n", captureFragment]
             liftIO $ T.writeFile scriptPath scriptWithCapture
             let command_ = T.unpack $ command tk conf spec scriptPath
 

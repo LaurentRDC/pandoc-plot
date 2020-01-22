@@ -58,6 +58,7 @@ data Toolkit
     | Mathematica
     | Octave
     | GGPlot2
+    | GNUPlot
     deriving (Bounded, Eq, Enum, Generic)
 
 -- | This instance should only be used to display toolkit names
@@ -68,6 +69,7 @@ instance Show Toolkit where
     show Mathematica  = "Mathematica"
     show Octave       = "GNU Octave"
     show GGPlot2      = "ggplot2"
+    show GNUPlot      = "gnuplot"
 
 -- | Class name which will trigger the filter
 cls :: Toolkit -> Text
@@ -77,6 +79,7 @@ cls PlotlyPython = "plotly_python"
 cls Mathematica  = "mathplot"
 cls Octave       = "octaveplot"
 cls GGPlot2      = "ggplot2"
+cls GNUPlot      = "gnuplot"
 
 
 type PlotM a = ReaderT PlotEnv IO a
@@ -98,6 +101,7 @@ data Configuration = Configuration
     , mathematicaPreamble   :: !Script
     , octavePreamble        :: !Script
     , ggplot2Preamble       :: !Script
+    , gnuplotPreamble       :: !Script
     -- Toolkit executables
     , matplotlibExe         :: !FilePath
     , matlabExe             :: !FilePath
@@ -105,6 +109,7 @@ data Configuration = Configuration
     , mathematicaExe        :: !FilePath
     , octaveExe             :: !FilePath
     , ggplot2Exe            :: !FilePath
+    , gnuplotExe            :: !FilePath
     -- Toolkit-specific options
     , matplotlibTightBBox   :: !Bool
     , matplotlibTransparent :: !Bool
@@ -123,6 +128,7 @@ instance Default Configuration where
           , mathematicaPreamble = mempty
           , octavePreamble      = mempty
           , ggplot2Preamble     = mempty
+          , gnuplotPreamble     = mempty
           -- Toolkit executables
           -- Default values are executable names as if on the PATH
           , matplotlibExe       = if isWindows then "python" else "python3"
@@ -131,6 +137,7 @@ instance Default Configuration where
           , mathematicaExe      = "math"
           , octaveExe           = "octave"
           , ggplot2Exe          = "Rscript"
+          , gnuplotExe          = "gnuplot"
           -- Toolkit-specific
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False
@@ -176,6 +183,8 @@ data InclusionKey
     | OctaveExecutableK
     | GGPlot2PreambleK
     | GGPlot2ExecutableK
+    | GNUPlotPreambleK
+    | GNUPlotExecutableK
     deriving (Bounded, Eq, Enum)
 
 -- | Keys that pandoc-plot will look for in code blocks.
@@ -196,12 +205,14 @@ instance Show InclusionKey where
     show MathematicaPreambleK   = show PreambleK
     show OctavePreambleK        = show PreambleK
     show GGPlot2PreambleK       = show PreambleK
+    show GNUPlotPreambleK       = show PreambleK
     show MatplotlibExecutableK  = show ExecutableK
     show MatlabExecutableK      = show ExecutableK
     show PlotlyPythonExecutableK = show ExecutableK
     show MathematicaExecutableK = show ExecutableK
     show OctaveExecutableK      = show ExecutableK
     show GGPlot2ExecutableK     = show ExecutableK
+    show GNUPlotExecutableK     = show ExecutableK
 
 
 -- | List of all keys related to pandoc-plot that

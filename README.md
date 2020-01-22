@@ -57,6 +57,7 @@ pandoc --filter pandoc-plot input.md --output output.html
 * `mathplot` : plots using [Mathematica](https://www.wolfram.com/mathematica/);
 * `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
 * `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
+* `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
 
 
 To know which toolkits are useable on *your machine* (and which ones are not available), you can check with the `--toolkits/-t` flag:
@@ -64,13 +65,6 @@ To know which toolkits are useable on *your machine* (and which ones are not ava
 ```bash
 pandoc-plot --toolkits
 ```
-
-### In progress
-
-Support for the following plotting toolkits is coming:
-
-* [gnuplot](http://www.gnuplot.info/)
-* [Plotly R](https://plot.ly/r/)
 
 **Wish your plotting toolkit of choice was available? Please [raise an issue](https://github.com/LaurentRDC/pandoc-plot/issues)!**
 

@@ -66,6 +66,7 @@ testFileInclusion tk =
         include Mathematica  = "tests/includes/mathplot.m"
         include Octave       = "tests/includes/octave.m"
         include GGPlot2      = "tests/includes/ggplot2.r"
+        include GNUPlot      = "tests/includes/gnuplot.gp"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -96,6 +97,7 @@ trivialContent Matlab       = "figure('visible', 'off')\n"
 trivialContent Mathematica  = "\n"
 trivialContent Octave       = "figure('visible', 'off')\nplot (-10:0.1:10);"
 trivialContent GGPlot2      = "library(ggplot2)\nggplot()\n"
+trivialContent GNUPlot      = "plot sin(x)"
 
 
 addCaption :: String -> Block -> Block
