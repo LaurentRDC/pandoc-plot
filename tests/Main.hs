@@ -39,6 +39,7 @@ toolkitSuite tk =
         , testFileInclusion
         , testSaveFormat
         , testWithSource
+        , testOverrideConfiguration
         ] <*> [tk]
 
 

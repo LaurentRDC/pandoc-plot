@@ -55,7 +55,7 @@ testFileInclusion tk =
         tempDir <- (</> "test-file-inclusion-" <> postfix) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
-        let cb = (addInclusion (include tk) $
+        let cb = (addPreamble (include tk) $
                     addDirectory tempDir $ codeBlock tk (trivialContent tk))
         _ <- (make tk) def cb
         inclusion <- readFile (include tk)
@@ -122,6 +122,41 @@ testWithSource tk =
         extractImageCaption (Image _ c _) = c
         extractImageCaption _             = mempty
 
+-------------------------------------------------------------------------------
+-- Test that parameters in code blocks will override the defaults in configuration
+testOverrideConfiguration :: Toolkit -> TestTree
+testOverrideConfiguration tk = 
+    -- We set the default save format to JPG via the configuration, 
+    -- but set the code block parameter to PNG.
+    -- Therefore, after the filter has been used, there should be one PNG file and
+    -- no JPG files.
+    testCase "code block attributes override configuration defaults" $ do
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-caption-links-" <> postfix) <$> getCanonicalTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        let config = (def::Configuration) { defaultDirectory = tempDir
+                                          , defaultSaveFormat = JPG}
+
+        -- Not all toolkits support both save formats
+        when (  JPG `elem` supportedSaveFormats tk 
+             && PNG `elem` supportedSaveFormats tk
+             ) $ do
+
+            let cb = addDirectory tempDir 
+                        $ addSaveFormat PNG
+                        $ codeBlock tk (trivialContent tk)
+            _ <- (make tk) config cb
+
+            numberPngFiles <-
+                length <$> filter (isExtensionOf (extension PNG)) <$>
+                listDirectory (defaultDirectory config)
+            numberJpgFiles <-
+                length <$> filter (isExtensionOf (extension JPG)) <$>
+                listDirectory (defaultDirectory config)
+            assertEqual "" numberPngFiles 1
+            assertEqual "" numberJpgFiles 0
+
 
 codeBlock :: Toolkit -> Script -> Block
 codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
@@ -147,8 +182,8 @@ addDirectory dir (CodeBlock (id', cls, attrs) script) =
     CodeBlock (id', cls, attrs ++ [(tshow DirectoryK, pack dir)]) script
 
 
-addInclusion :: FilePath -> Block -> Block
-addInclusion inclusionPath (CodeBlock (id', cls, attrs) script) =
+addPreamble :: FilePath -> Block -> Block
+addPreamble inclusionPath (CodeBlock (id', cls, attrs) script) =
     CodeBlock (id', cls, attrs ++ [(tshow PreambleK, pack inclusionPath)]) script
 
 
