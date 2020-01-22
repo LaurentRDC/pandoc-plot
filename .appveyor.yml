@@ -45,6 +45,16 @@ before_test:
 - curl -sS -ostack.zip -L --insecure https://get.haskellstack.org/stable/windows-x86_64.zip
 - 7z x stack.zip stack.exe
 
+# Install GNU Octave
+- choco install --yes octave
+
+# Install gnuplot
+- choco install --yes gnuplot
+
+# Refresh environment to be able to use the choco-installed binaries
+# This must be done before conda is added to path
+- refreshenv
+
 # Miniconda is preinstalled on Appveyor images
 # https://www.appveyor.com/docs/windows-images-software/#python
 - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
@@ -59,12 +69,6 @@ before_test:
 # https://plot.ly/python/static-image-export/
 - conda install --yes -c plotly plotly-orca psutil requests
 - conda install --yes plotly
-
-# Install GNU Octave
-- choco install --yes octave
-
-# Install gnuplot
-- choco install --yes gnuplot
 test_script:
 
 # Install toolchain, but do it silently due to lots of output
@@ -72,6 +76,4 @@ test_script:
 
 # The ugly echo "" hack is to avoid complaints about 0 being an invalid file
 # descriptor
-- refreshenv
-- activate testenv
 - echo "" | stack %ARGS% --no-terminal test --fast --ghc-options=-Werror
