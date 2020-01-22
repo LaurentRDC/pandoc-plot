@@ -1,10 +1,10 @@
 # pandoc-plot 
 
-## A Pandoc filter to generate figures from code blocks in documents using your plotting toolkit of choice
+## A Pandoc filter to generate figures from code blocks in documents
 
 [![Hackage version](https://img.shields.io/hackage/v/pandoc-plot.svg)](http://hackage.haskell.org/package/pandoc-plot) [![Build status](https://ci.appveyor.com/api/projects/status/mmgiuk52j356e6jp?svg=true)](https://ci.appveyor.com/project/LaurentRDC/pandoc-plot) [![Build Status](https://dev.azure.com/laurentdecotret/pandoc-plot/_apis/build/status/LaurentRDC.pandoc-plot?branchName=master)](https://dev.azure.com/laurentdecotret/pandoc-plot/_build/latest?definitionId=5&branchName=master) ![GitHub](https://img.shields.io/github/license/LaurentRDC/pandoc-plot)
 
-`pandoc-plot` turns code blocks present in your documents into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
+`pandoc-plot` turns code blocks present in your documents (Markdown, LaTeX, etc.) into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
 
 ## Table of content
 
