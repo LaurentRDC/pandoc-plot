@@ -9,6 +9,7 @@ import           Control.Monad.Reader
 import           Data.Default.Class               (def)
 import           Data.List                        (isInfixOf, isSuffixOf)
 import           Data.Monoid                      ((<>))
+import           Data.String                      (fromString)
 import           Data.Text                        (Text, pack, unpack)
 
 import           Test.Tasty
@@ -36,7 +37,7 @@ import           System.IO.Temp                   (getCanonicalTemporaryDirector
 testFileCreation :: Toolkit -> TestTree
 testFileCreation tk =
     testCase "writes output files in appropriate directory" $ do
-        tempDir <- (</> "test-file-creation") <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-file-creation-" <> show tk) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
@@ -49,7 +50,7 @@ testFileCreation tk =
 testFileInclusion :: Toolkit -> TestTree
 testFileInclusion tk =
     testCase "includes plot inclusions" $ do
-        tempDir <- (</> "test-file-inclusion") <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-file-inclusion-" <> show tk) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addInclusion (include tk) $
@@ -73,7 +74,7 @@ testFileInclusion tk =
 testSaveFormat :: Toolkit -> TestTree
 testSaveFormat tk =
     testCase "saves in the appropriate format" $ do
-        tempDir <- (</> "test-safe-format") <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-safe-format-" <> show tk) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
         let fmt = head (supportedSaveFormats tk)
             cb = (addSaveFormat fmt $
@@ -84,6 +85,37 @@ testSaveFormat tk =
             listDirectory tempDir
         assertEqual "" numberjpgFiles 1
 
+-------------------------------------------------------------------------------
+-- Test that it is possible to not render source links in captions
+testWithSource :: Toolkit -> TestTree
+testWithSource tk =
+    testCase "appropriately omits links to source code" $ do
+        tempDir <- (</> "test-caption-links-" <> show tk) <$> getCanonicalTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        let expected = "caption content"
+            noSource = addWithSource False 
+                      $ addDirectory tempDir 
+                      $ addCaption expected 
+                      $ codeBlock tk (trivialContent tk)
+            withSource = addWithSource True 
+                      $ addDirectory tempDir 
+                      $ addCaption expected 
+                      $ codeBlock tk (trivialContent tk)
+        blockNoSource   <- (make tk) def noSource
+        blockWithSource <- (make tk) def withSource
+
+        -- In the case where source=false, the caption is used verbatim.
+        -- This is what this test is checking.
+        assertEqual    "" (B.toList $ fromString expected) (extractCaption blockNoSource)
+        assertNotEqual "" (B.toList $ fromString expected) (extractCaption blockWithSource)
+
+    where
+        extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
+        extractCaption _               = mempty
+
+        extractImageCaption (Image _ c _) = c
+        extractImageCaption _             = mempty
 
 
 codeBlock :: Toolkit -> Script -> Block
@@ -137,6 +169,13 @@ assertFileExists filepath = do
     unless fileExists (assertFailure msg)
   where
     msg = mconcat ["File ", filepath, " does not exist."]
+
+
+-- | Assert not equal
+assertNotEqual :: (HasCallStack, Eq a, Show a) => String -> a -> a -> Assertion
+assertNotEqual msg expected actual = 
+    unless (expected /= actual) 
+        (assertFailure $ mconcat [msg, ": expected ", show expected, " but got ", show actual])
 
 
 -- | Not available with GHC < 8.4

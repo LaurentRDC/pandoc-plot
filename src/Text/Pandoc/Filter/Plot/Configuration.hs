@@ -98,34 +98,34 @@ instance Default GNUPlotPrecursor       where def = GNUPlotPrecursor      Nothin
 instance FromJSON MatplotlibPrecursor where
     parseJSON (Object v) = 
         MatplotlibPrecursor
-            <$> v .:? (tshow MatplotlibPreambleK)
+            <$> v .:? (tshow PreambleK)
             <*> v .:? (tshow MatplotlibTightBBoxK)   .!= (matplotlibTightBBox def) 
             <*> v .:? (tshow MatplotlibTransparentK) .!= (matplotlibTransparent def)
-            <*> v .:? (tshow MatplotlibExecutableK)  .!= (matplotlibExe def)
+            <*> v .:? (tshow ExecutableK)  .!= (matplotlibExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Matplotlib, " configuration."]
 
 instance FromJSON MatlabPrecursor where
-    parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow MatlabPreambleK) <*> v .:? (tshow MatlabExecutableK) .!= (matlabExe def)
+    parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (matlabExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Matlab, " configuration."]
 
 instance FromJSON PlotlyPythonPrecursor where
-    parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PlotlyPythonPreambleK) <*> v .:? (tshow PlotlyPythonExecutableK) .!= (plotlyPythonExe def)
+    parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyPythonExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyPython, " configuration."]
 
 instance FromJSON MathematicaPrecursor where
-    parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow MathematicaPreambleK) <*> v .:? (tshow MathematicaExecutableK) .!= (mathematicaExe def)
+    parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (mathematicaExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Mathematica, " configuration."]
 
 instance FromJSON OctavePrecursor where
-    parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow OctavePreambleK) <*> v .:? (tshow OctaveExecutableK) .!= (octaveExe def)
+    parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (octaveExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Octave, " configuration."]
 
 instance FromJSON GGPlot2Precursor where
-    parseJSON (Object v) = GGPlot2Precursor <$> v .:? (tshow GGPlot2PreambleK) <*> v .:? (tshow GGPlot2ExecutableK) .!= (ggplot2Exe def)
+    parseJSON (Object v) = GGPlot2Precursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (ggplot2Exe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show GGPlot2, " configuration."]
 
 instance FromJSON GNUPlotPrecursor where
-    parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow GNUPlotPreambleK) <*> v .:? (tshow GNUPlotExecutableK) .!= (ggplot2Exe def)
+    parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (ggplot2Exe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show GNUPlot, " configuration."]
 
 

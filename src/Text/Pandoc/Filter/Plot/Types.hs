@@ -171,20 +171,6 @@ data InclusionKey
     | ExecutableK
     | MatplotlibTightBBoxK
     | MatplotlibTransparentK
-    | MatplotlibPreambleK
-    | MatplotlibExecutableK
-    | PlotlyPythonPreambleK
-    | PlotlyPythonExecutableK
-    | MatlabPreambleK
-    | MatlabExecutableK
-    | MathematicaPreambleK
-    | MathematicaExecutableK
-    | OctavePreambleK
-    | OctaveExecutableK
-    | GGPlot2PreambleK
-    | GGPlot2ExecutableK
-    | GNUPlotPreambleK
-    | GNUPlotExecutableK
     deriving (Bounded, Eq, Enum)
 
 -- | Keys that pandoc-plot will look for in code blocks.
@@ -199,20 +185,6 @@ instance Show InclusionKey where
     show ExecutableK            = "executable"
     show MatplotlibTightBBoxK   = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
-    show MatplotlibPreambleK    = show PreambleK
-    show PlotlyPythonPreambleK  = show PreambleK
-    show MatlabPreambleK        = show PreambleK
-    show MathematicaPreambleK   = show PreambleK
-    show OctavePreambleK        = show PreambleK
-    show GGPlot2PreambleK       = show PreambleK
-    show GNUPlotPreambleK       = show PreambleK
-    show MatplotlibExecutableK  = show ExecutableK
-    show MatlabExecutableK      = show ExecutableK
-    show PlotlyPythonExecutableK = show ExecutableK
-    show MathematicaExecutableK = show ExecutableK
-    show OctaveExecutableK      = show ExecutableK
-    show GGPlot2ExecutableK     = show ExecutableK
-    show GNUPlotExecutableK     = show ExecutableK
 
 
 -- | List of all keys related to pandoc-plot that

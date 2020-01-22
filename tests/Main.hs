@@ -38,6 +38,7 @@ toolkitSuite tk =
         [ testFileCreation
         , testFileInclusion
         , testSaveFormat
+        , testWithSource
         ] <*> [tk]
 
 
