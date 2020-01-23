@@ -159,6 +159,31 @@ testOverrideConfiguration tk =
             assertEqual "" numberPngFiles 1
             assertEqual "" numberJpgFiles 0
 
+-------------------------------------------------------------------------------
+-- Test that Markdown formatting in captions is correctly rendered
+testMarkdownFormattingCaption :: Toolkit -> TestTree
+testMarkdownFormattingCaption tk =
+    testCase "appropriately parses captions" $ do
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-caption-parsing-" <> postfix) <$> getCanonicalTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        -- Note that this test is fragile, in the sense that the expected result must be carefully
+        -- constructed
+        let expected = [B.Strong [B.Str "caption"]]
+            cb = addDirectory tempDir 
+                    $ addCaption "**caption**" 
+                    $ codeBlock tk (trivialContent tk)
+            fmt = B.Format "markdown+tex_math_dollars"
+        result <- (make tk) def fmt cb
+        assertIsInfix expected (extractCaption result)
+    where
+        extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
+        extractCaption _               = mempty
+
+        extractImageCaption (Image _ c _) = c
+        extractImageCaption _             = mempty
+
 
 codeBlock :: Toolkit -> Script -> Block
 codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
