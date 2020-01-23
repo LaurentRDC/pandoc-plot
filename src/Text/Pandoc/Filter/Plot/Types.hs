@@ -89,30 +89,32 @@ data PlotEnv
               , config    :: !Configuration
               }
 
+-- | The @Configuration@ type holds the default values to use
+-- when running pandoc-plot. These values can be overridden in code blocks.
 data Configuration = Configuration
     { defaultDirectory      :: !FilePath   -- ^ The default directory where figures will be saved.
     , defaultWithSource     :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , defaultDPI            :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
     -- Default preambles
-    , matplotlibPreamble    :: !Script
-    , plotlyPythonPreamble  :: !Script
-    , matlabPreamble        :: !Script
-    , mathematicaPreamble   :: !Script
-    , octavePreamble        :: !Script
-    , ggplot2Preamble       :: !Script
-    , gnuplotPreamble       :: !Script
+    , matplotlibPreamble    :: !Script     -- ^ The default preamble script for the matplotlib toolkit.
+    , plotlyPythonPreamble  :: !Script     -- ^ The default preamble script for the Plotly/Python toolkit.
+    , matlabPreamble        :: !Script     -- ^ The default preamble script for the MATLAB toolkit.
+    , mathematicaPreamble   :: !Script     -- ^ The default preamble script for the Mathematica toolkit.
+    , octavePreamble        :: !Script     -- ^ The default preamble script for the GNU Octave toolkit.
+    , ggplot2Preamble       :: !Script     -- ^ The default preamble script for the GGPlot2 toolkit.
+    , gnuplotPreamble       :: !Script     -- ^ The default preamble script for the gnuplot toolkit.
     -- Toolkit executables
-    , matplotlibExe         :: !FilePath
-    , matlabExe             :: !FilePath
-    , plotlyPythonExe       :: !FilePath
-    , mathematicaExe        :: !FilePath
-    , octaveExe             :: !FilePath
-    , ggplot2Exe            :: !FilePath
-    , gnuplotExe            :: !FilePath
+    , matplotlibExe         :: !FilePath   -- ^ The executable to use to generate figures using the matplotlib toolkit.
+    , matlabExe             :: !FilePath   -- ^ The executable to use to generate figures using the MATLAB toolkit.
+    , plotlyPythonExe       :: !FilePath   -- ^ The executable to use to generate figures using the Plotly/Python toolkit.
+    , mathematicaExe        :: !FilePath   -- ^ The executable to use to generate figures using the Mathematica toolkit.
+    , octaveExe             :: !FilePath   -- ^ The executable to use to generate figures using the GNU Octave toolkit.
+    , ggplot2Exe            :: !FilePath   -- ^ The executable to use to generate figures using the GGPlot2 toolkit.
+    , gnuplotExe            :: !FilePath   -- ^ The executable to use to generate figures using the gnuplot toolkit.
     -- Toolkit-specific options
-    , matplotlibTightBBox   :: !Bool
-    , matplotlibTransparent :: !Bool
+    , matplotlibTightBBox   :: !Bool       -- ^ Whether or not to make Matplotlib figures tight by default.
+    , matplotlibTransparent :: !Bool       -- ^ Whether or not to make Matplotlib figures transparent by default.
     } deriving (Eq, Show)
 
 instance Default Configuration where
@@ -211,8 +213,7 @@ data FigureSpec = FigureSpec
 instance Hashable FigureSpec -- From Generic
 
 -- | Generated figure file format supported by pandoc-plot.
--- Note: all formats are supported by Matplotlib, but not all
--- formats are supported by Plotly
+-- Note that not all formats are supported by all toolkits.
 data SaveFormat
     = PNG
     | PDF
@@ -227,7 +228,7 @@ data SaveFormat
 instance Hashable SaveFormat -- From Generic
 
 instance IsString SaveFormat where
-    -- An error is thrown if the save format cannot be parsed. That's OK
+    -- | An error is thrown if the save format cannot be parsed. That's OK
     -- since pandoc-plot is a command-line tool and isn't expected to run
     -- long.
     fromString s

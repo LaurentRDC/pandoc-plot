@@ -15,14 +15,15 @@ that can be used to walk over a Pandoc document and generate figures from
 code blocks using a multitude of plotting toolkits.
 
 The syntax for code blocks is simple, Code blocks with the appropriate class
-attribute will trigger the filter. For example:
+attribute will trigger the filter:
 
-*   @.matplotlib@ for matplotlib-based Python plots;
-*   @.plotly_python@ for Plotly-based Python plots;
-*   @.matlabplot@ for MATLAB plots;
-*   @.mathplot@ for Mathematica plots;
-*   @.octaveplot@ for GNU Octave plots;
-*   @.ggplot2@ for ggplot2-based R plots;
+*   @matplotlib@ for matplotlib-based Python plots;
+*   @plotly_python@ for Plotly-based Python plots;
+*   @matlabplot@ for MATLAB plots;
+*   @mathplot@ for Mathematica plots;
+*   @octaveplot@ for GNU Octave plots;
+*   @ggplot2@ for ggplot2-based R plots;
+*   @gnuplot@ for gnuplot plots;
 
 The code block will be reworked into a script and the output figure will be captured. Optionally, the source code
  used to generate the figure will be linked in the caption.
@@ -37,6 +38,17 @@ Here are the possible attributes what pandoc-plot understands for ALL toolkits:
     * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
 
 Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a YAML file.
+
+Here is an example code block which will render a figure using gnuplot, in Markdown:
+
+@
+    ```{.gnuplot format=png caption="Sinusoidal function"}
+    sin(x)
+
+    set xlabel "x"
+    set ylabel "y"
+    ```
+@
 -}
 module Text.Pandoc.Filter.Plot (
     -- * Operating on single Pandoc blocks
