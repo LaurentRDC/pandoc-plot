@@ -1,6 +1,4 @@
-{-# LANGUAGE MultiWayIf        #-}
 {-# LANGUAGE OverloadedStrings #-}
-
 {-|
 Module      : $header$
 Description : Pandoc filter to create figures from code blocks using your plotting toolkit of choice
