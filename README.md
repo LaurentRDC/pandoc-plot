@@ -47,6 +47,8 @@ Putting the above in `input.md`, we can then generate the plot and embed it in a
 pandoc --filter pandoc-plot input.md --output output.html
 ```
 
+*Note that pandoc-plot only works with pandoc >= 2.8 because of some breaking changes in pandoc's API.*
+
 ## Supported toolkits
 
 `pandoc-plot` currently supports the following plotting toolkits (**installed separately**):
