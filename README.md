@@ -79,7 +79,7 @@ You can also specify a caption for your image. This is done using the optional `
 __Markdown__:
 
 ~~~markdown
-```{.matlabplot caption="This is a simple figure"}
+```{.matlabplot caption="This is a simple figure with a **Markdown** caption"}
 x  = 0: .1 : 2*pi;
 y1 = cos(x);
 y2 = sin(x);
@@ -92,7 +92,7 @@ plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 __LaTex__:
 
 ```latex
-\begin{minted}[caption=This is a simple figure]{matlabplot}
+\begin{minted}[caption=This is a simple figure with a \LaTeX caption]{matlabplot}
 x  = 0: .1 : 2*pi;
 y1 = cos(x);
 y2 = sin(x);
@@ -102,7 +102,7 @@ plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 \end{minted}
 ```
 
-Caption formatting is either plain text or Markdown. LaTeX-style math is also support in captions (using dollar signs $...$).
+Caption formatting should match the document formatting.
 
 ### Link to source code
 
