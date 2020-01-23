@@ -23,7 +23,7 @@ module Text.Pandoc.Filter.Plot.Renderers.GNUPlot (
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 gnuplotSupportedSaveFormats :: [SaveFormat]
-gnuplotSupportedSaveFormats = [PNG] -- TODO: support more save formats
+gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]
 
 
 gnuplotCommand :: Configuration -> FigureSpec -> FilePath -> Text
@@ -31,11 +31,20 @@ gnuplotCommand Configuration{..} _ fp = [st|#{gnuplotExe} -c #{fp}|]
 
 
 gnuplotAvailable :: Configuration -> IO Bool
-gnuplotAvailable Configuration{..} = commandSuccess [st|#{gnuplotExe} -h|] -- TODO: test this
+gnuplotAvailable Configuration{..} = commandSuccess [st|#{gnuplotExe} -h|]
 
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script
 gnuplotCapture FigureSpec{..} fname = [st|
-set term png
+set terminal #{terminalString saveFormat}
 set output '#{fname}'
 |]
+    where
+        terminalString :: SaveFormat -> Text
+        terminalString PNG = "pngcairo"
+        terminalString SVG = "svg"
+        terminalString EPS = "postscript eps"
+        terminalString GIF = "gif"
+        terminalString JPG = "jpeg"
+        terminalString PDF = "pdfcairo"
+        terminalString fmt = error $ "gnuplot: unsupported save format" <> show fmt
