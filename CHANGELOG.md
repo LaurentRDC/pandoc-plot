@@ -8,6 +8,8 @@ Release 0.2.0.0
 * Added support for gnuplot.
 * Added more tests for all toolkits.
 
+* Fixed an issue where the package could not be installed because a source file was not included in the cabal file.
+
 Release 0.1.0.0
 ---------------
 
