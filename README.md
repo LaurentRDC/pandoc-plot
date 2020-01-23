@@ -237,6 +237,12 @@ octaveplot:
 ggplot2:
   preamble: ggplot2.r
   executable: Rscript
+
+# The possible parameters for the gnuplot toolkit
+gnuplot:
+  preamble: gnuplot.gp
+  executable: gnuplot
+
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.
