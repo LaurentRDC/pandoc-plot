@@ -32,8 +32,8 @@ Here are the possible attributes what pandoc-plot understands for ALL toolkits:
 
     * @directory=...@ : Directory where to save the figure.
     * @source=true|false@ : Whether or not to link the source code of this figure in the caption. Ideal for web pages, for example. Default is false.
-    * @format=...@: Format of the generated figure. This can be an extension or an acronym, e.g. @format=png@.
-    * @caption="..."@: Specify a plot caption (or alternate text). Captions support Markdown formatting and LaTeX math (@$...$@).
+    * @format=...@: Format of the generated figure. This can be an extension or an acronym, e.g. @format=PNG@.
+    * @caption="..."@: Specify a plot caption (or alternate text). Captions should be formatted in the same format as the document (e.g. Markdown captions in Markdown documents).
     * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.
     * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
 
