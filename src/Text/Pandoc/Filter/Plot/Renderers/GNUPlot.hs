@@ -39,12 +39,13 @@ gnuplotCapture FigureSpec{..} fname = [st|
 set terminal #{terminalString saveFormat}
 set output '#{fname}'
 |]
-    where
-        terminalString :: SaveFormat -> Text
-        terminalString PNG = "pngcairo"
-        terminalString SVG = "svg"
-        terminalString EPS = "postscript eps"
-        terminalString GIF = "gif"
-        terminalString JPG = "jpeg"
-        terminalString PDF = "pdfcairo"
-        terminalString fmt = error $ "gnuplot: unsupported save format" <> show fmt
+
+-- | Terminal name for supported save formats
+terminalString :: SaveFormat -> Text
+terminalString PNG = "pngcairo"
+terminalString SVG = "svg"
+terminalString EPS = "postscript eps"
+terminalString GIF = "gif"
+terminalString JPG = "jpeg"
+terminalString PDF = "pdfcairo"
+terminalString fmt = error $ "gnuplot: unsupported save format" <> show fmt
