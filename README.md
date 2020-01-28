@@ -274,13 +274,9 @@ matlabplot:
 
 ## Installation
 
-### Binaries
+### Binaries and Installers (Windows)
 
-*Coming soon*
-
-### Installers (Windows)
-
-*Coming soon*
+Windows binaries and installers are available on the [GitHub release page](https://github.com/LaurentRDC/pandoc-plot/releases).
 
 ### From Hackage/Stackage
 
