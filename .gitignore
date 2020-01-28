@@ -22,4 +22,5 @@ cabal.project.local~
 .ghc.environment.*
 
 examples/plots/
+examples/*.html
 stack.yaml.lock
