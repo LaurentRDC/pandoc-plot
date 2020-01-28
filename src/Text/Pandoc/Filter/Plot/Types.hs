@@ -96,7 +96,7 @@ data Configuration = Configuration
     , defaultWithSource     :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , defaultDPI            :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
-    -- Default preambles
+
     , matplotlibPreamble    :: !Script     -- ^ The default preamble script for the matplotlib toolkit.
     , plotlyPythonPreamble  :: !Script     -- ^ The default preamble script for the Plotly/Python toolkit.
     , matlabPreamble        :: !Script     -- ^ The default preamble script for the MATLAB toolkit.
@@ -104,7 +104,7 @@ data Configuration = Configuration
     , octavePreamble        :: !Script     -- ^ The default preamble script for the GNU Octave toolkit.
     , ggplot2Preamble       :: !Script     -- ^ The default preamble script for the GGPlot2 toolkit.
     , gnuplotPreamble       :: !Script     -- ^ The default preamble script for the gnuplot toolkit.
-    -- Toolkit executables
+    
     , matplotlibExe         :: !FilePath   -- ^ The executable to use to generate figures using the matplotlib toolkit.
     , matlabExe             :: !FilePath   -- ^ The executable to use to generate figures using the MATLAB toolkit.
     , plotlyPythonExe       :: !FilePath   -- ^ The executable to use to generate figures using the Plotly/Python toolkit.
@@ -112,7 +112,7 @@ data Configuration = Configuration
     , octaveExe             :: !FilePath   -- ^ The executable to use to generate figures using the GNU Octave toolkit.
     , ggplot2Exe            :: !FilePath   -- ^ The executable to use to generate figures using the GGPlot2 toolkit.
     , gnuplotExe            :: !FilePath   -- ^ The executable to use to generate figures using the gnuplot toolkit.
-    -- Toolkit-specific options
+    
     , matplotlibTightBBox   :: !Bool       -- ^ Whether or not to make Matplotlib figures tight by default.
     , matplotlibTransparent :: !Bool       -- ^ Whether or not to make Matplotlib figures transparent by default.
     } deriving (Eq, Show)
@@ -123,7 +123,7 @@ instance Default Configuration where
           , defaultWithSource = False
           , defaultDPI        = 80
           , defaultSaveFormat = PNG
-          -- toolkit-specific default preambles
+          
           , matplotlibPreamble  = mempty
           , plotlyPythonPreamble= mempty
           , matlabPreamble      = mempty
@@ -131,8 +131,7 @@ instance Default Configuration where
           , octavePreamble      = mempty
           , ggplot2Preamble     = mempty
           , gnuplotPreamble     = mempty
-          -- Toolkit executables
-          -- Default values are executable names as if on the PATH
+
           , matplotlibExe       = if isWindows then "python" else "python3"
           , matlabExe           = "matlab"
           , plotlyPythonExe     = if isWindows then "python" else "python3"
@@ -140,7 +139,7 @@ instance Default Configuration where
           , octaveExe           = "octave"
           , ggplot2Exe          = "Rscript"
           , gnuplotExe          = "gnuplot"
-          -- Toolkit-specific
+          
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False
           }
