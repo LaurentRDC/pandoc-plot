@@ -18,6 +18,7 @@
     * [Compatibility with pandoc-crossref](#compatibility-with-pandoc-crossref)
 * [Configuration](#configuration)
     * [Toolkit-specific options](#toolkit-specific-options)
+* [Usage as a Haskell library](#usage-as-a-haskell-library)
 * [Installation](#installation)
 * [Warning](#warning)
 
@@ -271,6 +272,33 @@ matlabplot:
 
 * `tight_bbox` is a boolean that determines whether to use `bbox_inches="tight"` or not when saving Matplotlib figures. For example, `tight_bbox: true`. See [here](https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html) for details.
 * `transparent` is a boolean that determines whether to make Matplotlib figure background transparent or not. This is useful, for example, for displaying a plot on top of a colored background on a web page. High-resolution figures are not affected. For example, `transparent: true`.
+
+## Usage as a Haskell library
+
+To include the functionality of `pandoc-plot` in a Haskell package, you can use the `makePlot` function (for single blocks) or `plotTransform` function (for entire documents). [Take a look at the documentation on Hackage](https://hackage.haskell.org/package/pandoc-pyplot).
+
+### Usage with Hakyll
+
+In case you want to use the filter with your own Hakyll setup, you can use a transform function that works on entire documents:
+
+```haskell
+import Text.Pandoc.Filter.Plot (plotTransform)
+
+import Data.Default (def) -- From data-default package, for default configuration
+import Hakyll
+
+-- Unsafe compiler is required because of the interaction
+-- in IO (i.e. running an external Python script).
+makePlotPandocCompiler :: Compiler (Item String)
+makePlotPandocCompiler = 
+  pandocCompilerWithTransformM
+    defaultHakyllReaderOptions
+    defaultHakyllWriterOptions
+    (unsafeCompiler . plotTransform def fmt)
+    where
+      config = def -- Default configuration
+      fmt = Just "markdown"
+```
 
 ## Installation
 
