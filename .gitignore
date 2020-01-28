@@ -24,3 +24,7 @@ cabal.project.local~
 examples/plots/
 examples/*.html
 stack.yaml.lock
+
+# Installer-related
+installer/setup*
+installer/*.exe
