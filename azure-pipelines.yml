@@ -20,6 +20,8 @@ trigger:
     - "*.md"
     - .appveyor.yml
     - example-config.yml
+    - build-setup.ps1
+    - installer/*
 
 jobs:
 - template: ./.azure/azure-linux-template.yml
