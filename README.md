@@ -288,7 +288,7 @@ import Data.Default (def) -- From data-default package, for default configuratio
 import Hakyll
 
 -- Unsafe compiler is required because of the interaction
--- in IO (i.e. running an external Python script).
+-- in IO (i.e. running an external script).
 makePlotPandocCompiler :: Compiler (Item String)
 makePlotPandocCompiler = 
   pandocCompilerWithTransformM
@@ -296,8 +296,8 @@ makePlotPandocCompiler =
     defaultHakyllWriterOptions
     (unsafeCompiler . plotTransform def fmt)
     where
-      config = def -- Default configuration
-      fmt = Just "markdown"
+      config = def              -- Default configuration
+      fmt    = Just "markdown"  -- Document format, including extensions
 ```
 
 ## Installation
