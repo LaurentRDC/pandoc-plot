@@ -275,7 +275,7 @@ matlabplot:
 
 ## Usage as a Haskell library
 
-To include the functionality of `pandoc-plot` in a Haskell package, you can use the `makePlot` function (for single blocks) or `plotTransform` function (for entire documents). [Take a look at the documentation on Hackage](https://hackage.haskell.org/package/pandoc-pyplot).
+To include the functionality of `pandoc-plot` in a Haskell package, you can use the `makePlot` function (for single blocks) or `plotTransform` function (for entire documents). [Take a look at the documentation on Hackage](https://hackage.haskell.org/package/pandoc-plot).
 
 ### Usage with Hakyll
 
