@@ -47,7 +47,7 @@ jobs:
 
   - task: DownloadPipelineArtifact@2
     inputs:
-      patterns: '**(.zip|.tar.gz)'
+      patterns: '**(.zip|.tar.xz)'
       path: $(Build.SourcesDirectory)/.azure-release
   
   - bash: ls $(Build.SourcesDirectory)/.azure-release
