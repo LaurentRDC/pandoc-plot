@@ -15,6 +15,7 @@ trigger:
   branches:
     include:
     - master
+    - release
   paths:
     exclude:
     - "*.md"
@@ -42,7 +43,7 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-    
+
   - bash: mkdir $(Build.SourcesDirectory)/.azure-release
     displayName: Create space for release artifacts
 
