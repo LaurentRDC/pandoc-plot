@@ -42,7 +42,8 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-  - step: mkdir $(Build.SourcesDirectory)/.azure-release
+    
+  - bash: mkdir $(Build.SourcesDirectory)/.azure-release
     displayName: Create space for release artifacts
 
   - task: DownloadPipelineArtifact@2
