@@ -44,13 +44,13 @@ jobs:
     vmImage: windows-latest
   steps:
 
-  - bash: mkdir $(Build.SourcesDirectory)/.azure-release
+  - bash: mkdir .azure-release
     displayName: Create space for release artifacts
 
   - task: DownloadPipelineArtifact@2
     inputs:
       patterns: '**(.zip|.tar.xz)'
-      path: $(Build.SourcesDirectory)/.azure-release
+      path: .azure-release
   
-  - bash: ls $(Build.SourcesDirectory)/.azure-release
+  - bash: ls .azure-release
     displayName: Examine resulting downloads
