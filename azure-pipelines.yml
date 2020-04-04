@@ -37,20 +37,20 @@ jobs:
    vmImage: windows-latest
    os: windows
   
-- job: Release
-  dependsOn: [Windows, Linux]
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-  pool:
-    vmImage: windows-latest
-  steps:
+# - job: Release
+#   dependsOn: [Windows, Linux]
+#   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+#   pool:
+#     vmImage: windows-latest
+#   steps:
 
-  - bash: mkdir .azure-release
-    displayName: Create space for release artifacts
+#   - bash: mkdir .azure-release
+#     displayName: Create space for release artifacts
 
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      patterns: '**(.zip|.tar.xz)'
-      path: .azure-release
+#   - task: DownloadPipelineArtifact@2
+#     inputs:
+#       patterns: '(*.zip)|(*.tar.xz)'
+#       path: .azure-release
   
-  - bash: ls .azure-release
-    displayName: Examine resulting downloads
+#   - bash: ls .azure-release
+#     displayName: Examine resulting downloads
