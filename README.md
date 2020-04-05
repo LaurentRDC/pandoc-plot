@@ -2,7 +2,7 @@
 
 ## A Pandoc filter to generate figures from code blocks in documents
 
-[![Hackage version](https://img.shields.io/hackage/v/pandoc-plot.svg)](http://hackage.haskell.org/package/pandoc-plot) [![Stackage version (nightly)](http://stackage.org/package/pandoc-plot/badge/nightly)](http://stackage.org/nightly/package/pandoc-plot) [![Build status](https://ci.appveyor.com/api/projects/status/mmgiuk52j356e6jp?svg=true)](https://ci.appveyor.com/project/LaurentRDC/pandoc-plot) [![Build Status](https://dev.azure.com/laurentdecotret/pandoc-plot/_apis/build/status/LaurentRDC.pandoc-plot?branchName=master)](https://dev.azure.com/laurentdecotret/pandoc-plot/_build/latest?definitionId=5&branchName=master) ![GitHub](https://img.shields.io/github/license/LaurentRDC/pandoc-plot)
+[![Hackage version](https://img.shields.io/hackage/v/pandoc-plot.svg)](http://hackage.haskell.org/package/pandoc-plot) [![Stackage version (nightly)](http://stackage.org/package/pandoc-plot/badge/nightly)](http://stackage.org/nightly/package/pandoc-plot) [![Build status](https://ci.appveyor.com/api/projects/status/mmgiuk52j356e6jp?svg=true)](https://ci.appveyor.com/project/LaurentRDC/pandoc-plot) [![Build Status](https://dev.azure.com/laurentdecotret/pandoc-plot/_apis/build/status/LaurentRDC.pandoc-plot?branchName=master)](https://dev.azure.com/laurentdecotret/pandoc-plot/_build/latest?definitionId=5&branchName=master) ![GitHub](https://img.shields.io/github/license/LaurentRDC/pandoc-plot) [![Conda Version](https://img.shields.io/conda/vn/conda-forge/pandoc-plot.svg)](https://anaconda.org/conda-forge/pandoc-plot)
 
 `pandoc-plot` turns code blocks present in your documents (Markdown, LaTeX, etc.) into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
 
@@ -305,6 +305,16 @@ makePlotPandocCompiler =
 ### Binaries and Installers (Windows)
 
 Windows binaries and installers are available on the [GitHub release page](https://github.com/LaurentRDC/pandoc-plot/releases).
+
+### conda
+
+Like `pandoc`, `pandoc-plot` is available as a package installable with [`conda`](https://docs.conda.io/en/latest/). [Click here to see the package page](https://anaconda.org/conda-forge/pandoc-plot).
+
+To install in the current environment:
+
+```sh
+conda install -c conda-forge pandoc-plot
+```
 
 ### From Hackage/Stackage
 
