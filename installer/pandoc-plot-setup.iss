@@ -22,8 +22,8 @@ DefaultDirName={pf}\{#AppName}
 DisableProgramGroupPage=yes
 ChangesEnvironment=true
 LicenseFile=..\LICENSE
-OutputDir=.\setup-{#AppVersion}
-OutputBaseFilename={#AppName}-wininst-{#AppVersion}
+OutputDir=.
+OutputBaseFilename={#AppName}-wininst-x86_64-{#AppVersion}
 Compression=lzma2/ultra64
 SolidCompression=yes
 
