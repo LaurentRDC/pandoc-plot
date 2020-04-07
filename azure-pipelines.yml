@@ -39,7 +39,7 @@ jobs:
 
 - template: ./.azure/azure-macos-template.yml
   parameters:
-   name: Mac OS
+   name: MacOS
    vmImage: macOS-latest
    os: macos
   
