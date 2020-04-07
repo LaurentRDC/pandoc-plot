@@ -27,7 +27,7 @@ mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 mathematicaCommand :: Configuration -> FigureSpec -> FilePath -> Text
-mathematicaCommand Configuration{..} _ fp = [st|#{mathematicaExe} -script #{fp}|]
+mathematicaCommand Configuration{..} _ fp = [st|#{mathematicaExe} -script "#{fp}"|]
 
 
 mathematicaAvailable :: Configuration -> IO Bool

@@ -35,7 +35,7 @@ matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 matplotlibCommand :: Configuration -> FigureSpec -> FilePath -> Text
-matplotlibCommand Configuration{..} _ fp = [st|#{matplotlibExe} #{fp}|]
+matplotlibCommand Configuration{..} _ fp = [st|#{matplotlibExe} "#{fp}"|]
 
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script
