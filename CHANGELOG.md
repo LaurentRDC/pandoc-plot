@@ -6,6 +6,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 0.2.2.0
 ---------------
 
+* Fixed an issue where paths with spaces would not work (issue #2).
 * Added Linux binaries built via Azure pipelines.
 
 Release 0.2.1.0
