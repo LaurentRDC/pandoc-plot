@@ -36,6 +36,12 @@ jobs:
    name: Windows
    vmImage: windows-latest
    os: windows
+
+- template: ./.azure/azure-macos-template.yml
+  parameters:
+   name: Mac OS
+   vmImage: macOS-latest
+   os: macos
   
 # - job: Release
 #   dependsOn: [Windows, Linux]
