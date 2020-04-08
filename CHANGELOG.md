@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.2.3.0
+---------------
+
+* Added MacOS binaries built via Azure pipelines.
 
 Release 0.2.2.0
 ---------------
