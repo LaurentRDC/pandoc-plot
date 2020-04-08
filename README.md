@@ -302,9 +302,9 @@ makePlotPandocCompiler =
 
 ## Installation
 
-### Binaries and Installers (Windows)
+### Binaries and Installers
 
-Windows binaries and installers are available on the [GitHub release page](https://github.com/LaurentRDC/pandoc-plot/releases).
+Windows, Linux, and Mac OS binaries are available on the [GitHub release page](https://github.com/LaurentRDC/pandoc-plot/releases). There are also Windows installers.
 
 ### conda
 
