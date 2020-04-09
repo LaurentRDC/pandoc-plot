@@ -1,4 +1,4 @@
-# Scientific article example
+# Report example
 
 This example shows you how you can integrate pandoc-plot with your scientific writing, which is commonly done in La/TeX. You will need Python 3+, and the `matplotlib` package.
 
