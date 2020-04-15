@@ -82,8 +82,8 @@ testCaptionReader =
     testCase "caption is parsed in the same way as input document format" $ do
         -- Note that this test is fragile, in the sense that the expected result must be carefully
         -- constructed
-        let caption="[Google](https://www.google.com)"
-            expected = Just $ [Link ("",[],[]) [Str "Google"] ("https://www.google.com","")]
+        let caption="Here is a [link](https://www.google.com) in a caption."
+            expected = Just $ [Str "Here",Space,Str "is",Space,Str "a",Space,Link ("",[],[]) [Str "link"] ("https://www.google.com",""),Space,Str "in",Space,Str "a",Space,Str "caption."]
             fmt = B.Format "markdown+tex_math_dollars"
             parsed = captionReader fmt caption
 
