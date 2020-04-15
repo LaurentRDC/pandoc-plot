@@ -160,12 +160,12 @@ testOverrideConfiguration tk =
             assertEqual "" numberJpgFiles 0
 
 -------------------------------------------------------------------------------
--- Test that Markdown formatting in captions is correctly rendered
-testMarkdownFormattingCaption :: Toolkit -> TestTree
-testMarkdownFormattingCaption tk =
-    testCase "appropriately parses captions" $ do
+-- Test that Markdown bold formatting in captions is correctly rendered
+testMarkdownFormattingCaption1 :: Toolkit -> TestTree
+testMarkdownFormattingCaption1 tk =
+    testCase "appropriately parses captions 1" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-caption-parsing-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-caption-parsing1-" <> postfix) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         -- Note that this test is fragile, in the sense that the expected result must be carefully
@@ -173,6 +173,31 @@ testMarkdownFormattingCaption tk =
         let expected = [B.Strong [B.Str "caption"]]
             cb = addDirectory tempDir 
                     $ addCaption "**caption**" 
+                    $ codeBlock tk (trivialContent tk)
+            fmt = B.Format "markdown+tex_math_dollars"
+        result <- (make tk) def fmt cb
+        assertIsInfix expected (extractCaption result)
+    where
+        extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
+        extractCaption _               = mempty
+
+        extractImageCaption (Image _ c _) = c
+        extractImageCaption _             = mempty
+
+-------------------------------------------------------------------------------
+-- Test that Markdown bold formatting in captions is correctly rendered
+testMarkdownFormattingCaption2 :: Toolkit -> TestTree
+testMarkdownFormattingCaption2 tk =
+    testCase "appropriately parses captions 2" $ do
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-caption-parsing2-" <> postfix) <$> getCanonicalTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        -- Note that this test is fragile, in the sense that the expected result must be carefully
+        -- constructed
+        let expected =  [Link ("",[],[]) [Str "title"] ("https://google.com","")]
+            cb = addDirectory tempDir 
+                    $ addCaption "[title](https://google.com)" 
                     $ codeBlock tk (trivialContent tk)
             fmt = B.Format "markdown+tex_math_dollars"
         result <- (make tk) def fmt cb

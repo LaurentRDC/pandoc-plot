@@ -40,7 +40,8 @@ toolkitSuite tk =
         , testSaveFormat
         , testWithSource
         , testOverrideConfiguration
-        , testMarkdownFormattingCaption
+        , testMarkdownFormattingCaption1
+        , testMarkdownFormattingCaption2
         ] <*> [tk]
 
 
