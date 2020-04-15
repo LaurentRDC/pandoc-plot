@@ -9,6 +9,10 @@ import           Data.Text                        (Text, unpack)
 import           Test.Tasty
 import           Test.Tasty.HUnit
 
+import qualified Text.Pandoc.Builder              as B
+import qualified Text.Pandoc.Definition           as B
+import           Text.Pandoc.JSON
+
 import           Common
 import           Text.Pandoc.Filter.Plot.Internal
 
@@ -25,6 +29,9 @@ main = do
             [ testEmptyConfiguration
             , testExampleConfiguration
             ]        
+        , testGroup
+            "Parsing tests"
+            [ testCaptionReader ]
         , testGroup
             "Toolkit tests"
             (toolkitSuite <$> available)
@@ -69,3 +76,15 @@ testExampleConfiguration =
 
         parsedConfig <- configuration "example-config.yml"
         assertEqual "" config parsedConfig
+
+testCaptionReader :: TestTree
+testCaptionReader = 
+    testCase "caption is parsed in the same way as input document format" $ do
+        -- Note that this test is fragile, in the sense that the expected result must be carefully
+        -- constructed
+        let caption="[Google](https://www.google.com)"
+            expected = Just $ [Link ("",[],[]) [Str "Google"] ("https://www.google.com","")]
+            fmt = B.Format "markdown+tex_math_dollars"
+            parsed = captionReader fmt caption
+
+        assertEqual "" expected parsed
