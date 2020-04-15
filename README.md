@@ -93,7 +93,7 @@ plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 __LaTex__:
 
 ```latex
-\begin{minted}[caption=This is a simple figure with a \LaTeX caption]{matlabplot}
+\begin{minted}[caption=This is a simple figure with a caption]{matlabplot}
 x  = 0: .1 : 2*pi;
 y1 = cos(x);
 y2 = sin(x);
@@ -103,7 +103,7 @@ plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 \end{minted}
 ```
 
-Caption formatting should match the document formatting.
+Caption formatting is **Markdown** with LaTeX math syntax.
 
 ### Link to source code
 

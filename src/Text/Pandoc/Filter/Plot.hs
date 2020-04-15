@@ -31,7 +31,7 @@ Here are the possible attributes what pandoc-plot understands for ALL toolkits:
     * @directory=...@ : Directory where to save the figure.
     * @source=true|false@ : Whether or not to link the source code of this figure in the caption. Ideal for web pages, for example. Default is false.
     * @format=...@: Format of the generated figure. This can be an extension or an acronym, e.g. @format=PNG@.
-    * @caption="..."@: Specify a plot caption (or alternate text). Captions should be formatted in the same format as the document (e.g. Markdown captions in Markdown documents).
+    * @caption="..."@: Specify a plot caption (or alternate text). Captions should be formatted in Markdown, with LaTeX math.
     * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.
     * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
 
@@ -67,8 +67,6 @@ module Text.Pandoc.Filter.Plot (
 import           Control.Monad.IO.Class           (liftIO)
 import           Control.Monad.Reader             (runReaderT)
 
-import           Data.Maybe                       (fromMaybe)
-
 import           System.IO                        (hPutStrLn, stderr)
 
 import           Text.Pandoc.Definition
@@ -84,21 +82,23 @@ import           Text.Pandoc.Filter.Plot.Internal
 -- The target document format determines how the figure captions should be parsed.
 -- By default (i.e. if Nothing), captions will be parsed as Markdown with LaTeX math @$...$@,
 makePlot :: Configuration -- ^ Configuration for default values
-         -> Maybe Format  -- ^ Input document format
          -> Block 
          -> IO Block
-makePlot conf mfmt block = 
-    let fmt = fromMaybe (Format "markdown+tex_math_dollars") mfmt
+makePlot conf block = 
+    -- As of version 0.3.0.0, there is no way to determine the source format. Therefore,
+    -- we parse captions in the following format
+    let fmt = (Format "markdown+tex_math_dollars")
+    -- However, I'm leaving the structure of the function as-is because in the future,
+    -- it might be possible to change this behavior.
     in maybe (return block) (\tk -> make tk conf fmt block) (plotToolkit block)
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
 -- into figures. Default configuration is used.
 plotTransform :: Configuration -- ^ Configuration for default values
-              -> Maybe Format  -- ^ Input document format
-              -> Pandoc 
+              -> Pandoc        -- ^ Input document
               -> IO Pandoc
-plotTransform conf mfmt = walkM $ makePlot conf mfmt
+plotTransform conf = walkM $ makePlot conf
 
 
 -- | Force to use a particular toolkit to render appropriate code blocks.
@@ -106,9 +106,9 @@ plotTransform conf mfmt = walkM $ makePlot conf mfmt
 -- Failing to render a figure does not stop the filter, so that you may run the filter
 -- on documents without having all necessary toolkits installed. In this case, error
 -- messages are printed to stderr, and blocks are left unchanged.
-make :: Toolkit 
-     -> Configuration -- ^ Configuration for default values
-     -> Format        -- ^ Input document format
+make :: Toolkit       -- ^ Plotting toolkit.
+     -> Configuration -- ^ Configuration for default values.
+     -> Format        -- ^ Caption format.
      -> Block 
      -> IO Block
 make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf)
@@ -119,7 +119,7 @@ make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf)
             >>= maybe 
                     (return blk) 
                     (\s -> runScriptIfNecessary s >>= handleResult s)
-            where
+            where                
                 handleResult spec ScriptSuccess         = return $ toImage fmt spec
                 handleResult _ (ScriptChecksFailed msg) = do
                     liftIO $ hPutStrLn stderr $ "pandoc-plot: The script check failed with message: " <> msg 
