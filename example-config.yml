@@ -13,10 +13,25 @@
 # notices it.
 
 # The following parameters affect all toolkits
+# Directory where to save the plots. The path can be relative to this file, or absolute.
 directory: plots/
+
+# Whether or not to include a link to the source script in the caption. 
+# Particularly useful for HTML output.
 source: false
+
+# Default density of figures in dots per inches (DPI). 
+# This can be changed in the document specifically as well.
 dpi: 80
+
+# Default format in which to save the figures. This can be specified individually as well.
 format: PNG
+
+# Text format for the captions. Unfortunately, there is no way to detect this automatically.
+# You can use the same notation as Pandoc's --from parameter, specified here:
+# https://pandoc.org/MANUAL.html#option--from
+# Example: markdown, rst+raw_tex
+caption_format: markdown+tex_math_dollars
 
 # The possible parameters for the Matplotlib toolkit
 matplotlib:
