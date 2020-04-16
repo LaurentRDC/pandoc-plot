@@ -24,6 +24,8 @@ import qualified Data.Text.IO           as TIO
 import           Data.Yaml
 import           Data.Yaml.Config       (ignoreEnv, loadYamlSettings)
 
+import           Text.Pandoc.Definition (Format(..))
+
 import Text.Pandoc.Filter.Plot.Types
 
 -- | Read configuration from a YAML file. The
@@ -43,6 +45,7 @@ data ConfigPrecursor = ConfigPrecursor
     , _defaultWithSource :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , _defaultDPI        :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , _defaultSaveFormat :: !SaveFormat -- ^ The default save format of generated figures.
+    , _captionFormat     :: Format        -- ^ Caption format in Pandoc notation, e.g. "markdown+tex_math_dollars".
     
     , _matplotlibPrec    :: !MatplotlibPrecursor
     , _matlabPrec        :: !MatlabPrecursor
@@ -59,6 +62,7 @@ instance Default ConfigPrecursor where
         , _defaultWithSource = defaultWithSource def
         , _defaultDPI        = defaultDPI def
         , _defaultSaveFormat = defaultSaveFormat def
+        , _captionFormat     = captionFormat def
         
         , _matplotlibPrec    = def
         , _matlabPrec        = def
@@ -137,6 +141,7 @@ instance FromJSON ConfigPrecursor where
         _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (defaultWithSource def)
         _defaultDPI        <- v .:? (tshow DpiK)           .!= (defaultDPI def)
         _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat def)
+        _captionFormat     <- v .:? (tshow CaptionFormatK) .!= (_captionFormat def)
 
         _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
         _matlabPrec        <- v .:? (cls Matlab)           .!= def
@@ -156,6 +161,7 @@ renderConfig ConfigPrecursor{..} = do
         defaultWithSource = _defaultWithSource
         defaultDPI        = _defaultDPI
         defaultSaveFormat = _defaultSaveFormat
+        captionFormat     = _captionFormat
 
         matplotlibTightBBox   = _matplotlibTightBBox _matplotlibPrec
         matplotlibTransparent = _matplotlibTransparent _matplotlibPrec

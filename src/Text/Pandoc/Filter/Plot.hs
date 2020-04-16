@@ -84,13 +84,7 @@ import           Text.Pandoc.Filter.Plot.Internal
 makePlot :: Configuration -- ^ Configuration for default values
          -> Block 
          -> IO Block
-makePlot conf block = 
-    -- As of version 0.3.0.0, there is no way to determine the source format. Therefore,
-    -- we parse captions in the following format
-    let fmt = (Format "markdown+tex_math_dollars")
-    -- However, I'm leaving the structure of the function as-is because in the future,
-    -- it might be possible to change this behavior.
-    in maybe (return block) (\tk -> make tk conf fmt block) (plotToolkit block)
+makePlot conf block = maybe (return block) (\tk -> make tk conf block) (plotToolkit block)
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
@@ -108,10 +102,9 @@ plotTransform conf = walkM $ makePlot conf
 -- messages are printed to stderr, and blocks are left unchanged.
 make :: Toolkit       -- ^ Plotting toolkit.
      -> Configuration -- ^ Configuration for default values.
-     -> Format        -- ^ Caption format.
      -> Block 
      -> IO Block
-make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf)
+make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
     where
         makePlot' :: Block -> PlotM Block
         makePlot' blk 
@@ -120,7 +113,7 @@ make tk conf fmt block = runReaderT (makePlot' block) (PlotEnv tk conf)
                     (return blk) 
                     (\s -> runScriptIfNecessary s >>= handleResult s)
             where                
-                handleResult spec ScriptSuccess         = return $ toImage fmt spec
+                handleResult spec ScriptSuccess         = return $ toImage (captionFormat conf) spec
                 handleResult _ (ScriptChecksFailed msg) = do
                     liftIO $ hPutStrLn stderr $ "pandoc-plot: The script check failed with message: " <> msg 
                     return blk

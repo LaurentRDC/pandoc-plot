@@ -45,7 +45,7 @@ import           Data.Yaml
 import           GHC.Generics           (Generic)
 import           System.Info            (os)
 
-import           Text.Pandoc.Definition (Attr)
+import           Text.Pandoc.Definition (Attr, Format(..))
 
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
@@ -96,6 +96,7 @@ data Configuration = Configuration
     , defaultWithSource     :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , defaultDPI            :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
+    , captionFormat         :: Format      -- ^ Caption format, in the same notation as Pandoc format, e.g. "markdown+tex_math_dollars"
 
     , matplotlibPreamble    :: !Script     -- ^ The default preamble script for the matplotlib toolkit.
     , plotlyPythonPreamble  :: !Script     -- ^ The default preamble script for the Plotly/Python toolkit.
@@ -123,6 +124,7 @@ instance Default Configuration where
           , defaultWithSource = False
           , defaultDPI        = 80
           , defaultSaveFormat = PNG
+          , captionFormat     = Format "markdown+tex_math_dollars"
           
           , matplotlibPreamble  = mempty
           , plotlyPythonPreamble= mempty
@@ -167,6 +169,7 @@ data InclusionKey
     | CaptionK
     | SaveFormatK
     | WithSourceK
+    | CaptionFormatK
     | PreambleK
     | DpiK
     | ExecutableK
@@ -181,6 +184,7 @@ instance Show InclusionKey where
     show CaptionK               = "caption"
     show SaveFormatK            = "format"
     show WithSourceK            = "source"
+    show CaptionFormatK         = "caption_format"
     show PreambleK              = "preamble"
     show DpiK                   = "dpi"
     show ExecutableK            = "executable"
