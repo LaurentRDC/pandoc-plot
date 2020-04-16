@@ -35,7 +35,8 @@ Here are the possible attributes what pandoc-plot understands for ALL toolkits:
     * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.
     * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
 
-Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a YAML file.
+Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a 
+YAML file which must be named ".pandoc-plot.yml".
 
 Here is an example code block which will render a figure using gnuplot, in Markdown:
 
