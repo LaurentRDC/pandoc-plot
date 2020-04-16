@@ -31,9 +31,6 @@ import           System.Directory                 (createDirectory,
 import           System.FilePath                  (takeExtensions, (</>))
 import           System.IO.Temp                   (getCanonicalTemporaryDirectory)
 
--- Default caption format
-defFmt = B.Format "markdown+tex_math_dollars"
-
 -------------------------------------------------------------------------------
 -- Test that plot files and source files are created when the filter is run
 testFileCreation :: Toolkit -> TestTree
@@ -44,7 +41,7 @@ testFileCreation tk =
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- (make tk) def defFmt cb
+        _ <- (make tk) def cb
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
 
@@ -59,7 +56,7 @@ testFileInclusion tk =
 
         let cb = (addPreamble (include tk) $
                     addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- (make tk) def defFmt cb
+        _ <- (make tk) def cb
         inclusion <- readFile (include tk)
         sourcePath <- head . filter (isExtensionOf "txt") <$> listDirectory tempDir
         src <- readFile (tempDir </> sourcePath)
@@ -84,7 +81,7 @@ testSaveFormat tk =
         let fmt = head (supportedSaveFormats tk)
             cb = (addSaveFormat fmt $
                  addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- (make tk) def defFmt cb
+        _ <- (make tk) def cb
         numberjpgFiles <-
             length <$> filter (isExtensionOf (extension fmt)) <$>
             listDirectory tempDir
@@ -108,8 +105,8 @@ testWithSource tk =
                       $ addDirectory tempDir 
                       $ addCaption expected 
                       $ codeBlock tk (trivialContent tk)
-        blockNoSource   <- (make tk) def defFmt noSource
-        blockWithSource <- (make tk) def defFmt withSource
+        blockNoSource   <- (make tk) def noSource
+        blockWithSource <- (make tk) def withSource
 
         -- In the case where source=false, the caption is used verbatim.
         -- Otherwise, links will be appended to the caption; hence, the caption
@@ -148,7 +145,7 @@ testOverrideConfiguration tk =
             let cb = addDirectory tempDir 
                         $ addSaveFormat PNG
                         $ codeBlock tk (trivialContent tk)
-            _ <- (make tk) config defFmt cb
+            _ <- (make tk) config cb
 
             numberPngFiles <-
                 length <$> filter (isExtensionOf (extension PNG)) <$>
@@ -174,8 +171,8 @@ testMarkdownFormattingCaption1 tk =
             cb = addDirectory tempDir 
                     $ addCaption "**caption**" 
                     $ codeBlock tk (trivialContent tk)
-            fmt = B.Format "markdown+tex_math_dollars"
-        result <- (make tk) def fmt cb
+            fmt = B.Format "markdown"
+        result <- (make tk) (def {captionFormat=fmt}) cb
         assertIsInfix expected (extractCaption result)
     where
         extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
@@ -199,8 +196,8 @@ testMarkdownFormattingCaption2 tk =
             cb = addDirectory tempDir 
                     $ addCaption "[title](https://google.com)" 
                     $ codeBlock tk (trivialContent tk)
-            fmt = B.Format "markdown+tex_math_dollars"
-        result <- (make tk) def fmt cb
+            fmt = B.Format "markdown"
+        result <- (make tk) (def {captionFormat=fmt}) cb
         assertIsInfix expected (extractCaption result)
     where
         extractCaption (B.Para blocks) = extractImageCaption . head $ blocks

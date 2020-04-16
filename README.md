@@ -103,7 +103,7 @@ plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 \end{minted}
 ```
 
-Caption formatting is **Markdown** with LaTeX math syntax.
+Caption formatting unfortunately cannot be determined automatically. To specify a caption format (e.g. "markdown", "LaTeX", etc.), see [Configuration](#configuration).
 
 ### Link to source code
 
@@ -205,7 +205,7 @@ directory: plots/
 source: false
 dpi: 80
 format: PNG
-python_interpreter: python
+caption_format: markdown+tex_math_dollars
 
 # The possible parameters for the Matplotlib toolkit
 matplotlib:

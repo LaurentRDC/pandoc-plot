@@ -7,7 +7,7 @@ Release 0.3.0.0
 
 * Added more examples.
 * Added MacOS binaries built via Azure pipelines.
-* BREAKING CHANGE: Parsing captions based on source file was not working. Captions will be parsed as if they were markdown (including Tex math). This unfortunately changes the type signature of a few high-level functions.
+* BREAKING CHANGE: Parsing captions based on source file was not working. Captions format can be specified in the configuration file. This unfortunately changes the type signature of a few high-level functions.
 
 Release 0.2.2.0
 ---------------
