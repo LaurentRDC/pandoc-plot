@@ -19,6 +19,7 @@ trigger:
   paths:
     exclude:
     - "*.md"
+    - ".github/*"
     - .appveyor.yml
     - example-config.yml
     - build-setup.ps1
