@@ -17,18 +17,13 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         cabal: ["3.2"]
         ghc:
-          - "8.6.5"
           - "8.8.3"
           - "8.10.1"
         exclude:
           - os: macOS-latest
             ghc: 8.8.3
-          - os: macOS-latest
-            ghc: 8.6.5
           - os: windows-latest
             ghc: 8.8.3
-          - os: windows-latest
-            ghc: 8.6.5
 
     steps:
     - uses: actions/checkout@v2
