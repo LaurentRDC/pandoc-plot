@@ -10,10 +10,12 @@ on:
 
 jobs:
   stack:
-    name: stack / ghc ${{ matrix.ghc }}
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    name: stack / ghc ${{ matrix.ghc }}
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
