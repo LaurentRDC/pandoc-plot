@@ -77,11 +77,12 @@ import           Text.Pandoc.Filter.Plot.Internal
 
 
 -- | Highest-level function that can be walked over a Pandoc tree.
--- All code blocks that have the @.plot@ / @.plotly@ class will be considered
--- figures.
+-- All code blocks that have the appropriate class names will be considered
+-- figures, e.g. @.matplotlib@.
 --
--- The target document format determines how the figure captions should be parsed.
--- By default (i.e. if Nothing), captions will be parsed as Markdown with LaTeX math @$...$@,
+-- Failing to render a figure does not stop the filter, so that you may run the filter
+-- on documents without having all necessary toolkits installed. In this case, error
+-- messages are printed to stderr, and blocks are left unchanged.
 makePlot :: Configuration -- ^ Configuration for default values
          -> Block 
          -> IO Block
@@ -89,7 +90,11 @@ makePlot conf block = maybe (return block) (\tk -> make tk conf block) (plotTool
 
 
 -- | Walk over an entire Pandoc document, changing appropriate code blocks
--- into figures. Default configuration is used.
+-- into figures. 
+--
+-- Failing to render a figure does not stop the filter, so that you may run the filter
+-- on documents without having all necessary toolkits installed. In this case, error
+-- messages are printed to stderr, and blocks are left unchanged.
 plotTransform :: Configuration -- ^ Configuration for default values
               -> Pandoc        -- ^ Input document
               -> IO Pandoc
@@ -121,7 +126,7 @@ make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
                 handleResult _ (ScriptFailure _ code) = do
                     liftIO $ hPutStrLn stderr $ "pandoc-plot: The script failed with exit code " <> show code 
                     return blk
-                
+                    
 
 -- | Possible errors returned by the filter
 data PandocPlotError
