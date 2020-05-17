@@ -21,6 +21,7 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , parseExtraAttrs
     , command
     , capture
+    , toolkitAvailable
     , availableToolkits
     , unavailableToolkits
 ) where
