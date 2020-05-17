@@ -14,20 +14,22 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
 
-    name: stack / ghc ${{ matrix.ghc }}
+    name: stack ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
       if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.ref == 'refs/heads/master'
 
+    # https://github.com/actions/setup-haskell
     - uses: actions/setup-haskell@v1.1
       name: Setup Haskell Stack
       with:
         stack-version: "latest"
         enable-stack: true
         stack-no-global: true
-
+    
+    # https://github.com/actions/cache
     - uses: actions/cache@v1
       name: Cache ~/.stack
       with:
