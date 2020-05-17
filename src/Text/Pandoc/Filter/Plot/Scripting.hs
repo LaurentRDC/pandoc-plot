@@ -48,8 +48,9 @@ import           Text.Pandoc.Filter.Plot.Types
 -- | Possible result of running a script
 data ScriptResult
     = ScriptSuccess
-    | ScriptChecksFailed String -- Message
-    | ScriptFailure String Int  -- Command and exit code
+    | ScriptChecksFailed String   -- Message
+    | ScriptFailure String Int    -- Command and exit code
+    | ToolkitNotInstalled Toolkit -- Script failed because toolkit is not installed
 
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
@@ -63,8 +64,7 @@ runScriptIfNecessary spec = do
 
     case result of
         ScriptSuccess      -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
-        ScriptFailure cmd code -> return $ ScriptFailure cmd code
-        ScriptChecksFailed msg -> return $ ScriptChecksFailed msg
+        other -> return other
 
 
 -- Run script as described by the spec
@@ -99,7 +99,14 @@ runTempScript spec@FigureSpec{..} = do
                     $ shell command_
             case ec of
                 ExitSuccess      -> return   ScriptSuccess
-                ExitFailure code -> return $ ScriptFailure command_ code
+                ExitFailure code -> do
+                    -- Two possible types of failures: either the script
+                    -- failed because the toolkit was not available, or
+                    -- because of a genuine error
+                    toolkitInstalled <- liftIO $ toolkitAvailable tk conf 
+                    if toolkitInstalled
+                        then return $ ScriptFailure command_ code
+                        else return $ ToolkitNotInstalled tk
 
 
 -- | Convert a @FigureSpec@ to a Pandoc block component.

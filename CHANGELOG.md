@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.4.0.0
+---------------
+
+* Added a distinction between failure to render a figure because of a mistake, and failing to render a figure because the toolkit is not installed. `pandoc-plot` will give better error messages in the latter case.
+
 Release 0.3.0.0
 ---------------
 

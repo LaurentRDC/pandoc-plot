@@ -121,10 +121,13 @@ make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
             where                
                 handleResult spec ScriptSuccess         = return $ toImage (captionFormat conf) spec
                 handleResult _ (ScriptChecksFailed msg) = do
-                    liftIO $ hPutStrLn stderr $ "pandoc-plot: The script check failed with message: " <> msg 
+                    liftIO $ hPutStrLn stderr $ " ERROR (pandoc-plot) The script check failed with message: " <> msg 
                     return blk
                 handleResult _ (ScriptFailure _ code) = do
-                    liftIO $ hPutStrLn stderr $ "pandoc-plot: The script failed with exit code " <> show code 
+                    liftIO $ hPutStrLn stderr $ "ERROR (pandoc-plot) The script failed with exit code " <> show code 
+                    return blk
+                handleResult _ (ToolkitNotInstalled tk') = do
+                    liftIO $ hPutStrLn stderr $ "ERROR (pandoc-plot) The " <> show tk' <> " toolkit is required but not installed."
                     return blk
                     
 
