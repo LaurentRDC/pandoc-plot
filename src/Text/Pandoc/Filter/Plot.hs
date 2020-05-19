@@ -8,11 +8,11 @@ Maintainer  : laurent.decotret@outlook.com
 Stability   : unstable
 Portability : portable
 
-This module defines a Pandoc filter @makePlot@ and related functions
+This module defines a Pandoc filter @plotTransform@ and related functions
 that can be used to walk over a Pandoc document and generate figures from
-code blocks using a multitude of plotting toolkits.
+code blocks, using a multitude of plotting toolkits.
 
-The syntax for code blocks is simple, Code blocks with the appropriate class
+The syntax for code blocks is simple. Code blocks with the appropriate class
 attribute will trigger the filter:
 
 *   @matplotlib@ for matplotlib-based Python plots;
@@ -23,6 +23,17 @@ attribute will trigger the filter:
 *   @ggplot2@ for ggplot2-based R plots;
 *   @gnuplot@ for gnuplot plots;
 
+For example, in Markdown:
+
+@
+    This is a paragraph.
+
+    ```{.matlabplot}
+    figure()
+    plot([1,2,3,4,5], [1,2,3,4,5], '-k)
+    ```
+@
+
 The code block will be reworked into a script and the output figure will be captured. Optionally, the source code
  used to generate the figure will be linked in the caption.
 
@@ -31,7 +42,7 @@ Here are the possible attributes what pandoc-plot understands for ALL toolkits:
     * @directory=...@ : Directory where to save the figure.
     * @source=true|false@ : Whether or not to link the source code of this figure in the caption. Ideal for web pages, for example. Default is false.
     * @format=...@: Format of the generated figure. This can be an extension or an acronym, e.g. @format=PNG@.
-    * @caption="..."@: Specify a plot caption (or alternate text). Captions should be formatted in Markdown, with LaTeX math.
+    * @caption="..."@: Specify a plot caption (or alternate text). Format for captions is specified in the documentation for the @Configuration@ type.
     * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.
     * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
 
@@ -41,7 +52,7 @@ YAML file which must be named ".pandoc-plot.yml".
 Here is an example code block which will render a figure using gnuplot, in Markdown:
 
 @
-    ```{.gnuplot format=png caption="Sinusoidal function"}
+    ```{.gnuplot format=png caption="Sinusoidal function" source=true}
     sin(x)
 
     set xlabel "x"
