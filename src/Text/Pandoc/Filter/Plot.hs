@@ -141,16 +141,3 @@ make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
                     liftIO $ hPutStrLn stderr $ "ERROR (pandoc-plot) The " <> show tk' <> " toolkit is required but not installed."
                     return blk
                     
-
--- | Possible errors returned by the filter
-data PandocPlotError
-    = ScriptError String Int          -- ^ Running script has yielded an error
-    | ScriptChecksFailedError String  -- ^ Script did not pass all checks
-    deriving (Eq)
-
-instance Show PandocPlotError where
-    show (ScriptError cmd exitcode)   = mconcat [ "Script error: plot could not be generated.\n"
-                                                , "    Command: ", cmd, "\n"
-                                                , "    Exit code " <> (show exitcode)
-                                                ]
-    show (ScriptChecksFailedError msg) = "Script did not pass all checks: " <> msg
