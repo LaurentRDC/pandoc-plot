@@ -132,7 +132,6 @@ toolkitInfo tk = do
     putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
     putStrLn mempty
 
-
 -- | Use Doc type directly because of newline formatting
 footer' :: P.Doc
 footer' = mconcat [
