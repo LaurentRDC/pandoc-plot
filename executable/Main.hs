@@ -13,6 +13,8 @@ import           Data.Monoid                      ((<>))
 import qualified Data.Text                        as T
 import qualified Data.Text.IO                     as T
 
+import           GitHash                          as Git
+
 import           Options.Applicative
 import qualified Options.Applicative.Help.Pretty  as P
 
@@ -125,11 +127,12 @@ exampleConfig = T.pack $(embedExampleConfig)
 showFullVersion :: IO ()
 showFullVersion = do
     putStrLn $ "pandoc-plot " <> (V.showVersion version)
+    putStrLn $ "Git revision " <> (Git.giHash $$tGitInfoCwd)
     putStrLn $ mconcat [ "Compiled with pandoc "
                         , (T.unpack pandocVersion)
                         , " and pandoc-types "
                         , V.showVersion pandocTypesVersion
-                        ]
+                        ]        
 
 
 showAvailableToolkits :: IO ()

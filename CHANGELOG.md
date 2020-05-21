@@ -6,6 +6,7 @@ Release 0.4.0.0
 ---------------
 
 * Updated documentation.
+* Added a `--full-version` flag to the executable, which includes which version of pandoc/pandoc-types was used, as well as the git revision.
 * Added the top-level function `cleanOutputDir` to clean output of pandoc-plot. This is only accessible if `pandoc-plot` is used as a library.
 * Added a distinction between failure to render a figure because of a mistake, and failing to render a figure because the toolkit is not installed. `pandoc-plot` will give better error messages in the latter case.
 

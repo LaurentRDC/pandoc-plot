@@ -75,16 +75,17 @@ executable pandoc-plot
         executable
     ghc-options: -Wall -Wcompat -rtsopts -threaded -with-rtsopts=-N
     build-depends:
-          base                  >=4.11 && <5
+          base                  >= 4.11 && <5
         , directory
         , data-default-class    >= 0.1.2
         , deepseq
         , filepath
+        , githash               >= 0.1.3.0 && < 1
         , open-browser          >= 0.2.1.0
         , optparse-applicative  >= 0.14 && < 1
         , pandoc
         , pandoc-plot
-        , pandoc-types          >1.12 && <2
+        , pandoc-types          > 1.12 && <2
         , template-haskell      > 2.7 && < 3
         , temporary
         , text
