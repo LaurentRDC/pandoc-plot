@@ -43,7 +43,9 @@ library
         Text.Pandoc.Filter.Plot.Renderers.GNUPlot
     hs-source-dirs:
         src
-    ghc-options: -Wall -Wcompat
+    ghc-options: 
+        -Wall 
+        -Wcompat
     build-depends:
           base               >= 4.11  && <5
         , containers

@@ -1,6 +1,6 @@
-{-# LANGUAGE ApplicativeDo   #-}
-{-# LANGUAGE LambdaCase      #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE ApplicativeDo     #-}
+{-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE TemplateHaskell   #-}
 
 module Main where
 
@@ -21,10 +21,12 @@ import           System.IO.Temp                   (writeSystemTempFile)
 
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform)
-import           Text.Pandoc.Filter.Plot.Internal (Toolkit (..), cls, Configuration(..),
+import           Text.Pandoc.Filter.Plot.Internal (cls, Configuration(..),
                                                    supportedSaveFormats, 
                                                    configuration, toolkits)
 
+import           Text.Pandoc                      (pandocVersion)
+import           Text.Pandoc.Definition           (pandocTypesVersion)
 import           Text.Pandoc.JSON                 (toJSONFilter)
 
 import           Web.Browser                      (openBrowser)
@@ -61,6 +63,7 @@ config = do
 
 
 data Flag = Version
+          | FullVersion
           | Manual
           | Toolkits
           | Config
@@ -73,6 +76,11 @@ run = do
         [ long "version"
         , short 'v'
         , help "Show version number and exit."
+        ])
+    
+    fullVersionP <- flag Nothing (Just FullVersion) (mconcat
+        [ long "full-version"
+        , help "Show full version information and exit."
         ])
 
     manualP  <- flag Nothing (Just Manual) (mconcat
@@ -95,26 +103,15 @@ run = do
                \already exists, an error will be thrown. "])
 
     input    <- optional $ strArgument (metavar "AST")
-    return $ go (versionP <|> manualP <|> toolkitsP <|> configP) input
+    return $ go (versionP <|> fullVersionP <|> manualP <|> toolkitsP <|> configP) input
     where
         go :: Maybe Flag -> Maybe String -> IO ()
-        go (Just Version)  _ = putStrLn (V.showVersion version)
-        go (Just Manual)   _ = writeSystemTempFile "pandoc-plot-manual.html" (T.unpack manualHtml)
-                                >>= \fp -> openBrowser ("file:///" <> fp)
-                                >> return ()
-        go (Just Toolkits) _ = do
-            c <- config
-            putStrLn "\nAVAILABLE TOOLKITS\n"
-            available <- availableToolkits c
-            return available >>= mapM_ toolkitInfo
-            putStrLn "\nUNAVAILABLE TOOLKITS\n"
-            -- We don't use unavailableToolkits because this would force
-            -- more IO actions
-            let unavailable = toolkits \\ available
-            return unavailable >>= mapM_ toolkitInfo
-        go (Just Config)   _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
-
-        go Nothing         _ = toJSONFilterWithConfig
+        go (Just Version)     _ = putStrLn (V.showVersion version)
+        go (Just FullVersion) _ = showFullVersion
+        go (Just Manual)      _ = showManPage
+        go (Just Toolkits)    _ = showAvailableToolkits
+        go (Just Config)      _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
+        go Nothing            _ = toJSONFilterWithConfig
 
 
 manualHtml :: T.Text
@@ -125,12 +122,40 @@ exampleConfig :: T.Text
 exampleConfig = T.pack $(embedExampleConfig)
 
 
-toolkitInfo :: Toolkit -> IO ()
-toolkitInfo tk = do
-    putStrLn $ "Toolkit: " <> show tk
-    putStrLn $ "    Code block trigger: " <> (T.unpack . cls $ tk)
-    putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
-    putStrLn mempty
+showFullVersion :: IO ()
+showFullVersion = do
+    putStrLn $ "pandoc-plot " <> (V.showVersion version)
+    putStrLn $ mconcat [ "Compiled with pandoc "
+                        , (T.unpack pandocVersion)
+                        , " and pandoc-types "
+                        , V.showVersion pandocTypesVersion
+                        ]
+
+
+showAvailableToolkits :: IO ()
+showAvailableToolkits = do
+    c <- config
+    putStrLn "\nAVAILABLE TOOLKITS\n"
+    available <- availableToolkits c
+    return available >>= mapM_ toolkitInfo
+    putStrLn "\nUNAVAILABLE TOOLKITS\n"
+    -- We don't use unavailableToolkits because this would force
+    -- more IO actions
+    let unavailable = toolkits \\ available
+    return unavailable >>= mapM_ toolkitInfo
+    where
+        toolkitInfo tk = do
+            putStrLn $ "Toolkit: " <> show tk
+            putStrLn $ "    Code block trigger: " <> (T.unpack . cls $ tk)
+            putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
+            putStrLn mempty
+
+
+showManPage :: IO ()
+showManPage = 
+    writeSystemTempFile "pandoc-plot-manual.html" (T.unpack manualHtml)
+        >>= \fp -> openBrowser ("file:///" <> fp)
+        >> return ()
 
 -- | Use Doc type directly because of newline formatting
 footer' :: P.Doc
