@@ -28,6 +28,7 @@ library
         Text.Pandoc.Filter.Plot.Internal
     other-modules:
         Paths_pandoc_plot
+        Text.Pandoc.Filter.Plot.Clean
         Text.Pandoc.Filter.Plot.Configuration
         Text.Pandoc.Filter.Plot.Types
         Text.Pandoc.Filter.Plot.Parse
@@ -48,6 +49,7 @@ library
         -Wcompat
     build-depends:
           base               >= 4.11  && <5
+        , bytestring
         , containers
         , directory
         , data-default-class >= 0.1.2 && < 0.2

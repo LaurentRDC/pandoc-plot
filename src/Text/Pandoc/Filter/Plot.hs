@@ -72,20 +72,20 @@ module Text.Pandoc.Filter.Plot (
     , Configuration(..)
     , SaveFormat(..)
     , Script
-    -- * For testing purposes ONLY
+    -- * For testing and internal purposes ONLY
     , make
+    , readDoc
     , availableToolkits
     , unavailableToolkits
     ) where
 
 import           Control.Monad.IO.Class           (liftIO)
-import           Control.Monad.Reader             (runReaderT, forM_)
+import           Control.Monad.Reader             (runReaderT)
 
-import           System.Directory                 (removePathForcibly)
 import           System.IO                        (hPutStrLn, stderr)
 
 import           Text.Pandoc.Definition
-import           Text.Pandoc.Walk                 (walkM, query)
+import           Text.Pandoc.Walk                 (walkM)
 
 import           Text.Pandoc.Filter.Plot.Internal
 
@@ -143,20 +143,3 @@ make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
                 handleResult _ (ToolkitNotInstalled tk') = do
                     liftIO $ hPutStrLn stderr $ "ERROR (pandoc-plot) The " <> show tk' <> " toolkit is required but not installed."
                     return blk
-                    
-
--- | Clean all output related to pandoc-plot. This includes output directories specified 
--- in the configuration and in the document. Note that *all* files in pandoc-plot output 
--- directories will be removed.
-cleanOutputDirs :: Configuration -> Pandoc -> IO ()
-cleanOutputDirs conf doc = do
-    directories <- sequence $ query (\b -> [outputDir b]) doc
-    forM_ directories $ maybe (return ()) removeDir
-    where
-        outputDir b = 
-            maybe
-                (return Nothing)
-                (\tk -> runReaderT (parseFigureSpec b >>= return . fmap directory) (PlotEnv tk conf))
-                (plotToolkit b)
-        
-        removeDir d = putStrLn ("Removing directory " <> show d) >> removePathForcibly d
