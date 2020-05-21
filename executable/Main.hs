@@ -25,7 +25,8 @@ import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform)
 import           Text.Pandoc.Filter.Plot.Internal (cls, Configuration(..),
                                                    supportedSaveFormats, 
-                                                   configuration, toolkits)
+                                                   configuration, toolkits, 
+                                                   readDoc, cleanOutputDirs)
 
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
@@ -152,6 +153,10 @@ showAvailableToolkits = do
             putStrLn $ "    Code block trigger: " <> (T.unpack . cls $ tk)
             putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
             putStrLn mempty
+
+
+clean :: Configuration -> FilePath -> IO ()
+clean conf fp = readDoc fp >>= cleanOutputDirs conf
 
 
 showManPage :: IO ()
