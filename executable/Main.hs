@@ -159,16 +159,8 @@ showManPage =
 
 -- | Use Doc type directly because of newline formatting
 footer' :: P.Doc
-footer' = mconcat [
-        P.text "Example usage with pandoc:"
-    , P.line, P.line
-    , P.indent 4 $ P.string "> pandoc --filter pandoc-plot input.md --output output.html"
-    , P.line, P.line
-    , P.text "If you use pandoc-plot in combination with other filters, you probably want to run pandoc-plot first. Here is an example with pandoc-crossref:"
-    , P.line, P.line
-    , P.indent 4 $ P.string "> pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.pdf"
-    , P.line, P.line
-    , P.text "More information can be found via the manual (pandoc-plot --manual) or the repository README, located at"
+footer' = mconcat 
+    [ P.text "More information can be found via the manual (pandoc-plot --manual) or the repository README, located at"
     , P.line
     , P.indent 4 $ P.text "https://github.com/LaurentRDC/pandoc-plot"
     , P.line
