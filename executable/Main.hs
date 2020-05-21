@@ -1,6 +1,7 @@
 {-# LANGUAGE ApplicativeDo     #-}
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Main where
 
@@ -40,15 +41,96 @@ import           Paths_pandoc_plot                (version)
 import           ManPage                          (embedManualHtml)
 import           ExampleConfig                    (embedExampleConfig)
 
+-- It is understood that Opts Nothing Nothing should be used for filtering
+data Opts = Opts
+    { optCommand :: Maybe Command
+    , optFlag :: Maybe Flag
+    }
+
+-- The difference between commands and flags is that commands perform actions,
+-- while flags only display information.
+
+data Command = Clean FilePath
+             | WriteConfig
+
+data Flag = Version
+          | FullVersion
+          | Manual
+          | Toolkits
+    deriving (Eq)
+
+
 main :: IO ()
 main = join $ execParser opts
-    where
-        opts = info (run <**> helper)
+    where 
+        opts = info (optparse <**> helper)
             (fullDesc
-            <> progDesc "This pandoc filter generates plots from code blocks using a multitude of possible renderers. This allows to keep documentation and figures in perfect synchronicity."
+            <> progDesc "This pandoc filter generates plots from code blocks using a multitude of possible renderers. \
+                        \This allows to keep documentation and figures in perfect synchronicity."
             <> header "pandoc-plot - generate figures directly in documents using your plotting toolkit of choice."
             <> footerDoc (Just footer')
             )
+        
+        optparse = do
+            flag_ <- flagParser
+            command_ <- commandParser
+            -- The extra optional input below only serves to show
+            -- to the user that the last argument is the AST from pandoc
+            -- The parsed input is never used
+            input <- optional $ strArgument (metavar "AST")
+            return $ go flag_ command_ input
+        
+        go :: Maybe Flag -> Maybe Command -> Maybe String -> IO ()
+        go (Just Version)     _ _ = putStrLn (V.showVersion version)
+        go (Just FullVersion) _ _ = showFullVersion
+        go (Just Manual)      _ _ = showManPage
+        go (Just Toolkits)    _ _ = showAvailableToolkits
+        go _ (Just (Clean fp))  _ = clean fp
+        go _ (Just WriteConfig) _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
+        go Nothing Nothing      _ = toJSONFilterWithConfig
+
+flagParser :: Parser (Maybe Flag)
+flagParser = versionP <|> fullVersionP <|> manualP <|> toolkitsP
+    where
+        versionP = flag Nothing (Just Version) (mconcat
+            [ long "version"
+            , short 'v'
+            , help "Show version number and exit."
+            ])
+        
+        fullVersionP = flag Nothing (Just FullVersion) (mconcat
+            [ long "full-version"
+            , help "Show full version information and exit."
+            ])
+
+        manualP  = flag Nothing (Just Manual) (mconcat
+            [ long "manual"
+            , short 'm'
+            , help "Open the manual page in the default web browser and exit."
+            ])
+
+        toolkitsP = flag Nothing (Just Toolkits) (mconcat
+            [ long "toolkits"
+            , short 't'
+            , help "Show information on toolkits and exit. Executables from the configuration \
+                   \file will be used, if a '.pandoc-plot.yml' file is in the current directory."
+            ])
+
+commandParser :: Parser (Maybe Command)
+commandParser = optional $ subparser (
+            command "clean" (
+                info (cleanP <**> helper) ( 
+                    progDesc "Clean output directories where figures from FILE might be stored.\
+                              \ WARNING: All files in those directories will be deleted." 
+                    )
+                )
+            <> command "write-example-config" (
+                    info (writeConfigP <**> helper) (progDesc "Write example configuration to a file.")
+                    )
+                )
+    where
+        cleanP = Clean <$> strArgument (metavar "FILE")
+        writeConfigP = pure WriteConfig
 
 
 toJSONFilterWithConfig :: IO ()
@@ -63,58 +145,6 @@ config = do
     if configExists
         then configuration ".pandoc-plot.yml" 
         else return def
-
-
-data Flag = Version
-          | FullVersion
-          | Manual
-          | Toolkits
-          | Config
-    deriving (Eq)
-
-
-run :: Parser (IO ())
-run = do
-    versionP <- flag Nothing (Just Version) (mconcat
-        [ long "version"
-        , short 'v'
-        , help "Show version number and exit."
-        ])
-    
-    fullVersionP <- flag Nothing (Just FullVersion) (mconcat
-        [ long "full-version"
-        , help "Show full version information and exit."
-        ])
-
-    manualP  <- flag Nothing (Just Manual) (mconcat
-        [ long "manual"
-        , short 'm'
-        , help "Open the manual page in the default web browser and exit."
-        ])
-
-    toolkitsP <- flag Nothing (Just Toolkits) (mconcat
-        [ long "toolkits"
-        , short 't'
-        , help "Show information on toolkits and exit. Executables from the configuration \
-               \file will be used, if a '.pandoc-plot.yml' file is in the current directory."
-        ])
-    
-    configP <- flag Nothing (Just Config) (mconcat
-        [ long "write-example-config"
-        , help "Write an example configuration in '.pandoc-plot.yml', \
-               \which you can subsequently customize, and exit. If '.pandoc-plot.yml' \
-               \already exists, an error will be thrown. "])
-
-    input    <- optional $ strArgument (metavar "AST")
-    return $ go (versionP <|> fullVersionP <|> manualP <|> toolkitsP <|> configP) input
-    where
-        go :: Maybe Flag -> Maybe String -> IO ()
-        go (Just Version)     _ = putStrLn (V.showVersion version)
-        go (Just FullVersion) _ = showFullVersion
-        go (Just Manual)      _ = showManPage
-        go (Just Toolkits)    _ = showAvailableToolkits
-        go (Just Config)      _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
-        go Nothing            _ = toJSONFilterWithConfig
 
 
 manualHtml :: T.Text
@@ -155,8 +185,11 @@ showAvailableToolkits = do
             putStrLn mempty
 
 
-clean :: Configuration -> FilePath -> IO ()
-clean conf fp = readDoc fp >>= cleanOutputDirs conf
+clean :: FilePath -> IO ()
+clean fp = do
+    conf <- config
+    putStrLn $ "Cleaning output directories for " <> fp
+    readDoc fp >>= cleanOutputDirs conf
 
 
 showManPage :: IO ()
