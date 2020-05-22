@@ -23,6 +23,7 @@ import           Control.Monad.Reader             (runReaderT, forM, liftIO)
 import qualified Data.ByteString.Lazy             as B
 import           Data.Char                        (toLower)
 import           Data.Default.Class               (def)
+import           Data.List                        (nub)
 import           Data.Maybe                       (fromMaybe, catMaybes)
 
 import           Data.Text                        (Text)
@@ -51,7 +52,7 @@ import Text.Pandoc.Filter.Plot.Types
 cleanOutputDirs :: Walkable Block b => Configuration -> b -> IO [FilePath]
 cleanOutputDirs conf doc = do
     directories <- sequence $ query (\b -> [outputDir b]) doc
-    forM (catMaybes directories) removeDir
+    forM (nub . catMaybes $ directories) removeDir
     where
         outputDir b = 
             maybe
