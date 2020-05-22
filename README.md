@@ -8,7 +8,7 @@
 
 ## Table of content
 
-* [Usage](#usage)
+* [Overview](#overview)
 * [Supported toolkits](#supported-toolkits)
 * [Features](#features)
     * [Captions](#captions)
@@ -18,13 +18,18 @@
     * [Compatibility with pandoc-crossref](#compatibility-with-pandoc-crossref)
 * [Configuration](#configuration)
     * [Toolkit-specific options](#toolkit-specific-options)
-* [Usage as a Haskell library](#usage-as-a-haskell-library)
+* [Detailed usage](#detailed-usage)
+    * [As a filter](#as-a-filter)
+    * [Cleaning output](#cleaning-output)
+    * [Configuration template](#configuration-template)
+    * [As a Haskell library](#as-a-haskell-library)
+        * [Usage with Hakyll](#usage-with-hakyll)
 * [Installation](#installation)
 * [Warning](#warning)
 
-## Usage
+## Overview
 
-This program is a [Pandoc](https://pandoc.org/) filter. It operates on the Pandoc abstract syntax tree, and can therefore be used in the middle of conversion from input format to output format.
+This program is a [Pandoc](https://pandoc.org/) filter. It can therefore be used in the middle of conversion from input format to output format, replacing code blocks with figures.
 
 The filter recognizes code blocks with classes that match plotting toolkits. For example, using the `matplotlib` toolkit:
 
@@ -273,11 +278,82 @@ matlabplot:
 * `tight_bbox` is a boolean that determines whether to use `bbox_inches="tight"` or not when saving Matplotlib figures. For example, `tight_bbox: true`. See [here](https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html) for details.
 * `transparent` is a boolean that determines whether to make Matplotlib figure background transparent or not. This is useful, for example, for displaying a plot on top of a colored background on a web page. High-resolution figures are not affected. For example, `transparent: true`.
 
-## Usage as a Haskell library
+## Detailed usage
+
+`pandoc-plot` is a command line executable with a few functions. You can take a look at the help using the `-h`/`--help` flag:
+
+```bash
+$ pandoc-plot --help
+pandoc-plot - generate figures directly in documents using your plotting toolkit
+of choice.
+
+Usage: pandoc-plot.exe ([-v|--version] | [--full-version] | [-m|--manual] |   
+                       [-t|--toolkits]) [COMMAND] [AST]
+  This pandoc filter generates plots from code blocks using a multitude of    
+  possible renderers. This allows to keep documentation and figures in perfect
+  synchronicity.
+
+Available options:
+  -v,--version             Show version number and exit.
+  --full-version           Show full version information and exit.
+  -m,--manual              Open the manual page in the default web browser and
+                           exit.
+  -t,--toolkits            Show information on toolkits and exit. Executables
+                           from the configuration file will be used, if a
+                           '.pandoc-plot.yml' file is in the current directory.
+  -h,--help                Show this help text
+
+Available commands:
+  clean                    Clean output directories where figures from FILE
+                           might be stored. WARNING: All files in those
+                           directories will be deleted.
+  write-example-config     Write example configuration to a file.
+
+More information can be found via the manual (pandoc-plot --manual) or the repository README, located at
+    https://github.com/LaurentRDC/pandoc-plot
+```
+
+### As a filter
+
+The most common use for `pandoc-plot` is as a pandoc filter, in which case it should be called without arguments. For example:
+
+```bash
+pandoc --filter pandoc-plot -i input.md -o output.html
+```
+
+If `pandoc-plot` fails to render a code block into a figure, the filtering will not stop. Your code blocks will stay unchanged.
+
+You can chain other filters with it (e.g., [`pandoc-crossref`](https://github.com/lierdakil/pandoc-crossref)) like so:
+
+```bash
+pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
+```
+
+### Cleaning output
+
+Figures produced by `pandoc-plot` can be placed in a few different locations. You can set a default location in the [Configuration](#configuration), but you can also re-direct specific figures in other directories if you use the `directory=...` argument in code blocks. These figures will build up over time. You can use the `clean` command to scan documents and delete the associated `pandoc-plot` output files. For example, to delete the figures generated from the `input.md` file:
+
+```bash
+pandoc-plot clean input.md
+```
+
+This sill remove all directories where a figure *could* have been placed. **WARNING**: all files will be removed.
+
+### Configuration template
+
+Because `pandoc-plot` supports a few toolkits, there are a lot of configuration options. Don't start from scratch! The `write-example-config` command will create a file for you, which you can then modify:
+
+```bash
+pandoc-plot write-example-config
+```
+
+You will need to re-name the file to `.pandoc-ploy.yml` to be able to use it, so don't worry about overwriting your own configuration.
+
+### As a Haskell library
 
 To include the functionality of `pandoc-plot` in a Haskell package, you can use the `makePlot` function (for single blocks) or `plotTransform` function (for entire documents). [Take a look at the documentation on Hackage](https://hackage.haskell.org/package/pandoc-plot).
 
-### Usage with Hakyll
+#### Usage with Hakyll
 
 In case you want to use the filter with your own Hakyll setup, you can use a transform function that works on entire documents:
 
@@ -294,10 +370,7 @@ makePlotPandocCompiler =
   pandocCompilerWithTransformM
     defaultHakyllReaderOptions
     defaultHakyllWriterOptions
-    (unsafeCompiler . plotTransform def fmt)
-    where
-      config = def              -- Default configuration
-      fmt    = Just "markdown"  -- Document format, including extensions
+    (unsafeCompiler . plotTransform def) -- default configuration
 ```
 
 ## Installation
