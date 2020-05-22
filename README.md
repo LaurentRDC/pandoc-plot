@@ -14,7 +14,7 @@
     * [Captions](#captions)
     * [Link to source code](#link-to-source-code)
     * [Preamble scripts](#preamble-scripts)
-    * [No wasted work](#no-wasted-work)
+    * [Performance](#performance)
     * [Compatibility with pandoc-crossref](#compatibility-with-pandoc-crossref)
 * [Configuration](#configuration)
     * [Toolkit-specific options](#toolkit-specific-options)
@@ -176,9 +176,13 @@ The equivalent LaTeX usage is as follows:
 
 This `preamble` parameter is perfect for longer documents with many plots. Simply define the style you want in a separate script! You can also import packages this way, or define functions you often use.
 
-### No wasted work
+### Performance
 
-`pandoc-plot` minimizes work, only generating figures if it absolutely must, i.e. if the content has changed. Therefore, you can confidently run the filter on very large documents containing dozens of figures --- like a book or a thesis --- and only the figures which have changed will be re-generated.
+`pandoc-plot` minimizes work, only generating figures if it absolutely must, i.e. if the content has changed. 
+
+`pandoc-plot` will save the hash of the source code used to generate a figure in its filename. Before generating a figure, `pandoc-plot` will check it this figure already exists based on the hash of its source! This also means that there is no way to directly name figures.
+
+Therefore, you can confidently run the filter on very large documents containing hundreds of figures --- like a book or a thesis --- and only the figures which have changed will be re-generated.
 
 ### Compatibility with pandoc-crossref
 
