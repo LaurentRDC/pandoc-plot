@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.4.0.1
+---------------
+
+* Fixed an issue where the `pandoc-plot` executable could not be built outside of its git repository.
+
 Release 0.4.0.0
 ---------------
 

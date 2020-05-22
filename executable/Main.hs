@@ -11,8 +11,7 @@ import           Control.Monad                    (join, forM_)
 import           Data.Default.Class               (def)
 import           Data.List                        (intersperse, (\\))
 import           Data.Monoid                      ((<>))
-import qualified Data.Text                        as T
-import qualified Data.Text.IO                     as T
+import           Data.Text                        (unpack)
 
 import           GitHash                          as Git
 
@@ -86,7 +85,7 @@ main = join $ execParser opts
         go (Just Manual)      _ _ = showManPage
         go (Just Toolkits)    _ _ = showAvailableToolkits
         go _ (Just (Clean fp))  _ = clean fp
-        go _ (Just WriteConfig) _ = T.writeFile ".example-pandoc-plot.yml" exampleConfig
+        go _ (Just WriteConfig) _ = writeFile ".example-pandoc-plot.yml" $(embedExampleConfig)
         go Nothing Nothing      _ = toJSONFilterWithConfig
 
 flagParser :: Parser (Maybe Flag)
@@ -147,20 +146,12 @@ config = do
         else return def
 
 
-manualHtml :: T.Text
-manualHtml = T.pack $(embedManualHtml)
-
-
-exampleConfig :: T.Text
-exampleConfig = T.pack $(embedExampleConfig)
-
-
 showFullVersion :: IO ()
 showFullVersion = do
     putStrLn $ "pandoc-plot " <> (V.showVersion version)
     putStrLn $ "Git revision " <> gitrev
     putStrLn $ mconcat [ "Compiled with pandoc "
-                        , (T.unpack pandocVersion)
+                        , (unpack pandocVersion)
                         , " and pandoc-types "
                         , V.showVersion pandocTypesVersion
                         ]
@@ -184,7 +175,7 @@ showAvailableToolkits = do
     where
         toolkitInfo tk = do
             putStrLn $ "Toolkit: " <> show tk
-            putStrLn $ "    Code block trigger: " <> (T.unpack . cls $ tk)
+            putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)
             putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
             putStrLn mempty
 
@@ -199,7 +190,7 @@ clean fp = do
 
 showManPage :: IO ()
 showManPage = 
-    writeSystemTempFile "pandoc-plot-manual.html" (T.unpack manualHtml)
+    writeSystemTempFile "pandoc-plot-manual.html" $(embedManualHtml)
         >>= \fp -> openBrowser ("file:///" <> fp)
         >> return ()
 
