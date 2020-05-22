@@ -207,6 +207,27 @@ testMarkdownFormattingCaption2 tk =
         extractImageCaption _             = mempty
 
 
+-------------------------------------------------------------------------------
+-- Test that cleanOutpuDirs correctly cleans the output directory specified in a block.
+testCleanOutputDirs :: Toolkit -> TestTree
+testCleanOutputDirs tk = 
+    testCase "correctly cleans output directories" $ do
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-clean-output-dir" <> postfix) <$> getCanonicalTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        let cb = addDirectory tempDir
+                    $ codeBlock tk (trivialContent tk)
+        
+        result <- (make tk) def cb
+        cleanedDirs <- cleanOutputDirs def cb
+
+        assertEqual "" [tempDir] cleanedDirs
+
+        outputDirExists <- doesDirectoryExist tempDir
+        assertEqual "" outputDirExists False
+
+
 codeBlock :: Toolkit -> Script -> Block
 codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
 

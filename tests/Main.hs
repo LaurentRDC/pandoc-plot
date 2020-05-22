@@ -49,6 +49,7 @@ toolkitSuite tk =
         , testOverrideConfiguration
         , testMarkdownFormattingCaption1
         , testMarkdownFormattingCaption2
+        , testCleanOutputDirs
         ] <*> [tk]
 
 
