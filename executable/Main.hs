@@ -6,7 +6,7 @@
 module Main where
 
 import           Control.Applicative              ((<|>))
-import           Control.Monad                    (join)
+import           Control.Monad                    (join, forM_)
 
 import           Data.Default.Class               (def)
 import           Data.List                        (intersperse, (\\))
@@ -189,7 +189,8 @@ clean :: FilePath -> IO ()
 clean fp = do
     conf <- config
     putStrLn $ "Cleaning output directories for " <> fp
-    readDoc fp >>= cleanOutputDirs conf
+    cleanedDirs <- readDoc fp >>= cleanOutputDirs conf
+    forM_ cleanedDirs $ \d -> putStrLn $ "Removed directory " <> d
 
 
 showManPage :: IO ()

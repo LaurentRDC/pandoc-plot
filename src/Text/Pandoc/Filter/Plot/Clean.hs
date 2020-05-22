@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts  #-}
 
 {-|
 Module      : $header$
@@ -17,12 +18,12 @@ module Text.Pandoc.Filter.Plot.Clean (
 ) where
 
 
-import           Control.Monad.Reader             (runReaderT, forM_, liftIO)
+import           Control.Monad.Reader             (runReaderT, forM, liftIO)
 
 import qualified Data.ByteString.Lazy             as B
 import           Data.Char                        (toLower)
 import           Data.Default.Class               (def)
-import           Data.Maybe                       (fromMaybe)
+import           Data.Maybe                       (fromMaybe, catMaybes)
 
 import           Data.Text                        (Text)
 import qualified Data.Text.IO                     as Text
@@ -36,19 +37,21 @@ import           Text.Pandoc.Definition
 import           Text.Pandoc.Error                (handleError)
 import qualified Text.Pandoc.Readers              as P
 import qualified Text.Pandoc.Options              as P
-import           Text.Pandoc.Walk                 (query)
+import           Text.Pandoc.Walk                 (query, Walkable)
 
 import Text.Pandoc.Filter.Plot.Parse
 import Text.Pandoc.Filter.Plot.Types
 
 
 -- | Clean all output related to pandoc-plot. This includes output directories specified 
--- in the configuration and in the document. Note that *all* files in pandoc-plot output 
+-- in the configuration and in the document/block. Note that *all* files in pandoc-plot output 
 -- directories will be removed.
-cleanOutputDirs :: Configuration -> Pandoc -> IO ()
+--
+-- The cleaned directories are returned.
+cleanOutputDirs :: Walkable Block b => Configuration -> b -> IO [FilePath]
 cleanOutputDirs conf doc = do
     directories <- sequence $ query (\b -> [outputDir b]) doc
-    forM_ directories $ maybe (return ()) removeDir
+    forM (catMaybes directories) removeDir
     where
         outputDir b = 
             maybe
@@ -56,7 +59,8 @@ cleanOutputDirs conf doc = do
                 (\tk -> runReaderT (parseFigureSpec b >>= return . fmap directory) (PlotEnv tk conf))
                 (plotToolkit b)
         
-        removeDir d = putStrLn ("Removing directory " <> show d) >> removePathForcibly d
+        removeDir :: FilePath -> IO FilePath
+        removeDir d = removePathForcibly d >> return d
 
 
 -- | Read document, guessing what extensions and reader options are appropriate. If
