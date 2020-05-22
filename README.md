@@ -257,7 +257,7 @@ gnuplot:
 
 A file like the above sets the **default** values; you can still override them in documents directly.
 
-Using `pandoc-plot --write-example-config` will write the default configuration to a file which you can then customize.
+Using `pandoc-plot write-example-config` will write the default configuration to a file which you can then customize.
 
 ### Executables
 
