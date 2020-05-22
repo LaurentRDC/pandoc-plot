@@ -158,12 +158,16 @@ exampleConfig = T.pack $(embedExampleConfig)
 showFullVersion :: IO ()
 showFullVersion = do
     putStrLn $ "pandoc-plot " <> (V.showVersion version)
-    putStrLn $ "Git revision " <> (Git.giHash $$tGitInfoCwd)
+    putStrLn $ "Git revision " <> gitrev
     putStrLn $ mconcat [ "Compiled with pandoc "
                         , (T.unpack pandocVersion)
                         , " and pandoc-types "
                         , V.showVersion pandocTypesVersion
-                        ]        
+                        ]
+    where
+        -- In certain environments (e.g. Hackage when building documentation),
+        -- there is no git information. 
+        gitrev = either (const "unknown") Git.giHash ($$tGitInfoCwdTry)
 
 
 showAvailableToolkits :: IO ()
