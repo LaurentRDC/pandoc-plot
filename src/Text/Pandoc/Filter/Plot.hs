@@ -128,16 +128,18 @@ plotTransform conf = walkM $ makePlot conf
 --
 -- @since 0.5.0.0
 parPlotTransform :: Configuration 
-               -> Pandoc
-               -> IO Pandoc
-parPlotTransform conf (Pandoc meta blocks) = do
+                 -> Pandoc
+                 -> IO Pandoc
+parPlotTransform conf doc@(Pandoc meta blocks) = do
     -- We use the maximum number of threads possible, up until
     -- the point where there are more threads than blocks
     availableThreads <- getNumCapabilities
     let numThreads = min availableThreads (length blocks)
-
-    newBlocks <- withPool numThreads $ \pool -> parallel pool (makePlot conf <$> blocks)
-    return $ Pandoc meta newBlocks
+    if numThreads == 1
+        then plotTransform conf doc
+        else 
+            withPool numThreads $ \pool -> parallel pool (makePlot conf <$> blocks)
+            >>= \newBlocks -> return $ Pandoc meta newBlocks
 
 
 -- | Force to use a particular toolkit to render appropriate code blocks.
