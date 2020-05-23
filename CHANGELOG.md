@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.5.0.0
+---------------
+
+* `pandoc-plot` will now process documents in parallel. This should dramatically speed up processing of large documents with lots of figures. This functionality is also exposed in libraries via `plotTransformP`.
+
 Release 0.4.0.1
 ---------------
 

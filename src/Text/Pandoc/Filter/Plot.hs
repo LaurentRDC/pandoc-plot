@@ -65,6 +65,7 @@ module Text.Pandoc.Filter.Plot (
       makePlot
     -- * Operating on whole Pandoc documents
     , plotTransform
+    , plotTransformP
     -- * Cleaning output directories
     , cleanOutputDirs
     -- * Runtime configuration
@@ -79,15 +80,18 @@ module Text.Pandoc.Filter.Plot (
     , unavailableToolkits
     ) where
 
-import           Control.Monad.IO.Class           (liftIO)
-import           Control.Monad.Reader             (runReaderT)
+import Control.Concurrent                   (getNumCapabilities)
+import Control.Concurrent.ParallelIO.Local  (withPool, parallel)
 
-import           System.IO                        (hPutStrLn, stderr)
+import Control.Monad.IO.Class               (liftIO)
+import Control.Monad.Reader                 (runReaderT)
 
-import           Text.Pandoc.Definition
-import           Text.Pandoc.Walk                 (walkM)
+import System.IO                            (hPutStrLn, stderr)
 
-import           Text.Pandoc.Filter.Plot.Internal
+import Text.Pandoc.Definition
+import Text.Pandoc.Walk                     (walkM)
+
+import Text.Pandoc.Filter.Plot.Internal
 
 
 -- | Highest-level function that can be walked over a Pandoc tree.
@@ -103,7 +107,7 @@ makePlot :: Configuration -- ^ Configuration for default values
 makePlot conf block = maybe (return block) (\tk -> make tk conf block) (plotToolkit block)
 
 
--- | Walk over an entire Pandoc document, changing appropriate code blocks
+-- | Walk over an entire Pandoc document, transforming appropriate code blocks
 -- into figures. 
 --
 -- Failing to render a figure does not stop the filter, so that you may run the filter
@@ -113,6 +117,27 @@ plotTransform :: Configuration -- ^ Configuration for default values
               -> Pandoc        -- ^ Input document
               -> IO Pandoc
 plotTransform conf = walkM $ makePlot conf
+
+
+-- | Walk over an entire Pandoc document *in parallel*, transforming appropriate code blocks
+-- into figures.
+--
+-- Failing to render a figure does not stop the filter, so that you may run the filter
+-- on documents without having all necessary toolkits installed. In this case, error
+-- messages are printed to stderr, and blocks are left unchanged.
+--
+-- @since 0.5.0.0
+plotTransformP :: Configuration 
+               -> Pandoc
+               -> IO Pandoc
+plotTransformP conf (Pandoc meta blocks) = do
+    -- We use the maximum number of threads possible, up until
+    -- the point where there are more threads than blocks
+    availableThreads <- getNumCapabilities
+    let numThreads = min availableThreads (length blocks)
+
+    newBlocks <- withPool numThreads $ \pool -> parallel pool (makePlot conf <$> blocks)
+    return $ Pandoc meta newBlocks
 
 
 -- | Force to use a particular toolkit to render appropriate code blocks.
