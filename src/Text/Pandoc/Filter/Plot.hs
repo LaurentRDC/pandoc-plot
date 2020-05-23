@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-|
 Module      : $header$
 Description : Pandoc filter to create figures from code blocks using your plotting toolkit of choice
@@ -65,7 +66,6 @@ module Text.Pandoc.Filter.Plot (
       makePlot
     -- * Operating on whole Pandoc documents
     , plotTransform
-    , parPlotTransform
     -- * Cleaning output directories
     , cleanOutputDirs
     -- * Runtime configuration
@@ -110,35 +110,30 @@ makePlot conf block = maybe (return block) (\tk -> make tk conf block) (plotTool
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
 -- into figures. 
 --
+-- Based on configuration, this function might operate on blocks in parallel.
+--
 -- Failing to render a figure does not stop the filter, so that you may run the filter
 -- on documents without having all necessary toolkits installed. In this case, error
 -- messages are printed to stderr, and blocks are left unchanged.
 plotTransform :: Configuration -- ^ Configuration for default values
               -> Pandoc        -- ^ Input document
               -> IO Pandoc
-plotTransform conf = walkM $ makePlot conf
+plotTransform conf = walkFunc (makePlot conf)
+    where
+        walkFunc = if allowParallel conf
+                        then parWalk
+                        else walkM
 
 
--- | Walk over an entire Pandoc document *in parallel*, transforming appropriate code blocks
--- into figures.
---
--- Failing to render a figure does not stop the filter, so that you may run the filter
--- on documents without having all necessary toolkits installed. In this case, error
--- messages are printed to stderr, and blocks are left unchanged.
---
--- @since 0.5.0.0
-parPlotTransform :: Configuration 
-                 -> Pandoc
-                 -> IO Pandoc
-parPlotTransform conf doc@(Pandoc meta blocks) = do
-    -- We use the maximum number of threads possible, up until
-    -- the point where there are more threads than blocks
+-- | Walk over pandoc document, potentially in parallel.
+-- This function is equivalent to walkM for single-threaded operation
+parWalk :: (Block -> IO Block) -> Pandoc -> IO Pandoc
+parWalk f doc@(Pandoc meta blocks) = do
     availableThreads <- getNumCapabilities
     let numThreads = min availableThreads (length blocks)
     if numThreads == 1
-        then plotTransform conf doc
-        else 
-            withPool numThreads $ \pool -> parallel pool (makePlot conf <$> blocks)
+        then walkM f doc
+        else withPool numThreads $ \pool -> parallel pool (f <$> blocks)
             >>= \newBlocks -> return $ Pandoc meta newBlocks
 
 

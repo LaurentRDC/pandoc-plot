@@ -22,7 +22,7 @@ import           System.Directory                 (doesFileExist)
 import           System.IO.Temp                   (writeSystemTempFile)
 
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
-                                                   parPlotTransform)
+                                                   plotTransform)
 import           Text.Pandoc.Filter.Plot.Internal (cls, Configuration(..),
                                                    supportedSaveFormats, 
                                                    configuration, toolkits, 
@@ -135,7 +135,7 @@ commandParser = optional $ subparser (
 toJSONFilterWithConfig :: IO ()
 toJSONFilterWithConfig = do
     c <- config
-    toJSONFilter (parPlotTransform c)
+    toJSONFilter (plotTransform c)
 
 
 config :: IO Configuration

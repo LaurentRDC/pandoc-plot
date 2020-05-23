@@ -41,11 +41,12 @@ configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
 -- but we want to read those files before building a full
 -- @Configuration@ value.
 data ConfigPrecursor = ConfigPrecursor
-    { _defaultDirectory  :: !FilePath   -- ^ The default directory where figures will be saved.
-    , _defaultWithSource :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
-    , _defaultDPI        :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
-    , _defaultSaveFormat :: !SaveFormat -- ^ The default save format of generated figures.
-    , _captionFormat     :: Format        -- ^ Caption format in Pandoc notation, e.g. "markdown+tex_math_dollars".
+    { _defaultDirectory  :: !FilePath    -- ^ The default directory where figures will be saved.
+    , _defaultWithSource :: !Bool        -- ^ The default behavior of whether or not to include links to source code and high-res
+    , _defaultDPI        :: !Int         -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
+    , _defaultSaveFormat :: !SaveFormat  -- ^ The default save format of generated figures.
+    , _captionFormat     :: !Format      -- ^ Caption format in Pandoc notation, e.g. "markdown+tex_math_dollars".
+    , _allowParallel     :: !Bool        -- ^ Allow parallel processing of @Block@s.
     
     , _matplotlibPrec    :: !MatplotlibPrecursor
     , _matlabPrec        :: !MatlabPrecursor
@@ -63,6 +64,7 @@ instance Default ConfigPrecursor where
         , _defaultDPI        = defaultDPI def
         , _defaultSaveFormat = defaultSaveFormat def
         , _captionFormat     = captionFormat def
+        , _allowParallel     = allowParallel def
         
         , _matplotlibPrec    = def
         , _matlabPrec        = def
@@ -137,11 +139,12 @@ instance FromJSON ConfigPrecursor where
     parseJSON (Null) = return def -- In case of empty file
     parseJSON (Object v) = do
         
-        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (defaultDirectory def)
-        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (defaultWithSource def)
-        _defaultDPI        <- v .:? (tshow DpiK)           .!= (defaultDPI def)
+        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory def)
+        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource def)
+        _defaultDPI        <- v .:? (tshow DpiK)           .!= (_defaultDPI def)
         _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat def)
         _captionFormat     <- v .:? (tshow CaptionFormatK) .!= (_captionFormat def)
+        _allowParallel     <- v .:? (tshow AllowParallelK) .!= (_allowParallel def)
 
         _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
         _matlabPrec        <- v .:? (cls Matlab)           .!= def
@@ -162,6 +165,7 @@ renderConfig ConfigPrecursor{..} = do
         defaultDPI        = _defaultDPI
         defaultSaveFormat = _defaultSaveFormat
         captionFormat     = _captionFormat
+        allowParallel     = _allowParallel
 
         matplotlibTightBBox   = _matplotlibTightBBox _matplotlibPrec
         matplotlibTransparent = _matplotlibTransparent _matplotlibPrec

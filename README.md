@@ -215,6 +215,7 @@ source: false
 dpi: 80
 format: PNG
 caption_format: markdown+tex_math_dollars
+allow_parallel: true
 
 # The possible parameters for the Matplotlib toolkit
 matplotlib:
