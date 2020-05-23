@@ -178,11 +178,11 @@ This `preamble` parameter is perfect for longer documents with many plots. Simpl
 
 ### Performance
 
-`pandoc-plot` minimizes work, only generating figures if it absolutely must, i.e. if the content has changed. 
+`pandoc-plot` minimizes work, only generating figures if it absolutely must, i.e. if the content has changed. `pandoc-plot` will save the hash of the source code used to generate a figure in its filename. Before generating a figure, `pandoc-plot` will check it this figure already exists based on the hash of its source! This also means that there is no way to directly name figures.
 
-`pandoc-plot` will save the hash of the source code used to generate a figure in its filename. Before generating a figure, `pandoc-plot` will check it this figure already exists based on the hash of its source! This also means that there is no way to directly name figures.
+Moreover, `pandoc-plot` takes advantage of multicore CPUs for large documents, rendering figures **in parallel**.
 
-Therefore, you can confidently run the filter on very large documents containing hundreds of figures --- like a book or a thesis --- and only the figures which have changed will be re-generated.
+Therefore, you can confidently run the filter on very large documents containing hundreds of figures, like a book or a thesis.
 
 ### Compatibility with pandoc-crossref
 

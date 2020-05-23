@@ -65,7 +65,7 @@ module Text.Pandoc.Filter.Plot (
       makePlot
     -- * Operating on whole Pandoc documents
     , plotTransform
-    , plotTransformP
+    , parPlotTransform
     -- * Cleaning output directories
     , cleanOutputDirs
     -- * Runtime configuration
@@ -127,10 +127,10 @@ plotTransform conf = walkM $ makePlot conf
 -- messages are printed to stderr, and blocks are left unchanged.
 --
 -- @since 0.5.0.0
-plotTransformP :: Configuration 
+parPlotTransform :: Configuration 
                -> Pandoc
                -> IO Pandoc
-plotTransformP conf (Pandoc meta blocks) = do
+parPlotTransform conf (Pandoc meta blocks) = do
     -- We use the maximum number of threads possible, up until
     -- the point where there are more threads than blocks
     availableThreads <- getNumCapabilities
