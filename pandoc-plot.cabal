@@ -115,3 +115,12 @@ test-suite tests
                    , mtl                >= 2.2   && < 2.3
     default-language: Haskell2010
   
+benchmark benchmark-pandoc-plot
+    type: exitcode-stdio-1.0
+    main-is: bench.hs
+    hs-source-dirs: benchmark
+    build-depends:   base
+                   , pandoc-plot
+                   , pandoc-types
+                   , criterion >= 1.0 && < 1.6
+    ghc-options:   -Wall -Wcompat -rtsopts -O2 -threaded -with-rtsopts=-N
