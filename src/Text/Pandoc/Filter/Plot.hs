@@ -177,6 +177,6 @@ data PandocPlotError
     | ToolkitNotInstalledError Toolkit
 
 instance Show PandocPlotError where
-    show (ScriptRuntimeError cmd exitcode) = "ERROR (pandoc-plot) The script failed with exit code " <> show exitcode <> "."
-    show (ScriptChecksFailedError msg)     = "ERROR (pandoc-plot) A script check failed with message: " <> msg <> "."
-    show (ToolkitNotInstalledError tk)     = "ERROR (pandoc-plot) The " <> show tk <> " toolkit is required but not installed."
+    show (ScriptRuntimeError _ exitcode) = "ERROR (pandoc-plot) The script failed with exit code " <> show exitcode <> "."
+    show (ScriptChecksFailedError msg)   = "ERROR (pandoc-plot) A script check failed with message: " <> msg <> "."
+    show (ToolkitNotInstalledError tk)   = "ERROR (pandoc-plot) The " <> show tk <> " toolkit is required but not installed."
