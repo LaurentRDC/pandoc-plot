@@ -80,6 +80,6 @@ test_script:
 
 # Integration tests
 # We install pandoc with conda because it is prebuilt
-- conda install --yes pandoc
+- conda install --yes -c conda-forge pandoc
 - stack install --local-bin-path .
 - pandoc --filter pandoc-plot -i tests/integration.md -t html
