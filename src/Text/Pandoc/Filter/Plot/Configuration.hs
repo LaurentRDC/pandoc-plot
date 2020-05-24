@@ -15,6 +15,7 @@ Reading configuration from file
 
 module Text.Pandoc.Filter.Plot.Configuration (
       configuration
+    , defaultConfiguration
 ) where
 
 import           Data.Default.Class     (Default, def)
@@ -35,6 +36,13 @@ import Text.Pandoc.Filter.Plot.Types
 -- to the default value. Parsing errors result in thrown exceptions.
 configuration :: FilePath -> IO Configuration
 configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
+
+
+-- | Default configuration values.
+--
+-- @since 0.5.0.0
+defaultConfiguration :: Configuration
+defaultConfiguration = def
 
 
 -- We define a precursor type because preambles are best specified as file paths,

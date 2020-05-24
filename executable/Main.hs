@@ -8,7 +8,6 @@ module Main where
 import           Control.Applicative              ((<|>))
 import           Control.Monad                    (join, forM_)
 
-import           Data.Default.Class               (def)
 import           Data.List                        (intersperse, (\\))
 import           Data.Monoid                      ((<>))
 import           Data.Text                        (unpack)
@@ -22,11 +21,13 @@ import           System.Directory                 (doesFileExist)
 import           System.IO.Temp                   (writeSystemTempFile)
 
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
-                                                   plotTransform)
-import           Text.Pandoc.Filter.Plot.Internal (cls, Configuration(..),
-                                                   supportedSaveFormats, 
-                                                   configuration, toolkits, 
-                                                   readDoc, cleanOutputDirs)
+                                                   plotTransform,
+                                                   defaultConfiguration, 
+                                                   configuration, 
+                                                   Configuration(..))
+import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats, 
+                                                   toolkits, readDoc, 
+                                                   cleanOutputDirs, )
 
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
@@ -143,7 +144,7 @@ config = do
     configExists <- doesFileExist ".pandoc-plot.yml"
     if configExists
         then configuration ".pandoc-plot.yml" 
-        else return def
+        else return defaultConfiguration
 
 
 showFullVersion :: IO ()

@@ -70,6 +70,7 @@ module Text.Pandoc.Filter.Plot (
     , cleanOutputDirs
     -- * Runtime configuration
     , configuration
+    , defaultConfiguration
     , Configuration(..)
     , SaveFormat(..)
     , Script
