@@ -77,3 +77,8 @@ test_script:
 # The ugly echo "" hack is to avoid complaints about 0 being an invalid file
 # descriptor
 - echo "" | stack %ARGS% --no-terminal test --fast --ghc-options=-Werror
+
+# Integration tests
+- stack install pandoc
+- stack install
+- pandoc --filter pandoc-plot -i tests/integration.md -t html
