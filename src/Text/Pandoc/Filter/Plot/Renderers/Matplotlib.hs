@@ -23,12 +23,14 @@ module Text.Pandoc.Filter.Plot.Renderers.Matplotlib (
     , matplotlibCapture
     , matplotlibExtraAttrs
     , matplotlibAvailable
+    , matplotlibCheckIfShow
 ) where
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 import qualified Data.Map.Strict                           as M
-
+import           Data.Monoid                               (Any(..))
+import qualified Data.Text                                 as T
 
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
@@ -56,6 +58,22 @@ matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "tran
 
 matplotlibAvailable :: Configuration -> IO Bool
 matplotlibAvailable Configuration{..} = commandSuccess [st|#{matplotlibExe} -c "import matplotlib"|]
+
+
+-- | Check if `matplotlib.pyplot.show()` calls are present in the script,
+-- which would halt pandoc-plot
+matplotlibCheckIfShow :: Script -> CheckResult
+matplotlibCheckIfShow s = 
+    if getAny $ mconcat showPresent
+        then CheckFailed "encountered a call to `matplotlib.pyplot.show`."
+        else CheckPassed
+    where
+        showPresent = (\n -> Any (T.isInfixOf n s)) <$> [
+                  "matplotlib.pyplot.show()"
+                , "pyplot.show()"
+                , "plt.show()"
+            ]
+        
 
 
 -- | Flexible boolean parsing

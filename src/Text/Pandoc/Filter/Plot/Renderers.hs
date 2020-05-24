@@ -92,7 +92,8 @@ supportedSaveFormats GNUPlot      = gnuplotSupportedSaveFormats
 -- the figure is not rendered. This is to prevent, for example,
 -- blocking operations to occur.
 scriptChecks :: Toolkit -> [Script -> CheckResult]
-scriptChecks = const mempty
+scriptChecks Matplotlib = [matplotlibCheckIfShow]
+scriptChecks _ = mempty
 
 
 -- | Parse code block headers for extra attributes that are specific

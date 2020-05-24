@@ -121,15 +121,13 @@ plotTransform :: Configuration -- ^ Configuration for default values
               -> IO Pandoc
 plotTransform conf = walkFunc (makePlot conf)
     where
-        walkFunc = if allowParallel conf
-                        then parWalk
-                        else walkM
+        walkFunc = if allowParallel conf then parWalkM else walkM
 
 
 -- | Walk over pandoc document, potentially in parallel.
 -- This function is equivalent to walkM for single-threaded operation
-parWalk :: (Block -> IO Block) -> Pandoc -> IO Pandoc
-parWalk f doc@(Pandoc meta blocks) = do
+parWalkM :: (Block -> IO Block) -> Pandoc -> IO Pandoc
+parWalkM f doc@(Pandoc meta blocks) = do
     availableThreads <- getNumCapabilities
     let numThreads = min availableThreads (length blocks)
     if numThreads == 1
