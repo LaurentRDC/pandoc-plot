@@ -79,7 +79,6 @@ executable pandoc-plot
     build-depends:
           base                  >= 4.11 && <5
         , directory
-        , data-default-class    >= 0.1.2
         , deepseq
         , filepath
         , githash               >= 0.1.3.0 && < 1
@@ -118,9 +117,13 @@ test-suite tests
 benchmark benchmark-pandoc-plot
     type: exitcode-stdio-1.0
     main-is: bench.hs
+    other-modules:
+        MatplotlibGallery
     hs-source-dirs: benchmark
     build-depends:   base
                    , pandoc-plot
                    , pandoc-types
-                   , criterion >= 1.0 && < 1.6
+                   , criterion          >= 1.0 && < 1.6
+                   , template-haskell   > 2.7 && < 3
+                   , text
     ghc-options:   -Wall -Wcompat -rtsopts -O2 -threaded -with-rtsopts=-N
