@@ -6,6 +6,7 @@ Release 0.5.0.0
 ---------------
 
 * The `pandoc-plot` executable will now process documents in parallel. This should dramatically speed up processing of large documents with lots of figures. This functionality is also exposed in libraries via `parPlotTransform`.
+* Added `defaultConfiguration` so that people don't have to install the `data-default` package to get access to default configuration values. 
 
 Release 0.4.0.1
 ---------------
