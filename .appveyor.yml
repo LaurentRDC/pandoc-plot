@@ -79,6 +79,7 @@ test_script:
 - echo "" | stack %ARGS% --no-terminal test --fast --ghc-options=-Werror
 
 # Integration tests
-- stack install pandoc
+# We install pandoc with conda because it is prebuilt
+- conda install --yes pandoc
 - stack install
 - pandoc --filter pandoc-plot -i tests/integration.md -t html
