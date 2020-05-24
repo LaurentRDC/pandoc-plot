@@ -50,6 +50,7 @@ toolkitSuite tk =
         , testMarkdownFormattingCaption1
         , testMarkdownFormattingCaption2
         , testCleanOutputDirs
+        , testChecksFail
         ] <*> [tk]
 
 

@@ -76,6 +76,8 @@ module Text.Pandoc.Filter.Plot (
     , Script
     -- * For testing and internal purposes ONLY
     , make
+    , make'
+    , PandocPlotError(..)
     , readDoc
     , availableToolkits
     , unavailableToolkits
@@ -84,7 +86,6 @@ module Text.Pandoc.Filter.Plot (
 import Control.Concurrent                   (getNumCapabilities)
 import Control.Concurrent.ParallelIO.Local  (withPool, parallel)
 
-import Control.Monad.IO.Class               (liftIO)
 import Control.Monad.Reader                 (runReaderT)
 
 import System.IO                            (hPutStrLn, stderr)
@@ -145,22 +146,37 @@ make :: Toolkit       -- ^ Plotting toolkit.
      -> Configuration -- ^ Configuration for default values.
      -> Block 
      -> IO Block
-make tk conf block = runReaderT (makePlot' block) (PlotEnv tk conf)
+make tk conf blk = do
+    result <- make' tk conf blk
+    either (const (return blk) . showErr) return result
     where
-        makePlot' :: Block -> PlotM Block
-        makePlot' blk 
-            = parseFigureSpec blk 
-            >>= maybe 
-                    (return blk) 
-                    (\s -> runScriptIfNecessary s >>= handleResult s)
-            where                
-                handleResult spec ScriptSuccess         = return $ toImage (captionFormat conf) spec
-                handleResult _ (ScriptChecksFailed msg) = do
-                    liftIO $ hPutStrLn stderr $ " ERROR (pandoc-plot) The script check failed with message: " <> msg 
-                    return blk
-                handleResult _ (ScriptFailure _ code) = do
-                    liftIO $ hPutStrLn stderr $ "ERROR (pandoc-plot) The script failed with exit code " <> show code 
-                    return blk
-                handleResult _ (ToolkitNotInstalled tk') = do
-                    liftIO $ hPutStrLn stderr $ "ERROR (pandoc-plot) The " <> show tk' <> " toolkit is required but not installed."
-                    return blk
+        showErr e = hPutStrLn stderr $ show e
+
+
+make' :: Toolkit 
+      -> Configuration 
+      -> Block 
+      -> IO (Either PandocPlotError Block)
+make' tk conf block = runReaderT (make'' block) (PlotEnv tk conf)
+    where
+        make'' :: Block -> PlotM (Either PandocPlotError Block)
+        make'' blk = parseFigureSpec blk
+                    >>= maybe
+                        (return $ Right blk)
+                        (\s -> runScriptIfNecessary s >>= handleResult s)
+            where
+                handleResult spec ScriptSuccess          = return $ Right $ toImage (captionFormat conf) spec
+                handleResult _ (ScriptFailure msg code)  = return $ Left (ScriptRuntimeError msg code) 
+                handleResult _ (ScriptChecksFailed msg)  = return $ Left (ScriptChecksFailedError msg)
+                handleResult _ (ToolkitNotInstalled tk') = return $ Left (ToolkitNotInstalledError tk') 
+
+
+data PandocPlotError
+    = ScriptRuntimeError String Int
+    | ScriptChecksFailedError String
+    | ToolkitNotInstalledError Toolkit
+
+instance Show PandocPlotError where
+    show (ScriptRuntimeError cmd exitcode) = "ERROR (pandoc-plot) The script failed with exit code " <> show exitcode <> "."
+    show (ScriptChecksFailedError msg)     = "ERROR (pandoc-plot) A script check failed with message: " <> msg <> "."
+    show (ToolkitNotInstalledError tk)     = "ERROR (pandoc-plot) The " <> show tk <> " toolkit is required but not installed."

@@ -8,6 +8,7 @@ Release 0.5.0.0
 * The `pandoc-plot` executable will now process documents in parallel. This should dramatically speed up processing of large documents with lots of figures. This functionality is also exposed in libraries via `parPlotTransform`.
 * Added a benchmarking suite.
 * Added `defaultConfiguration` so that people don't have to install the `data-default` package to get access to default configuration values. 
+* Added a check for the `matplotlib` toolkit, preventing users from using `matplotlib.pyplot.show` in figures. This would halt `pandoc-plot`.
 
 Release 0.4.0.1
 ---------------

@@ -228,6 +228,27 @@ testCleanOutputDirs tk =
         assertEqual "" outputDirExists False
 
 
+-------------------------------------------------------------------------------
+-- Test that toolkit checks failed when appropriate.
+testChecksFail :: Toolkit -> TestTree
+testChecksFail tk = 
+    testCase "script checks fail when appropriate" $ do
+        assertChecksFail tk
+    where
+        assertChecksFail Matplotlib = do
+            let postfix = unpack . cls $ tk
+            tempDir <- (</> "test-checks" <> postfix) <$> getCanonicalTemporaryDirectory
+            ensureDirectoryExistsAndEmpty tempDir
+
+            let cb = addDirectory tempDir $ codeBlock Matplotlib "plt.show()"
+            result <- (make' Matplotlib) def cb
+            let expectedCheck :: Either PandocPlotError a -> Bool
+                expectedCheck (Left (ScriptChecksFailedError _)) = True
+                expectedCheck _ = False
+            assertBool "" (expectedCheck result)
+
+        assertChecksFail _          = assertEqual "Test skipped" True True
+
 codeBlock :: Toolkit -> Script -> Block
 codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
 
