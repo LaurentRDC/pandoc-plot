@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskellQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-|
 This module was inspired by pandoc-crossref
 |-}
