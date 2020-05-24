@@ -146,9 +146,8 @@ make :: Toolkit       -- ^ Plotting toolkit.
      -> Configuration -- ^ Configuration for default values.
      -> Block 
      -> IO Block
-make tk conf blk = do
-    result <- make' tk conf blk
-    either (const (return blk) . showErr) return result
+make tk conf blk = 
+    either (const (return blk) . showErr) return =<< make' tk conf blk
     where
         showErr e = hPutStrLn stderr $ show e
 
