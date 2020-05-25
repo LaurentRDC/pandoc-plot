@@ -109,7 +109,7 @@ import Text.Pandoc.Filter.Plot.Internal
 -- messages are printed to stderr, and blocks are left unchanged.
 makePlot :: Walkable Block a
          => Configuration -- ^ Configuration for default values
-         -> a
+         -> a             -- ^ Input block or document
          -> IO a
 makePlot conf = walkM makePlot'
     where
