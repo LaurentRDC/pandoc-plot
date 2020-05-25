@@ -180,7 +180,7 @@ This `preamble` parameter is perfect for longer documents with many plots. Simpl
 
 `pandoc-plot` minimizes work, only generating figures if it absolutely must, i.e. if the content has changed. `pandoc-plot` will save the hash of the source code used to generate a figure in its filename. Before generating a figure, `pandoc-plot` will check it this figure already exists based on the hash of its source! This also means that there is no way to directly name figures.
 
-Moreover, starting with version 0.5.0.0, `pandoc-plot` takes advantage of multicore CPUs, rendering figures **in parallel** for large documents.
+Moreover, starting with version 0.5.0.0, `pandoc-plot` takes advantage of multicore CPUs, rendering figures **in parallel**.
 
 Therefore, you can confidently run the filter on very large documents containing hundreds of figures, like a book or a thesis.
 
@@ -215,7 +215,6 @@ source: false
 dpi: 80
 format: PNG
 caption_format: markdown+tex_math_dollars
-allow_parallel: true
 
 # The possible parameters for the Matplotlib toolkit
 matplotlib:

@@ -26,7 +26,7 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , unavailableToolkits
 ) where
 
-import           Control.Concurrent.ParallelIO.Local
+import           Control.Concurrent.Async                      (mapConcurrently)
 
 import           Data.List                                     ((\\))
 import           Data.Map.Strict                               (Map)
@@ -139,14 +139,7 @@ toolkitAvailable GNUPlot      = gnuplotAvailable
 -- | List of toolkits available on this machine.
 -- The executables to look for are taken from the configuration.
 availableToolkits :: Configuration -> IO [Toolkit]
-availableToolkits conf = do
-    -- Certain toolkits (e.g. Python-based toolkits)
-    -- may take a long time to startup.
-    -- Therefore, we check for available of toolkits in parallel.
-    -- TODO: benchmark. Is this overkill?
-    maybeToolkits <- withPool (length toolkits) $ 
-        \pool -> parallel pool (maybeToolkit <$> toolkits)
-    return $ catMaybes maybeToolkits
+availableToolkits conf = catMaybes <$> (mapConcurrently maybeToolkit toolkits)
     where
         maybeToolkit tk = do
             available <- toolkitAvailable tk conf

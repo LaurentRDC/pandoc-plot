@@ -33,11 +33,6 @@ format: PNG
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
 
-# Allow the pandoc-plot executable to process code blocks in parallel. This will
-# speed up pandoc-plot significantly when processing documents with multiple figures.
-allow_parallel: true
-
-
 # The possible parameters for the Matplotlib toolkit
 matplotlib:
   # preamble: matplotlib.py

@@ -83,15 +83,13 @@ module Text.Pandoc.Filter.Plot (
     , unavailableToolkits
     ) where
 
-import Control.Concurrent                   (getNumCapabilities)
-import Control.Concurrent.ParallelIO.Local  (withPool, parallel)
+import Control.Concurrent.Async          (mapConcurrently)
 
-import Control.Monad.Reader                 (runReaderT)
+import Control.Monad.Reader              (runReaderT)
 
-import System.IO                            (hPutStrLn, stderr)
+import System.IO                         (hPutStrLn, stderr)
 
-import Text.Pandoc.Definition
-import Text.Pandoc.Walk                     (walkM)
+import Text.Pandoc.Definition            (Pandoc(..), Block)
 
 import Text.Pandoc.Filter.Plot.Internal
 
@@ -110,9 +108,7 @@ makePlot conf block = maybe (return block) (\tk -> make tk conf block) (plotTool
 
 
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
--- into figures. 
---
--- Based on configuration, this function might operate on blocks in parallel.
+-- into figures. This function will operate on blocks in parallel if possible.
 --
 -- Failing to render a figure does not stop the filter, so that you may run the filter
 -- on documents without having all necessary toolkits installed. In this case, error
@@ -120,21 +116,8 @@ makePlot conf block = maybe (return block) (\tk -> make tk conf block) (plotTool
 plotTransform :: Configuration -- ^ Configuration for default values
               -> Pandoc        -- ^ Input document
               -> IO Pandoc
-plotTransform conf = walkFunc (makePlot conf)
-    where
-        walkFunc = if allowParallel conf then parWalkM else walkM
-
-
--- | Walk over pandoc document, potentially in parallel.
--- This function is equivalent to walkM for single-threaded operation
-parWalkM :: (Block -> IO Block) -> Pandoc -> IO Pandoc
-parWalkM f doc@(Pandoc meta blocks) = do
-    availableThreads <- getNumCapabilities
-    let numThreads = min availableThreads (length blocks)
-    if numThreads == 1
-        then walkM f doc
-        else withPool numThreads $ \pool -> parallel pool (f <$> blocks)
-            >>= \newBlocks -> return $ Pandoc meta newBlocks
+plotTransform conf (Pandoc meta blocks) =
+    mapConcurrently (makePlot conf) blocks >>= return . Pandoc meta
 
 
 -- | Force to use a particular toolkit to render appropriate code blocks.

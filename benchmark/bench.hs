@@ -13,13 +13,9 @@ main =
     defaultMain [
         envWithCleanup (return ()) (\_ -> cleanupEnv) $ \_ -> 
             bgroup "main" [
-                  bench "single-threaded filter" $ nfIO (plotTransform singleThreadedConf benchDoc)
-                , bench "multi-threaded filter"  $ nfIO (plotTransform multiThreadedConf benchDoc)
+                  bench "filter" $ nfIO (plotTransform defaultConfiguration benchDoc)
                 ]
     ]
-    where
-        singleThreadedConf = defaultConfiguration {allowParallel=False}
-        multiThreadedConf  = defaultConfiguration {allowParallel=True}
 
 cleanupEnv :: IO ()
 cleanupEnv = cleanOutputDirs defaultConfiguration benchDoc >> return ()

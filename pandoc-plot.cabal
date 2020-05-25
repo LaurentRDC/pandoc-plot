@@ -57,7 +57,7 @@ library
         , hashable           >= 1     && < 2
         , pandoc             >= 2.8   && < 3
         , pandoc-types       >= 1.20  && < 2
-        , parallel-io        >= 0.3.3 && < 0.4
+        , async              >= 2     && < 3
         , shakespeare        >= 2.0   && < 3
         , temporary
         , text               >= 1     && < 2

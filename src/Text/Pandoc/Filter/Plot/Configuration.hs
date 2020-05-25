@@ -54,7 +54,6 @@ data ConfigPrecursor = ConfigPrecursor
     , _defaultDPI        :: !Int         -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , _defaultSaveFormat :: !SaveFormat  -- ^ The default save format of generated figures.
     , _captionFormat     :: !Format      -- ^ Caption format in Pandoc notation, e.g. "markdown+tex_math_dollars".
-    , _allowParallel     :: !Bool        -- ^ Allow parallel processing of @Block@s.
     
     , _matplotlibPrec    :: !MatplotlibPrecursor
     , _matlabPrec        :: !MatlabPrecursor
@@ -72,7 +71,6 @@ instance Default ConfigPrecursor where
         , _defaultDPI        = defaultDPI def
         , _defaultSaveFormat = defaultSaveFormat def
         , _captionFormat     = captionFormat def
-        , _allowParallel     = allowParallel def
         
         , _matplotlibPrec    = def
         , _matlabPrec        = def
@@ -152,7 +150,6 @@ instance FromJSON ConfigPrecursor where
         _defaultDPI        <- v .:? (tshow DpiK)           .!= (_defaultDPI def)
         _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat def)
         _captionFormat     <- v .:? (tshow CaptionFormatK) .!= (_captionFormat def)
-        _allowParallel     <- v .:? (tshow AllowParallelK) .!= (_allowParallel def)
 
         _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
         _matlabPrec        <- v .:? (cls Matlab)           .!= def
@@ -173,7 +170,6 @@ renderConfig ConfigPrecursor{..} = do
         defaultDPI        = _defaultDPI
         defaultSaveFormat = _defaultSaveFormat
         captionFormat     = _captionFormat
-        allowParallel     = _allowParallel
 
         matplotlibTightBBox   = _matplotlibTightBBox _matplotlibPrec
         matplotlibTransparent = _matplotlibTransparent _matplotlibPrec

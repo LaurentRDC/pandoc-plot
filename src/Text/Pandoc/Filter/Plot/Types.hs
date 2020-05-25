@@ -97,7 +97,6 @@ data Configuration = Configuration
     , defaultDPI            :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
     , captionFormat         :: !Format     -- ^ Caption format, in the same notation as Pandoc format, e.g. "markdown+tex_math_dollars"
-    , allowParallel         :: !Bool       -- ^ Allow pandoc-plot to process blocks in parallel. This does nothing on single-core systems. @since 0.5.0.0.
 
     , matplotlibPreamble    :: !Script     -- ^ The default preamble script for the matplotlib toolkit.
     , plotlyPythonPreamble  :: !Script     -- ^ The default preamble script for the Plotly/Python toolkit.
@@ -126,7 +125,6 @@ instance Default Configuration where
           , defaultDPI        = 80
           , defaultSaveFormat = PNG
           , captionFormat     = Format "markdown+tex_math_dollars"
-          , allowParallel     = True
           
           , matplotlibPreamble  = mempty
           , plotlyPythonPreamble= mempty
@@ -174,7 +172,6 @@ data InclusionKey
     | CaptionFormatK
     | PreambleK
     | DpiK
-    | AllowParallelK
     | ExecutableK
     | MatplotlibTightBBoxK
     | MatplotlibTransparentK
@@ -190,7 +187,6 @@ instance Show InclusionKey where
     show CaptionFormatK         = "caption_format"
     show PreambleK              = "preamble"
     show DpiK                   = "dpi"
-    show AllowParallelK         = "allow_parallel"
     show ExecutableK            = "executable"
     show MatplotlibTightBBoxK   = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
