@@ -5,7 +5,8 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 0.5.0.0
 ---------------
 
-* The `pandoc-plot` executable will now process documents in parallel. This should dramatically speed up processing of large documents with lots of figures. This functionality is also exposed in libraries via `parPlotTransform`.
+* The `pandoc-plot` executable will now process documents in parallel. This should dramatically speed up processing of large documents with lots of figures. 
+This happens automatically through the function `plotTransform`.
 * Added a benchmarking suite.
 * Added `defaultConfiguration` so that people don't have to install the `data-default` package to get access to default configuration values. 
 * Added a check for the `matplotlib` toolkit, preventing users from using `matplotlib.pyplot.show` in figures. This would halt `pandoc-plot`.
