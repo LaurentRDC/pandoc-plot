@@ -83,3 +83,4 @@ test_script:
 - conda install --yes -c conda-forge pandoc
 - stack install --local-bin-path .
 - pandoc --filter pandoc-plot -i tests/integration.md -t html
+- pandoc-plot clean tests/integration.md
