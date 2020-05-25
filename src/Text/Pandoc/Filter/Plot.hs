@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-|
 Module      : $header$
 Description : Pandoc filter to create figures from code blocks using your plotting toolkit of choice
@@ -90,6 +91,7 @@ import Control.Monad.Reader              (runReaderT)
 import System.IO                         (hPutStrLn, stderr)
 
 import Text.Pandoc.Definition            (Pandoc(..), Block)
+import Text.Pandoc.Walk                  (walkM, Walkable)
 
 import Text.Pandoc.Filter.Plot.Internal
 
@@ -98,13 +100,20 @@ import Text.Pandoc.Filter.Plot.Internal
 -- All code blocks that have the appropriate class names will be considered
 -- figures, e.g. @.matplotlib@.
 --
+-- This function can be made to operation on whole @Pandoc@ documents. However,
+-- you should prefer the @plotTransform@ function for whole documents, as it
+-- is optimized for parallel operations.
+--
 -- Failing to render a figure does not stop the filter, so that you may run the filter
 -- on documents without having all necessary toolkits installed. In this case, error
 -- messages are printed to stderr, and blocks are left unchanged.
-makePlot :: Configuration -- ^ Configuration for default values
-         -> Block 
-         -> IO Block
-makePlot conf block = maybe (return block) (\tk -> make tk conf block) (plotToolkit block)
+makePlot :: Walkable Block a
+         => Configuration -- ^ Configuration for default values
+         -> a
+         -> IO a
+makePlot conf = walkM makePlot'
+    where
+        makePlot' block = maybe (return block) (\tk -> make tk conf block) (plotToolkit block)
 
 
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
