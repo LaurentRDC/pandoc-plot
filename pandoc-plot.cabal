@@ -127,3 +127,4 @@ benchmark benchmark-pandoc-plot
                    , template-haskell   > 2.7 && < 3
                    , text
     ghc-options:   -Wall -Wcompat -rtsopts -O2 -threaded -with-rtsopts=-N
+    default-language: Haskell2010
