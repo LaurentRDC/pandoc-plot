@@ -1,7 +1,6 @@
 # Release checklist
 
-[ ] Update README.md if necessary.
-    This includes the pandoc-plot --help output in the detailed usage section.
+[ ] Render the README with `mkreadme.ps1`
 [ ] Update CHANGELOG.md if necessary.
 [ ] Run Azure pipelines to make sure tests pass.
 [ ] Tag release in git.
