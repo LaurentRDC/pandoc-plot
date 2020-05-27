@@ -362,9 +362,8 @@ To include the functionality of `pandoc-plot` in a Haskell package, you can use 
 In case you want to use the filter with your own Hakyll setup, you can use a transform function that works on entire documents:
 
 ```haskell
-import Text.Pandoc.Filter.Plot (plotTransform)
+import Text.Pandoc.Filter.Plot (plotTransform, defaultConfiguration)
 
-import Data.Default (def) -- From data-default package, for default configuration
 import Hakyll
 
 -- Unsafe compiler is required because of the interaction
@@ -374,7 +373,7 @@ makePlotPandocCompiler =
   pandocCompilerWithTransformM
     defaultHakyllReaderOptions
     defaultHakyllWriterOptions
-    (unsafeCompiler . plotTransform def) -- default configuration
+    (unsafeCompiler . plotTransform defaultConfiguration)
 ```
 
 ## Installation
