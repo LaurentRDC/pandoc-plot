@@ -11,32 +11,31 @@ Do not edit manually
 
 `pandoc-plot` turns code blocks present in your documents (Markdown, LaTeX, etc.) into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
 
--   [Overview](#overview)
--   [Supported toolkits](#supported-toolkits)
--   [Features](#features)
-    -   [Captions](#captions)
-    -   [Link to source code](#link-to-source-code)
-    -   [Preamble scripts](#preamble-scripts)
-    -   [Performance](#performance)
-    -   [Compatibility with
+  - [Overview](#overview)
+  - [Supported toolkits](#supported-toolkits)
+  - [Features](#features)
+      - [Captions](#captions)
+      - [Link to source code](#link-to-source-code)
+      - [Preamble scripts](#preamble-scripts)
+      - [Performance](#performance)
+      - [Compatibility with
         pandoc-crossref](#compatibility-with-pandoc-crossref)
--   [Configuration](#configuration)
-    -   [Executables](#executables)
-    -   [Toolkit-specific options](#toolkit-specific-options)
--   [Detailed usage](#detailed-usage)
-    -   [As a filter](#as-a-filter)
-    -   [Cleaning output](#cleaning-output)
-    -   [Configuration template](#configuration-template)
-    -   [As a Haskell library](#as-a-haskell-library)
--   [Installation](#installation)
-    -   [Binaries and Installers](#binaries-and-installers)
-    -   [conda](#conda)
-    -   [From Hackage/Stackage](#from-hackagestackage)
-    -   [From source](#from-source)
--   [Warning](#warning)
+  - [Configuration](#configuration)
+      - [Executables](#executables)
+      - [Toolkit-specific options](#toolkit-specific-options)
+  - [Detailed usage](#detailed-usage)
+      - [As a filter](#as-a-filter)
+      - [Cleaning output](#cleaning-output)
+      - [Configuration template](#configuration-template)
+      - [As a Haskell library](#as-a-haskell-library)
+  - [Installation](#installation)
+      - [Binaries and Installers](#binaries-and-installers)
+      - [conda](#conda)
+      - [From Hackage/Stackage](#from-hackagestackage)
+      - [From source](#from-source)
+  - [Warning](#warning)
 
-Overview
---------
+## Overview
 
 This program is a [Pandoc](https://pandoc.org/) filter. It can therefore
 be used in the middle of conversion from input format to output format,
@@ -45,7 +44,7 @@ replacing code blocks with figures.
 The filter recognizes code blocks with classes that match plotting
 toolkits. For example, using the `matplotlib` toolkit:
 
-```` {.markdown}
+```` markdown
 # My document
 
 This is a paragraph.
@@ -62,43 +61,41 @@ plt.title('This is an example figure')
 Putting the above in `input.md`, we can then generate the plot and embed
 it in an HTML page:
 
-``` {.bash}
+``` bash
 pandoc --filter pandoc-plot input.md --output output.html
 ```
 
 *Note that pandoc-plot only works with pandoc \>= 2.8 because of some
-breaking changes in pandoc's API.*
+breaking changes in pandoc’s API.*
 
-Supported toolkits
-------------------
+## Supported toolkits
 
 `pandoc-plot` currently supports the following plotting toolkits
 (**installed separately**):
 
--   `matplotlib`: plots using the [matplotlib](https://matplotlib.org/)
+  - `matplotlib`: plots using the [matplotlib](https://matplotlib.org/)
     Python library;
--   `plotly_python` : plots using the [plotly](https://plot.ly/python/)
+  - `plotly_python` : plots using the [plotly](https://plot.ly/python/)
     Python library;
--   `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
--   `mathplot` : plots using
+  - `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
+  - `mathplot` : plots using
     [Mathematica](https://www.wolfram.com/mathematica/);
--   `octaveplot`: plots using [GNU
+  - `octaveplot`: plots using [GNU
     Octave](https://www.gnu.org/software/octave/);
--   `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
--   `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
+  - `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
+  - `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
 
 To know which toolkits are useable on *your machine* (and which ones are
 not available), you can check with the `--toolkits/-t` flag:
 
-``` {.bash}
+``` bash
 pandoc-plot --toolkits
 ```
 
 **Wish your plotting toolkit of choice was available? Please [raise an
-issue](https://github.com/LaurentRDC/pandoc-plot/issues)!**
+issue](https://github.com/LaurentRDC/pandoc-plot/issues)\!**
 
-Features
---------
+## Features
 
 ### Captions
 
@@ -107,7 +104,7 @@ optional `caption` parameter.
 
 **Markdown**:
 
-```` {.markdown}
+```` markdown
 ```{.matlabplot caption="This is a simple figure with a **Markdown** caption"}
 x  = 0: .1 : 2*pi;
 y1 = cos(x);
@@ -120,7 +117,7 @@ plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 
 **LaTex**:
 
-``` {.latex}
+``` latex
 \begin{minted}[caption=This is a simple figure with a caption]{matlabplot}
 x  = 0: .1 : 2*pi;
 y1 = cos(x);
@@ -132,7 +129,7 @@ plot(x, y1, 'b', x, y2, 'r-.', 'LineWidth', 2)
 ```
 
 Caption formatting unfortunately cannot be determined automatically. To
-specify a caption format (e.g. "markdown", "LaTeX", etc.), see
+specify a caption format (e.g. “markdown”, “LaTeX”, etc.), see
 [Configuration](#configuration).
 
 ### Link to source code
@@ -146,7 +143,7 @@ You can turn this on via the `source=true` key:
 
 **Markdown**:
 
-```` {.markdown}
+```` markdown
 ```{.mathplot source=true}
 ...
 ```
@@ -154,7 +151,7 @@ You can turn this on via the `source=true` key:
 
 **LaTex**:
 
-``` {.latex}
+``` latex
 \begin{minted}[source=true]{mathplot}
 ...
 \end{minted}
@@ -170,14 +167,14 @@ Matplotlib plots to have the
 [`ggplot`](https://matplotlib.org/tutorials/introductory/customizing.html#sphx-glr-tutorials-introductory-customizing-py)
 style, you can write a very short preamble `style.py` like so:
 
-``` {.python}
+``` python
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 ```
 
 and include it in your document as follows:
 
-```` {.markdown}
+```` markdown
 ```{.matplotlib preamble=style.py}
 plt.figure()
 plt.plot([0,1,2,3,4], [1,2,3,4,5])
@@ -187,7 +184,7 @@ plt.title('This is an example figure')
 
 Which is equivalent to writing the following markdown:
 
-```` {.markdown}
+```` markdown
 ```{.matplotlib}
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
@@ -200,14 +197,14 @@ plt.title('This is an example figure')
 
 The equivalent LaTeX usage is as follows:
 
-``` {.latex}
+``` latex
 \begin{minted}[include=style.py]{matplotlib}
 
 \end{minted}
 ```
 
 This `preamble` parameter is perfect for longer documents with many
-plots. Simply define the style you want in a separate script! You can
+plots. Simply define the style you want in a separate script\! You can
 also import packages this way, or define functions you often use.
 
 ### Performance
@@ -216,8 +213,8 @@ also import packages this way, or define functions you often use.
 must, i.e. if the content has changed. `pandoc-plot` will save the hash
 of the source code used to generate a figure in its filename. Before
 generating a figure, `pandoc-plot` will check it this figure already
-exists based on the hash of its source! This also means that there is no
-way to directly name figures.
+exists based on the hash of its source\! This also means that there is
+no way to directly name figures.
 
 Moreover, starting with version 0.5.0.0, `pandoc-plot` takes advantage
 of multicore CPUs, rendering figures **in parallel**.
@@ -235,7 +232,7 @@ You can use `pandoc-crossref` in conjunction with `pandoc-plot` for the
 ultimate figure-making pipeline. You can combine both in a figure like
 so:
 
-```` {.markdown}
+```` markdown
 ```{#fig:myexample .plotly_python caption="This is a caption"}
 # Insert figure script here
 ```
@@ -247,18 +244,18 @@ If the above source is located in file `myfile.md`, you can render the
 figure and references by applying `pandoc-plot` **first**, and then
 `pandoc-crossref`. For example:
 
-``` {.bash}
+``` bash
 pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 ```
 
-Configuration
--------------
+## Configuration
 
 To avoid repetition, `pandoc-plot` can be configured using simple YAML
 files. `pandoc-plot` will look for a `.pandoc-plot.yml` file in the
 current working directory. Here are **all** the possible parameters:
 
-``` {.yaml}
+``` yaml
+
 # This is an example configuration. Everything in this file is optional.
 # Please refer to the documentation to know about the parameters herein.
 #
@@ -344,12 +341,12 @@ name (if it is present on the PATH), or the full path to the executable.
 
 Examples:
 
-``` {.yaml}
+``` yaml
 matplotlib:
   executable: python3
 ```
 
-``` {.yaml}
+``` yaml
 matlabplot:
   executable: "C:\Program Files\Matlab\R2019b\bin\matlab.exe"
 ```
@@ -358,25 +355,24 @@ matlabplot:
 
 #### Matplotlib
 
--   `tight_bbox` is a boolean that determines whether to use
+  - `tight_bbox` is a boolean that determines whether to use
     `bbox_inches="tight"` or not when saving Matplotlib figures. For
     example, `tight_bbox: true`. See
     [here](https://matplotlib.org/api/_as_gen/matplotlib.pyplot.savefig.html)
     for details.
--   `transparent` is a boolean that determines whether to make
+  - `transparent` is a boolean that determines whether to make
     Matplotlib figure background transparent or not. This is useful, for
     example, for displaying a plot on top of a colored background on a
     web page. High-resolution figures are not affected. For example,
     `transparent: true`.
 
-Detailed usage
---------------
+## Detailed usage
 
 `pandoc-plot` is a command line executable with a few functions. You can
 take a look at the help using the `-h`/`--help` flag:
 
-``` {.bash}
-pandoc-plot - generate figures directly in documents using your plotting toolkit
+``` bash
+∩╗┐pandoc-plot - generate figures directly in documents using your plotting toolkit
 of choice.
 
 Usage: pandoc-plot.exe ([-v|--version] | [--full-version] | [-m|--manual] |
@@ -411,7 +407,7 @@ More information can be found via the manual (pandoc-plot --manual) or the repos
 The most common use for `pandoc-plot` is as a pandoc filter, in which
 case it should be called without arguments. For example:
 
-``` {.bash}
+``` bash
 pandoc --filter pandoc-plot -i input.md -o output.html
 ```
 
@@ -422,7 +418,7 @@ You can chain other filters with it (e.g.,
 [`pandoc-crossref`](https://github.com/lierdakil/pandoc-crossref)) like
 so:
 
-``` {.bash}
+``` bash
 pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
 ```
 
@@ -437,7 +433,7 @@ code blocks. These figures will build up over time. You can use the
 `pandoc-plot` output files. For example, to delete the figures generated
 from the `input.md` file:
 
-``` {.bash}
+``` bash
 pandoc-plot clean input.md
 ```
 
@@ -447,16 +443,16 @@ placed. **WARNING**: all files will be removed.
 ### Configuration template
 
 Because `pandoc-plot` supports a few toolkits, there are a lot of
-configuration options. Don't start from scratch! The
+configuration options. Don’t start from scratch\! The
 `write-example-config` command will create a file for you, which you can
 then modify:
 
-``` {.bash}
+``` bash
 pandoc-plot write-example-config
 ```
 
 You will need to re-name the file to `.pandoc-ploy.yml` to be able to
-use it, so don't worry about overwriting your own configuration.
+use it, so don’t worry about overwriting your own configuration.
 
 ### As a Haskell library
 
@@ -470,7 +466,7 @@ Hackage](https://hackage.haskell.org/package/pandoc-plot).
 In case you want to use the filter with your own Hakyll setup, you can
 use a transform function that works on entire documents:
 
-``` {.haskell}
+``` haskell
 import Text.Pandoc.Filter.Plot (plotTransform, defaultConfiguration)
 
 import Hakyll
@@ -485,8 +481,7 @@ makePlotPandocCompiler =
     (unsafeCompiler . plotTransform defaultConfiguration)
 ```
 
-Installation
-------------
+## Installation
 
 ### Binaries and Installers
 
@@ -502,7 +497,7 @@ package page](https://anaconda.org/conda-forge/pandoc-plot).
 
 To install in the current environment:
 
-``` {.sh}
+``` sh
 conda install -c conda-forge pandoc-plot
 ```
 
@@ -513,14 +508,14 @@ conda install -c conda-forge pandoc-plot
 [Stackage](https://www.stackage.org/nightly/package/pandoc-plot). Using
 the [`cabal-install`](https://www.haskell.org/cabal/) tool:
 
-``` {.bash}
+``` bash
 cabal update
 cabal install pandoc-plot
 ```
 
 or
 
-``` {.bash}
+``` bash
 stack update
 stack install pandoc-plot
 ```
@@ -531,14 +526,13 @@ Building from source can be done using
 [`stack`](https://docs.haskellstack.org/en/stable/README/) or
 [`cabal`](https://www.haskell.org/cabal/):
 
-``` {.bash}
+``` bash
 git clone https://github.com/LaurentRDC/pandoc-plot
 cd pandoc-plot
 stack install # Alternatively, `cabal install`
 ```
 
-Warning
--------
+## Warning
 
 Do not run this filter on unknown documents. There is nothing in
 `pandoc-plot` that can stop a script from performing **evil actions**.
