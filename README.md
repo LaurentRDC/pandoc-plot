@@ -20,11 +20,11 @@ Do not edit manually
       - [Performance](#performance)
       - [Compatibility with
         pandoc-crossref](#compatibility-with-pandoc-crossref)
-  - [Configuration](#configuration)
-      - [Executables](#executables)
-      - [Toolkit-specific options](#toolkit-specific-options)
   - [Detailed usage](#detailed-usage)
       - [As a filter](#as-a-filter)
+      - [Parameters and options](#parameters-and-options)
+      - [Configuration](#configuration)
+      - [Toolkit-specific options](#toolkit-specific-options)
       - [Cleaning output](#cleaning-output)
       - [Configuration template](#configuration-template)
       - [As a Haskell library](#as-a-haskell-library)
@@ -248,7 +248,111 @@ figure and references by applying `pandoc-plot` **first**, and then
 pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 ```
 
-## Configuration
+## Detailed usage
+
+`pandoc-plot` is a command line executable with a few functions. You can
+take a look at the help using the `-h`/`--help` flag:
+
+``` bash
+∩╗┐pandoc-plot - generate figures directly in documents using your plotting toolkit
+of choice.
+
+Usage: pandoc-plot.exe ([-v|--version] | [--full-version] | [-m|--manual] |
+                       [-t|--toolkits]) [COMMAND] [AST]
+  This pandoc filter generates plots from code blocks using a multitude of
+  possible renderers. This allows to keep documentation and figures in perfect
+  synchronicity.
+
+Available options:
+  -v,--version             Show version number and exit.
+  --full-version           Show full version information and exit.
+  -m,--manual              Open the manual page in the default web browser and
+                           exit.
+  -t,--toolkits            Show information on toolkits and exit. Executables
+                           from the configuration file will be used, if a
+                           '.pandoc-plot.yml' file is in the current directory.
+  -h,--help                Show this help text
+
+Available commands:
+  clean                    Clean output directories where figures from FILE
+                           might be stored. WARNING: All files in those
+                           directories will be deleted.
+  write-example-config     Write example configuration to a file.
+
+More information can be found via the manual (pandoc-plot --manual) or the repository README, located at
+    https://github.com/LaurentRDC/pandoc-plot
+
+```
+
+### As a filter
+
+The most common use for `pandoc-plot` is as a pandoc filter, in which
+case it should be called without arguments. For example:
+
+``` bash
+pandoc --filter pandoc-plot -i input.md -o output.html
+```
+
+If `pandoc-plot` fails to render a code block into a figure, the
+filtering will not stop. Your code blocks will stay unchanged.
+
+You can chain other filters with it (e.g.,
+[`pandoc-crossref`](https://github.com/lierdakil/pandoc-crossref)) like
+so:
+
+``` bash
+pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
+```
+
+### Parameters and options
+
+`pandoc-plot` looks for code blocks with a specific class, depending on
+the toolkit you want to use. There are also other parameters that affect
+the figure that will be included in your document. Here are all the
+possible parameters:
+
+```` markdown
+  ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
+  # script content
+  ```
+````
+
+  - `cls` must be one of the following: `matplotlib`, `matlabplot`,
+    `plotly_python`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`
+
+All following parameters are optional, with their default values
+controlled by the [configuration](#configuration)
+
+  - `directory` is a path to the directory where the figure and source
+    code will be saved. You cannot control the file name. This path is
+    either absolute, or relative from the working directory where you
+    call `pandoc-plot`.
+  - `caption` is the caption text. The format of the caption is
+    specified in the `caption_format` parameter, described below.
+  - `format` is the desired filetype for the resulting figure. Possible
+    values for `format` are \[`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`,
+    `TIF`, `WEBP`\]. Not all toolkits support all formats. See
+    `pandoc-plot --toolkits` for toolkit-specific information regarding
+    save formats.
+  - `source` is a boolean toggle that determines whether the source code
+    should be linked in the caption or not. Possible values are
+    \[`true`, `True`, `false`, `False`\].
+  - `preamble` is a path to a script that will be included as a preamble
+    to the content of the code block. This path is either absolute, or
+    relative from the working directory where you call `pandoc-plot`.
+  - `dpi` is the pixel density of the figure in dots-per-inch. Possible
+    values are positive integers. Not all toolkits respect this.
+  - `executable` is a path to the executable to use
+    (e.g. `C:\\python3.exe`) or the name of the executable
+    (e.g. `python3`).
+  - `caption_format` is the text format of the caption. Possible values
+    are exactly the same as `pandoc`’s format specification, usually
+    `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with
+    raw LaTeX would be parsed correctly provided that
+    `caption_format=markdown+raw_tex`. See Pandoc’s guide on [Specifying
+    formats](https://pandoc.org/MANUAL.html#specifying-formats).
+
+### Configuration
 
 To avoid repetition, `pandoc-plot` can be configured using simple YAML
 files. `pandoc-plot` will look for a `.pandoc-plot.yml` file in the
@@ -334,7 +438,7 @@ override them in documents directly.
 Using `pandoc-plot write-example-config` will write the default
 configuration to a file which you can then customize.
 
-### Executables
+#### Executables
 
 The `executable` parameter for all toolkits can be either the executable
 name (if it is present on the PATH), or the full path to the executable.
@@ -353,7 +457,7 @@ matlabplot:
 
 ### Toolkit-specific options
 
-#### Matplotlib
+##### Matplotlib
 
   - `tight_bbox` is a boolean that determines whether to use
     `bbox_inches="tight"` or not when saving Matplotlib figures. For
@@ -365,62 +469,6 @@ matlabplot:
     example, for displaying a plot on top of a colored background on a
     web page. High-resolution figures are not affected. For example,
     `transparent: true`.
-
-## Detailed usage
-
-`pandoc-plot` is a command line executable with a few functions. You can
-take a look at the help using the `-h`/`--help` flag:
-
-``` bash
-∩╗┐pandoc-plot - generate figures directly in documents using your plotting toolkit
-of choice.
-
-Usage: pandoc-plot.exe ([-v|--version] | [--full-version] | [-m|--manual] |
-                       [-t|--toolkits]) [COMMAND] [AST]
-  This pandoc filter generates plots from code blocks using a multitude of
-  possible renderers. This allows to keep documentation and figures in perfect
-  synchronicity.
-
-Available options:
-  -v,--version             Show version number and exit.
-  --full-version           Show full version information and exit.
-  -m,--manual              Open the manual page in the default web browser and
-                           exit.
-  -t,--toolkits            Show information on toolkits and exit. Executables
-                           from the configuration file will be used, if a
-                           '.pandoc-plot.yml' file is in the current directory.
-  -h,--help                Show this help text
-
-Available commands:
-  clean                    Clean output directories where figures from FILE
-                           might be stored. WARNING: All files in those
-                           directories will be deleted.
-  write-example-config     Write example configuration to a file.
-
-More information can be found via the manual (pandoc-plot --manual) or the repository README, located at
-    https://github.com/LaurentRDC/pandoc-plot
-
-```
-
-### As a filter
-
-The most common use for `pandoc-plot` is as a pandoc filter, in which
-case it should be called without arguments. For example:
-
-``` bash
-pandoc --filter pandoc-plot -i input.md -o output.html
-```
-
-If `pandoc-plot` fails to render a code block into a figure, the
-filtering will not stop. Your code blocks will stay unchanged.
-
-You can chain other filters with it (e.g.,
-[`pandoc-crossref`](https://github.com/lierdakil/pandoc-crossref)) like
-so:
-
-``` bash
-pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
-```
 
 ### Cleaning output
 
