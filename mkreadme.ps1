@@ -6,5 +6,5 @@ stack install
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 pandoc-plot --help > help.txt
 
-pandoc --standalone --toc --toc-depth=4 --include-before-body=readme/header.md --filter=pandoc-include-code readme/README.template -t gfm -o README.md
+pandoc --standalone --toc --include-before-body=readme/header.md --filter=pandoc-include-code readme/README.template -t gfm -o README.md
 rm .\help.txt
