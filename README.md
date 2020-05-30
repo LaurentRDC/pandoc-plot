@@ -23,11 +23,14 @@ Do not edit manually
   - [Detailed usage](#detailed-usage)
       - [As a filter](#as-a-filter)
       - [Parameters and options](#parameters-and-options)
+          - [Code highlighting](#code-highlighting)
       - [Configuration](#configuration)
-      - [Toolkit-specific options](#toolkit-specific-options)
+          - [Executables](#executables)
+          - [Toolkit-specific options](#toolkit-specific-options)
       - [Cleaning output](#cleaning-output)
       - [Configuration template](#configuration-template)
       - [As a Haskell library](#as-a-haskell-library)
+          - [Usage with Hakyll](#usage-with-hakyll)
   - [Installation](#installation)
       - [Binaries and Installers](#binaries-and-installers)
       - [conda](#conda)
@@ -352,6 +355,35 @@ controlled by the [configuration](#configuration)
     `caption_format=markdown+raw_tex`. See Pandoc’s guide on [Specifying
     formats](https://pandoc.org/MANUAL.html#specifying-formats).
 
+#### Code highlighting
+
+If your editor supports code highlighting in code blocks, you can also
+include the programming language. In Markdown:
+
+```` markdown
+  ```{.language .cls (options)}
+  # script content
+  ```
+````
+
+For example, for Matplotlib plots:
+
+```` markdown
+  ```{.python .matplotlib}
+  # script content
+  ```
+````
+
+or for GGPlot2 figures:
+
+```` markdown
+  ```{.r .ggplot2}
+  # script content
+  ```
+````
+
+This way, you benefit from code highlighting *and* `pandoc-plot`.
+
 ### Configuration
 
 To avoid repetition, `pandoc-plot` can be configured using simple YAML
@@ -455,7 +487,7 @@ matlabplot:
   executable: "C:\Program Files\Matlab\R2019b\bin\matlab.exe"
 ```
 
-### Toolkit-specific options
+#### Toolkit-specific options
 
 ##### Matplotlib
 
