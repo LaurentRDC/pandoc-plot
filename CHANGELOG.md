@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.6.0.0
+--------------
+
+* Added the ability to write the example configuration to an arbitrary file using `pandoc-plot write-example-config`.
+
 Release 0.5.0.0
 ---------------
 

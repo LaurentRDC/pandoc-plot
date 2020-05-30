@@ -39,10 +39,10 @@ pandoc --filter pandoc-plot input.md --output output.html
 * `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
 
 
-To know which toolkits are useable on *your machine* (and which ones are not available), you can check with the `--toolkits/-t` flag:
+To know which toolkits are useable on *your machine* (and which ones are not available), you can check with the `toolkits` command:
 
 ```bash
-pandoc-plot --toolkits
+pandoc-plot toolkits
 ```
 
 **Wish your plotting toolkit of choice was available? Please [raise an issue](https://github.com/LaurentRDC/pandoc-plot/issues)!**
@@ -215,7 +215,7 @@ All following parameters are optional, with their default values controlled by t
 
 * `directory` is a path to the directory where the figure and source code will be saved. You cannot control the file name. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
 * `caption` is the caption text. The format of the caption is specified in the `caption_format` parameter, described below.
-* `format` is the desired filetype for the resulting figure. Possible values for `format` are [`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`, `TIF`, `WEBP`]. Not all toolkits support all formats. See `pandoc-plot --toolkits` for toolkit-specific information regarding save formats.
+* `format` is the desired filetype for the resulting figure. Possible values for `format` are [`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`, `TIF`, `WEBP`]. Not all toolkits support all formats. See `pandoc-plot toolkits` for toolkit-specific information regarding save formats.
 * `source` is a boolean toggle that determines whether the source code should be linked in the caption or not. Possible values are [`true`, `True`, `false`, `False`].
 * `preamble` is a path to a script that will be included as a preamble to the content of the code block. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
 * `dpi` is the pixel density of the figure in dots-per-inch. Possible values are positive integers. Not all toolkits respect this.

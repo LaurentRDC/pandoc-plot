@@ -41,22 +41,16 @@ import           Paths_pandoc_plot                (version)
 import           ManPage                          (embedManualHtml)
 import           ExampleConfig                    (embedExampleConfig)
 
--- It is understood that Opts Nothing Nothing should be used for filtering
-data Opts = Opts
-    { optCommand :: Maybe Command
-    , optFlag :: Maybe Flag
-    }
-
--- The difference between commands and flags is that commands perform actions,
--- while flags only display information.
+-- The difference between commands and flags is that commands require knowledge of
+-- the configuration, while flags only display static information.
 
 data Command = Clean FilePath
-             | WriteConfig
+             | WriteConfig FilePath
+             | Toolkits
 
 data Flag = Version
           | FullVersion
           | Manual
-          | Toolkits
     deriving (Eq)
 
 
@@ -81,16 +75,16 @@ main = join $ execParser opts
             return $ go flag_ command_ input
         
         go :: Maybe Flag -> Maybe Command -> Maybe String -> IO ()
-        go (Just Version)     _ _ = putStrLn (V.showVersion version)
-        go (Just FullVersion) _ _ = showFullVersion
-        go (Just Manual)      _ _ = showManPage
-        go (Just Toolkits)    _ _ = showAvailableToolkits
-        go _ (Just (Clean fp))  _ = clean fp
-        go _ (Just WriteConfig) _ = writeFile ".example-pandoc-plot.yml" $(embedExampleConfig)
-        go Nothing Nothing      _ = toJSONFilterWithConfig
+        go (Just Version)          _ _ = putStrLn (V.showVersion version)
+        go (Just FullVersion)      _ _ = showFullVersion
+        go (Just Manual)           _ _ = showManPage
+        go _ (Just Toolkits)         _ = showAvailableToolkits
+        go _ (Just (Clean fp))       _ = clean fp
+        go _ (Just (WriteConfig fp)) _ = writeFile fp $(embedExampleConfig)
+        go Nothing Nothing           _ = toJSONFilterWithConfig
 
 flagParser :: Parser (Maybe Flag)
-flagParser = versionP <|> fullVersionP <|> manualP <|> toolkitsP
+flagParser = versionP <|> fullVersionP <|> manualP
     where
         versionP = flag Nothing (Just Version) (mconcat
             [ long "version"
@@ -109,41 +103,45 @@ flagParser = versionP <|> fullVersionP <|> manualP <|> toolkitsP
             , help "Open the manual page in the default web browser and exit."
             ])
 
-        toolkitsP = flag Nothing (Just Toolkits) (mconcat
-            [ long "toolkits"
-            , short 't'
-            , help "Show information on toolkits and exit. Executables from the configuration \
-                   \file will be used, if a '.pandoc-plot.yml' file is in the current directory."
-            ])
-
 commandParser :: Parser (Maybe Command)
-commandParser = optional $ subparser (
-            command "clean" (
+commandParser = optional $ subparser $ mconcat
+            [ command "toolkits" ( 
+                info (toolkitsP <**> helper) (progDesc "Show information on toolkits and exit.")
+                )  
+            , command "clean" (
                 info (cleanP <**> helper) ( 
                     progDesc "Clean output directories where figures from FILE might be stored.\
                               \ WARNING: All files in those directories will be deleted." 
                     )
                 )
-            <> command "write-example-config" (
-                    info (writeConfigP <**> helper) (progDesc "Write example configuration to a file.")
-                    )
+            , command "write-example-config" (
+                info (writeConfigP <**> helper) (progDesc "Write example configuration to a file and exit.")
                 )
+            ]
     where
+        toolkitsP = pure Toolkits
         cleanP = Clean <$> strArgument (metavar "FILE")
-        writeConfigP = pure WriteConfig
+        writeConfigP = WriteConfig <$> 
+                strOption ( 
+                    mconcat [ long "path"
+                            , metavar "FILE"
+                            , value ".example-pandoc-plot.yml"
+                            , help "Target location of the configuration file. Default is \".example-pandoc-plot.yml\""
+                            ] 
+                          )
 
 
 toJSONFilterWithConfig :: IO ()
-toJSONFilterWithConfig = do
-    c <- config
-    toJSONFilter (plotTransform c)
+toJSONFilterWithConfig = config >>= \c -> toJSONFilter (plotTransform c)
 
 
+-- | Load configuration from file. If the file does not exist, 
+-- the default configuration will be used.
 config :: IO Configuration
 config = do 
     configExists <- doesFileExist ".pandoc-plot.yml"
     if configExists
-        then configuration ".pandoc-plot.yml" 
+        then configuration ".pandoc-plot.yml"
         else return defaultConfiguration
 
 

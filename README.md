@@ -85,10 +85,10 @@ breaking changes in pandoc’s API.*
   - `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
 
 To know which toolkits are useable on *your machine* (and which ones are
-not available), you can check with the `--toolkits/-t` flag:
+not available), you can check with the `toolkits` command:
 
 ``` bash
-pandoc-plot --toolkits
+pandoc-plot toolkits
 ```
 
 **Wish your plotting toolkit of choice was available? Please [raise an
@@ -256,8 +256,8 @@ take a look at the help using the `-h`/`--help` flag:
 ∩╗┐pandoc-plot - generate figures directly in documents using your plotting toolkit
 of choice.
 
-Usage: pandoc-plot.exe ([-v|--version] | [--full-version] | [-m|--manual] |
-                       [-t|--toolkits]) [COMMAND] [AST]
+Usage: pandoc-plot.exe ([-v|--version] | [--full-version] | [-m|--manual])
+                       [COMMAND] [AST]
   This pandoc filter generates plots from code blocks using a multitude of
   possible renderers. This allows to keep documentation and figures in perfect
   synchronicity.
@@ -267,16 +267,14 @@ Available options:
   --full-version           Show full version information and exit.
   -m,--manual              Open the manual page in the default web browser and
                            exit.
-  -t,--toolkits            Show information on toolkits and exit. Executables
-                           from the configuration file will be used, if a
-                           '.pandoc-plot.yml' file is in the current directory.
   -h,--help                Show this help text
 
 Available commands:
+  toolkits                 Show information on toolkits and exit.
   clean                    Clean output directories where figures from FILE
                            might be stored. WARNING: All files in those
                            directories will be deleted.
-  write-example-config     Write example configuration to a file.
+  write-example-config     Write example configuration to a file and exit.
 
 More information can be found via the manual (pandoc-plot --manual) or the repository README, located at
     https://github.com/LaurentRDC/pandoc-plot
@@ -331,7 +329,7 @@ controlled by the [configuration](#configuration)
   - `format` is the desired filetype for the resulting figure. Possible
     values for `format` are \[`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`,
     `TIF`, `WEBP`\]. Not all toolkits support all formats. See
-    `pandoc-plot --toolkits` for toolkit-specific information regarding
+    `pandoc-plot toolkits` for toolkit-specific information regarding
     save formats.
   - `source` is a boolean toggle that determines whether the source code
     should be linked in the caption or not. Possible values are
