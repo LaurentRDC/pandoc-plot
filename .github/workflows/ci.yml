@@ -39,6 +39,15 @@ jobs:
     - name: Build
       run: |
         stack build --system-ghc --test --no-run-tests
+      
+    
+    - name: Install plotting toolkits
+      run: |
+        conda install --quiet --yes matplotlib pillow
+        
+        conda install --quiet --yes -c plotly plotly-orca psutil requests
+        conda install --quiet --yes plotly
+
 
     - name: Test
       run: |
