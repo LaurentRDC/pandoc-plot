@@ -4,6 +4,7 @@
 import           Control.Monad                    (forM_)
 
 import           Data.Default.Class               (Default, def)
+import qualified Data.Map.Strict                  as Map
 import           Data.Text                        (Text, unpack)
 
 import           Test.Tasty
@@ -28,6 +29,7 @@ main = do
             "Configuration tests"
             [ testEmptyConfiguration
             , testExampleConfiguration
+            , testConfigurationPathMeta
             ]        
         , testGroup
             "Parsing tests"
@@ -59,11 +61,11 @@ testEmptyConfiguration =
     testCase "empty configuration is correctly parsed to default values" $ do
         let config = def
 
-        parsedConfig <- configuration "tests/fixtures/.pandoc-plot.yml"
+        parsedConfig <- configuration "tests/fixtures/.empty-config.yml"
         assertEqual "" config parsedConfig
 
 
--- The exampel configuration is build by hand (to add comments)
+-- The example configuration is build by hand (to add comments)
 -- and it is embedded into the executable. Therefore, we must make sure it 
 -- is correctly parsed (and is therefore valid.)
 testExampleConfiguration :: TestTree
@@ -78,6 +80,19 @@ testExampleConfiguration =
 
         parsedConfig <- configuration "example-config.yml"
         assertEqual "" config parsedConfig
+
+
+-- Test that the path to configuration in metadata is found correctly
+testConfigurationPathMeta :: TestTree
+testConfigurationPathMeta = 
+    testCase "Configuration path stored in metadata is correctly parsed" $ do
+    let configPath = "tests/fixtures/.pandoc-plot.yml"
+        meta = B.Meta $ Map.fromList [("plot-configuration", B.MetaString configPath)]
+
+    parsedConfig <- maybe (return defaultConfiguration) configuration $ configurationPathMeta (B.Pandoc meta mempty)
+    expected <- configuration (unpack configPath)
+    assertEqual "" expected parsedConfig
+
 
 testCaptionReader :: TestTree
 testCaptionReader = 

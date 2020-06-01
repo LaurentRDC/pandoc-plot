@@ -27,7 +27,8 @@ import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    Configuration(..))
 import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats, 
                                                    toolkits, readDoc, 
-                                                   cleanOutputDirs, )
+                                                   cleanOutputDirs, 
+                                                   configurationPathMeta)
 
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
@@ -130,15 +131,26 @@ commandParser = optional $ subparser $ mconcat
                             ] 
                           )
 
-
+-- | Determine configuration and run filter.
+--
+-- Priority for configuration:
+-- 
+--     (1) Loaded from filepath stored in document metadata, under the key @plot-configuration@;
+--
+--     (2) Loaded from file @.pandoc-plot.yml@ in current work directory;
+--
+--     (3) Default configuration
+--
 toJSONFilterWithConfig :: IO ()
-toJSONFilterWithConfig = config >>= \c -> toJSONFilter (plotTransform c)
+toJSONFilterWithConfig = toJSONFilter $ \doc -> do
+    c <- maybe localConfig configuration (configurationPathMeta doc)
+    plotTransform c doc
 
 
--- | Load configuration from file. If the file does not exist, 
--- the default configuration will be used.
-config :: IO Configuration
-config = do 
+-- | Load configuration from local file @.pandoc-plot.yml@. 
+-- If the file does not exist, the default configuration will be used.
+localConfig :: IO Configuration
+localConfig = do 
     configExists <- doesFileExist ".pandoc-plot.yml"
     if configExists
         then configuration ".pandoc-plot.yml"
@@ -162,7 +174,7 @@ showFullVersion = do
 
 showAvailableToolkits :: IO ()
 showAvailableToolkits = do
-    c <- config
+    c <- localConfig
     putStrLn "\nAVAILABLE TOOLKITS\n"
     available <- availableToolkits c
     return available >>= mapM_ toolkitInfo
@@ -179,11 +191,15 @@ showAvailableToolkits = do
             putStrLn mempty
 
 
+-- | Clean output directories associated with a file
+-- 
+-- Priority for configuration are the same as @toJSONFilterWithConfig@.
 clean :: FilePath -> IO ()
 clean fp = do
-    conf <- config
+    doc <- readDoc fp
+    conf <- maybe localConfig configuration (configurationPathMeta doc)
     putStrLn $ "Cleaning output directories for " <> fp
-    cleanedDirs <- readDoc fp >>= cleanOutputDirs conf
+    cleanedDirs <- cleanOutputDirs conf doc
     forM_ cleanedDirs $ \d -> putStrLn $ "Removed directory " <> d
 
 

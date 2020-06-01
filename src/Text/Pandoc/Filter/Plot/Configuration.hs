@@ -15,24 +15,25 @@ Reading configuration from file
 
 module Text.Pandoc.Filter.Plot.Configuration (
       configuration
+    , configurationPathMeta
     , defaultConfiguration
 ) where
 
 import           Data.Default.Class     (Default, def)
 import           Data.Maybe             (fromMaybe)
-import           Data.Text              (Text, pack)
+import           Data.Text              (Text, pack, unpack)
 import qualified Data.Text.IO           as TIO
 import           Data.Yaml
 import           Data.Yaml.Config       (ignoreEnv, loadYamlSettings)
 
-import           Text.Pandoc.Definition (Format(..))
+import           Text.Pandoc.Definition (Format(..), Pandoc(..), MetaValue(..), lookupMeta)
 
 import Text.Pandoc.Filter.Plot.Types
 
 -- | Read configuration from a YAML file. The
 -- keys are exactly the same as for code blocks.
 --
--- If a key is either not present, its value will be set
+-- If a key is not present, its value will be set
 -- to the default value. Parsing errors result in thrown exceptions.
 configuration :: FilePath -> IO Configuration
 configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
@@ -43,6 +44,33 @@ configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
 -- @since 0.5.0.0
 defaultConfiguration :: Configuration
 defaultConfiguration = def
+
+
+-- | Extact path to configuration from the metadata in a Pandoc document.
+-- The path to the configuration file should be under the @plot-configuration@ key.
+-- In case there is no such metadata, return the default configuration.
+--
+-- For example, at the top of a markdown file:
+--
+-- @
+--     ---
+--     title: My document
+--     author: John Doe
+--     plot-configuration: /path/to/file.yml
+--     ---     
+-- @
+--
+-- The same can be specified via the command line using Pandoc's @-M@ flag:
+--
+-- > pandoc --filter pandoc-plot -M plot-configuration="path/to/file.yml" ...
+--
+-- @since 0.6.0.0
+configurationPathMeta :: Pandoc -> Maybe FilePath
+configurationPathMeta (Pandoc meta _) = 
+        lookupMeta "plot-configuration" meta >>= getPath
+    where
+        getPath (MetaString s) = Just (unpack s)
+        getPath _              = Nothing
 
 
 -- We define a precursor type because preambles are best specified as file paths,

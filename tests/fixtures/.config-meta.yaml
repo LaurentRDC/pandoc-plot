@@ -1,0 +1,3 @@
+# Just not default values
+dpi: 1000
+directory: ".."

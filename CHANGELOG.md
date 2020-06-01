@@ -6,6 +6,21 @@ Release 0.6.0.0
 --------------
 
 * Added the ability to write the example configuration to an arbitrary file using `pandoc-plot write-example-config`.
+* Added the possibility to specify the configuration file via metadata. For example, in Markdown:
+
+    ```markdown
+    ---
+    title: My document
+    author: John Doe
+    plot-configuration: /path/to/file.yml
+    ---     
+    ```
+
+or on the command line:
+
+```bash
+pandoc --filter pandoc-plot -M plot-configuration=/path/to/file.yml ...
+```
 
 Release 0.5.0.0
 ---------------
