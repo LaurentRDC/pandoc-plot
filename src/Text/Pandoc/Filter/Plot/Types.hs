@@ -91,6 +91,24 @@ data PlotEnv
 
 -- | The @Configuration@ type holds the default values to use
 -- when running pandoc-plot. These values can be overridden in code blocks.
+--
+-- You can create an instance of the @Configuration@ type from file using the @configuration@ function.
+--
+-- You can store the path to a configuration file in metadata under the key @plot-configuration@. For example, in Markdown:
+--
+-- @
+--     ---
+--     title: My document
+--     author: John Doe
+--     plot-configuration: /path/to/file.yml
+--     ---     
+-- @
+--
+-- The same can be specified via the command line using Pandoc's @-M@ flag:
+--
+-- > pandoc --filter pandoc-plot -M plot-configuration="path/to/file.yml" ...
+--
+-- In this case, use @configurationPathMeta@ to extact the path from @Pandoc@ documents.
 data Configuration = Configuration
     { defaultDirectory      :: !FilePath   -- ^ The default directory where figures will be saved.
     , defaultWithSource     :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res

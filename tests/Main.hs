@@ -86,7 +86,7 @@ testExampleConfiguration =
 testConfigurationPathMeta :: TestTree
 testConfigurationPathMeta = 
     testCase "Configuration path stored in metadata is correctly parsed" $ do
-    let configPath = "tests/fixtures/.pandoc-plot.yml"
+    let configPath = "tests/fixtures/.config-meta.yml"
         meta = B.Meta $ Map.fromList [("plot-configuration", B.MetaString configPath)]
 
     parsedConfig <- maybe (return defaultConfiguration) configuration $ configurationPathMeta (B.Pandoc meta mempty)
