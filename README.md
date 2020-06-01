@@ -381,8 +381,7 @@ This way, you benefit from code highlighting *and* `pandoc-plot`.
 ### Configuration
 
 To avoid repetition, `pandoc-plot` can be configured using simple YAML
-files. `pandoc-plot` will look for a `.pandoc-plot.yml` file in the
-current working directory. Here are **all** the possible parameters:
+files. Here are **all** the possible parameters:
 
 ``` yaml
 
@@ -460,6 +459,33 @@ gnuplot:
 
 A file like the above sets the **default** values; you can still
 override them in documents directly.
+
+The easiest way to specify configuration for `pandoc-plot` is to place a
+`.pandoc-plot.yml` file in the current working directory. You can also
+specify a configuration file in document metadata, under the
+`plot-configuration` key. For example, in Markdown:
+
+``` markdown
+---
+title: My document
+author: John Doe
+plot-configuration: /path/to/file.yml
+---
+```
+
+or on the command line, using pandoc’s `-M/--metadata` flag:
+
+``` bash
+pandoc --filter pandoc-plot -M plot-configuration=/path/to/file.yml ...
+```
+
+The hierarchy of configuration files is as follows:
+
+1.  A configuration file specified in the metadata under the
+    `plot-configuration` key;
+2.  Otherwise, a file in the current working directory named
+    `.pandoc-plot.yml`;
+3.  Finally, the default configuration is used.
 
 Using `pandoc-plot write-example-config` will write the default
 configuration to a file which you can then customize.
