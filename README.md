@@ -25,7 +25,6 @@ Do not edit manually
       - [Parameters and options](#parameters-and-options)
       - [Configuration](#configuration)
       - [Cleaning output](#cleaning-output)
-      - [Configuration template](#configuration-template)
       - [As a Haskell library](#as-a-haskell-library)
   - [Installation](#installation)
       - [Binaries and Installers](#binaries-and-installers)
@@ -487,8 +486,19 @@ The hierarchy of configuration files is as follows:
     `.pandoc-plot.yml`;
 3.  Finally, the default configuration is used.
 
-Using `pandoc-plot write-example-config` will write the default
-configuration to a file which you can then customize.
+#### Configuration template
+
+Because `pandoc-plot` supports a few toolkits, there are a lot of
+configuration options. Don’t start from scratch\! The
+`write-example-config` command will create a file for you, which you can
+then modify:
+
+``` bash
+pandoc-plot write-example-config
+```
+
+You will need to re-name the file to `.pandoc-ploy.yml` to be able to
+use it, so don’t worry about overwriting your own configuration.
 
 #### Executables
 
@@ -539,20 +549,6 @@ pandoc-plot clean input.md
 
 This sill remove all directories where a figure *could* have been
 placed. **WARNING**: all files will be removed.
-
-### Configuration template
-
-Because `pandoc-plot` supports a few toolkits, there are a lot of
-configuration options. Don’t start from scratch\! The
-`write-example-config` command will create a file for you, which you can
-then modify:
-
-``` bash
-pandoc-plot write-example-config
-```
-
-You will need to re-name the file to `.pandoc-ploy.yml` to be able to
-use it, so don’t worry about overwriting your own configuration.
 
 ### As a Haskell library
 
