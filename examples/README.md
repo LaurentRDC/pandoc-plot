@@ -13,3 +13,7 @@ This example is a bit more advanced, because it combines LaTeX templates and Mar
 ## preamble
 
 This example shows how to use preamble files and show the source code for figures as a link in captions.
+
+## config
+
+This example shows how to use a custom configuration file.
