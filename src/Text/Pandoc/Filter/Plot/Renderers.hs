@@ -39,6 +39,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.Matlab
 import           Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import           Text.Pandoc.Filter.Plot.Renderers.Octave
 import           Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
+import           Text.Pandoc.Filter.Plot.Renderers.PlotlyR
 import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 import           Text.Pandoc.Filter.Plot.Renderers.GNUPlot
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable)
@@ -50,6 +51,7 @@ import           Text.Pandoc.Filter.Plot.Types
 scriptExtension :: Toolkit -> String
 scriptExtension Matplotlib   = ".py"
 scriptExtension PlotlyPython = ".py"
+scriptExtension PlotlyR      = ".r"
 scriptExtension Matlab       = ".m"
 scriptExtension Mathematica  = ".m"
 scriptExtension Octave       = ".m"
@@ -61,6 +63,7 @@ scriptExtension GNUPlot      = ".gp"
 comment :: Toolkit -> (Text -> Text)
 comment Matplotlib   = mappend "# "
 comment PlotlyPython = mappend "# "
+comment PlotlyR      = mappend "# "
 comment Matlab       = mappend "% "
 comment Mathematica  = \t -> mconcat ["(*", t, "*)"]
 comment Octave       = mappend "% "
@@ -72,6 +75,7 @@ comment GNUPlot      = mappend "# "
 preambleSelector :: Toolkit -> (Configuration -> Script)
 preambleSelector Matplotlib   = matplotlibPreamble
 preambleSelector PlotlyPython = plotlyPythonPreamble
+preambleSelector PlotlyR      = plotlyRPreamble
 preambleSelector Matlab       = matlabPreamble
 preambleSelector Mathematica  = mathematicaPreamble
 preambleSelector Octave       = octavePreamble
@@ -83,6 +87,7 @@ preambleSelector GNUPlot      = gnuplotPreamble
 supportedSaveFormats :: Toolkit -> [SaveFormat]
 supportedSaveFormats Matplotlib   = matplotlibSupportedSaveFormats
 supportedSaveFormats PlotlyPython = plotlyPythonSupportedSaveFormats
+supportedSaveFormats PlotlyR      = plotlyRSupportedSaveFormats
 supportedSaveFormats Matlab       = matlabSupportedSaveFormats
 supportedSaveFormats Mathematica  = mathematicaSupportedSaveFormats
 supportedSaveFormats Octave       = octaveSupportedSaveFormats
@@ -110,6 +115,7 @@ parseExtraAttrs _          = return mempty
 command :: Toolkit -> (Configuration -> FigureSpec -> FilePath -> IO Text)
 command Matplotlib   = matplotlibCommand
 command PlotlyPython = plotlyPythonCommand
+command PlotlyR      = plotlyRCommand
 command Matlab       = matlabCommand
 command Mathematica  = mathematicaCommand
 command Octave       = octaveCommand
@@ -121,6 +127,7 @@ command GNUPlot      = gnuplotCommand
 capture :: Toolkit -> (FigureSpec -> FilePath -> Script)
 capture Matplotlib   = matplotlibCapture
 capture PlotlyPython = plotlyPythonCapture
+capture PlotlyR      = plotlyRCapture
 capture Matlab       = matlabCapture
 capture Mathematica  = mathematicaCapture
 capture Octave       = octaveCapture
@@ -132,6 +139,7 @@ capture GNUPlot      = gnuplotCapture
 toolkitAvailable :: Toolkit -> Configuration -> IO Bool
 toolkitAvailable Matplotlib   = matplotlibAvailable
 toolkitAvailable PlotlyPython = plotlyPythonAvailable
+toolkitAvailable PlotlyR      = plotlyRAvailable
 toolkitAvailable Matlab       = matlabAvailable
 toolkitAvailable Mathematica  = mathematicaAvailable
 toolkitAvailable Octave       = octaveAvailable

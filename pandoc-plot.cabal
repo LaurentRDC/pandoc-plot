@@ -38,6 +38,7 @@ library
         Text.Pandoc.Filter.Plot.Renderers.Prelude
         Text.Pandoc.Filter.Plot.Renderers.Matplotlib
         Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
+        Text.Pandoc.Filter.Plot.Renderers.PlotlyR
         Text.Pandoc.Filter.Plot.Renderers.Matlab
         Text.Pandoc.Filter.Plot.Renderers.Mathematica
         Text.Pandoc.Filter.Plot.Renderers.Octave

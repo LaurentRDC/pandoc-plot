@@ -59,6 +59,7 @@ data Toolkit
     = Matplotlib
     | Matlab
     | PlotlyPython
+    | PlotlyR
     | Mathematica
     | Octave
     | GGPlot2
@@ -71,6 +72,7 @@ instance Show Toolkit where
     show Matplotlib   = "Python/Matplotlib"
     show Matlab       = "MATLAB"
     show PlotlyPython = "Python/Plotly"
+    show PlotlyR      = "R/Plotly"
     show Mathematica  = "Mathematica"
     show Octave       = "GNU Octave"
     show GGPlot2      = "ggplot2"
@@ -82,6 +84,7 @@ cls :: Toolkit -> Text
 cls Matplotlib   = "matplotlib"
 cls Matlab       = "matlabplot"
 cls PlotlyPython = "plotly_python"
+cls PlotlyR      = "plotly_r"
 cls Mathematica  = "mathplot"
 cls Octave       = "octaveplot"
 cls GGPlot2      = "ggplot2"
@@ -125,6 +128,7 @@ data Configuration = Configuration
 
     , matplotlibPreamble    :: !Script     -- ^ The default preamble script for the matplotlib toolkit.
     , plotlyPythonPreamble  :: !Script     -- ^ The default preamble script for the Plotly/Python toolkit.
+    , plotlyRPreamble       :: !Script     -- ^ The default preamble script for the Plotly/R toolkit.
     , matlabPreamble        :: !Script     -- ^ The default preamble script for the MATLAB toolkit.
     , mathematicaPreamble   :: !Script     -- ^ The default preamble script for the Mathematica toolkit.
     , octavePreamble        :: !Script     -- ^ The default preamble script for the GNU Octave toolkit.
@@ -134,6 +138,7 @@ data Configuration = Configuration
     , matplotlibExe         :: !FilePath   -- ^ The executable to use to generate figures using the matplotlib toolkit.
     , matlabExe             :: !FilePath   -- ^ The executable to use to generate figures using the MATLAB toolkit.
     , plotlyPythonExe       :: !FilePath   -- ^ The executable to use to generate figures using the Plotly/Python toolkit.
+    , plotlyRExe            :: !FilePath   -- ^ The executable to use to generate figures using the Plotly/R toolkit.
     , mathematicaExe        :: !FilePath   -- ^ The executable to use to generate figures using the Mathematica toolkit.
     , octaveExe             :: !FilePath   -- ^ The executable to use to generate figures using the GNU Octave toolkit.
     , ggplot2Exe            :: !FilePath   -- ^ The executable to use to generate figures using the GGPlot2 toolkit.
@@ -153,6 +158,7 @@ instance Default Configuration where
           
           , matplotlibPreamble  = mempty
           , plotlyPythonPreamble= mempty
+          , plotlyRPreamble     = mempty
           , matlabPreamble      = mempty
           , mathematicaPreamble = mempty
           , octavePreamble      = mempty
@@ -162,6 +168,7 @@ instance Default Configuration where
           , matplotlibExe       = if isWindows then "python" else "python3"
           , matlabExe           = "matlab"
           , plotlyPythonExe     = if isWindows then "python" else "python3"
+          , plotlyRExe          = "Rscript"
           , mathematicaExe      = "math"
           , octaveExe           = "octave"
           , ggplot2Exe          = "Rscript"

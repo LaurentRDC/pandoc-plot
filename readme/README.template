@@ -31,13 +31,13 @@ pandoc --filter pandoc-plot input.md --output output.html
 `pandoc-plot` currently supports the following plotting toolkits (**installed separately**):
 
 * `matplotlib`: plots using the [matplotlib](https://matplotlib.org/) Python library;
-* `plotly_python` : plots using the [plotly](https://plot.ly/python/) Python library;
+* `plotly_python` : plots using the [plotly](https://plotly.com/python/) Python library;
+* `plotly_r`: plots using the [plotly](https://plotly.com/r/) R library
 * `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
 * `mathplot` : plots using [Mathematica](https://www.wolfram.com/mathematica/);
 * `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
 * `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
 * `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
-
 
 To know which toolkits are useable on *your machine* (and which ones are not available), you can check with the `toolkits` command:
 
@@ -209,7 +209,7 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
 
 ````
 
-* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`
+* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`
 
 All following parameters are optional, with their default values controlled by the [configuration](#configuration)
 

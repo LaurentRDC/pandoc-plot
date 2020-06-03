@@ -50,6 +50,11 @@ plotly_python:
   # preamble: plotly-python.py
   executable: python
 
+# The possible parameters for the Plotly/R toolkit
+plotly_r:
+  # preamble: plotly-r.r
+  executable: Rscript
+
 # The possible parameters for the Mathematica toolkit
 mathplot:
   # preamble: mathematica.m

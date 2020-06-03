@@ -64,6 +64,7 @@ tryToFindExe fp = findExecutable fp >>= maybe (return fp) return
 executable :: Toolkit -> Configuration -> IO FilePath
 executable Matplotlib   = tryToFindExe . matplotlibExe
 executable PlotlyPython = tryToFindExe . plotlyPythonExe
+executable PlotlyR      = tryToFindExe . plotlyRExe
 executable Matlab       = tryToFindExe . matlabExe
 executable Mathematica  = tryToFindExe . mathematicaExe
 executable Octave       = tryToFindExe . octaveExe

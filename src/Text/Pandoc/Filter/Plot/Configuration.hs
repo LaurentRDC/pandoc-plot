@@ -86,6 +86,7 @@ data ConfigPrecursor = ConfigPrecursor
     , _matplotlibPrec    :: !MatplotlibPrecursor
     , _matlabPrec        :: !MatlabPrecursor
     , _plotlyPythonPrec  :: !PlotlyPythonPrecursor
+    , _plotlyRPrec       :: !PlotlyRPrecursor
     , _mathematicaPrec   :: !MathematicaPrecursor
     , _octavePrec        :: !OctavePrecursor
     , _ggplot2Prec       :: !GGPlot2Precursor
@@ -103,6 +104,7 @@ instance Default ConfigPrecursor where
         , _matplotlibPrec    = def
         , _matlabPrec        = def
         , _plotlyPythonPrec  = def
+        , _plotlyRPrec       = def
         , _mathematicaPrec   = def
         , _octavePrec        = def
         , _ggplot2Prec       = def
@@ -119,6 +121,7 @@ data MatplotlibPrecursor = MatplotlibPrecursor
         }
 data MatlabPrecursor        = MatlabPrecursor       {_matlabPreamble       :: !(Maybe FilePath), _matlabExe       :: !FilePath}
 data PlotlyPythonPrecursor  = PlotlyPythonPrecursor {_plotlyPythonPreamble :: !(Maybe FilePath), _plotlyPythonExe :: !FilePath}
+data PlotlyRPrecursor       = PlotlyRPrecursor      {_plotlyRPreamble      :: !(Maybe FilePath), _plotlyRExe      :: !FilePath}
 data MathematicaPrecursor   = MathematicaPrecursor  {_mathematicaPreamble  :: !(Maybe FilePath), _mathematicaExe  :: !FilePath}
 data OctavePrecursor        = OctavePrecursor       {_octavePreamble       :: !(Maybe FilePath), _octaveExe       :: !FilePath}
 data GGPlot2Precursor       = GGPlot2Precursor      {_ggplot2Preamble      :: !(Maybe FilePath), _ggplot2Exe      :: !FilePath}
@@ -130,6 +133,7 @@ instance Default MatplotlibPrecursor where
 
 instance Default MatlabPrecursor        where def = MatlabPrecursor       Nothing (matlabExe def)
 instance Default PlotlyPythonPrecursor  where def = PlotlyPythonPrecursor Nothing (plotlyPythonExe def)
+instance Default PlotlyRPrecursor       where def = PlotlyRPrecursor      Nothing (plotlyRExe def)
 instance Default MathematicaPrecursor   where def = MathematicaPrecursor  Nothing (mathematicaExe def)
 instance Default OctavePrecursor        where def = OctavePrecursor       Nothing (octaveExe def)
 instance Default GGPlot2Precursor       where def = GGPlot2Precursor      Nothing (ggplot2Exe def)
@@ -151,6 +155,10 @@ instance FromJSON MatlabPrecursor where
 instance FromJSON PlotlyPythonPrecursor where
     parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyPythonExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyPython, " configuration."]
+
+instance FromJSON PlotlyRPrecursor where
+    parseJSON (Object v) = PlotlyRPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyRExe def)
+    parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyR, " configuration."]
 
 instance FromJSON MathematicaPrecursor where
     parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (mathematicaExe def)
@@ -182,6 +190,7 @@ instance FromJSON ConfigPrecursor where
         _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
         _matlabPrec        <- v .:? (cls Matlab)           .!= def
         _plotlyPythonPrec  <- v .:? (cls PlotlyPython)     .!= def
+        _plotlyRPrec       <- v .:? (cls PlotlyR)          .!= def
         _mathematicaPrec   <- v .:? (cls Mathematica)      .!= def
         _octavePrec        <- v .:? (cls Octave)           .!= def
         _ggplot2Prec       <- v .:? (cls GGPlot2)          .!= def
@@ -205,6 +214,7 @@ renderConfig ConfigPrecursor{..} = do
         matplotlibExe   = _matplotlibExe _matplotlibPrec
         matlabExe       = _matlabExe _matlabPrec
         plotlyPythonExe = _plotlyPythonExe _plotlyPythonPrec
+        plotlyRExe      = _plotlyRExe _plotlyRPrec
         mathematicaExe  = _mathematicaExe _mathematicaPrec
         octaveExe       = _octaveExe _octavePrec
         ggplot2Exe      = _ggplot2Exe _ggplot2Prec
@@ -213,6 +223,7 @@ renderConfig ConfigPrecursor{..} = do
     matplotlibPreamble   <- readPreamble (_matplotlibPreamble _matplotlibPrec)
     matlabPreamble       <- readPreamble (_matlabPreamble _matlabPrec)
     plotlyPythonPreamble <- readPreamble (_plotlyPythonPreamble _plotlyPythonPrec)
+    plotlyRPreamble      <- readPreamble (_plotlyRPreamble _plotlyRPrec)
     mathematicaPreamble  <- readPreamble (_mathematicaPreamble _mathematicaPrec)
     octavePreamble       <- readPreamble (_octavePreamble _octavePrec)
     ggplot2Preamble      <- readPreamble (_ggplot2Preamble _ggplot2Prec)

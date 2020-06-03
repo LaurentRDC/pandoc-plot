@@ -10,7 +10,7 @@ Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
 Portability : portable
 
-Rendering Mathematica plots code blocks
+Rendering GGPlot2 plots code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.GGPlot2 (

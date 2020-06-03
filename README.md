@@ -73,8 +73,10 @@ breaking changes in pandoc’s API.*
 
   - `matplotlib`: plots using the [matplotlib](https://matplotlib.org/)
     Python library;
-  - `plotly_python` : plots using the [plotly](https://plot.ly/python/)
-    Python library;
+  - `plotly_python` : plots using the
+    [plotly](https://plotly.com/python/) Python library;
+  - `plotly_r`: plots using the [plotly](https://plotly.com/r/) R
+    library
   - `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
   - `mathplot` : plots using
     [Mathematica](https://www.wolfram.com/mathematica/);
@@ -314,7 +316,8 @@ possible parameters:
 ````
 
   - `cls` must be one of the following: `matplotlib`, `matlabplot`,
-    `plotly_python`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`
+    `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`,
+    `gnuplot`
 
 All following parameters are optional, with their default values
 controlled by the [configuration](#configuration)
@@ -434,6 +437,11 @@ matlabplot:
 plotly_python:
   # preamble: plotly-python.py
   executable: python
+
+# The possible parameters for the Plotly/R toolkit
+plotly_r:
+  # preamble: plotly-r.r
+  executable: Rscript
 
 # The possible parameters for the Mathematica toolkit
 mathplot:
