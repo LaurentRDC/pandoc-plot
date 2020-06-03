@@ -6,7 +6,7 @@
 module Main where
 
 import           Control.Applicative              ((<|>))
-import           Control.Monad                    (join, forM_)
+import           Control.Monad                    (join, forM_, when)
 
 import           Data.List                        (intersperse, (\\))
 import           Data.Monoid                      ((<>))
@@ -28,7 +28,8 @@ import           Text.Pandoc.Filter.Plot          (availableToolkits,
 import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats, 
                                                    toolkits, readDoc, 
                                                    cleanOutputDirs, 
-                                                   configurationPathMeta)
+                                                   configurationPathMeta,
+                                                   executable)
 
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
@@ -177,18 +178,22 @@ showAvailableToolkits = do
     c <- localConfig
     putStrLn "\nAVAILABLE TOOLKITS\n"
     available <- availableToolkits c
-    return available >>= mapM_ toolkitInfo
+    return available >>= mapM_ (availToolkitInfo c)
     putStrLn "\nUNAVAILABLE TOOLKITS\n"
     -- We don't use unavailableToolkits because this would force
     -- more IO actions
     let unavailable = toolkits \\ available
-    return unavailable >>= mapM_ toolkitInfo
+    return unavailable >>= mapM_ (unavailToolkitInfo c)
     where
-        toolkitInfo tk = do
+        toolkitInfo avail conf tk = do
+            exe <- executable tk conf
             putStrLn $ "Toolkit: " <> show tk
+            when avail $ putStrLn $ "    Executable: " <> exe
             putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)
             putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
             putStrLn mempty
+        availToolkitInfo = toolkitInfo True
+        unavailToolkitInfo = toolkitInfo False
 
 
 -- | Clean output directories associated with a file

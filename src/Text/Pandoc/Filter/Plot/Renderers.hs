@@ -24,6 +24,7 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , toolkitAvailable
     , availableToolkits
     , unavailableToolkits
+    , executable
 ) where
 
 import           Control.Concurrent.Async                      (mapConcurrently)
@@ -40,6 +41,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.Octave
 import           Text.Pandoc.Filter.Plot.Renderers.Plotly
 import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 import           Text.Pandoc.Filter.Plot.Renderers.GNUPlot
+import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (tryToFindExe)
 
 import           Text.Pandoc.Filter.Plot.Types
 
@@ -135,6 +137,18 @@ toolkitAvailable Mathematica  = mathematicaAvailable
 toolkitAvailable Octave       = octaveAvailable
 toolkitAvailable GGPlot2      = ggplot2Available
 toolkitAvailable GNUPlot      = gnuplotAvailable
+
+
+-- | Path to the executable of a toolkit. If the executable can
+-- be found, then it will be the full path to it.
+executable :: Toolkit -> Configuration -> IO FilePath
+executable Matplotlib   = tryToFindExe . matplotlibExe
+executable PlotlyPython = tryToFindExe . plotlyPythonExe
+executable Matlab       = tryToFindExe . matlabExe
+executable Mathematica  = tryToFindExe . mathematicaExe
+executable Octave       = tryToFindExe . octaveExe
+executable GGPlot2      = tryToFindExe . ggplot2Exe
+executable GNUPlot      = tryToFindExe . gnuplotExe
 
 
 -- | List of toolkits available on this machine.
