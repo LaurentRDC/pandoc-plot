@@ -19,10 +19,13 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , unpack
     , commandSuccess
     , existsOnPath
+    , tryToFindExe
 ) where
 
 import           Data.Maybe                    (isJust)
 import           Data.Text                     (Text, unpack)
+
+import           System.Directory              (findExecutable)
 import           System.Exit                   (ExitCode(..))
 import           System.Process.Typed          (runProcess, shell, 
                                                 setStdout, setStderr, 
@@ -48,3 +51,9 @@ commandSuccess s = do
 -- | Checks that an executable is available on path, at all.
 existsOnPath :: FilePath -> IO Bool
 existsOnPath fp = Sh.which (Sh.fromString fp) >>= fmap isJust . return
+
+
+-- | Try to find the executable and normalise its path.
+-- If it cannot be found, it is left unchanged - just in case.
+tryToFindExe :: String -> IO FilePath
+tryToFindExe fp = findExecutable fp >>= maybe (return fp) return

@@ -26,8 +26,10 @@ ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
 
-ggplot2Command :: Configuration -> FigureSpec -> FilePath -> Text
-ggplot2Command Configuration{..} _ fp = [st|#{ggplot2Exe} "#{fp}"|]
+ggplot2Command :: Configuration -> FigureSpec -> FilePath -> IO Text
+ggplot2Command Configuration{..} _ fp = do
+  exe <- tryToFindExe ggplot2Exe
+  return [st|#{exe} "#{fp}"|]
 
 
 ggplot2Available :: Configuration -> IO Bool

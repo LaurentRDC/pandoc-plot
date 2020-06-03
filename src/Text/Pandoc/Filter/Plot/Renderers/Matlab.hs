@@ -27,8 +27,10 @@ matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-matlabCommand :: Configuration -> FigureSpec -> FilePath -> Text
-matlabCommand Configuration{..} _ fp = [st|#{matlabExe} -batch "run('#{fp}')"|]
+matlabCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
+matlabCommand Configuration{..} _ fp = do
+    exe <- tryToFindExe matlabExe
+    return [st|#{exe} -batch "run('#{fp}')"|]
 
 
 -- On Windows at least, "matlab -help"  actually returns -1, even though the

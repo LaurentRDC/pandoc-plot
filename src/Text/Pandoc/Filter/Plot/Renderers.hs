@@ -104,7 +104,8 @@ parseExtraAttrs _          = return mempty
 
 
 -- | Generate the appropriate command-line command to generate a figure.
-command :: Toolkit -> (Configuration -> FigureSpec -> FilePath -> Text)
+-- The executable will need to be found first, hence the IO monad.
+command :: Toolkit -> (Configuration -> FigureSpec -> FilePath -> IO Text)
 command Matplotlib   = matplotlibCommand
 command PlotlyPython = plotlyPythonCommand
 command Matlab       = matlabCommand
