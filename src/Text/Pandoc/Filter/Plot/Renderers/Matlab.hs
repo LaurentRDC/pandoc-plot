@@ -20,6 +20,8 @@ module Text.Pandoc.Filter.Plot.Renderers.Matlab (
     , matlabAvailable
 ) where
 
+import           System.Directory                            (exeExtension)
+
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
@@ -38,11 +40,7 @@ matlabCommand Configuration{..} _ fp = do
 -- Therefore, we cannot rely on this behavior to know if matlab is present, 
 -- like other toolkits.
 matlabAvailable :: Configuration -> IO Bool
-matlabAvailable Configuration{..} = existsOnPath (matlabExe <> ext)
-    where
-        -- The @which@ function from Turtle only works on
-        -- windows if the executable extension is included.
-        ext = if isWindows then ".exe" else mempty
+matlabAvailable Configuration{..} = existsOnPath (matlabExe <> exeExtension)
 
 
 matlabCapture :: FigureSpec -> FilePath -> Script
