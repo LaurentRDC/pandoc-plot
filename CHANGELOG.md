@@ -6,6 +6,7 @@ Release 0.6.0.0
 --------------
 
 * The determination of which figures to re-render or not has been improved. For example, changing the caption will not trigger a re-render of a figure anymore.
+* `pandoc-plot` will look for executables in a more thorough way.
 * Added the ability to write the example configuration to an arbitrary file using `pandoc-plot write-example-config`.
 * Added the possibility to specify the configuration file via metadata. For example, in Markdown:
 
