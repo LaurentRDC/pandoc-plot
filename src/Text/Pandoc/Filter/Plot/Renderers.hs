@@ -38,7 +38,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.Mathematica
 import           Text.Pandoc.Filter.Plot.Renderers.Matlab
 import           Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import           Text.Pandoc.Filter.Plot.Renderers.Octave
-import           Text.Pandoc.Filter.Plot.Renderers.Plotly
+import           Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
 import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 import           Text.Pandoc.Filter.Plot.Renderers.GNUPlot
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable)

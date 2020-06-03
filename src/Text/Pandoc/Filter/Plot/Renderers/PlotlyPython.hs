@@ -10,10 +10,10 @@ Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
 Portability : portable
 
-Rendering Plotly code blocks
+Rendering Plotly-python code blocks
 -}
 
-module Text.Pandoc.Filter.Plot.Renderers.Plotly (
+module Text.Pandoc.Filter.Plot.Renderers.PlotlyPython (
       plotlyPythonSupportedSaveFormats
     , plotlyPythonCommand
     , plotlyPythonCapture
