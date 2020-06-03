@@ -24,6 +24,7 @@ module Text.Pandoc.Filter.Plot.Types (
     , InclusionKey(..)
     , FigureSpec(..)
     , SaveFormat(..)
+    , figureContentHash
     , cls
     , extension
     , toolkits
@@ -36,7 +37,7 @@ import           Control.Monad.Reader
 
 import           Data.Char              (toLower)
 import           Data.Default.Class     (Default, def)
-import           Data.Hashable          (Hashable (..))
+import           Data.Hashable          (hash)
 import           Data.List              (intersperse)
 import           Data.Semigroup         (Semigroup (..))
 import           Data.String            (IsString (..))
@@ -232,12 +233,16 @@ data FigureSpec = FigureSpec
     , blockAttrs :: !Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
     }
 
-instance Hashable FigureSpec where
-    -- Not all parts of a FigureSpec are related to running code.
-    -- For example, changing the caption does not require running the
-    -- figure again.
-    hashWithSalt salt FigureSpec{..} 
-        = hashWithSalt salt (script, saveFormat, directory, dpi, extraAttrs)
+
+-- | Hash of the content of a @FigureSpec@. Note that unlike usual hashes,
+-- two @FigureSpec@ with the same @figureContentHash@ does not mean that they are equal!
+--
+-- Not all parts of a FigureSpec are related to running code.
+-- For example, changing the caption should not require running the figure again.
+figureContentHash :: FigureSpec -> Int
+figureContentHash FigureSpec{..} = 
+    hash (script, fromEnum saveFormat, directory, dpi, extraAttrs)
+
 
 -- | Generated figure file format supported by pandoc-plot.
 -- Note that not all formats are supported by all toolkits.
@@ -252,7 +257,6 @@ data SaveFormat
     | WEBP
     deriving (Bounded, Enum, Eq, Show, Generic)
 
-instance Hashable SaveFormat -- From Generic
 
 instance IsString SaveFormat where
     -- | An error is thrown if the save format cannot be parsed. That's OK

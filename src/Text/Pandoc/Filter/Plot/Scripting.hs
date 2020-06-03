@@ -52,6 +52,7 @@ data ScriptResult
     | ScriptFailure String Int    -- Command and exit code
     | ToolkitNotInstalled Toolkit -- Script failed because toolkit is not installed
 
+
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
 runScriptIfNecessary spec = do
@@ -80,8 +81,6 @@ runTempScript spec@FigureSpec{..} = do
     case checkResult of
         CheckFailed msg -> return $ ScriptChecksFailed msg
         CheckPassed -> do
-            -- We involve the script hash as a temporary filename
-            -- so that there is never any collision
             scriptPath <- tempScriptPath spec
             let captureFragment = (capture tk) spec (figurePath spec)
                 -- Note: for gnuplot, the capture string must be placed
@@ -134,11 +133,13 @@ toImage fmt spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig
 -- is important.
 tempScriptPath :: FigureSpec -> PlotM FilePath
 tempScriptPath FigureSpec{..} = do
-    tk <- asks toolkit
+    ext <- scriptExtension <$> asks toolkit
     -- Note that matlab will refuse to process files that don't start with
     -- a letter... so we append the renderer name
-    let ext = scriptExtension tk
-        hashedPath = "pandocplot" <> (show . abs . hash $ script) <> ext
+    -- Note that this hash is only so that we are running scripts from unique
+    -- file names; it does NOT determine whether this figure should
+    -- be rendered or not.
+    let hashedPath = "pandocplot" <> (show . abs . hash $ script) <> ext
     liftIO $ (</> hashedPath) <$> getCanonicalTemporaryDirectory
 
 
@@ -148,8 +149,11 @@ sourceCodePath = normalise . flip replaceExtension ".txt" . figurePath
 
 
 -- | Determine the path a figure should have.
+-- The path for this file is unique to the content of the figure,
+-- so that @figurePath@ can be used to determine whether a figure should
+-- be rendered again or not.
 figurePath :: FigureSpec -> FilePath
 figurePath spec = normalise $ directory spec </> stem spec
   where
-    stem = flip addExtension ext . show . hash
+    stem = flip addExtension ext . show . figureContentHash
     ext  = extension . saveFormat $ spec
