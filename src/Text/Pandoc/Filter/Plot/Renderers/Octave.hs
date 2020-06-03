@@ -29,12 +29,14 @@ octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 octaveCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
 octaveCommand Configuration{..} _ fp = do
-  exe <- tryToFindExe octaveExe
-  return [st|#{exe} --no-gui --no-window-system "#{fp}"|]
+    exe <- tryToFindExe octaveExe
+    return [st|#{exe} --no-gui --no-window-system "#{fp}"|]
 
 
 octaveAvailable :: Configuration -> IO Bool
-octaveAvailable Configuration{..} = commandSuccess [st|#{octaveExe} -h|]
+octaveAvailable Configuration{..} = do
+    exe <- tryToFindExe octaveExe
+    commandSuccess [st|#{exe} -h|]
 
 
 octaveCapture :: FigureSpec -> FilePath -> Script

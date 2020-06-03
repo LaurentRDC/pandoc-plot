@@ -29,12 +29,14 @@ plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
 plotlyPythonCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
 plotlyPythonCommand Configuration{..} _ fp = do
-  exe <- tryToFindExe plotlyPythonExe
-  return [st|#{exe} "#{fp}"|]
+    exe <- tryToFindExe plotlyPythonExe
+    return [st|#{exe} "#{fp}"|]
 
 
 plotlyPythonAvailable :: Configuration -> IO Bool
-plotlyPythonAvailable Configuration{..} = commandSuccess [st|#{plotlyPythonExe} -c "import plotly.graph_objects"|]
+plotlyPythonAvailable Configuration{..} = do
+    exe <- tryToFindExe plotlyPythonExe
+    commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
 
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script

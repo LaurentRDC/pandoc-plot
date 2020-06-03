@@ -28,12 +28,14 @@ gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]
 
 gnuplotCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
 gnuplotCommand Configuration{..} _ fp = do
-  exe <- tryToFindExe gnuplotExe
-  return [st|#{exe} -c "#{fp}"|]
+    exe <- tryToFindExe gnuplotExe
+    return [st|#{exe} -c "#{fp}"|]
 
 
 gnuplotAvailable :: Configuration -> IO Bool
-gnuplotAvailable Configuration{..} = commandSuccess [st|#{gnuplotExe} -h|]
+gnuplotAvailable Configuration{..} = do
+    exe <- tryToFindExe gnuplotExe
+    commandSuccess [st|#{exe} -h|]
 
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script

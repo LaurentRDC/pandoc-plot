@@ -28,12 +28,14 @@ ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
 ggplot2Command :: Configuration -> FigureSpec -> FilePath -> IO Text
 ggplot2Command Configuration{..} _ fp = do
-  exe <- tryToFindExe ggplot2Exe
-  return [st|#{exe} "#{fp}"|]
+    exe <- tryToFindExe ggplot2Exe
+    return [st|#{exe} "#{fp}"|]
 
 
 ggplot2Available :: Configuration -> IO Bool
-ggplot2Available Configuration{..} = commandSuccess [st|#{ggplot2Exe} -e 'library("ggplot2")'|]
+ggplot2Available Configuration{..} = do
+    exe <- tryToFindExe ggplot2Exe
+    commandSuccess [st|#{exe} -e 'library("ggplot2")'|]
 
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script

@@ -59,7 +59,9 @@ matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "tran
 
 
 matplotlibAvailable :: Configuration -> IO Bool
-matplotlibAvailable Configuration{..} = commandSuccess [st|#{matplotlibExe} -c "import matplotlib"|]
+matplotlibAvailable Configuration{..} = do
+    exe <- tryToFindExe matplotlibExe
+    commandSuccess [st|#{exe} -c "import matplotlib"|]
 
 
 -- | Check if `matplotlib.pyplot.show()` calls are present in the script,
