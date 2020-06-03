@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 
 {-|
@@ -229,9 +230,14 @@ data FigureSpec = FigureSpec
     , dpi        :: !Int            -- ^ Dots-per-inch of figure.
     , extraAttrs :: ![(Text, Text)] -- ^ Renderer-specific extra attributes.
     , blockAttrs :: !Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
-    } deriving Generic
+    }
 
-instance Hashable FigureSpec -- From Generic
+instance Hashable FigureSpec where
+    -- Not all parts of a FigureSpec are related to running code.
+    -- For example, changing the caption does not require running the
+    -- figure again.
+    hashWithSalt salt FigureSpec{..} 
+        = hashWithSalt salt (script, saveFormat, directory, dpi, extraAttrs)
 
 -- | Generated figure file format supported by pandoc-plot.
 -- Note that not all formats are supported by all toolkits.
