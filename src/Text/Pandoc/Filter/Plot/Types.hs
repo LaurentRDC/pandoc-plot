@@ -49,8 +49,10 @@ import           System.Info            (os)
 
 import           Text.Pandoc.Definition (Attr, Format(..))
 
+
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
+
 
 -- | Enumeration of supported toolkits
 data Toolkit
@@ -63,6 +65,7 @@ data Toolkit
     | GNUPlot
     deriving (Bounded, Eq, Enum, Generic)
 
+
 -- | This instance should only be used to display toolkit names
 instance Show Toolkit where
     show Matplotlib   = "Python/Matplotlib"
@@ -72,6 +75,7 @@ instance Show Toolkit where
     show Octave       = "GNU Octave"
     show GGPlot2      = "ggplot2"
     show GNUPlot      = "gnuplot"
+
 
 -- | Class name which will trigger the filter
 cls :: Toolkit -> Text
@@ -85,6 +89,7 @@ cls GNUPlot      = "gnuplot"
 
 
 type PlotM a = ReaderT PlotEnv IO a
+
 
 data PlotEnv
     = PlotEnv { toolkit   :: !Toolkit
@@ -168,6 +173,7 @@ instance Default Configuration where
 
 type Script = Text
 
+
 -- | Result of checking scripts for problems
 data CheckResult
     = CheckPassed
@@ -181,6 +187,7 @@ instance Semigroup CheckResult where
 
 instance Monoid CheckResult where
     mempty = CheckPassed
+
 
 -- | Description of any possible inclusion key, both in documents
 -- and in configuration files.
@@ -257,7 +264,6 @@ data SaveFormat
     | WEBP
     deriving (Bounded, Enum, Eq, Show, Generic)
 
-
 instance IsString SaveFormat where
     -- | An error is thrown if the save format cannot be parsed. That's OK
     -- since pandoc-plot is a command-line tool and isn't expected to run
@@ -283,6 +289,7 @@ instance FromJSON SaveFormat -- TODO: test this parsing
 
 instance ToJSON SaveFormat where
     toJSON = toJSON . extension
+
 
 -- | Save format file extension
 extension :: SaveFormat -> String
