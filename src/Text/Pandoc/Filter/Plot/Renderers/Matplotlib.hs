@@ -37,8 +37,8 @@ matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 matplotlibCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-matplotlibCommand Configuration{..} _ fp = do
-    exe <- tryToFindExe matplotlibExe
+matplotlibCommand conf _ fp = do
+    exe <- executable Matplotlib conf
     return [st|#{exe} "#{fp}"|]
 
 
@@ -59,8 +59,8 @@ matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "tran
 
 
 matplotlibAvailable :: Configuration -> IO Bool
-matplotlibAvailable Configuration{..} = do
-    exe <- tryToFindExe matplotlibExe
+matplotlibAvailable conf = do
+    exe <- executable Matplotlib conf
     commandSuccess [st|#{exe} -c "import matplotlib"|]
 
 

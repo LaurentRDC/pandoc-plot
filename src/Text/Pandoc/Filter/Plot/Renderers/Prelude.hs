@@ -19,7 +19,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , unpack
     , commandSuccess
     , existsOnPath
-    , tryToFindExe
+    , executable
 ) where
 
 import           Data.Maybe                    (isJust)
@@ -57,3 +57,15 @@ existsOnPath fp = Sh.which (Sh.fromString fp) >>= fmap isJust . return
 -- If it cannot be found, it is left unchanged - just in case.
 tryToFindExe :: String -> IO FilePath
 tryToFindExe fp = findExecutable fp >>= maybe (return fp) return
+
+
+-- | Path to the executable of a toolkit. If the executable can
+-- be found, then it will be the full path to it.
+executable :: Toolkit -> Configuration -> IO FilePath
+executable Matplotlib   = tryToFindExe . matplotlibExe
+executable PlotlyPython = tryToFindExe . plotlyPythonExe
+executable Matlab       = tryToFindExe . matlabExe
+executable Mathematica  = tryToFindExe . mathematicaExe
+executable Octave       = tryToFindExe . octaveExe
+executable GGPlot2      = tryToFindExe . ggplot2Exe
+executable GNUPlot      = tryToFindExe . gnuplotExe

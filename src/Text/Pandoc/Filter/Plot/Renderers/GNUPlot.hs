@@ -27,14 +27,14 @@ gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]
 
 
 gnuplotCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-gnuplotCommand Configuration{..} _ fp = do
-    exe <- tryToFindExe gnuplotExe
+gnuplotCommand conf _ fp = do
+    exe <- executable GNUPlot conf
     return [st|#{exe} -c "#{fp}"|]
 
 
 gnuplotAvailable :: Configuration -> IO Bool
-gnuplotAvailable Configuration{..} = do
-    exe <- tryToFindExe gnuplotExe
+gnuplotAvailable conf = do
+    exe <- executable GNUPlot conf
     commandSuccess [st|#{exe} -h|]
 
 

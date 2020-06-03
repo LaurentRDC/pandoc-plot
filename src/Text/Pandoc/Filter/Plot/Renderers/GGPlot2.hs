@@ -22,19 +22,20 @@ module Text.Pandoc.Filter.Plot.Renderers.GGPlot2 (
 
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
+
 ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
 
 ggplot2Command :: Configuration -> FigureSpec -> FilePath -> IO Text
-ggplot2Command Configuration{..} _ fp = do
-    exe <- tryToFindExe ggplot2Exe
+ggplot2Command conf _ fp = do
+    exe <- executable GGPlot2 conf
     return [st|#{exe} "#{fp}"|]
 
 
 ggplot2Available :: Configuration -> IO Bool
-ggplot2Available Configuration{..} = do
-    exe <- tryToFindExe ggplot2Exe
+ggplot2Available conf = do
+    exe <- executable GGPlot2 conf
     commandSuccess [st|#{exe} -e 'library("ggplot2")'|]
 
 

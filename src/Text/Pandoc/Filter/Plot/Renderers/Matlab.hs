@@ -30,8 +30,8 @@ matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 matlabCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-matlabCommand Configuration{..} _ fp = do
-    exe <- tryToFindExe matlabExe
+matlabCommand conf _ fp = do
+    exe <- executable Matlab conf
     return [st|#{exe} -batch "run('#{fp}')"|]
 
 

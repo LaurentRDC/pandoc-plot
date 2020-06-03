@@ -27,14 +27,14 @@ mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
 mathematicaCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-mathematicaCommand Configuration{..} _ fp = do
-    exe <- tryToFindExe mathematicaExe
+mathematicaCommand conf _ fp = do
+    exe <- executable Mathematica conf
     return [st|#{exe} -script "#{fp}"|]
 
 
 mathematicaAvailable :: Configuration -> IO Bool
-mathematicaAvailable Configuration{..} = do
-    exe <- tryToFindExe mathematicaExe
+mathematicaAvailable conf = do
+    exe <- executable Mathematica conf
     commandSuccess [st|#{exe} -h|] -- TODO: test this
 
 
