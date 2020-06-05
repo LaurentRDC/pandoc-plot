@@ -11,6 +11,7 @@ import           Control.Monad                    (join, forM_, when)
 import           Data.List                        (intersperse, (\\))
 import           Data.Monoid                      ((<>))
 import           Data.Text                        (unpack)
+import           Data.Version                     (parseVersion, showVersion)
 
 import           GitHash                          as Git
 
@@ -18,6 +19,8 @@ import           Options.Applicative
 import qualified Options.Applicative.Help.Pretty  as P
 
 import           System.Directory                 (doesFileExist)
+import           System.Environment               (lookupEnv)
+import           System.IO                        (hPutStrLn, stderr)
 import           System.IO.Temp                   (writeSystemTempFile)
 
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
@@ -34,6 +37,8 @@ import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats,
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
 import           Text.Pandoc.JSON                 (toJSONFilter)
+
+import           Text.ParserCombinators.ReadP     (readP_to_S)
 
 import           Web.Browser                      (openBrowser)
 
@@ -143,9 +148,37 @@ commandParser = optional $ subparser $ mconcat
 --     (3) Default configuration
 --
 toJSONFilterWithConfig :: IO ()
-toJSONFilterWithConfig = toJSONFilter $ \doc -> do
-    c <- maybe localConfig configuration (configurationPathMeta doc)
-    plotTransform c doc
+toJSONFilterWithConfig = do
+    upToDatePandoc <- checkRuntimePandocVersion 
+    when upToDatePandoc $ toJSONFilter $ \doc -> do
+        c <- maybe localConfig configuration (configurationPathMeta doc)
+        plotTransform c doc
+
+
+-- | Check that the runtime version of Pandoc is at least 2.8. The return value
+-- indicates whether the Pandoc version is new enough or not.
+checkRuntimePandocVersion :: IO Bool
+checkRuntimePandocVersion = do
+    let minimumPandocVersion = V.Version [2,8,0,0] []
+    -- Pandoc runs filters in an environment with two variables:
+    -- PANDOV_VERSION and PANDOC_READER_OPTS
+    -- We can use the former to ensure that people are not using pandoc < 2.8
+    pandocV <- lookupEnv "PANDOC_VERSION"
+    case pandocV >>= readVersion of
+        Nothing -> return True
+        Just v -> if (v < minimumPandocVersion)
+            then do
+                hPutStrLn stderr $ mconcat 
+                    [ "ERROR (pandoc-plot) The pandoc-plot filter only "
+                    , "supports Pandoc 2.8 and newer. "
+                    , "but you are using Pandoc "
+                    , showVersion v
+                    ] 
+                return False 
+            else return True
+    where
+        readVersion = fmap fst . lastMaybe . readP_to_S parseVersion
+        lastMaybe xs = if length xs > 1 then Just (last xs) else Nothing
 
 
 -- | Load configuration from local file @.pandoc-plot.yml@. 
