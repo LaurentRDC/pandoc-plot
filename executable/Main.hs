@@ -6,7 +6,7 @@
 module Main where
 
 import           Control.Applicative              ((<|>))
-import           Control.Monad                    (join, forM_, when)
+import           Control.Monad                    (join, forM_, when, msum)
 
 import           Data.List                        (intersperse, (\\))
 import           Data.Monoid                      ((<>))
@@ -51,9 +51,9 @@ import           ExampleConfig                    (embedExampleConfig)
 -- The difference between commands and flags is that commands require knowledge of
 -- the configuration, while flags only display static information.
 
-data Command = Clean FilePath
+data Command = Clean (Maybe FilePath) FilePath
              | WriteConfig FilePath
-             | Toolkits
+             | Toolkits (Maybe FilePath)
 
 data Flag = Version
           | FullVersion
@@ -85,8 +85,8 @@ main = join $ execParser opts
         go (Just Version)          _ _ = putStrLn (V.showVersion version)
         go (Just FullVersion)      _ _ = showFullVersion
         go (Just Manual)           _ _ = showManPage
-        go _ (Just Toolkits)         _ = showAvailableToolkits
-        go _ (Just (Clean fp))       _ = clean fp
+        go _ (Just (Toolkits mfp))   _ = showAvailableToolkits mfp
+        go _ (Just (Clean mfp fp))   _ = clean mfp fp
         go _ (Just (WriteConfig fp)) _ = writeFile fp $(embedExampleConfig)
         go Nothing Nothing           _ = toJSONFilterWithConfig
 
@@ -126,8 +126,9 @@ commandParser = optional $ subparser $ mconcat
                 )
             ]
     where
-        toolkitsP = pure Toolkits
-        cleanP = Clean <$> strArgument (metavar "FILE")
+        configP = optional $ strOption (mconcat [long "config", metavar "PATH", help "Path to optional configuration file."])
+        toolkitsP = Toolkits <$> configP
+        cleanP = Clean <$> configP <*> strArgument (metavar "FILE")
         writeConfigP = WriteConfig <$> 
                 strOption ( 
                     mconcat [ long "path"
@@ -206,9 +207,12 @@ showFullVersion = do
         gitrev = either (const "unknown") Git.giHash ($$tGitInfoCwdTry)
 
 
-showAvailableToolkits :: IO ()
-showAvailableToolkits = do
-    c <- localConfig
+showAvailableToolkits :: Maybe FilePath -> IO ()
+showAvailableToolkits mfp = do
+    c <- case mfp of
+        Nothing -> localConfig
+        Just fp -> configuration fp
+
     putStrLn "\nAVAILABLE TOOLKITS\n"
     available <- availableToolkits c
     return available >>= mapM_ (availToolkitInfo c)
@@ -232,14 +236,20 @@ showAvailableToolkits = do
 -- | Clean output directories associated with a file
 -- 
 -- Priority for configuration are the same as @toJSONFilterWithConfig@.
-clean :: FilePath -> IO ()
-clean fp = do
+clean :: Maybe FilePath -- Use configuration file?
+      -> FilePath       -- Document to clean
+      -> IO ()
+clean mfp fp = do
     doc <- readDoc fp
-    conf <- maybe localConfig configuration (configurationPathMeta doc)
+    -- Note the priority for configuration:
+    -- (1) path of argument --config (2) document metadata (3) local .pandoc-plot.yml (4) default config
+    conf <- maybe localConfig configuration $ firstJusts [configurationPathMeta doc, mfp]
     putStrLn $ "Cleaning output directories for " <> fp
     cleanedDirs <- cleanOutputDirs conf doc
     forM_ cleanedDirs $ \d -> putStrLn $ "Removed directory " <> d
-
+    where
+        firstJusts :: [Maybe a] -> Maybe a
+        firstJusts = msum
 
 showManPage :: IO ()
 showManPage = 
