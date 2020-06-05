@@ -6,7 +6,7 @@ Release 0.6.0.0
 --------------
 
 * The determination of which figures to re-render or not has been improved. For example, changing the caption will not trigger a re-render of a figure anymore.
-* `pandoc-plot` will look for executables in a more thorough way.
+* `pandoc-plot` will look for executables more thoroughly.
 * `pandoc-plot toolkits` will now show the exact executable that is being used, if possible.
 * Added a check when running the filter that the Pandoc version is at least 2.8. This is easier to understand that the default Pandoc warning on API incompatibility.
 * Added the ability to write the example configuration to an arbitrary file using `pandoc-plot write-example-config`.
