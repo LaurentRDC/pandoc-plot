@@ -255,7 +255,7 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 take a look at the help using the `-h`/`--help` flag:
 
 ``` bash
-∩╗┐pandoc-plot - generate figures directly in documents using your plotting toolkit
+pandoc-plot - generate figures directly in documents using your plotting toolkit
 of choice.
 
 Usage: pandoc-plot.exe ([-v|--version] | [--full-version] | [-m|--manual])
@@ -537,7 +537,7 @@ You can determine which toolkits are available on your current machine
 using the `pandoc-plot toolkits` command. Here is the full help text:
 
 ``` bash
-∩╗┐Usage: pandoc-plot.exe toolkits [--config PATH]
+Usage: pandoc-plot.exe toolkits [--config PATH]
   Show information on toolkits and exit.
 
 Available options:
@@ -566,7 +566,7 @@ placed. **WARNING**: all files will be removed.
 Here is the full help text for the `clean` command:
 
 ``` bash
-∩╗┐Usage: pandoc-plot.exe clean [--config PATH] FILE
+Usage: pandoc-plot.exe clean [--config PATH] FILE
   Clean output directories where figures from FILE might be stored. WARNING: All
   files in those directories will be deleted.
 
@@ -592,7 +592,7 @@ use it, so don’t worry about overwriting your own configuration.
 Here is the full help text for the `write-example-config` command:
 
 ``` bash
-∩╗┐Usage: pandoc-plot.exe write-example-config [--path FILE]
+Usage: pandoc-plot.exe write-example-config [--path FILE]
   Write example configuration to a file and exit.
 
 Available options:
