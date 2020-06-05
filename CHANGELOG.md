@@ -25,6 +25,7 @@ or on the command line:
 ```bash
 pandoc --filter pandoc-plot -M plot-configuration=/path/to/file.yml ...
 ```
+* Added the ability to specify configuration file to the `pandoc-plot clean` and `pandoc-plot toolkits` commands.
 
 Release 0.5.0.0
 ---------------
