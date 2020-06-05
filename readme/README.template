@@ -200,7 +200,9 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
 
 ### Parameters and options
 
-`pandoc-plot` looks for code blocks with a specific class, depending on the toolkit you want to use. There are also other parameters that affect the figure that will be included in your document. Here are all the possible parameters:
+`pandoc-plot` looks for code blocks with a specific class, depending on the toolkit you want to use. `pandoc-plot` will run the code and capture the figure output. There can only be **one** figure per code block.
+
+There are parameters that affect the figure that will be included in your document. Here are all the possible general parameters:
 
 ````markdown
   ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
