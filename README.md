@@ -24,8 +24,7 @@ Do not edit manually
       - [As a filter](#as-a-filter)
       - [Parameters and options](#parameters-and-options)
       - [Configuration](#configuration)
-      - [Cleaning output](#cleaning-output)
-      - [As a Haskell library](#as-a-haskell-library)
+      - [Other commands](#other-commands)
   - [Installation](#installation)
       - [Binaries and Installers](#binaries-and-installers)
       - [conda](#conda)
@@ -91,6 +90,8 @@ not available), you can check with the `toolkits` command:
 ``` bash
 pandoc-plot toolkits
 ```
+
+The `toolkits` command is described in its own section below.
 
 **Wish your plotting toolkit of choice was available? Please [raise an
 issue](https://github.com/LaurentRDC/pandoc-plot/issues)\!**
@@ -496,20 +497,6 @@ The hierarchy of configuration files is as follows:
     `.pandoc-plot.yml`;
 3.  Finally, the default configuration is used.
 
-#### Configuration template
-
-Because `pandoc-plot` supports a few toolkits, there are a lot of
-configuration options. Don’t start from scratch\! The
-`write-example-config` command will create a file for you, which you can
-then modify:
-
-``` bash
-pandoc-plot write-example-config
-```
-
-You will need to re-name the file to `.pandoc-ploy.yml` to be able to
-use it, so don’t worry about overwriting your own configuration.
-
 #### Executables
 
 The `executable` parameter for all toolkits can be either the executable
@@ -542,7 +529,23 @@ matlabplot:
     web page. High-resolution figures are not affected. For example,
     `transparent: true`.
 
-### Cleaning output
+### Other commands
+
+#### Finding installed toolkits
+
+You can determine which toolkits are available on your current machine
+using the `pandoc-plot toolkits` command. Here is the full help text:
+
+``` bash
+∩╗┐Usage: pandoc-plot.exe toolkits [--config PATH]
+  Show information on toolkits and exit.
+
+Available options:
+  --config PATH            Path to optional configuration file.
+  -h,--help                Show this help text
+```
+
+#### Cleaning output
 
 Figures produced by `pandoc-plot` can be placed in a few different
 locations. You can set a default location in the
@@ -560,31 +563,42 @@ pandoc-plot clean input.md
 This sill remove all directories where a figure *could* have been
 placed. **WARNING**: all files will be removed.
 
-### As a Haskell library
+Here is the full help text for the `clean` command:
 
-To include the functionality of `pandoc-plot` in a Haskell package, you
-can use the `makePlot` function (for single blocks) or `plotTransform`
-function (for entire documents). [Take a look at the documentation on
-Hackage](https://hackage.haskell.org/package/pandoc-plot).
+``` bash
+∩╗┐Usage: pandoc-plot.exe clean [--config PATH] FILE
+  Clean output directories where figures from FILE might be stored. WARNING: All
+  files in those directories will be deleted.
 
-#### Usage with Hakyll
+Available options:
+  --config PATH            Path to optional configuration file.
+  -h,--help                Show this help text
+```
 
-In case you want to use the filter with your own Hakyll setup, you can
-use a transform function that works on entire documents:
+#### Configuration template
 
-``` haskell
-import Text.Pandoc.Filter.Plot (plotTransform, defaultConfiguration)
+Because `pandoc-plot` supports a few toolkits, there are a lot of
+configuration options. Don’t start from scratch\! The
+`write-example-config` command will create a file for you, which you can
+then modify:
 
-import Hakyll
+``` bash
+pandoc-plot write-example-config
+```
 
--- Unsafe compiler is required because of the interaction
--- in IO (i.e. running an external script).
-makePlotPandocCompiler :: Compiler (Item String)
-makePlotPandocCompiler = 
-  pandocCompilerWithTransformM
-    defaultHakyllReaderOptions
-    defaultHakyllWriterOptions
-    (unsafeCompiler . plotTransform defaultConfiguration)
+You will need to re-name the file to `.pandoc-ploy.yml` to be able to
+use it, so don’t worry about overwriting your own configuration.
+
+Here is the full help text for the `write-example-config` command:
+
+``` bash
+∩╗┐Usage: pandoc-plot.exe write-example-config [--path FILE]
+  Write example configuration to a file and exit.
+
+Available options:
+  --path FILE              Target location of the configuration file. Default is
+                           ".example-pandoc-plot.yml"
+  -h,--help                Show this help text
 ```
 
 ## Installation
