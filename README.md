@@ -83,6 +83,7 @@ breaking changes in pandoc’s API.*
     Octave](https://www.gnu.org/software/octave/);
   - `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
   - `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
+  - `graphviz`: graphs using the [Graphviz](http://graphviz.org/)
 
 To know which toolkits are useable on *your machine* (and which ones are
 not available), you can check with the `toolkits` command:
@@ -465,6 +466,11 @@ ggplot2:
 gnuplot:
   # preamble: gnuplot.gp
   executable: gnuplot
+
+# The possible parameters for the graphviz toolkit
+graphviz:
+  # preamble: graphviz.dot
+  executable: dot
 ```
 
 A file like the above sets the **default** values; you can still

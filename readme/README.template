@@ -38,6 +38,7 @@ pandoc --filter pandoc-plot input.md --output output.html
 * `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
 * `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
 * `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
+* `graphviz`: graphs using the [Graphviz](http://graphviz.org/)
 
 To know which toolkits are useable on *your machine* (and which ones are not available), you can check with the `toolkits` command:
 
