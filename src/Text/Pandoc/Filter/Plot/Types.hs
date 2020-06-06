@@ -64,6 +64,7 @@ data Toolkit
     | Octave
     | GGPlot2
     | GNUPlot
+    | Graphviz
     deriving (Bounded, Eq, Enum, Generic)
 
 
@@ -77,6 +78,7 @@ instance Show Toolkit where
     show Octave       = "GNU Octave"
     show GGPlot2      = "ggplot2"
     show GNUPlot      = "gnuplot"
+    show Graphviz     = "graphviz"
 
 
 -- | Class name which will trigger the filter
@@ -89,6 +91,7 @@ cls Mathematica  = "mathplot"
 cls Octave       = "octaveplot"
 cls GGPlot2      = "ggplot2"
 cls GNUPlot      = "gnuplot"
+cls Graphviz     = "graphviz"
 
 
 type PlotM a = ReaderT PlotEnv IO a
@@ -134,6 +137,7 @@ data Configuration = Configuration
     , octavePreamble        :: !Script     -- ^ The default preamble script for the GNU Octave toolkit.
     , ggplot2Preamble       :: !Script     -- ^ The default preamble script for the GGPlot2 toolkit.
     , gnuplotPreamble       :: !Script     -- ^ The default preamble script for the gnuplot toolkit.
+    , graphvizPreamble      :: !Script     -- ^ The default preamble script for the Graphviz toolkit.
     
     , matplotlibExe         :: !FilePath   -- ^ The executable to use to generate figures using the matplotlib toolkit.
     , matlabExe             :: !FilePath   -- ^ The executable to use to generate figures using the MATLAB toolkit.
@@ -143,6 +147,7 @@ data Configuration = Configuration
     , octaveExe             :: !FilePath   -- ^ The executable to use to generate figures using the GNU Octave toolkit.
     , ggplot2Exe            :: !FilePath   -- ^ The executable to use to generate figures using the GGPlot2 toolkit.
     , gnuplotExe            :: !FilePath   -- ^ The executable to use to generate figures using the gnuplot toolkit.
+    , graphvizExe           :: !FilePath   -- ^ The executable to use to generate figures using the Graphviz toolkit.
     
     , matplotlibTightBBox   :: !Bool       -- ^ Whether or not to make Matplotlib figures tight by default.
     , matplotlibTransparent :: !Bool       -- ^ Whether or not to make Matplotlib figures transparent by default.
@@ -164,6 +169,7 @@ instance Default Configuration where
           , octavePreamble      = mempty
           , ggplot2Preamble     = mempty
           , gnuplotPreamble     = mempty
+          , graphvizPreamble    = mempty
 
           , matplotlibExe       = if isWindows then "python" else "python3"
           , matlabExe           = "matlab"
@@ -173,6 +179,7 @@ instance Default Configuration where
           , octaveExe           = "octave"
           , ggplot2Exe          = "Rscript"
           , gnuplotExe          = "gnuplot"
+          , graphvizExe         = "dot"
           
           , matplotlibTightBBox   = False
           , matplotlibTransparent = False

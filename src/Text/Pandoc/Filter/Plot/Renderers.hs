@@ -43,6 +43,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
 import           Text.Pandoc.Filter.Plot.Renderers.PlotlyR
 import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 import           Text.Pandoc.Filter.Plot.Renderers.GNUPlot
+import           Text.Pandoc.Filter.Plot.Renderers.Graphviz
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, OutputSpec(..))
 
 import           Text.Pandoc.Filter.Plot.Types
@@ -58,6 +59,7 @@ scriptExtension Mathematica  = ".m"
 scriptExtension Octave       = ".m"
 scriptExtension GGPlot2      = ".r"
 scriptExtension GNUPlot      = ".gp"
+scriptExtension Graphviz     = ".dot"
 
 
 -- Make a string into a comment
@@ -70,6 +72,7 @@ comment Mathematica  = \t -> mconcat ["(*", t, "*)"]
 comment Octave       = mappend "% "
 comment GGPlot2      = mappend "# "
 comment GNUPlot      = mappend "# "
+comment Graphviz     = mappend "//"
 
 
 -- | The function that maps from configuration to the preamble.
@@ -82,6 +85,7 @@ preambleSelector Mathematica  = mathematicaPreamble
 preambleSelector Octave       = octavePreamble
 preambleSelector GGPlot2      = ggplot2Preamble
 preambleSelector GNUPlot      = gnuplotPreamble
+preambleSelector Graphviz     = graphvizPreamble
 
 
 -- | Save formats supported by this renderer.
@@ -94,6 +98,7 @@ supportedSaveFormats Mathematica  = mathematicaSupportedSaveFormats
 supportedSaveFormats Octave       = octaveSupportedSaveFormats
 supportedSaveFormats GGPlot2      = ggplot2SupportedSaveFormats
 supportedSaveFormats GNUPlot      = gnuplotSupportedSaveFormats
+supportedSaveFormats Graphviz     = graphvizSupportedSaveFormats
 
 
 -- Checks to perform before running a script. If ANY check fails,
@@ -124,6 +129,7 @@ command Mathematica  = mathematicaCommand
 command Octave       = octaveCommand
 command GGPlot2      = ggplot2Command
 command GNUPlot      = gnuplotCommand
+command Graphviz     = graphvizCommand
 
 
 -- | Script fragment required to capture a figure.
@@ -136,6 +142,7 @@ capture Mathematica  = mathematicaCapture
 capture Octave       = octaveCapture
 capture GGPlot2      = ggplot2Capture
 capture GNUPlot      = gnuplotCapture
+capture Graphviz     = graphvizCapture 
 
 
 -- | Check if a toolkit is available, based on the current configuration
@@ -148,6 +155,7 @@ toolkitAvailable Mathematica  = mathematicaAvailable
 toolkitAvailable Octave       = octaveAvailable
 toolkitAvailable GGPlot2      = ggplot2Available
 toolkitAvailable GNUPlot      = gnuplotAvailable
+toolkitAvailable Graphviz     = graphvizAvailable
 
 
 -- | List of toolkits available on this machine.

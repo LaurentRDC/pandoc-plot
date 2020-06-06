@@ -44,6 +44,7 @@ library
         Text.Pandoc.Filter.Plot.Renderers.Octave
         Text.Pandoc.Filter.Plot.Renderers.GGPlot2
         Text.Pandoc.Filter.Plot.Renderers.GNUPlot
+        Text.Pandoc.Filter.Plot.Renderers.Graphviz
     hs-source-dirs:
         src
     ghc-options: 

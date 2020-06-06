@@ -91,6 +91,7 @@ data ConfigPrecursor = ConfigPrecursor
     , _octavePrec        :: !OctavePrecursor
     , _ggplot2Prec       :: !GGPlot2Precursor
     , _gnuplotPrec       :: !GNUPlotPrecursor
+    , _graphvizPrec      :: !GraphvizPrecursor
     }
 
 instance Default ConfigPrecursor where
@@ -109,6 +110,7 @@ instance Default ConfigPrecursor where
         , _octavePrec        = def
         , _ggplot2Prec       = def
         , _gnuplotPrec       = def
+        , _graphvizPrec      = def
         }
 
 
@@ -126,6 +128,7 @@ data MathematicaPrecursor   = MathematicaPrecursor  {_mathematicaPreamble  :: !(
 data OctavePrecursor        = OctavePrecursor       {_octavePreamble       :: !(Maybe FilePath), _octaveExe       :: !FilePath}
 data GGPlot2Precursor       = GGPlot2Precursor      {_ggplot2Preamble      :: !(Maybe FilePath), _ggplot2Exe      :: !FilePath}
 data GNUPlotPrecursor       = GNUPlotPrecursor      {_gnuplotPreamble      :: !(Maybe FilePath), _gnuplotExe      :: !FilePath}
+data GraphvizPrecursor      = GraphvizPrecursor     {_graphvizPreamble     :: !(Maybe FilePath), _graphvizExe    :: !FilePath}
 
 
 instance Default MatplotlibPrecursor where
@@ -138,6 +141,7 @@ instance Default MathematicaPrecursor   where def = MathematicaPrecursor  Nothin
 instance Default OctavePrecursor        where def = OctavePrecursor       Nothing (octaveExe def)
 instance Default GGPlot2Precursor       where def = GGPlot2Precursor      Nothing (ggplot2Exe def)
 instance Default GNUPlotPrecursor       where def = GNUPlotPrecursor      Nothing (gnuplotExe def)
+instance Default GraphvizPrecursor      where def = GraphvizPrecursor     Nothing (graphvizExe def)
 
 instance FromJSON MatplotlibPrecursor where
     parseJSON (Object v) = 
@@ -173,8 +177,12 @@ instance FromJSON GGPlot2Precursor where
     parseJSON _ = fail $ mconcat ["Could not parse ", show GGPlot2, " configuration."]
 
 instance FromJSON GNUPlotPrecursor where
-    parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (ggplot2Exe def)
+    parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (gnuplotExe def)
     parseJSON _ = fail $ mconcat ["Could not parse ", show GNUPlot, " configuration."]
+
+instance FromJSON GraphvizPrecursor where
+    parseJSON (Object v) = GraphvizPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (graphvizExe def)
+    parseJSON _ = fail $ mconcat ["Could not parse ", show Graphviz, " configuration."]
 
 
 instance FromJSON ConfigPrecursor where
@@ -195,6 +203,7 @@ instance FromJSON ConfigPrecursor where
         _octavePrec        <- v .:? (cls Octave)           .!= def
         _ggplot2Prec       <- v .:? (cls GGPlot2)          .!= def
         _gnuplotPrec       <- v .:? (cls GNUPlot)          .!= def
+        _graphvizPrec      <- v .:? (cls Graphviz)         .!= def
 
         return $ ConfigPrecursor{..}
     parseJSON _          = fail "Could not parse configuration."
@@ -219,6 +228,7 @@ renderConfig ConfigPrecursor{..} = do
         octaveExe       = _octaveExe _octavePrec
         ggplot2Exe      = _ggplot2Exe _ggplot2Prec
         gnuplotExe      = _gnuplotExe _gnuplotPrec
+        graphvizExe     = _graphvizExe _graphvizPrec
     
     matplotlibPreamble   <- readPreamble (_matplotlibPreamble _matplotlibPrec)
     matlabPreamble       <- readPreamble (_matlabPreamble _matlabPrec)
@@ -228,6 +238,7 @@ renderConfig ConfigPrecursor{..} = do
     octavePreamble       <- readPreamble (_octavePreamble _octavePrec)
     ggplot2Preamble      <- readPreamble (_ggplot2Preamble _ggplot2Prec)
     gnuplotPreamble      <- readPreamble (_gnuplotPreamble _gnuplotPrec)
+    graphvizPreamble     <- readPreamble (_graphvizPreamble _graphvizPrec)
 
     return Configuration{..}
     where

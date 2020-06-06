@@ -71,6 +71,7 @@ executable Mathematica  = tryToFindExe . mathematicaExe
 executable Octave       = tryToFindExe . octaveExe
 executable GGPlot2      = tryToFindExe . ggplot2Exe
 executable GNUPlot      = tryToFindExe . gnuplotExe
+executable Graphviz     = tryToFindExe . graphvizExe
 
 
 -- | Internal description of all information 

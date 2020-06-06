@@ -74,3 +74,8 @@ ggplot2:
 gnuplot:
   # preamble: gnuplot.gp
   executable: gnuplot
+
+# The possible parameters for the graphviz toolkit
+graphviz:
+  # preamble: graphviz.dot
+  executable: dot
