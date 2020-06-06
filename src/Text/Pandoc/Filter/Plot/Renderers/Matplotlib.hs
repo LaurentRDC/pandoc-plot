@@ -36,10 +36,10 @@ matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-matplotlibCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-matplotlibCommand conf _ fp = do
-    exe <- executable Matplotlib conf
-    return [st|#{exe} "#{fp}"|]
+matplotlibCommand :: OutputSpec -> IO Text
+matplotlibCommand OutputSpec{..} = do
+    exe <- executable Matplotlib oConfiguration
+    return [st|#{exe} "#{oScriptPath}"|]
 
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script

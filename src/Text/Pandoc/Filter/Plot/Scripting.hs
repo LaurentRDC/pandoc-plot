@@ -90,7 +90,12 @@ runTempScript spec@FigureSpec{..} = do
                                         then mconcat [captureFragment, "\n", script]
                                         else mconcat [script, "\n", captureFragment]
             liftIO $ T.writeFile scriptPath scriptWithCapture
-            command_ <- T.unpack <$> (liftIO $ command tk conf spec scriptPath)
+            let outputSpec = OutputSpec { oConfiguration = conf
+                                        , oFigureSpec = spec
+                                        , oScriptPath = scriptPath
+                                        , oFigurePath = figurePath spec
+                                        }
+            command_ <- T.unpack <$> (liftIO $ command tk outputSpec)
 
             ec <- liftIO 
                     $ runProcess 

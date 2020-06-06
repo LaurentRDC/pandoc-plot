@@ -27,10 +27,10 @@ octaveSupportedSaveFormats :: [SaveFormat]
 octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-octaveCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-octaveCommand conf _ fp = do
-    exe <- executable Octave conf
-    return [st|#{exe} --no-gui --no-window-system "#{fp}"|]
+octaveCommand :: OutputSpec -> IO Text
+octaveCommand OutputSpec{..} = do
+    exe <- executable Octave oConfiguration
+    return [st|#{exe} --no-gui --no-window-system "#{oScriptPath}"|]
 
 
 octaveAvailable :: Configuration -> IO Bool

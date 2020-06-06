@@ -20,6 +20,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , commandSuccess
     , existsOnPath
     , executable
+    , OutputSpec(..)
 ) where
 
 import           Data.Maybe                    (isJust)
@@ -70,3 +71,13 @@ executable Mathematica  = tryToFindExe . mathematicaExe
 executable Octave       = tryToFindExe . octaveExe
 executable GGPlot2      = tryToFindExe . ggplot2Exe
 executable GNUPlot      = tryToFindExe . gnuplotExe
+
+
+-- | Internal description of all information 
+-- needed to output a figure.
+data OutputSpec = OutputSpec 
+    { oConfiguration :: Configuration -- ^ Pandoc-plot configuration
+    , oFigureSpec    :: FigureSpec    -- ^ Figure spec
+    , oScriptPath    :: FilePath      -- ^ Path to the script to render
+    , oFigurePath    :: FilePath      -- ^ Figure output path
+    } 

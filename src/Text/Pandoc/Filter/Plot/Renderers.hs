@@ -25,6 +25,7 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , toolkitAvailable
     , availableToolkits
     , unavailableToolkits
+    , OutputSpec(..)
 ) where
 
 import           Control.Concurrent.Async                      (mapConcurrently)
@@ -42,7 +43,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
 import           Text.Pandoc.Filter.Plot.Renderers.PlotlyR
 import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 import           Text.Pandoc.Filter.Plot.Renderers.GNUPlot
-import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable)
+import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, OutputSpec(..))
 
 import           Text.Pandoc.Filter.Plot.Types
 
@@ -112,7 +113,9 @@ parseExtraAttrs _          = return mempty
 
 -- | Generate the appropriate command-line command to generate a figure.
 -- The executable will need to be found first, hence the IO monad.
-command :: Toolkit -> (Configuration -> FigureSpec -> FilePath -> IO Text)
+command :: Toolkit 
+        -> OutputSpec
+        -> IO Text
 command Matplotlib   = matplotlibCommand
 command PlotlyPython = plotlyPythonCommand
 command PlotlyR      = plotlyRCommand

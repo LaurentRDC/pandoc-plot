@@ -27,10 +27,10 @@ plotlyPythonSupportedSaveFormats :: [SaveFormat]
 plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
 
-plotlyPythonCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-plotlyPythonCommand conf _ fp = do
-    exe <- executable PlotlyPython conf
-    return [st|#{exe} "#{fp}"|]
+plotlyPythonCommand :: OutputSpec -> IO Text
+plotlyPythonCommand OutputSpec{..} = do
+    exe <- executable PlotlyPython oConfiguration
+    return [st|#{exe} "#{oScriptPath}"|]
 
 
 plotlyPythonAvailable :: Configuration -> IO Bool

@@ -27,10 +27,10 @@ plotlyRSupportedSaveFormats :: [SaveFormat]
 plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS]
 
 
-plotlyRCommand :: Configuration -> FigureSpec -> FilePath -> IO Text
-plotlyRCommand conf _ fp = do
-    exe <- executable PlotlyR conf
-    return [st|#{exe} "#{fp}"|]
+plotlyRCommand :: OutputSpec -> IO Text
+plotlyRCommand OutputSpec{..} = do
+    exe <- executable PlotlyR oConfiguration
+    return [st|#{exe} "#{oScriptPath}"|]
 
 
 plotlyRAvailable :: Configuration -> IO Bool
