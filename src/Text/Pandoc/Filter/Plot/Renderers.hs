@@ -72,7 +72,7 @@ comment Mathematica  = \t -> mconcat ["(*", t, "*)"]
 comment Octave       = mappend "% "
 comment GGPlot2      = mappend "# "
 comment GNUPlot      = mappend "# "
-comment Graphviz     = mappend "//"
+comment Graphviz     = mappend "// "
 
 
 -- | The function that maps from configuration to the preamble.

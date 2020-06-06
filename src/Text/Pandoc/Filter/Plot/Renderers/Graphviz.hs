@@ -32,13 +32,13 @@ graphvizCommand :: OutputSpec -> IO Text
 graphvizCommand OutputSpec{..} = do
     exe <- executable Graphviz oConfiguration
     let fmt = fmap toLower . show . saveFormat $ oFigureSpec
-    return [st|#{exe} -T#{fmt} -o "#{oFigurePath} "#{oScriptPath}"|]
+    return [st|#{exe} -T#{fmt} -o "#{oFigurePath}" "#{oScriptPath}"|]
 
 
 graphvizAvailable :: Configuration -> IO Bool
 graphvizAvailable conf = do
-    exe <- executable GGPlot2 conf
-    commandSuccess [st|#{exe} -e 'library("plotly")'|]
+    exe <- executable Graphviz conf
+    commandSuccess [st|#{exe} -?|]
 
 
 -- Graphviz export is entirely based on command-line arguments

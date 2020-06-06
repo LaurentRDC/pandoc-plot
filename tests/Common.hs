@@ -69,6 +69,7 @@ testFileInclusion tk =
         include Octave       = "tests/includes/octave.m"
         include GGPlot2      = "tests/includes/ggplot2.r"
         include GNUPlot      = "tests/includes/gnuplot.gp"
+        include Graphviz     = "tests/includes/graphviz.dot"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -261,6 +262,7 @@ trivialContent Mathematica  = "\n"
 trivialContent Octave       = "figure('visible', 'off')\nplot (-10:0.1:10);"
 trivialContent GGPlot2      = "library(ggplot2)\nggplot()\n"
 trivialContent GNUPlot      = "plot sin(x)"
+trivialContent Graphviz     = "digraph {A -> B [label=\"test\"];}"
 
 
 addCaption :: String -> Block -> Block
@@ -324,6 +326,7 @@ assertIsInfix xs ys = unless (xs `isInfixOf` ys) (assertFailure msg)
   where
     msg = mconcat ["Expected ", show xs, " to be an infix of ", show ys]
 
+
 -- Ensure a directory is empty but exists.
 ensureDirectoryExistsAndEmpty :: FilePath -> IO ()
 ensureDirectoryExistsAndEmpty dir = do
@@ -332,6 +335,7 @@ ensureDirectoryExistsAndEmpty dir = do
         then removePathForcibly dir
         else return ()
     createDirectory dir
+
 
 tshow :: Show a => a -> Text
 tshow = pack . show
