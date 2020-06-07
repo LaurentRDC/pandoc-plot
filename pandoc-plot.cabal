@@ -9,7 +9,7 @@ homepage:       https://github.com/LaurentRDC/pandoc-plot#readme
 bug-reports:    https://github.com/LaurentRDC/pandoc-plot/issues
 author:         Laurent P. René de Cotret
 maintainer:     Laurent P. René de Cotret
-license:        GPL-2.0-or-later
+license:        GPL-2
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
