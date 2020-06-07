@@ -32,8 +32,7 @@ environment:
     MINICONDA: "C:\\Miniconda3-x64"
 
   matrix:
-  - ARGS: "--resolver lts-14"  # GHC 8.6
-  # - ARGS: "--resolver nightly"
+  - ARGS: "--stack-yaml stack.yaml"
 
 matrix:
   fast_finish: true
