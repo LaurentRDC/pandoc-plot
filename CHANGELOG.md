@@ -2,8 +2,13 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.7.0.0
+---------------
+
+* Made the functions `availableToolkits` and `unavailableToolkits` public.
+
 Release 0.6.0.0
---------------
+---------------
 
 New toolkits:
 * Added support for the Plotly/R plotting library.

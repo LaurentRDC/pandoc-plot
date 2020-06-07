@@ -19,11 +19,13 @@ attribute will trigger the filter:
 
 *   @matplotlib@ for matplotlib-based Python plots;
 *   @plotly_python@ for Plotly-based Python plots;
+*   @plotly_r@ for Plotly-based R plots;
 *   @matlabplot@ for MATLAB plots;
 *   @mathplot@ for Mathematica plots;
 *   @octaveplot@ for GNU Octave plots;
 *   @ggplot2@ for ggplot2-based R plots;
 *   @gnuplot@ for gnuplot plots;
+*   @graphviz@ for Graphviz graphs.
 
 For example, in Markdown:
 
@@ -32,7 +34,7 @@ For example, in Markdown:
 
     ```{.matlabplot}
     figure()
-    plot([1,2,3,4,5], [1,2,3,4,5], '-k)
+    plot([1,2,3,4,5], [1,2,3,4,5], '-k')
     ```
 @
 
@@ -75,13 +77,14 @@ module Text.Pandoc.Filter.Plot (
     , Configuration(..)
     , SaveFormat(..)
     , Script
+    -- * Determining available plotting toolkits
+    , availableToolkits
+    , unavailableToolkits
     -- * For testing and internal purposes ONLY
     , make
     , make'
     , PandocPlotError(..)
     , readDoc
-    , availableToolkits
-    , unavailableToolkits
     ) where
 
 import Control.Concurrent.Async          (mapConcurrently)
