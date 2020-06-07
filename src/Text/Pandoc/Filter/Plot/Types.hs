@@ -268,14 +268,14 @@ figureContentHash FigureSpec{..} =
 -- | Generated figure file format supported by pandoc-plot.
 -- Note that not all formats are supported by all toolkits.
 data SaveFormat
-    = PNG
-    | PDF
-    | SVG
-    | JPG
-    | EPS
-    | GIF
-    | TIF
-    | WEBP
+    = PNG   -- ^ Portable network graphics
+    | PDF   -- ^ Portable document format
+    | SVG   -- ^ Scalable vector graphics
+    | JPG   -- ^ JPEG/JPG compressed image
+    | EPS   -- ^ Encapsulated postscript
+    | GIF   -- ^ GIF format
+    | TIF   -- ^ Tagged image format
+    | WEBP  -- ^ WebP image format
     deriving (Bounded, Enum, Eq, Show, Generic)
 
 instance IsString SaveFormat where
