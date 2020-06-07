@@ -17,7 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-14.1
+resolver: lts-15.16
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -38,18 +38,6 @@ packages:
 # using the same syntax as the packages field.
 # (e.g., acme-missiles-0.3)
 extra-deps:
-- pandoc-2.9
-- pandoc-types-1.20@sha256:8393b1a73b8a6a1f3feaeb3a6592c176461082c3e4d897f1b316b1a58dd84c39,3999
-- texmath-0.12
-- HsYAML-0.2.1.0@sha256:e4677daeba57f7a1e9a709a1f3022fe937336c91513e893166bd1f023f530d68,5311
-- doclayout-0.2.0.1@sha256:0410e40c4fa8e299b4f5fa03d378111b9d0effdf59134c95882a160637887ba8,2063
-- haddock-library-1.8.0@sha256:9dece2cbca827755fdfc30af5a407b0ca30cf29ec1ee85215b38fd8fc23e7421,3723
-- regex-pcre-builtin-0.95.1.1.8.43@sha256:2d671af361adf1776fde182a687bb6da022b1e5e3b0a064ce264289de63564a5,3088
-- regex-base-0.94.0.0@sha256:d514eab2aa9ba4b9d14900ac40cbdea1993372466a6cc6ffeeab59a1975563c0,2166
-- doctemplates-0.8@sha256:a85670fbc199422ff06b3f511c426a94e72d3ee1f2d165bfdfb64ec6bb48bdc3,3109
-- emojis-0.1@sha256:3cd86b552ad71c118a7822128c97054b6cf22bc4ff5b8f7e3eb0b356202aeecd,1907
-- skylighting-0.8.3@sha256:dbd885fc6be993cb3714b67ab1ba32c110dc889cd96d2a70f4dc2f67518ad5d3,9726
-- skylighting-core-0.8.3@sha256:90cf39790b38f77f13a29a7a64a7c50a8cb0442c2c68f5cd7b44c12a32e8dd37,8056
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

@@ -2,10 +2,12 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-Release 0.7.0.0
+Release 0.6.1.0
 ---------------
 
 * Made the functions `availableToolkits` and `unavailableToolkits` public.
+* Minor documentation fixes.
+* Executables are now built with GHC 8.8.3.
 
 Release 0.6.0.0
 ---------------
