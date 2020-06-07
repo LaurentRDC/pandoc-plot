@@ -38,8 +38,8 @@ jobs:
 
     - name: Build
       run: |
-        stack build --system-ghc --test --no-run-tests
+        stack build --stack-yaml stack.yaml --test --no-run-tests
 
     - name: Test
       run: |
-        stack test --system-ghc
+        stack test --stack-yaml stack.yaml 
