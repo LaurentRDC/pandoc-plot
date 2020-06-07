@@ -21,7 +21,7 @@
 # We cannot use GHC 8.8.* because of this bug on Windows:
 #   https://gitlab.haskell.org/ghc/ghc/issues/17926
 # and other annoying bugs
-resolver: lts-14.27 # GHC 8.6.5
+resolver: lts-15.1 # GHC 8.8.1
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
