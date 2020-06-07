@@ -5,6 +5,11 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 0.6.0.0
 --------------
 
+New toolkits:
+* Added support for the Plotly/R plotting library.
+* Added support for Graphviz.
+
+Other changes:
 * The determination of which figures to re-render or not has been improved. For example, changing the caption will not trigger a re-render of a figure anymore.
 * `pandoc-plot` will look for executables more thoroughly.
 * `pandoc-plot toolkits` will now show the exact executable that is being used, if possible.
