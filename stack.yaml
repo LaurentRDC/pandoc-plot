@@ -18,9 +18,10 @@
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
 
-# We cannot use GHC 8.8.3 because of this bug on Windows:
+# We cannot use GHC 8.8.* because of this bug on Windows:
 #   https://gitlab.haskell.org/ghc/ghc/issues/17926
-resolver: lts-15.3 # GHC 8.8.2
+# and other annoying bugs
+resolver: lts-14.27 # GHC 8.6.5
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
