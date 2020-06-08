@@ -9,7 +9,6 @@ import           Data.String
 
 import           Language.Haskell.TH.Syntax
 
-import System.FilePath                      (FilePath)
 import System.IO
 
 docFile :: FilePath

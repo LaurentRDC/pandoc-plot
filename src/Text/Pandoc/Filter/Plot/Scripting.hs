@@ -23,14 +23,13 @@ import           Control.Monad.Reader
 
 import           Data.Hashable                     (hash)
 import           Data.Maybe                        (fromMaybe)
-import           Data.Monoid                       ((<>))
 import qualified Data.Text                         as T
 import qualified Data.Text.IO                      as T
 
 import           System.Directory                  (createDirectoryIfMissing,
                                                     doesFileExist)
 import           System.Exit                       (ExitCode (..))
-import           System.FilePath                   (FilePath, addExtension,
+import           System.FilePath                   (addExtension,
                                                     normalise, replaceExtension,
                                                     takeDirectory, (</>))
 import           System.IO.Temp                    (getCanonicalTemporaryDirectory)

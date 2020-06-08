@@ -28,7 +28,6 @@ import           Data.Default.Class                (def)
 import           Data.List                         (intersperse)
 import qualified Data.Map.Strict                   as Map
 import           Data.Maybe                        (fromMaybe, listToMaybe)
-import           Data.Monoid                       ((<>))
 import           Data.String                       (fromString)
 import           Data.Text                         (Text, pack, unpack)
 import qualified Data.Text.IO                      as TIO

@@ -5,11 +5,9 @@
 
 module Main where
 
-import           Control.Applicative              ((<|>))
 import           Control.Monad                    (join, forM_, when, msum)
 
 import           Data.List                        (intersperse, (\\))
-import           Data.Monoid                      ((<>))
 import           Data.Text                        (unpack)
 import           Data.Version                     (parseVersion, showVersion)
 
