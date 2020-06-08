@@ -406,6 +406,8 @@ stack install pandoc-plot
 
 ### From source
 
+
+
 Building from source can be done using [`stack`](https://docs.haskellstack.org/en/stable/README/) or [`cabal`](https://www.haskell.org/cabal/):
 
 ```bash
