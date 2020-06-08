@@ -32,7 +32,7 @@ environment:
     MINICONDA: "C:\\Miniconda3-x64"
 
   matrix:
-  - ARGS: "--stack-yaml stack.yaml"
+  - ARGS: "--stack-yaml stack.yaml --system-ghc"
 
 matrix:
   fast_finish: true
@@ -43,6 +43,10 @@ before_test:
 
 - curl -sS -ostack.zip -L --insecure https://get.haskellstack.org/stable/windows-x86_64.zip
 - 7z x stack.zip stack.exe
+
+# Installing GHC 8.10.1 to bypass problems regarding GHC 8.8.3 on Windows
+# We have --system-ghc in the ARGS to make sure we use this GHC
+- choco install --yes ghc --version 8.10.1
 
 # Install GNU Octave
 - choco install --yes octave
@@ -71,7 +75,7 @@ before_test:
 test_script:
 
 # Install toolchain, but do it silently due to lots of output
-- stack %ARGS% setup > nul
+# - stack %ARGS% setup > nul
 
 # The ugly echo "" hack is to avoid complaints about 0 being an invalid file
 # descriptor
