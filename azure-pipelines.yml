@@ -18,6 +18,7 @@ trigger:
     - release
   paths:
     exclude:
+    - "readme/*"
     - "*.md"
     - ".github/*"
     - .appveyor.yml
