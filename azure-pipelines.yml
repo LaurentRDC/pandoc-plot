@@ -21,7 +21,6 @@ trigger:
     - "readme/*"
     - "*.md"
     - ".github/*"
-    - .appveyor.yml
     - example-config.yml
     - build-setup.ps1
     - installer/*
