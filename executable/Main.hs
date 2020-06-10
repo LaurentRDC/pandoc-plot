@@ -2,14 +2,13 @@
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE RecordWildCards   #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
 import           Control.Monad                    (join, forM_, when, msum)
 
 import           Data.List                        (intersperse, (\\))
-import           Data.Text                        (pack, unpack)
+import           Data.Text                        (unpack)
 import           Data.Version                     (parseVersion, showVersion)
 
 import           GitHash                          as Git
@@ -32,8 +31,6 @@ import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats,
                                                    cleanOutputDirs, 
                                                    configurationPathMeta,
                                                    executable)
-
-import qualified Text.Pandoc.Filter.Plot.Internal as Log 
 
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
@@ -244,13 +241,13 @@ clean mfp fp = do
     doc <- readDoc fp
     -- Note the priority for configuration:
     -- (1) path of argument --config (2) document metadata (3) local .pandoc-plot.yml (4) default config
-    -- Also note that msum :: [Maybe a] -> Maybe a is used to select the first `Just` value. 
-    conf <- maybe localConfig configuration $ msum [configurationPathMeta doc, mfp]
-
-    Log.withLogger (logVerbosity conf) (logSink conf) $ \logger -> do
-        Log.info logger $ "Cleaning output directories for " <> (pack fp)
-        cleanedDirs <- cleanOutputDirs conf doc
-        forM_ cleanedDirs $ \d -> Log.info logger $ "Removed directory " <> (pack d)
+    conf <- maybe localConfig configuration $ firstJusts [configurationPathMeta doc, mfp]
+    putStrLn $ "Cleaning output directories for " <> fp
+    cleanedDirs <- cleanOutputDirs conf doc
+    forM_ cleanedDirs $ \d -> putStrLn $ "Removed directory " <> d
+    where
+        firstJusts :: [Maybe a] -> Maybe a
+        firstJusts = msum
 
 showManPage :: IO ()
 showManPage = 
