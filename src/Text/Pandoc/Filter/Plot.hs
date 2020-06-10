@@ -89,8 +89,6 @@ module Text.Pandoc.Filter.Plot (
 
 import Control.Concurrent.Async          (mapConcurrently)
 
-import Control.Monad.Reader              (runReaderT)
-
 import System.IO                         (hPutStrLn, stderr)
 
 import Text.Pandoc.Definition            (Pandoc(..), Block)
@@ -151,7 +149,7 @@ make' :: Toolkit
       -> Configuration 
       -> Block 
       -> IO (Either PandocPlotError Block)
-make' tk conf block = runReaderT (make'' block) (PlotEnv tk conf)
+make' tk conf block = runPlotM (make'' block) (PlotEnv tk conf)
     where
         make'' :: Block -> PlotM (Either PandocPlotError Block)
         make'' blk = parseFigureSpec blk

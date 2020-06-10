@@ -24,6 +24,7 @@ module Text.Pandoc.Filter.Plot.Types (
     , InclusionKey(..)
     , FigureSpec(..)
     , SaveFormat(..)
+    , runPlotM
     , figureContentHash
     , cls
     , extension
@@ -49,7 +50,11 @@ import           System.Info            (os)
 
 import           Text.Pandoc.Definition (Attr, Format(..))
 
-import           Text.Pandoc.Filter.Plot.Logging    (Verbosity(..), LogSink(..))
+import           Text.Pandoc.Filter.Plot.Logging    ( Verbosity(..)
+                                                    , LogSink(..)
+                                                    , LoggingM
+                                                    , runLoggingM
+                                                    )
 
 
 toolkits :: [Toolkit]
@@ -96,13 +101,22 @@ cls GNUPlot      = "gnuplot"
 cls Graphviz     = "graphviz"
 
 
-type PlotM a = ReaderT PlotEnv IO a
+type PlotM a = ReaderT PlotEnv LoggingM a
 
 
 data PlotEnv
     = PlotEnv { toolkit   :: !Toolkit
               , config    :: !Configuration
               }
+
+
+runPlotM :: PlotM a -> PlotEnv -> IO a
+runPlotM v env = 
+    let conf      = config env
+        verbosity = logVerbosity conf
+        sink      = logSink conf 
+    in runLoggingM verbosity sink (runReaderT v env)
+
 
 -- | The @Configuration@ type holds the default values to use
 -- when running pandoc-plot. These values can be overridden in code blocks.

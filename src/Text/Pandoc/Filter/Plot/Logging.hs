@@ -15,7 +15,8 @@ Logging implementation. Inspired by Hakyll and monad-logger.
 module Text.Pandoc.Filter.Plot.Logging 
     ( Verbosity(..)
     , LogSink(..)
-    , LoggingT(..)
+    , LoggingM(..)
+    , runLoggingM
     -- * Logging messages
     , debug
     , err
@@ -59,20 +60,19 @@ data LogSink = StdErr           -- ^ Standard error stream.
 
 type LogMessage = (Verbosity, Text)
 
-type LoggingT m a = WriterT [LogMessage] m a
+type LoggingM = WriterT [LogMessage] IO
 
 
-runLoggingT :: MonadIO m => Verbosity -> LogSink -> LoggingT m a -> m a
-runLoggingT v StdErr       = runLoggingT' v $ mapM_ (TIO.hPutStrLn stderr . snd)
-runLoggingT v (LogFile fp) = runLoggingT' v $ mapM_ (TIO.appendFile fp . snd)
+runLoggingM :: Verbosity -> LogSink -> LoggingM a -> IO a
+runLoggingM v StdErr       = runLoggingM' v $ mapM_ (TIO.hPutStrLn stderr . snd)
+runLoggingM v (LogFile fp) = runLoggingM' v $ mapM_ (TIO.appendFile fp . snd)
 
 
-runLoggingT' :: MonadIO m 
-            => Verbosity                -- ^ Minimum verbosity to keep
-            -> ([LogMessage] -> IO ())  -- ^ Log sink
-            -> LoggingT m a
-            -> m a
-runLoggingT' v f m = do
+runLoggingM' :: Verbosity                -- ^ Minimum verbosity to keep
+             -> ([LogMessage] -> IO ())  -- ^ Log sink
+             -> LoggingM a
+             -> IO a
+runLoggingM' v f m = do
     (r, t) <- runWriterT m
     -- Messages with lower level than minimum are discarded
     let t' = filter (\message -> fst message >= v) t
@@ -80,23 +80,23 @@ runLoggingT' v f m = do
     return r
 
 
-log :: Monad m => Verbosity -> Text -> LoggingT m ()
+log :: Verbosity -> Text -> LoggingM ()
 log v t = tell [(v, t)]
 
 
-debug :: Monad m => Text -> LoggingT m ()
+debug :: Text -> LoggingM ()
 debug t = log Debug $ "(DEBUG)   " <> t
 
 
-err :: Monad m => Text -> LoggingT m ()
+err :: Text -> LoggingM ()
 err t = log Error $ "(ERROR)   " <> t
 
 
-warning :: Monad m => Text -> LoggingT m ()
+warning :: Text -> LoggingM ()
 warning t = log Warning $ "(WARNING) " <> t
 
 
-info :: Monad m => Text -> LoggingT m ()
+info :: Text -> LoggingM ()
 info t = log Info $ "          " <> t
 
 

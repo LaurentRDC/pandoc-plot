@@ -18,7 +18,7 @@ module Text.Pandoc.Filter.Plot.Clean (
 ) where
 
 
-import           Control.Monad.Reader             (runReaderT, forM, liftIO)
+import           Control.Monad.Reader             (forM, liftIO)
 
 import qualified Data.ByteString.Lazy             as B
 import           Data.Char                        (toLower)
@@ -57,7 +57,7 @@ cleanOutputDirs conf doc = do
         outputDir b = 
             maybe
                 (return Nothing)
-                (\tk -> runReaderT (parseFigureSpec b >>= return . fmap directory) (PlotEnv tk conf))
+                (\tk -> runPlotM (parseFigureSpec b >>= return . fmap directory) (PlotEnv tk conf))
                 (plotToolkit b)
         
         removeDir :: FilePath -> IO FilePath
