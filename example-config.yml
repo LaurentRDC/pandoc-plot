@@ -35,7 +35,7 @@ caption_format: markdown+tex_math_dollars
 
 logging:
   # Possible verbosity values: debug, error, warning, info, silent
-  verbosity: info
+  verbosity: warning
   # If the filepath below is not present, then pandoc-plot will log to stderr
   # Otherwise, log messages will be appended to the filepath.
   # filepath: path/to/file.txt

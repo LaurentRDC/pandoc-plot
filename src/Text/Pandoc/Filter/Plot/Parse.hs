@@ -46,6 +46,7 @@ import           Text.Pandoc.Readers               (getReader, Reader(..))
 
 import           Text.Pandoc.Filter.Plot.Renderers
 import           Text.Pandoc.Filter.Plot.Types
+import           Text.Pandoc.Filter.Plot.Logging
 
 tshow :: Show a => a -> Text
 tshow = pack . show
@@ -94,7 +95,8 @@ parseFigureSpec (CodeBlock (id', classes, attrs) content) = do
             -- This is the first opportunity to check save format compatibility
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
             when (not saveFormatSupported) $ do
-                (error $ mconcat ["Save format ", show saveFormat, " not supported by ", show toolkit ])
+                let msg = pack $ mconcat ["Save format ", show saveFormat, " not supported by ", show toolkit ]
+                lift $ err msg
             return FigureSpec{..}
 
 parseFigureSpec _ = return Nothing
