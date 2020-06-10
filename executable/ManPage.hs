@@ -15,7 +15,6 @@ import           Language.Haskell.TH.Syntax
 import qualified Text.Pandoc                as P
 import           Text.Pandoc.Highlighting   (pygments)
 
-import System.FilePath                      (FilePath)
 import System.IO
 
 docFile :: FilePath

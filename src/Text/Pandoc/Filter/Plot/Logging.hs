@@ -30,14 +30,16 @@ import           Control.Monad.Trans     (liftIO, lift)
 import           Control.Monad.Writer    (WriterT, runWriterT, tell)
 
 import           Data.Char               (toLower)
+import           Data.List               (sortOn)
 import           Data.String             (IsString(..))
 import           Data.Text               (Text, unpack)
 import qualified Data.Text.IO            as TIO
+import           Data.Time.Clock.System  (getSystemTime, SystemTime(..))
 import           Data.Yaml
 
 import           System.IO               (stderr, nativeNewline, Newline(..))
 
-import           Prelude                 hiding (log)
+import           Prelude                 hiding (log, fst, snd)
 
 
 -- | Verbosity of the logger.
@@ -54,14 +56,14 @@ data LogSink = StdErr           -- ^ Standard error stream.
              | LogFile FilePath -- ^ Appended to file.
              deriving (Eq, Show)
 
-type LogMessage = (Verbosity, Text)
+type LogMessage = (Verbosity, SystemTime, Text)
 
 type LoggingM = WriterT [LogMessage] IO
 
 
 runLoggingM :: Verbosity -> LogSink -> LoggingM a -> IO a
-runLoggingM v StdErr       = runLoggingM' v $ mapM_ (TIO.hPutStrLn stderr . snd)
-runLoggingM v (LogFile fp) = runLoggingM' v $ mapM_ (TIO.appendFile fp . snd)
+runLoggingM v StdErr       = runLoggingM' v $ mapM_ (TIO.hPutStrLn stderr . trd)
+runLoggingM v (LogFile fp) = runLoggingM' v $ mapM_ (TIO.appendFile fp . trd)
 
 
 runLoggingM' :: Verbosity                -- ^ Minimum verbosity to keep
@@ -71,14 +73,16 @@ runLoggingM' :: Verbosity                -- ^ Minimum verbosity to keep
 runLoggingM' v f m = do
     (r, t) <- runWriterT m
     -- Messages with lower level than minimum are discarded
-    -- TODO: add timestamp and re-order?
-    let t' = filter (\message -> fst message >= v) t
+    -- We also re-order messages to be chronological
+    let t' = sortOn snd $ filter (\message -> fst message >= v) t
     liftIO $ f t'
     return r
 
 
 log :: Verbosity -> Text -> LoggingM ()
-log v t = tell [(v, t <> newline)]
+log v t = do
+    timestamp <- liftIO $ getSystemTime
+    tell [(v, timestamp, t <> newline)]
 
 
 debug :: Text -> LoggingM ()
@@ -104,7 +108,6 @@ newline = fromNative nativeNewline
         fromNative CRLF = "\r\n"
 
 
-
 instance IsString Verbosity where
     fromString s
         | ls == "silent"  = Silent
@@ -119,3 +122,12 @@ instance IsString Verbosity where
 instance FromJSON Verbosity where
     parseJSON (String t) = pure $ fromString . unpack $ t
     parseJSON _ = fail $ "Could not parse the logging verbosity."
+
+fst :: (a,b,c) -> a
+fst (a,_,_) = a
+
+snd :: (a,b,c) -> b
+snd (_,b,_) = b
+
+trd :: (a,b,c) -> c
+trd (_,_,c) = c
