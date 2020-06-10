@@ -29,6 +29,7 @@ import           Data.Yaml.Config       (ignoreEnv, loadYamlSettings)
 import           Text.Pandoc.Definition (Format(..), Pandoc(..), MetaValue(..), lookupMeta)
 
 import Text.Pandoc.Filter.Plot.Types
+import Text.Pandoc.Filter.Plot.Logging  (Verbosity(..), LogSink(..))
 
 -- | Read configuration from a YAML file. The
 -- keys are exactly the same as for code blocks.
@@ -83,6 +84,8 @@ data ConfigPrecursor = ConfigPrecursor
     , _defaultSaveFormat :: !SaveFormat  -- ^ The default save format of generated figures.
     , _captionFormat     :: !Format      -- ^ Caption format in Pandoc notation, e.g. "markdown+tex_math_dollars".
     
+    , _logPrec           :: !LoggingPrecursor
+
     , _matplotlibPrec    :: !MatplotlibPrecursor
     , _matlabPrec        :: !MatlabPrecursor
     , _plotlyPythonPrec  :: !PlotlyPythonPrecursor
@@ -101,6 +104,8 @@ instance Default ConfigPrecursor where
         , _defaultDPI        = defaultDPI def
         , _defaultSaveFormat = defaultSaveFormat def
         , _captionFormat     = captionFormat def
+
+        , _logPrec             = def
         
         , _matplotlibPrec    = def
         , _matlabPrec        = def
@@ -113,6 +118,10 @@ instance Default ConfigPrecursor where
         , _graphvizPrec      = def
         }
 
+
+data LoggingPrecursor = LoggingPrecursor { _logVerbosity :: !Verbosity
+                                         , _logFilePath  :: !(Maybe FilePath)
+                                         }
 
 -- Separate YAML clauses have their own types.
 data MatplotlibPrecursor = MatplotlibPrecursor
@@ -130,6 +139,8 @@ data GGPlot2Precursor       = GGPlot2Precursor      {_ggplot2Preamble      :: !(
 data GNUPlotPrecursor       = GNUPlotPrecursor      {_gnuplotPreamble      :: !(Maybe FilePath), _gnuplotExe      :: !FilePath}
 data GraphvizPrecursor      = GraphvizPrecursor     {_graphvizPreamble     :: !(Maybe FilePath), _graphvizExe    :: !FilePath}
 
+instance Default LoggingPrecursor where
+    def = LoggingPrecursor (logVerbosity def) Nothing -- _logFilePath=Nothing implies log to stderr
 
 instance Default MatplotlibPrecursor where
     def = MatplotlibPrecursor Nothing (matplotlibTightBBox def) (matplotlibTransparent def) (matplotlibExe def)
@@ -142,6 +153,13 @@ instance Default OctavePrecursor        where def = OctavePrecursor       Nothin
 instance Default GGPlot2Precursor       where def = GGPlot2Precursor      Nothing (ggplot2Exe def)
 instance Default GNUPlotPrecursor       where def = GNUPlotPrecursor      Nothing (gnuplotExe def)
 instance Default GraphvizPrecursor      where def = GraphvizPrecursor     Nothing (graphvizExe def)
+
+
+instance FromJSON LoggingPrecursor where
+    parseJSON (Object v) = 
+        LoggingPrecursor <$> v .:? "verbosity" .!= (logVerbosity def)
+                         <*> v .:? "filepath"
+    parseJSON _ = fail $ mconcat ["Could not parse logging configuration. "]
 
 instance FromJSON MatplotlibPrecursor where
     parseJSON (Object v) = 
@@ -195,6 +213,8 @@ instance FromJSON ConfigPrecursor where
         _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat def)
         _captionFormat     <- v .:? (tshow CaptionFormatK) .!= (_captionFormat def)
 
+        _logPrec           <- v .:? "logging"              .!= def
+
         _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
         _matlabPrec        <- v .:? (cls Matlab)           .!= def
         _plotlyPythonPrec  <- v .:? (cls PlotlyPython)     .!= def
@@ -216,6 +236,9 @@ renderConfig ConfigPrecursor{..} = do
         defaultDPI        = _defaultDPI
         defaultSaveFormat = _defaultSaveFormat
         captionFormat     = _captionFormat
+
+        logVerbosity = _logVerbosity _logPrec
+        logSink      = maybe StdErr LogFile (_logFilePath _logPrec)
 
         matplotlibTightBBox   = _matplotlibTightBBox _matplotlibPrec
         matplotlibTransparent = _matplotlibTransparent _matplotlibPrec

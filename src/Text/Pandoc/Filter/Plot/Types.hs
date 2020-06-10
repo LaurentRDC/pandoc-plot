@@ -49,6 +49,8 @@ import           System.Info            (os)
 
 import           Text.Pandoc.Definition (Attr, Format(..))
 
+import           Text.Pandoc.Filter.Plot.Logging    (Verbosity(..), LogSink(..))
+
 
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
@@ -129,6 +131,9 @@ data Configuration = Configuration
     , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
     , captionFormat         :: !Format     -- ^ Caption format, in the same notation as Pandoc format, e.g. "markdown+tex_math_dollars"
 
+    , logVerbosity          :: !Verbosity  -- ^ Level of logging verbosity.
+    , logSink               :: !LogSink    -- ^ Method of logging, i.e. printing to stderr or file.
+
     , matplotlibPreamble    :: !Script     -- ^ The default preamble script for the matplotlib toolkit.
     , plotlyPythonPreamble  :: !Script     -- ^ The default preamble script for the Plotly/Python toolkit.
     , plotlyRPreamble       :: !Script     -- ^ The default preamble script for the Plotly/R toolkit.
@@ -160,6 +165,9 @@ instance Default Configuration where
           , defaultDPI        = 80
           , defaultSaveFormat = PNG
           , captionFormat     = Format "markdown+tex_math_dollars"
+
+          , logVerbosity      = Error
+          , logSink           = StdErr
           
           , matplotlibPreamble  = mempty
           , plotlyPythonPreamble= mempty

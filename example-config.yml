@@ -33,6 +33,13 @@ format: PNG
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
 
+logging:
+  # Possible verbosity values: debug, error, warning, info, silent
+  verbosity: info
+  # If the filepath below is not present, then pandoc-plot will log to stderr
+  # Otherwise, log messages will be appended to the filepath.
+  # filepath: path/to/file.txt
+
 # The possible parameters for the Matplotlib toolkit
 matplotlib:
   # preamble: matplotlib.py
