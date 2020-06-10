@@ -42,6 +42,7 @@ import           Text.Pandoc.Definition            (Block (..), Format)
 import           Text.Pandoc.Filter.Plot.Parse     (captionReader)
 import           Text.Pandoc.Filter.Plot.Renderers
 import           Text.Pandoc.Filter.Plot.Types
+import           Text.Pandoc.Filter.Plot.Logging
 
 
 -- | Possible result of running a script
@@ -95,6 +96,7 @@ runTempScript spec@FigureSpec{..} = do
                                         , oFigurePath = figurePath spec
                                         }
             command_ <- T.unpack <$> (liftIO $ command tk outputSpec)
+            lift $ debug $ "Running command " <> (T.pack command_)
 
             ec <- liftIO 
                     $ runProcess 

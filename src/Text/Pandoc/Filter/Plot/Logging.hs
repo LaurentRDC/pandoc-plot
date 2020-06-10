@@ -15,9 +15,10 @@ Logging implementation. Inspired by Hakyll and monad-logger.
 module Text.Pandoc.Filter.Plot.Logging 
     ( Verbosity(..)
     , LogSink(..)
-    , LoggingM(..)
+    , LoggingM
     , runLoggingM
     -- * Logging messages
+    , lift
     , debug
     , err
     , warning
@@ -25,11 +26,7 @@ module Text.Pandoc.Filter.Plot.Logging
     ) where
 
 
-import           Control.Concurrent      (forkIO)
-import           Control.Concurrent.Chan (Chan, newChan, readChan, writeChan)
-import           Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar, takeMVar)
-import           Control.Monad           (forever, mapM_)
-import           Control.Monad.Trans     (MonadIO, liftIO)
+import           Control.Monad.Trans     (liftIO, lift)
 import           Control.Monad.Writer    (WriterT, runWriterT, tell)
 
 import           Data.Char               (toLower)
@@ -38,17 +35,17 @@ import           Data.Text               (Text, unpack)
 import qualified Data.Text.IO            as TIO
 import           Data.Yaml
 
-import           System.IO               (stderr)
+import           System.IO               (stderr, nativeNewline, Newline(..))
 
 import           Prelude                 hiding (log)
 
 
 -- | Verbosity of the logger.
-data Verbosity = Silent   -- ^ Don't log anything.
-               | Info     -- ^ Only log information messages.
-               | Warning  -- ^ Log information and warning messages.
+data Verbosity = Debug    -- ^ Log all messages, including debug messages.
                | Error    -- ^ Log information, warnings, and errors.
-               | Debug    -- ^ Log all messages, including debug messages.
+               | Warning  -- ^ Log information and warning messages.
+               | Info     -- ^ Only log information messages.
+               | Silent   -- ^ Don't log anything. 
                deriving (Eq, Ord, Show)
 
 
@@ -56,7 +53,6 @@ data Verbosity = Silent   -- ^ Don't log anything.
 data LogSink = StdErr           -- ^ Standard error stream.
              | LogFile FilePath -- ^ Appended to file.
              deriving (Eq, Show)
-
 
 type LogMessage = (Verbosity, Text)
 
@@ -75,13 +71,14 @@ runLoggingM' :: Verbosity                -- ^ Minimum verbosity to keep
 runLoggingM' v f m = do
     (r, t) <- runWriterT m
     -- Messages with lower level than minimum are discarded
+    -- TODO: add timestamp and re-order?
     let t' = filter (\message -> fst message >= v) t
     liftIO $ f t'
     return r
 
 
 log :: Verbosity -> Text -> LoggingM ()
-log v t = tell [(v, t)]
+log v t = tell [(v, t <> newline)]
 
 
 debug :: Text -> LoggingM ()
@@ -97,7 +94,15 @@ warning t = log Warning $ "(WARNING) " <> t
 
 
 info :: Text -> LoggingM ()
-info t = log Info $ "          " <> t
+info t = log Info $ " (INFO)   " <> t
+
+
+newline :: Text
+newline = fromNative nativeNewline
+    where
+        fromNative LF   = "\n"
+        fromNative CRLF = "\r\n"
+
 
 
 instance IsString Verbosity where

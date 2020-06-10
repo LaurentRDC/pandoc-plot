@@ -75,6 +75,8 @@ module Text.Pandoc.Filter.Plot (
     , configuration
     , defaultConfiguration
     , Configuration(..)
+    , Verbosity(..)
+    , LogSink(..)
     , SaveFormat(..)
     , Script
     -- * Determining available plotting toolkits

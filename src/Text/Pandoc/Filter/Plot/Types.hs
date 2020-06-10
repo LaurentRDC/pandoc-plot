@@ -180,7 +180,7 @@ instance Default Configuration where
           , defaultSaveFormat = PNG
           , captionFormat     = Format "markdown+tex_math_dollars"
 
-          , logVerbosity      = Error
+          , logVerbosity      = Warning
           , logSink           = StdErr
           
           , matplotlibPreamble  = mempty
