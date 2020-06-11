@@ -33,6 +33,7 @@ import           Data.Char               (toLower)
 import           Data.List               (sortOn)
 import           Data.String             (IsString(..))
 import           Data.Text               (Text, unpack)
+import qualified Data.Text               as T
 import qualified Data.Text.IO            as TIO
 import           Data.Time.Clock.System  (getSystemTime, SystemTime(..))
 import           Data.Yaml
@@ -79,27 +80,29 @@ runLoggingM' v f m = do
     liftIO $ f t'
     return r
 
-
+-- | General logging function.
+-- Input text will be decomposed into lines, with each
+-- line becoming a log line.
 log :: Verbosity -> Text -> LoggingM ()
 log v t = do
     timestamp <- liftIO $ getSystemTime
-    tell [(v, timestamp, t)]
+    tell [(v, timestamp, l <> newline) | l <- T.lines t]
 
 
 debug :: Text -> LoggingM ()
-debug t = log Debug $ "DEBUG| " <> t <> newline
+debug t = log Debug $ "DEBUG| " <> t
 
 
 err :: Text -> LoggingM ()
-err t = log Error $ "ERROR| " <> t <> newline
+err t = log Error $ "ERROR| " <> t
 
 
 warning :: Text -> LoggingM ()
-warning t = log Warning $ "WARN | " <> t <> newline
+warning t = log Warning $ "WARN | " <> t
 
 
 info :: Text -> LoggingM ()
-info t = log Info $       "INFO | " <> t <> newline
+info t = log Info $       "INFO | " <> t
 
 
 newline :: Text

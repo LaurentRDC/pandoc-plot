@@ -21,10 +21,13 @@ module Text.Pandoc.Filter.Plot.Scripting
 
 import           Control.Monad.Reader
 
+import           Data.ByteString.Lazy              (toStrict)
 import           Data.Hashable                     (hash)
 import           Data.Maybe                        (fromMaybe)
 import qualified Data.Text                         as T
 import qualified Data.Text.IO                      as T
+import           Data.Text.Encoding                (decodeUtf8With)
+import           Data.Text.Encoding.Error          (lenientDecode)
 
 import           System.Directory                  (createDirectoryIfMissing,
                                                     doesFileExist)
@@ -33,7 +36,8 @@ import           System.FilePath                   (addExtension,
                                                     normalise, replaceExtension,
                                                     takeDirectory, (</>))
 import           System.IO.Temp                    (getCanonicalTemporaryDirectory)
-import           System.Process.Typed              (runProcess, shell, setStdout, nullStream)
+import           System.Process.Typed              ( readProcessInterleaved, shell
+                                                   , setStdout, setStderr, byteStringOutput)
 
 import           Text.Pandoc.Builder               (fromList, imageWith, link,
                                                     para, toList)
@@ -109,10 +113,14 @@ runTempScript spec@FigureSpec{..} = do
             command_ <- T.unpack <$> (liftIO $ command toolkit outputSpec)
             lift $ debug $ "Running command " <> (T.pack command_)
 
-            ec <- liftIO 
-                    $ runProcess 
-                    $ setStdout nullStream
-                    $ shell command_
+            (ec, processOutput) <- liftIO 
+                                    $ readProcessInterleaved 
+                                    $ setStdout byteStringOutput
+                                    $ setStderr byteStringOutput 
+                                    $ shell command_
+
+            lift $ debug $ "Command output: " <> (decodeUtf8With lenientDecode $ toStrict processOutput)
+
             case ec of
                 ExitSuccess      -> return   ScriptSuccess
                 ExitFailure code -> do
