@@ -5,7 +5,19 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 0.7.0.0
 ---------------
 
-* Added preliminary support for logging to `pandoc-plot`.
+* Added preliminary support for logging to `pandoc-plot`. You can turn on this feature in the configuration as follows:
+
+````yaml
+logging:
+    # Possible verbosity values: debug, error, warning, info, silent
+    # debug level shows all messages
+    # error level shows all but debug messages, etc.
+    verbosity: info
+    
+    # OPTIONAL: log to file
+    # Remove line below to log to stderr
+    filepath: log.txt
+````
 
 Release 0.6.1.0
 ---------------
