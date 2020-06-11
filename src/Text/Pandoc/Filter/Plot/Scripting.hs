@@ -45,14 +45,6 @@ import           Text.Pandoc.Filter.Plot.Types
 import           Text.Pandoc.Filter.Plot.Logging
 
 
--- | Possible result of running a script
-data ScriptResult
-    = ScriptSuccess
-    | ScriptChecksFailed String   -- Message
-    | ScriptFailure String Int    -- Command and exit code
-    | ToolkitNotInstalled Toolkit -- Script failed because toolkit is not installed
-
-
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
 runScriptIfNecessary spec = do
@@ -65,7 +57,28 @@ runScriptIfNecessary spec = do
 
     case result of
         ScriptSuccess -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
-        other         -> return other -- TODO: log errors
+        other         -> do
+            logScriptResult other
+            return other
+
+
+-- | Possible result of running a script
+data ScriptResult
+    = ScriptSuccess
+    | ScriptChecksFailed String   -- Message
+    | ScriptFailure String Int    -- Command and exit code
+    | ToolkitNotInstalled Toolkit -- Script failed because toolkit is not installed
+
+instance Show ScriptResult where
+    show ScriptSuccess            = "Script success."
+    show (ScriptChecksFailed msg) = "Script checks failed: " <> msg
+    show (ScriptFailure msg ec)   = mconcat ["Script failed with exit code ", show ec, " and the following message: ", msg]
+    show (ToolkitNotInstalled tk) = (show tk) <> " toolkit not installed."
+
+
+logScriptResult :: ScriptResult -> PlotM ()
+logScriptResult ScriptSuccess = lift . debug . T.pack . show $ ScriptSuccess 
+logScriptResult r             = lift . err   . T.pack . show $ r
 
 
 -- Run script as described by the spec
