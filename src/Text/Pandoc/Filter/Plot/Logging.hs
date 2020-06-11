@@ -62,6 +62,7 @@ type LoggingM = WriterT [LogMessage] IO
 
 
 runLoggingM :: Verbosity -> LogSink -> LoggingM a -> IO a
+runLoggingM Silent _       = runLoggingM' Silent $ mapM_ (return . trd)
 runLoggingM v StdErr       = runLoggingM' v $ mapM_ (TIO.hPutStrLn stderr . trd)
 runLoggingM v (LogFile fp) = runLoggingM' v $ mapM_ (TIO.appendFile fp . trd)
 
