@@ -400,9 +400,6 @@ files. Here are **all** the possible parameters:
 # E.g.:
 #  executable: python3
 #  executable: "C:\Python37\Scripts\python.exe"
-#
-# Note that this file should be re-named to ".pandoc-plot.yml" before pandoc-plot 
-# notices it.
 
 # The following parameters affect all toolkits
 # Directory where to save the plots. The path can be relative to this file, or absolute.
@@ -424,6 +421,13 @@ format: PNG
 # https://pandoc.org/MANUAL.html#option--from
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
+
+logging:
+  # Possible verbosity values: debug, error, warning, info, silent
+  verbosity: warning
+  # If the filepath below is not present, then pandoc-plot will log to stderr
+  # Otherwise, log messages will be appended to the filepath.
+  # filepath: path/to/file.txt
 
 # The possible parameters for the Matplotlib toolkit
 matplotlib:

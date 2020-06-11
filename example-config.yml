@@ -8,9 +8,6 @@
 # E.g.:
 #  executable: python3
 #  executable: "C:\Python37\Scripts\python.exe"
-#
-# Note that this file should be re-named to ".pandoc-plot.yml" before pandoc-plot 
-# notices it.
 
 # The following parameters affect all toolkits
 # Directory where to save the plots. The path can be relative to this file, or absolute.
