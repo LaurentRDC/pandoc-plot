@@ -6,7 +6,6 @@ module Common where
 import           Control.Monad                    (unless)
 import           Control.Monad.Reader
 
-import           Data.Default.Class               (def)
 import           Data.List                        (isInfixOf, isSuffixOf)
 import           Data.Monoid                      ((<>))
 import           Data.String                      (fromString)
@@ -31,6 +30,10 @@ import           System.Directory                 (createDirectory,
 import           System.FilePath                  (takeExtensions, (</>))
 import           System.IO.Temp                   (getCanonicalTemporaryDirectory)
 
+
+defaultTestConfig :: Configuration
+defaultTestConfig = defaultConfiguration {logVerbosity=Silent, logSink=StdErr}
+
 -------------------------------------------------------------------------------
 -- Test that plot files and source files are created when the filter is run
 testFileCreation :: Toolkit -> TestTree
@@ -41,7 +44,7 @@ testFileCreation tk =
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- make def cb
+        _ <- make defaultTestConfig cb
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
 
@@ -56,7 +59,7 @@ testFileInclusion tk =
 
         let cb = (addPreamble (include tk) $
                     addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- make def cb
+        _ <- make defaultTestConfig cb
         inclusion <- readFile (include tk)
         sourcePath <- head . filter (isExtensionOf "txt") <$> listDirectory tempDir
         src <- readFile (tempDir </> sourcePath)
@@ -82,7 +85,7 @@ testSaveFormat tk =
         let fmt = head (supportedSaveFormats tk)
             cb = (addSaveFormat fmt $
                  addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- make def cb
+        _ <- make defaultTestConfig cb
         numberjpgFiles <-
             length <$> filter (isExtensionOf (extension fmt)) <$>
             listDirectory tempDir
@@ -106,8 +109,8 @@ testWithSource tk =
                       $ addDirectory tempDir 
                       $ addCaption expected 
                       $ codeBlock tk (trivialContent tk)
-        blockNoSource   <- make def noSource
-        blockWithSource <- make def withSource
+        blockNoSource   <- make defaultTestConfig noSource
+        blockWithSource <- make defaultTestConfig withSource
 
         -- In the case where source=false, the caption is used verbatim.
         -- Otherwise, links will be appended to the caption; hence, the caption
@@ -135,8 +138,8 @@ testOverrideConfiguration tk =
         tempDir <- (</> "test-caption-links-" <> postfix) <$> getCanonicalTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
-        let config = (def::Configuration) { defaultDirectory = tempDir
-                                          , defaultSaveFormat = JPG}
+        let config = defaultTestConfig { defaultDirectory = tempDir
+                                       , defaultSaveFormat = JPG}
 
         -- Not all toolkits support both save formats
         when (  JPG `elem` supportedSaveFormats tk 
@@ -173,7 +176,7 @@ testMarkdownFormattingCaption1 tk =
                     $ addCaption "**caption**" 
                     $ codeBlock tk (trivialContent tk)
             fmt = B.Format "markdown"
-        result <- make (def {captionFormat=fmt}) cb
+        result <- make (defaultTestConfig {captionFormat=fmt}) cb
         assertIsInfix expected (extractCaption result)
     where
         extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
@@ -198,7 +201,7 @@ testMarkdownFormattingCaption2 tk =
                     $ addCaption "[title](https://google.com)" 
                     $ codeBlock tk (trivialContent tk)
             fmt = B.Format "markdown"
-        result <- make (def {captionFormat=fmt}) cb
+        result <- make (defaultTestConfig {captionFormat=fmt}) cb
         assertIsInfix expected (extractCaption result)
     where
         extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
@@ -220,8 +223,8 @@ testCleanOutputDirs tk =
         let cb = addDirectory tempDir
                     $ codeBlock tk (trivialContent tk)
         
-        result <- make def cb
-        cleanedDirs <- cleanOutputDirs def cb
+        result <- make defaultTestConfig cb
+        cleanedDirs <- cleanOutputDirs defaultTestConfig cb
 
         assertEqual "" [tempDir] cleanedDirs
 
@@ -242,7 +245,7 @@ testChecksFail tk =
             ensureDirectoryExistsAndEmpty tempDir
 
             let cb = addDirectory tempDir $ codeBlock Matplotlib "plt.show()"
-            result <- makeEither def cb
+            result <- makeEither defaultTestConfig cb
             let expectedCheck :: Either PandocPlotError a -> Bool
                 expectedCheck (Left (ScriptChecksFailedError _)) = True
                 expectedCheck _ = False

@@ -3,7 +3,6 @@
 
 import           Control.Monad                    (forM_)
 
-import           Data.Default.Class               (Default, def)
 import qualified Data.Map.Strict                  as Map
 import           Data.Text                        (Text, unpack)
 
@@ -19,8 +18,8 @@ import           Text.Pandoc.Filter.Plot.Internal
 
 main :: IO ()
 main = do
-    available <- availableToolkits def
-    unavailable <- unavailableToolkits def
+    available <- availableToolkits defaultTestConfig
+    unavailable <- unavailableToolkits defaultTestConfig
     forM_ unavailable $ \tk -> do
         putStrLn $ show tk <> " is not availble. Its tests will be skipped."
 
@@ -59,7 +58,7 @@ toolkitSuite tk =
 testEmptyConfiguration :: TestTree
 testEmptyConfiguration = 
     testCase "empty configuration is correctly parsed to default values" $ do
-        let config = def
+        let config = defaultConfiguration
 
         parsedConfig <- configuration "tests/fixtures/.empty-config.yml"
         assertEqual "" config parsedConfig
@@ -74,9 +73,9 @@ testExampleConfiguration =
         -- The example config reflects the Windows default
         -- Therefore, we need to test against the Windows default,
         -- even on other OSes
-        let config = def { matplotlibExe = "python"
-                         , plotlyPythonExe = "python"
-                         }
+        let config = defaultConfiguration { matplotlibExe = "python"
+                                          , plotlyPythonExe = "python"
+                                          }
 
         parsedConfig <- configuration "example-config.yml"
         assertEqual "" config parsedConfig

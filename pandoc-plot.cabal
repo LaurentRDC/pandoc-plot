@@ -106,7 +106,6 @@ test-suite tests
     build-depends:   base                 >= 4.11 && < 5
                    , containers
                    , directory
-                   , data-default-class   >= 0.1.2
                    , filepath
                    , hspec
                    , hspec-expectations
