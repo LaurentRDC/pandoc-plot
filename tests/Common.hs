@@ -41,7 +41,7 @@ testFileCreation tk =
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- (make tk) def cb
+        _ <- make def cb
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
 
@@ -56,7 +56,7 @@ testFileInclusion tk =
 
         let cb = (addPreamble (include tk) $
                     addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- (make tk) def cb
+        _ <- make def cb
         inclusion <- readFile (include tk)
         sourcePath <- head . filter (isExtensionOf "txt") <$> listDirectory tempDir
         src <- readFile (tempDir </> sourcePath)
@@ -82,7 +82,7 @@ testSaveFormat tk =
         let fmt = head (supportedSaveFormats tk)
             cb = (addSaveFormat fmt $
                  addDirectory tempDir $ codeBlock tk (trivialContent tk))
-        _ <- (make tk) def cb
+        _ <- make def cb
         numberjpgFiles <-
             length <$> filter (isExtensionOf (extension fmt)) <$>
             listDirectory tempDir
@@ -106,8 +106,8 @@ testWithSource tk =
                       $ addDirectory tempDir 
                       $ addCaption expected 
                       $ codeBlock tk (trivialContent tk)
-        blockNoSource   <- (make tk) def noSource
-        blockWithSource <- (make tk) def withSource
+        blockNoSource   <- make def noSource
+        blockWithSource <- make def withSource
 
         -- In the case where source=false, the caption is used verbatim.
         -- Otherwise, links will be appended to the caption; hence, the caption
@@ -146,7 +146,7 @@ testOverrideConfiguration tk =
             let cb = addDirectory tempDir 
                         $ addSaveFormat PNG
                         $ codeBlock tk (trivialContent tk)
-            _ <- (make tk) config cb
+            _ <- make config cb
 
             numberPngFiles <-
                 length <$> filter (isExtensionOf (extension PNG)) <$>
@@ -173,7 +173,7 @@ testMarkdownFormattingCaption1 tk =
                     $ addCaption "**caption**" 
                     $ codeBlock tk (trivialContent tk)
             fmt = B.Format "markdown"
-        result <- (make tk) (def {captionFormat=fmt}) cb
+        result <- make (def {captionFormat=fmt}) cb
         assertIsInfix expected (extractCaption result)
     where
         extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
@@ -198,7 +198,7 @@ testMarkdownFormattingCaption2 tk =
                     $ addCaption "[title](https://google.com)" 
                     $ codeBlock tk (trivialContent tk)
             fmt = B.Format "markdown"
-        result <- (make tk) (def {captionFormat=fmt}) cb
+        result <- make (def {captionFormat=fmt}) cb
         assertIsInfix expected (extractCaption result)
     where
         extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
@@ -220,7 +220,7 @@ testCleanOutputDirs tk =
         let cb = addDirectory tempDir
                     $ codeBlock tk (trivialContent tk)
         
-        result <- (make tk) def cb
+        result <- make def cb
         cleanedDirs <- cleanOutputDirs def cb
 
         assertEqual "" [tempDir] cleanedDirs
@@ -242,13 +242,14 @@ testChecksFail tk =
             ensureDirectoryExistsAndEmpty tempDir
 
             let cb = addDirectory tempDir $ codeBlock Matplotlib "plt.show()"
-            result <- (makeEither Matplotlib) def cb
+            result <- makeEither def cb
             let expectedCheck :: Either PandocPlotError a -> Bool
                 expectedCheck (Left (ScriptChecksFailedError _)) = True
                 expectedCheck _ = False
             assertBool "" (expectedCheck result)
 
         assertChecksFail _          = assertEqual "Test skipped" True True
+
 
 codeBlock :: Toolkit -> Script -> Block
 codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script

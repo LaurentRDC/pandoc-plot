@@ -64,8 +64,8 @@ runScriptIfNecessary spec = do
                 else runTempScript spec
 
     case result of
-        ScriptSuccess      -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
-        other -> return other
+        ScriptSuccess -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
+        other         -> return other -- TODO: log errors
 
 
 -- Run script as described by the spec
