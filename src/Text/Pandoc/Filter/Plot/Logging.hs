@@ -37,7 +37,7 @@ import qualified Data.Text.IO            as TIO
 import           Data.Time.Clock.System  (getSystemTime, SystemTime(..))
 import           Data.Yaml
 
-import           System.IO               (stderr, nativeNewline, Newline(..))
+import           System.IO               (stderr)
 
 import           Prelude                 hiding (log, fst, snd)
 
@@ -83,30 +83,27 @@ runLoggingM' v f m = do
 log :: Verbosity -> Text -> LoggingM ()
 log v t = do
     timestamp <- liftIO $ getSystemTime
-    tell [(v, timestamp, t <> newline)]
+    tell [(v, timestamp, t)]
 
 
 debug :: Text -> LoggingM ()
-debug t = log Debug $ "(DEBUG)   " <> t
+debug t = log Debug $ "DEBUG| " <> t <> newline
 
 
 err :: Text -> LoggingM ()
-err t = log Error $ "(ERROR)   " <> t
+err t = log Error $ "ERROR| " <> t <> newline
 
 
 warning :: Text -> LoggingM ()
-warning t = log Warning $ "(WARNING) " <> t
+warning t = log Warning $ "WARN | " <> t <> newline
 
 
 info :: Text -> LoggingM ()
-info t = log Info $ " (INFO)   " <> t
+info t = log Info $       "INFO | " <> t <> newline
 
 
 newline :: Text
-newline = fromNative nativeNewline
-    where
-        fromNative LF   = "\n"
-        fromNative CRLF = "\r\n"
+newline = "\n"
 
 
 instance IsString Verbosity where

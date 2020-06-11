@@ -55,11 +55,15 @@ runScriptIfNecessary spec = do
                 then return ScriptSuccess
                 else runTempScript spec
 
+    logScriptResult result
+
     case result of
         ScriptSuccess -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
-        other         -> do
-            logScriptResult other
-            return other
+        other         -> return other
+
+    where
+        logScriptResult ScriptSuccess = lift . debug . T.pack . show $ ScriptSuccess 
+        logScriptResult r             = lift . err   . T.pack . show $ r
 
 
 -- | Possible result of running a script
@@ -74,11 +78,6 @@ instance Show ScriptResult where
     show (ScriptChecksFailed msg) = "Script checks failed: " <> msg
     show (ScriptFailure msg ec)   = mconcat ["Script failed with exit code ", show ec, " and the following message: ", msg]
     show (ToolkitNotInstalled tk) = (show tk) <> " toolkit not installed."
-
-
-logScriptResult :: ScriptResult -> PlotM ()
-logScriptResult ScriptSuccess = lift . debug . T.pack . show $ ScriptSuccess 
-logScriptResult r             = lift . err   . T.pack . show $ r
 
 
 -- Run script as described by the spec
