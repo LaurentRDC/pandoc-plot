@@ -402,7 +402,8 @@ files. Here are **all** the possible parameters:
 #  executable: "C:\Python37\Scripts\python.exe"
 
 # The following parameters affect all toolkits
-# Directory where to save the plots. The path can be relative to this file, or absolute.
+# Directory where to save the plots. The path can be relative to pandoc-plot's
+# current working directory, or absolute.
 directory: plots/
 
 # Whether or not to include a link to the source script in the caption. 
@@ -422,6 +423,7 @@ format: PNG
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
 
+# Logging configuration
 logging:
   # Possible verbosity values: debug, error, warning, info, silent
   verbosity: warning
