@@ -26,21 +26,21 @@ module Text.Pandoc.Filter.Plot.Logging
     ) where
 
 
-import           Control.Monad.Trans     (liftIO, lift)
-import           Control.Monad.Writer    (WriterT, runWriterT, tell)
+import           Control.Monad.Trans         (liftIO, lift)
+import           Control.Monad.Writer.Strict (WriterT, runWriterT, tell)
 
-import           Data.Char               (toLower)
-import           Data.List               (sortOn)
-import           Data.String             (IsString(..))
-import           Data.Text               (Text, unpack)
-import qualified Data.Text               as T
-import qualified Data.Text.IO            as TIO
-import           Data.Time.Clock.System  (getSystemTime, SystemTime(..))
+import           Data.Char                   (toLower)
+import           Data.List                   (sortOn)
+import           Data.String                 (IsString(..))
+import           Data.Text                   (Text, unpack)
+import qualified Data.Text                   as T
+import qualified Data.Text.IO                as TIO
+import           Data.Time.Clock.System      (getSystemTime, SystemTime(..))
 import           Data.Yaml
 
-import           System.IO               (stderr)
+import           System.IO                   (stderr)
 
-import           Prelude                 hiding (log, fst, snd)
+import           Prelude                     hiding (log, fst, snd)
 
 
 -- | Verbosity of the logger.
