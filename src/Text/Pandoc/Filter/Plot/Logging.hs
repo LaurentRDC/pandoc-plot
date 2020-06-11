@@ -9,7 +9,7 @@ Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
 Portability : portable
 
-Logging implementation. Inspired by Hakyll and monad-logger.
+Logging implementation.
 -}
 
 module Text.Pandoc.Filter.Plot.Logging 
