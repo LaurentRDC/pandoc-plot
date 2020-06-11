@@ -45,8 +45,7 @@ import           Text.Pandoc.Definition            (Block (..), Format)
 
 import           Text.Pandoc.Filter.Plot.Parse     (captionReader)
 import           Text.Pandoc.Filter.Plot.Renderers
-import           Text.Pandoc.Filter.Plot.Types
-import           Text.Pandoc.Filter.Plot.Logging
+import           Text.Pandoc.Filter.Plot.Monad
 
 
 -- Run script as described by the spec, only if necessary
@@ -66,8 +65,8 @@ runScriptIfNecessary spec = do
         other         -> return other
 
     where
-        logScriptResult ScriptSuccess = lift . debug . T.pack . show $ ScriptSuccess 
-        logScriptResult r             = lift . err   . T.pack . show $ r
+        logScriptResult ScriptSuccess = debug . T.pack . show $ ScriptSuccess 
+        logScriptResult r             = err   . T.pack . show $ r
 
 
 -- | Possible result of running a script
@@ -90,7 +89,6 @@ instance Show ScriptResult where
 -- stderr.
 runTempScript :: FigureSpec -> PlotM ScriptResult
 runTempScript spec@FigureSpec{..} = do
-    conf <- ask
     let checks = scriptChecks toolkit
         checkResult = mconcat $ checks <*> [script]
     case checkResult of
@@ -105,13 +103,12 @@ runTempScript spec@FigureSpec{..} = do
                                         then mconcat [captureFragment, "\n", script]
                                         else mconcat [script, "\n", captureFragment]
             liftIO $ T.writeFile scriptPath scriptWithCapture
-            let outputSpec = OutputSpec { oConfiguration = conf
-                                        , oFigureSpec = spec
+            let outputSpec = OutputSpec { oFigureSpec = spec
                                         , oScriptPath = scriptPath
                                         , oFigurePath = figurePath spec
                                         }
-            command_ <- T.unpack <$> (liftIO $ command toolkit outputSpec)
-            lift $ debug $ "Running command " <> (T.pack command_)
+            command_ <- T.unpack <$> (command toolkit outputSpec)
+            debug $ "Running command " <> (T.pack command_)
 
             (ec, processOutput) <- liftIO 
                                     $ readProcessInterleaved 
@@ -119,7 +116,7 @@ runTempScript spec@FigureSpec{..} = do
                                     $ setStderr byteStringOutput 
                                     $ shell command_
 
-            lift $ debug $ "Command output: " <> (decodeUtf8With lenientDecode $ toStrict processOutput)
+            debug $ "Command output: " <> (decodeUtf8With lenientDecode $ toStrict processOutput)
 
             case ec of
                 ExitSuccess      -> return   ScriptSuccess
@@ -127,7 +124,7 @@ runTempScript spec@FigureSpec{..} = do
                     -- Two possible types of failures: either the script
                     -- failed because the toolkit was not available, or
                     -- because of a genuine error
-                    toolkitInstalled <- liftIO $ toolkitAvailable toolkit conf 
+                    toolkitInstalled <- toolkitAvailable toolkit 
                     if toolkitInstalled
                         then return $ ScriptFailure command_ code
                         else return $ ToolkitNotInstalled toolkit

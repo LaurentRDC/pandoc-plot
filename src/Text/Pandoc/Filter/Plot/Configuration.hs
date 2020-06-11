@@ -28,8 +28,7 @@ import           Data.Yaml.Config       (ignoreEnv, loadYamlSettings)
 
 import           Text.Pandoc.Definition (Format(..), Pandoc(..), MetaValue(..), lookupMeta)
 
-import Text.Pandoc.Filter.Plot.Types
-import Text.Pandoc.Filter.Plot.Logging  (Verbosity(..), LogSink(..))
+import Text.Pandoc.Filter.Plot.Monad   
 
 -- | Read configuration from a YAML file. The
 -- keys are exactly the same as for code blocks.

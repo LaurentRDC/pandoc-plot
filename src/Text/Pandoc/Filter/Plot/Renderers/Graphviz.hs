@@ -28,17 +28,17 @@ graphvizSupportedSaveFormats :: [SaveFormat]
 graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]
 
 
-graphvizCommand :: OutputSpec -> IO Text
+graphvizCommand :: OutputSpec -> PlotM Text
 graphvizCommand OutputSpec{..} = do
-    exe <- executable Graphviz oConfiguration
+    exe <- executable Graphviz
     let fmt = fmap toLower . show . saveFormat $ oFigureSpec
     return [st|#{exe} -T#{fmt} -o "#{oFigurePath}" "#{oScriptPath}"|]
 
 
-graphvizAvailable :: Configuration -> IO Bool
-graphvizAvailable conf = do
-    exe <- executable Graphviz conf
-    commandSuccess [st|#{exe} -?|]
+graphvizAvailable :: PlotM Bool
+graphvizAvailable = do
+    exe <- executable Graphviz
+    liftIO $ commandSuccess [st|#{exe} -?|]
 
 
 -- Graphviz export is entirely based on command-line arguments

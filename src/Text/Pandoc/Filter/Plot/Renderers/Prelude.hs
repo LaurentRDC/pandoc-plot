@@ -13,7 +13,7 @@ Prelude for renderers, containing some helpful utilities.
 module Text.Pandoc.Filter.Plot.Renderers.Prelude (
 
       module Prelude
-    , module Text.Pandoc.Filter.Plot.Types
+    , module Text.Pandoc.Filter.Plot.Monad
     , Text
     , st
     , unpack
@@ -35,7 +35,7 @@ import           Text.Shakespeare.Text         (st)
 
 import qualified Turtle                         as Sh
 
-import           Text.Pandoc.Filter.Plot.Types
+import           Text.Pandoc.Filter.Plot.Monad
 
 
 -- | Check that the supplied command results in
@@ -62,23 +62,22 @@ tryToFindExe fp = findExecutable fp >>= maybe (return fp) return
 
 -- | Path to the executable of a toolkit. If the executable can
 -- be found, then it will be the full path to it.
-executable :: Toolkit -> Configuration -> IO FilePath
-executable Matplotlib   = tryToFindExe . matplotlibExe
-executable PlotlyPython = tryToFindExe . plotlyPythonExe
-executable PlotlyR      = tryToFindExe . plotlyRExe
-executable Matlab       = tryToFindExe . matlabExe
-executable Mathematica  = tryToFindExe . mathematicaExe
-executable Octave       = tryToFindExe . octaveExe
-executable GGPlot2      = tryToFindExe . ggplot2Exe
-executable GNUPlot      = tryToFindExe . gnuplotExe
-executable Graphviz     = tryToFindExe . graphvizExe
+executable :: Toolkit -> PlotM FilePath
+executable Matplotlib   = asks matplotlibExe   >>= liftIO . tryToFindExe
+executable PlotlyPython = asks plotlyPythonExe >>= liftIO . tryToFindExe
+executable PlotlyR      = asks plotlyRExe      >>= liftIO . tryToFindExe
+executable Matlab       = asks matlabExe       >>= liftIO . tryToFindExe
+executable Mathematica  = asks mathematicaExe  >>= liftIO . tryToFindExe
+executable Octave       = asks octaveExe       >>= liftIO . tryToFindExe
+executable GGPlot2      = asks ggplot2Exe      >>= liftIO . tryToFindExe
+executable GNUPlot      = asks gnuplotExe      >>= liftIO . tryToFindExe
+executable Graphviz     = asks graphvizExe     >>= liftIO . tryToFindExe
 
 
 -- | Internal description of all information 
 -- needed to output a figure.
 data OutputSpec = OutputSpec 
-    { oConfiguration :: Configuration -- ^ Pandoc-plot configuration
-    , oFigureSpec    :: FigureSpec    -- ^ Figure spec
+    { oFigureSpec    :: FigureSpec    -- ^ Figure spec
     , oScriptPath    :: FilePath      -- ^ Path to the script to render
     , oFigurePath    :: FilePath      -- ^ Figure output path
     } 

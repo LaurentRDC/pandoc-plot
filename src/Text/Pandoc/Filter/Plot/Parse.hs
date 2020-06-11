@@ -22,7 +22,6 @@ module Text.Pandoc.Filter.Plot.Parse (
 ) where
 
 import           Control.Monad                     (join, when)
-import           Control.Monad.Reader              (ask, liftIO)
 
 import           Data.Default.Class                (def)
 import           Data.List                         (intersperse)
@@ -45,8 +44,7 @@ import           Text.Pandoc.Options               (ReaderOptions (..))
 import           Text.Pandoc.Readers               (getReader, Reader(..))
 
 import           Text.Pandoc.Filter.Plot.Renderers
-import           Text.Pandoc.Filter.Plot.Types
-import           Text.Pandoc.Filter.Plot.Logging
+import           Text.Pandoc.Filter.Plot.Monad
 
 tshow :: Show a => a -> Text
 tshow = pack . show
@@ -98,7 +96,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = do
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
             when (not saveFormatSupported) $ do
                 let msg = pack $ mconcat ["Save format ", show saveFormat, " not supported by ", show toolkit ]
-                lift $ err msg
+                err msg
             return FigureSpec{..}
 
 parseFigureSpec _ = return Nothing

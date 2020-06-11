@@ -27,16 +27,16 @@ ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
 
-ggplot2Command :: OutputSpec -> IO Text
+ggplot2Command :: OutputSpec -> PlotM Text
 ggplot2Command OutputSpec{..} = do
-    exe <- executable GGPlot2 oConfiguration
+    exe <- executable GGPlot2
     return [st|#{exe} "#{oScriptPath}"|]
 
 
-ggplot2Available :: Configuration -> IO Bool
-ggplot2Available conf = do
-    exe <- executable GGPlot2 conf
-    commandSuccess [st|#{exe} -e 'library("ggplot2")'|]
+ggplot2Available :: PlotM Bool
+ggplot2Available = do
+    exe <- executable GGPlot2
+    liftIO $ commandSuccess [st|#{exe} -e 'library("ggplot2")'|]
 
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script

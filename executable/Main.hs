@@ -24,13 +24,12 @@ import           System.IO.Temp                   (writeSystemTempFile)
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform,
                                                    defaultConfiguration, 
-                                                   configuration, 
-                                                   Configuration(..))
+                                                   configuration, Configuration(..))
 import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats, 
                                                    toolkits, readDoc, 
                                                    cleanOutputDirs, 
                                                    configurationPathMeta,
-                                                   executable)
+                                                   executable, runPlotM)
 
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
@@ -221,7 +220,7 @@ showAvailableToolkits mfp = do
     return unavailable >>= mapM_ (unavailToolkitInfo c)
     where
         toolkitInfo avail conf tk = do
-            exe <- executable tk conf
+            exe <- runPlotM conf $ executable tk
             putStrLn $ "Toolkit: " <> show tk
             when avail $ putStrLn $ "    Executable: " <> exe
             putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)

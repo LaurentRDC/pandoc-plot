@@ -17,8 +17,8 @@ module Text.Pandoc.Filter.Plot.Clean (
     , readDoc
 ) where
 
-
-import           Control.Monad.Reader             (forM, liftIO)
+-- TODO: forConcurrently
+import           Control.Monad.Reader             (forM)
 
 import qualified Data.ByteString.Lazy             as B
 import           Data.Char                        (toLower)
@@ -41,7 +41,7 @@ import qualified Text.Pandoc.Options              as P
 import           Text.Pandoc.Walk                 (query, Walkable)
 
 import Text.Pandoc.Filter.Plot.Parse
-import Text.Pandoc.Filter.Plot.Types
+import Text.Pandoc.Filter.Plot.Monad
 
 
 -- | Clean all output related to pandoc-plot. This includes output directories specified 

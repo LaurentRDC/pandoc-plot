@@ -29,9 +29,9 @@ matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-matlabCommand :: OutputSpec -> IO Text
+matlabCommand :: OutputSpec -> PlotM Text
 matlabCommand OutputSpec{..} = do
-    exe <- executable Matlab oConfiguration
+    exe <- executable Matlab
     return [st|#{exe} -batch "run('#{oScriptPath}')"|]
 
 
@@ -39,8 +39,8 @@ matlabCommand OutputSpec{..} = do
 -- help text is shown successfully!
 -- Therefore, we cannot rely on this behavior to know if matlab is present, 
 -- like other toolkits.
-matlabAvailable :: Configuration -> IO Bool
-matlabAvailable Configuration{..} = existsOnPath (matlabExe <> exeExtension)
+matlabAvailable :: PlotM Bool
+matlabAvailable = asks matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <> exeExtension))
 
 
 matlabCapture :: FigureSpec -> FilePath -> Script

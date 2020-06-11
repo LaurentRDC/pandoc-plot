@@ -24,11 +24,13 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , executable
     , toolkitAvailable
     , availableToolkits
+    , availableToolkitsM
     , unavailableToolkits
+    , unavailableToolkitsM
     , OutputSpec(..)
 ) where
 
-import           Control.Concurrent.Async                      (mapConcurrently)
+import           Control.Concurrent.Async                      (forConcurrently)
 
 import           Data.List                                     ((\\))
 import           Data.Map.Strict                               (Map)
@@ -46,7 +48,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.GNUPlot
 import           Text.Pandoc.Filter.Plot.Renderers.Graphviz
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, OutputSpec(..))
 
-import           Text.Pandoc.Filter.Plot.Types
+import           Text.Pandoc.Filter.Plot.Monad
 
 
 -- Extension for script files, e.g. ".py", or ".m".
@@ -120,7 +122,7 @@ parseExtraAttrs _          = return mempty
 -- The executable will need to be found first, hence the IO monad.
 command :: Toolkit 
         -> OutputSpec
-        -> IO Text
+        -> PlotM Text
 command Matplotlib   = matplotlibCommand
 command PlotlyPython = plotlyPythonCommand
 command PlotlyR      = plotlyRCommand
@@ -146,7 +148,7 @@ capture Graphviz     = graphvizCapture
 
 
 -- | Check if a toolkit is available, based on the current configuration
-toolkitAvailable :: Toolkit -> Configuration -> IO Bool
+toolkitAvailable :: Toolkit -> PlotM Bool
 toolkitAvailable Matplotlib   = matplotlibAvailable
 toolkitAvailable PlotlyPython = plotlyPythonAvailable
 toolkitAvailable PlotlyR      = plotlyRAvailable
@@ -161,16 +163,27 @@ toolkitAvailable Graphviz     = graphvizAvailable
 -- | List of toolkits available on this machine.
 -- The executables to look for are taken from the configuration.
 availableToolkits :: Configuration -> IO [Toolkit]
-availableToolkits conf = catMaybes <$> (mapConcurrently maybeToolkit toolkits)
-    where
-        maybeToolkit tk = do
-            available <- toolkitAvailable tk conf
-            if available
-                then return $ Just tk
-                else return Nothing
+availableToolkits conf = runPlotM conf availableToolkitsM
+
+
+-- | List of toolkits not available on this machine.
+-- The executables to look for are taken from the configur
+unavailableToolkits :: Configuration -> IO [Toolkit]
+unavailableToolkits conf = runPlotM conf unavailableToolkitsM
+
+
+-- | Monadic version of @availableToolkits@.
+availableToolkitsM :: PlotM [Toolkit]
+availableToolkitsM = do
+    conf <- ask
+    mtks <- liftIO $ forConcurrently toolkits $  \tk -> do
+        available <- runPlotM conf $ toolkitAvailable tk
+        if available
+            then return $ Just tk
+            else return Nothing
+    return $ catMaybes mtks
 
     
--- | List of toolkits not available on this machine.
--- The executables to look for are taken from the configuration.
-unavailableToolkits :: Configuration -> IO [Toolkit]
-unavailableToolkits conf = ((\\) toolkits) <$> availableToolkits conf
+-- | Monadic version of @unavailableToolkits@
+unavailableToolkitsM :: PlotM [Toolkit]
+unavailableToolkitsM = (\\) toolkits <$> availableToolkitsM

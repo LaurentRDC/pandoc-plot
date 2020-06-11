@@ -9,24 +9,19 @@ Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
 Portability : portable
 
-Logging implementation.
+Logging primitives.
 -}
 
-module Text.Pandoc.Filter.Plot.Logging 
+module Text.Pandoc.Filter.Plot.Monad.Logging 
     ( Verbosity(..)
     , LogSink(..)
     , LoggingM
     , runLoggingM
-    -- * Logging messages
-    , lift
-    , debug
-    , err
-    , warning
-    , info
+    , log
     ) where
 
 
-import           Control.Monad.Trans         (liftIO, lift)
+import           Control.Monad.Trans         (liftIO)
 import           Control.Monad.Writer.Strict (WriterT, runWriterT, tell)
 
 import           Data.Char                   (toLower)
@@ -87,22 +82,6 @@ log :: Verbosity -> Text -> LoggingM ()
 log v t = do
     timestamp <- liftIO $ getSystemTime
     tell [(v, timestamp, l <> newline) | l <- T.lines t]
-
-
-debug :: Text -> LoggingM ()
-debug t = log Debug $ "DEBUG| " <> t
-
-
-err :: Text -> LoggingM ()
-err t = log Error $ "ERROR| " <> t
-
-
-warning :: Text -> LoggingM ()
-warning t = log Warning $ "WARN | " <> t
-
-
-info :: Text -> LoggingM ()
-info t = log Info $       "INFO | " <> t
 
 
 newline :: Text

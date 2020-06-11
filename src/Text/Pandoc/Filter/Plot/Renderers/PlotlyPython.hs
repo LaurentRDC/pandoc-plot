@@ -27,16 +27,16 @@ plotlyPythonSupportedSaveFormats :: [SaveFormat]
 plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS]
 
 
-plotlyPythonCommand :: OutputSpec -> IO Text
+plotlyPythonCommand :: OutputSpec -> PlotM Text
 plotlyPythonCommand OutputSpec{..} = do
-    exe <- executable PlotlyPython oConfiguration
+    exe <- executable PlotlyPython
     return [st|#{exe} "#{oScriptPath}"|]
 
 
-plotlyPythonAvailable :: Configuration -> IO Bool
-plotlyPythonAvailable conf = do
-    exe <- executable PlotlyPython conf
-    commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
+plotlyPythonAvailable :: PlotM Bool
+plotlyPythonAvailable = do
+    exe <- executable PlotlyPython
+    liftIO $ commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
 
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script

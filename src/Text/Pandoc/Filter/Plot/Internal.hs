@@ -12,19 +12,17 @@ The external use of content from this module is discouraged.
 -}
 
 module Text.Pandoc.Filter.Plot.Internal (
-      module Text.Pandoc.Filter.Plot.Types
-    , module Text.Pandoc.Filter.Plot.Renderers
+      module Text.Pandoc.Filter.Plot.Renderers
     , module Text.Pandoc.Filter.Plot.Scripting
     , module Text.Pandoc.Filter.Plot.Parse
     , module Text.Pandoc.Filter.Plot.Configuration
     , module Text.Pandoc.Filter.Plot.Clean
-    , module Text.Pandoc.Filter.Plot.Logging
+    , module Text.Pandoc.Filter.Plot.Monad
  ) where
 
 import Text.Pandoc.Filter.Plot.Parse
 import Text.Pandoc.Filter.Plot.Renderers
 import Text.Pandoc.Filter.Plot.Scripting
-import Text.Pandoc.Filter.Plot.Types
 import Text.Pandoc.Filter.Plot.Configuration
 import Text.Pandoc.Filter.Plot.Clean
-import Text.Pandoc.Filter.Plot.Logging
+import Text.Pandoc.Filter.Plot.Monad
