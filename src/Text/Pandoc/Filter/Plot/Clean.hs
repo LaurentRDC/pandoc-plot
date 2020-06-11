@@ -54,7 +54,7 @@ cleanOutputDirs conf doc = do
     directories <- sequence $ query (\b -> [outputDir b]) doc
     forM (nub . catMaybes $ directories) removeDir
     where
-        outputDir b = runPlotM (parseFigureSpec b >>= return . fmap directory) conf
+        outputDir b = runPlotM conf (parseFigureSpec b >>= return . fmap directory)
         
         removeDir :: FilePath -> IO FilePath
         removeDir d = removePathForcibly d >> return d

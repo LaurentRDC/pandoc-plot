@@ -138,7 +138,7 @@ make conf blk =
 makeEither :: Configuration 
            -> Block 
            -> IO (Either PandocPlotError Block)
-makeEither conf block = runPlotM (go block) conf
+makeEither conf block = runPlotM conf (go block)
     where
         go :: Block -> PlotM (Either PandocPlotError Block)
         go blk = parseFigureSpec blk

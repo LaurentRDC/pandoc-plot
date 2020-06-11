@@ -102,9 +102,9 @@ cls Graphviz     = "graphviz"
 
 type PlotM a = ReaderT Configuration LoggingM a
 
-
-runPlotM :: PlotM a -> Configuration -> IO a
-runPlotM v conf = 
+-- | Evaluate a @PlotM@ action 
+runPlotM :: Configuration -> PlotM a -> IO a
+runPlotM conf v = 
     let verbosity = logVerbosity conf
         sink      = logSink conf 
     in runLoggingM verbosity sink (runReaderT v conf)
