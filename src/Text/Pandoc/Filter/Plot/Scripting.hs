@@ -74,19 +74,18 @@ runScriptIfNecessary spec = do
 -- stderr.
 runTempScript :: FigureSpec -> PlotM ScriptResult
 runTempScript spec@FigureSpec{..} = do
-    tk <- asks toolkit
-    conf <- asks config
-    let checks = scriptChecks tk
+    conf <- ask
+    let checks = scriptChecks toolkit
         checkResult = mconcat $ checks <*> [script]
     case checkResult of
         CheckFailed msg -> return $ ScriptChecksFailed msg
         CheckPassed -> do
             scriptPath <- tempScriptPath spec
-            let captureFragment = (capture tk) spec (figurePath spec)
+            let captureFragment = (capture toolkit) spec (figurePath spec)
                 -- Note: for gnuplot, the capture string must be placed
                 --       BEFORE plotting happens. Since this is only really an
                 --       issue for gnuplot, we have a special case.
-                scriptWithCapture = if (tk == GNUPlot)
+                scriptWithCapture = if (toolkit == GNUPlot)
                                         then mconcat [captureFragment, "\n", script]
                                         else mconcat [script, "\n", captureFragment]
             liftIO $ T.writeFile scriptPath scriptWithCapture
@@ -95,7 +94,7 @@ runTempScript spec@FigureSpec{..} = do
                                         , oScriptPath = scriptPath
                                         , oFigurePath = figurePath spec
                                         }
-            command_ <- T.unpack <$> (liftIO $ command tk outputSpec)
+            command_ <- T.unpack <$> (liftIO $ command toolkit outputSpec)
             lift $ debug $ "Running command " <> (T.pack command_)
 
             ec <- liftIO 
@@ -108,10 +107,10 @@ runTempScript spec@FigureSpec{..} = do
                     -- Two possible types of failures: either the script
                     -- failed because the toolkit was not available, or
                     -- because of a genuine error
-                    toolkitInstalled <- liftIO $ toolkitAvailable tk conf 
+                    toolkitInstalled <- liftIO $ toolkitAvailable toolkit conf 
                     if toolkitInstalled
                         then return $ ScriptFailure command_ code
-                        else return $ ToolkitNotInstalled tk
+                        else return $ ToolkitNotInstalled toolkit
 
 
 -- | Convert a @FigureSpec@ to a Pandoc block component.
@@ -139,7 +138,7 @@ toImage fmt spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig
 -- is important.
 tempScriptPath :: FigureSpec -> PlotM FilePath
 tempScriptPath FigureSpec{..} = do
-    ext <- scriptExtension <$> asks toolkit
+    let ext = scriptExtension toolkit
     -- Note that matlab will refuse to process files that don't start with
     -- a letter... so we append the renderer name
     -- Note that this hash is only so that we are running scripts from unique

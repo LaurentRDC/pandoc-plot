@@ -17,7 +17,6 @@ This module defines types in use in pandoc-plot
 module Text.Pandoc.Filter.Plot.Types (
       Toolkit(..)
     , PlotM
-    , PlotEnv(..)
     , Configuration(..)
     , Script
     , CheckResult(..)
@@ -101,21 +100,14 @@ cls GNUPlot      = "gnuplot"
 cls Graphviz     = "graphviz"
 
 
-type PlotM a = ReaderT PlotEnv LoggingM a
+type PlotM a = ReaderT Configuration LoggingM a
 
 
-data PlotEnv
-    = PlotEnv { toolkit   :: !Toolkit
-              , config    :: !Configuration
-              }
-
-
-runPlotM :: PlotM a -> PlotEnv -> IO a
-runPlotM v env = 
-    let conf      = config env
-        verbosity = logVerbosity conf
+runPlotM :: PlotM a -> Configuration -> IO a
+runPlotM v conf = 
+    let verbosity = logVerbosity conf
         sink      = logSink conf 
-    in runLoggingM verbosity sink (runReaderT v env)
+    in runLoggingM verbosity sink (runReaderT v conf)
 
 
 -- | The @Configuration@ type holds the default values to use
@@ -266,7 +258,8 @@ inclusionKeys = enumFromTo (minBound::InclusionKey) maxBound
 -- It is assumed that once a @FigureSpec@ has been created, no configuration
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
-    { caption    :: !Text           -- ^ Figure caption.
+    { toolkit    :: !Toolkit        -- ^ Plotting toolkit to use for this figure.
+    , caption    :: !Text           -- ^ Figure caption.
     , withSource :: !Bool           -- ^ Append link to source code in caption.
     , script     :: !Script         -- ^ Source code for the figure.
     , saveFormat :: !SaveFormat     -- ^ Save format of the figure.
@@ -284,7 +277,7 @@ data FigureSpec = FigureSpec
 -- For example, changing the caption should not require running the figure again.
 figureContentHash :: FigureSpec -> Int
 figureContentHash FigureSpec{..} = 
-    hash (script, fromEnum saveFormat, directory, dpi, extraAttrs)
+    hash (fromEnum toolkit, script, fromEnum saveFormat, directory, dpi, extraAttrs)
 
 
 -- | Generated figure file format supported by pandoc-plot.

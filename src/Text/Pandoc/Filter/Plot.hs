@@ -84,19 +84,30 @@ module Text.Pandoc.Filter.Plot (
     , unavailableToolkits
     -- * For testing and internal purposes ONLY
     , make
-    , make'
+    , makeEither
     , PandocPlotError(..)
     , readDoc
     ) where
 
 import Control.Concurrent.Async          (mapConcurrently)
 
-import System.IO                         (hPutStrLn, stderr)
-
 import Text.Pandoc.Definition            (Pandoc(..), Block)
 import Text.Pandoc.Walk                  (walkM, Walkable)
 
 import Text.Pandoc.Filter.Plot.Internal
+
+
+-- | Walk over an entire Pandoc document, transforming appropriate code blocks
+-- into figures. This function will operate on blocks in parallel if possible.
+--
+-- Failing to render a figure does not stop the filter, so that you may run the filter
+-- on documents without having all necessary toolkits installed. In this case, error
+-- messages are printed to stderr, and blocks are left unchanged.
+plotTransform :: Configuration -- ^ Configuration for default values
+              -> Pandoc        -- ^ Input document
+              -> IO Pandoc
+plotTransform conf (Pandoc meta blocks) =
+    mapConcurrently (makePlot conf) blocks >>= return . Pandoc meta
 
 
 -- | Highest-level function that can be walked over a Pandoc tree.
@@ -114,51 +125,29 @@ makePlot :: Walkable Block a
          => Configuration -- ^ Configuration for default values
          -> a             -- ^ Input block or document
          -> IO a
-makePlot conf = walkM makePlot'
-    where
-        makePlot' block = maybe (return block) (\tk -> make tk conf block) (plotToolkit block)
+makePlot conf = walkM (make conf)
 
 
--- | Walk over an entire Pandoc document, transforming appropriate code blocks
--- into figures. This function will operate on blocks in parallel if possible.
---
--- Failing to render a figure does not stop the filter, so that you may run the filter
--- on documents without having all necessary toolkits installed. In this case, error
--- messages are printed to stderr, and blocks are left unchanged.
-plotTransform :: Configuration -- ^ Configuration for default values
-              -> Pandoc        -- ^ Input document
-              -> IO Pandoc
-plotTransform conf (Pandoc meta blocks) =
-    mapConcurrently (makePlot conf) blocks >>= return . Pandoc meta
-
-
--- | Force to use a particular toolkit to render appropriate code blocks.
---
--- Failing to render a figure does not stop the filter, so that you may run the filter
--- on documents without having all necessary toolkits installed. In this case, error
--- messages are printed to stderr, and blocks are left unchanged.
-make :: Toolkit       -- ^ Plotting toolkit.
-     -> Configuration -- ^ Configuration for default values.
+make :: Configuration
      -> Block 
      -> IO Block
-make tk conf blk = 
-    either (const (return blk) . showErr) return =<< make' tk conf blk
-    where
-        showErr e = hPutStrLn stderr $ show e
+make conf blk = 
+    either (const (return blk) ) return =<< makeEither conf blk
 
 
-make' :: Toolkit 
-      -> Configuration 
-      -> Block 
-      -> IO (Either PandocPlotError Block)
-make' tk conf block = runPlotM (make'' block) (PlotEnv tk conf)
+makeEither :: Configuration 
+           -> Block 
+           -> IO (Either PandocPlotError Block)
+makeEither conf block = runPlotM (go block) conf
     where
-        make'' :: Block -> PlotM (Either PandocPlotError Block)
-        make'' blk = parseFigureSpec blk
+        go :: Block -> PlotM (Either PandocPlotError Block)
+        go blk = parseFigureSpec blk
                     >>= maybe
                         (return $ Right blk)
                         (\s -> runScriptIfNecessary s >>= handleResult s)
             where
+                -- Logging of errors has been taken care of in @runScriptIfNecessary@ 
+                handleResult :: FigureSpec -> ScriptResult -> PlotM (Either PandocPlotError Block)
                 handleResult spec ScriptSuccess          = return $ Right $ toImage (captionFormat conf) spec
                 handleResult _ (ScriptFailure msg code)  = return $ Left (ScriptRuntimeError msg code) 
                 handleResult _ (ScriptChecksFailed msg)  = return $ Left (ScriptChecksFailedError msg)

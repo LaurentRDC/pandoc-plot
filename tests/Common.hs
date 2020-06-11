@@ -242,7 +242,7 @@ testChecksFail tk =
             ensureDirectoryExistsAndEmpty tempDir
 
             let cb = addDirectory tempDir $ codeBlock Matplotlib "plt.show()"
-            result <- (make' Matplotlib) def cb
+            result <- (makeEither Matplotlib) def cb
             let expectedCheck :: Either PandocPlotError a -> Bool
                 expectedCheck (Left (ScriptChecksFailedError _)) = True
                 expectedCheck _ = False
