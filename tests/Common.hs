@@ -26,9 +26,9 @@ import           System.Directory                 (createDirectory,
                                                    doesDirectoryExist,
                                                    doesFileExist, listDirectory,
                                                    removeDirectoryRecursive,
-                                                   removePathForcibly)
+                                                   removePathForcibly, 
+                                                   getTemporaryDirectory)
 import           System.FilePath                  (takeExtensions, (</>))
-import           System.IO.Temp                   (getCanonicalTemporaryDirectory)
 
 
 defaultTestConfig :: Configuration
@@ -40,7 +40,7 @@ testFileCreation :: Toolkit -> TestTree
 testFileCreation tk =
     testCase "writes output files in appropriate directory" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-file-creation-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-file-creation-" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
@@ -54,7 +54,7 @@ testFileInclusion :: Toolkit -> TestTree
 testFileInclusion tk =
     testCase "includes plot inclusions" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-file-inclusion-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-file-inclusion-" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = (addPreamble (include tk) $
@@ -80,7 +80,7 @@ testSaveFormat :: Toolkit -> TestTree
 testSaveFormat tk =
     testCase "saves in the appropriate format" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-safe-format-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-safe-format-" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
         let fmt = head (supportedSaveFormats tk)
             cb = (addSaveFormat fmt $
@@ -97,7 +97,7 @@ testWithSource :: Toolkit -> TestTree
 testWithSource tk =
     testCase "appropriately omits links to source code" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-caption-links-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-caption-links-" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let expected = "caption content"
@@ -135,7 +135,7 @@ testOverrideConfiguration tk =
     -- no JPG files.
     testCase "code block attributes override configuration defaults" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-caption-links-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-caption-links-" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let config = defaultTestConfig { defaultDirectory = tempDir
@@ -166,7 +166,7 @@ testMarkdownFormattingCaption1 :: Toolkit -> TestTree
 testMarkdownFormattingCaption1 tk =
     testCase "appropriately parses captions 1" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-caption-parsing1-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-caption-parsing1-" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         -- Note that this test is fragile, in the sense that the expected result must be carefully
@@ -191,7 +191,7 @@ testMarkdownFormattingCaption2 :: Toolkit -> TestTree
 testMarkdownFormattingCaption2 tk =
     testCase "appropriately parses captions 2" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-caption-parsing2-" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-caption-parsing2-" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         -- Note that this test is fragile, in the sense that the expected result must be carefully
@@ -217,7 +217,7 @@ testCleanOutputDirs :: Toolkit -> TestTree
 testCleanOutputDirs tk = 
     testCase "correctly cleans output directories" $ do
         let postfix = unpack . cls $ tk
-        tempDir <- (</> "test-clean-output-dir" <> postfix) <$> getCanonicalTemporaryDirectory
+        tempDir <- (</> "test-clean-output-dir" <> postfix) <$> getTemporaryDirectory
         ensureDirectoryExistsAndEmpty tempDir
 
         let cb = addDirectory tempDir
@@ -241,7 +241,7 @@ testChecksFail tk =
     where
         assertChecksFail Matplotlib = do
             let postfix = unpack . cls $ tk
-            tempDir <- (</> "test-checks" <> postfix) <$> getCanonicalTemporaryDirectory
+            tempDir <- (</> "test-checks" <> postfix) <$> getTemporaryDirectory
             ensureDirectoryExistsAndEmpty tempDir
 
             let cb = addDirectory tempDir $ codeBlock Matplotlib "plt.show()"

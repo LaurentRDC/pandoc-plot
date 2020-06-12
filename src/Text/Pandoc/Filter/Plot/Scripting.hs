@@ -30,12 +30,11 @@ import           Data.Text.Encoding                (decodeUtf8With)
 import           Data.Text.Encoding.Error          (lenientDecode)
 
 import           System.Directory                  (createDirectoryIfMissing,
-                                                    doesFileExist)
+                                                    doesFileExist, getTemporaryDirectory)
 import           System.Exit                       (ExitCode (..))
 import           System.FilePath                   (addExtension,
                                                     normalise, replaceExtension,
                                                     takeDirectory, (</>))
-import           System.IO.Temp                    (getCanonicalTemporaryDirectory)
 import           System.Process.Typed              ( readProcessInterleaved, shell
                                                    , setStdout, setStderr, byteStringOutput)
 
@@ -162,7 +161,7 @@ tempScriptPath FigureSpec{..} = do
     -- file names; it does NOT determine whether this figure should
     -- be rendered or not.
     let hashedPath = "pandocplot" <> (show . abs . hash $ script) <> ext
-    liftIO $ (</> hashedPath) <$> getCanonicalTemporaryDirectory
+    liftIO $ (</> hashedPath) <$> getTemporaryDirectory
 
 
 -- | Determine the path to the source code that generated the figure.

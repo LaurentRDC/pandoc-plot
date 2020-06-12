@@ -9,17 +9,19 @@ import           Control.Monad                    (join, forM_, when, msum)
 
 import           Data.List                        (intersperse, (\\))
 import           Data.Text                        (unpack)
+import qualified Data.Text.IO                     as TIO
 import           Data.Version                     (parseVersion, showVersion)
 
+import           GHC.IO.Encoding                  (setLocaleEncoding, utf8)
 import           GitHash                          as Git
 
 import           Options.Applicative
 import qualified Options.Applicative.Help.Pretty  as P
 
-import           System.Directory                 (doesFileExist)
+import           System.Directory                 (doesFileExist, getTemporaryDirectory)
 import           System.Environment               (lookupEnv)
+import           System.FilePath                  ((</>))
 import           System.IO                        (hPutStrLn, stderr)
-import           System.IO.Temp                   (writeSystemTempFile)
 
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform,
@@ -248,11 +250,14 @@ clean mfp fp = do
         firstJusts :: [Maybe a] -> Maybe a
         firstJusts = msum
 
+
 showManPage :: IO ()
-showManPage = 
-    writeSystemTempFile "pandoc-plot-manual.html" $(embedManualHtml)
-        >>= \fp -> openBrowser ("file:///" <> fp)
-        >> return ()
+showManPage = do
+    setLocaleEncoding utf8 -- This is required to write the manual file, for some reason.
+    manualPath <- (</> "pandoc-plot-manual.html") <$> getTemporaryDirectory
+    TIO.writeFile manualPath $(embedManualHtml)
+    openBrowser ("file:///" <> manualPath)
+    return ()
 
 -- | Use Doc type directly because of newline formatting
 footer' :: P.Doc
