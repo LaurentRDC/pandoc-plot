@@ -33,8 +33,6 @@ import           System.Process.Typed          (runProcess, shell,
                                                 nullStream)
 import           Text.Shakespeare.Text         (st)
 
-import qualified Turtle                         as Sh
-
 import           Text.Pandoc.Filter.Plot.Monad
 
 
@@ -51,7 +49,7 @@ commandSuccess s = do
 
 -- | Checks that an executable is available on path, at all.
 existsOnPath :: FilePath -> IO Bool
-existsOnPath fp = Sh.which (Sh.fromString fp) >>= fmap isJust . return
+existsOnPath fp = findExecutable fp >>= fmap isJust . return
 
 
 -- | Try to find the executable and normalise its path.
