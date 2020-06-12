@@ -19,7 +19,6 @@ module Text.Pandoc.Filter.Plot.Configuration (
     , defaultConfiguration
 ) where
 
-import           Data.Default.Class     (Default, def)
 import           Data.Maybe             (fromMaybe)
 import           Data.Text              (Text, pack, unpack)
 import qualified Data.Text.IO           as TIO
@@ -43,7 +42,40 @@ configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
 --
 -- @since 0.5.0.0
 defaultConfiguration :: Configuration
-defaultConfiguration = def
+defaultConfiguration = 
+    Configuration
+        { defaultDirectory  = "plots/"
+        , defaultWithSource = False
+        , defaultDPI        = 80
+        , defaultSaveFormat = PNG
+        , captionFormat     = Format "markdown+tex_math_dollars"
+
+        , logVerbosity      = Warning
+        , logSink           = StdErr
+        
+        , matplotlibPreamble  = mempty
+        , plotlyPythonPreamble= mempty
+        , plotlyRPreamble     = mempty
+        , matlabPreamble      = mempty
+        , mathematicaPreamble = mempty
+        , octavePreamble      = mempty
+        , ggplot2Preamble     = mempty
+        , gnuplotPreamble     = mempty
+        , graphvizPreamble    = mempty
+
+        , matplotlibExe       = if isWindows then "python" else "python3"
+        , matlabExe           = "matlab"
+        , plotlyPythonExe     = if isWindows then "python" else "python3"
+        , plotlyRExe          = "Rscript"
+        , mathematicaExe      = "math"
+        , octaveExe           = "octave"
+        , ggplot2Exe          = "Rscript"
+        , gnuplotExe          = "gnuplot"
+        , graphvizExe         = "dot"
+        
+        , matplotlibTightBBox   = False
+        , matplotlibTransparent = False
+        }
 
 
 -- | Extact path to configuration from the metadata in a Pandoc document.
@@ -96,25 +128,26 @@ data ConfigPrecursor = ConfigPrecursor
     , _graphvizPrec      :: !GraphvizPrecursor
     }
 
-instance Default ConfigPrecursor where
-    def = ConfigPrecursor
-        { _defaultDirectory  = defaultDirectory def
-        , _defaultWithSource = defaultWithSource def
-        , _defaultDPI        = defaultDPI def
-        , _defaultSaveFormat = defaultSaveFormat def
-        , _captionFormat     = captionFormat def
+defaultConfigPrecursor :: ConfigPrecursor
+defaultConfigPrecursor =  
+    ConfigPrecursor
+        { _defaultDirectory  = defaultDirectory defaultConfiguration
+        , _defaultWithSource = defaultWithSource defaultConfiguration
+        , _defaultDPI        = defaultDPI defaultConfiguration
+        , _defaultSaveFormat = defaultSaveFormat defaultConfiguration
+        , _captionFormat     = captionFormat defaultConfiguration
 
-        , _logPrec             = def
+        , _logPrec           = LoggingPrecursor (logVerbosity defaultConfiguration) Nothing -- _logFilePath=Nothing implies log to stderr
         
-        , _matplotlibPrec    = def
-        , _matlabPrec        = def
-        , _plotlyPythonPrec  = def
-        , _plotlyRPrec       = def
-        , _mathematicaPrec   = def
-        , _octavePrec        = def
-        , _ggplot2Prec       = def
-        , _gnuplotPrec       = def
-        , _graphvizPrec      = def
+        , _matplotlibPrec    = MatplotlibPrecursor Nothing (matplotlibTightBBox defaultConfiguration) (matplotlibTransparent defaultConfiguration) (matplotlibExe defaultConfiguration)
+        , _matlabPrec        = MatlabPrecursor Nothing (matlabExe defaultConfiguration)
+        , _plotlyPythonPrec  = PlotlyPythonPrecursor Nothing (plotlyPythonExe defaultConfiguration)
+        , _plotlyRPrec       = PlotlyRPrecursor      Nothing (plotlyRExe defaultConfiguration)
+        , _mathematicaPrec   = MathematicaPrecursor  Nothing (mathematicaExe defaultConfiguration)
+        , _octavePrec        = OctavePrecursor       Nothing (octaveExe defaultConfiguration)
+        , _ggplot2Prec       = GGPlot2Precursor      Nothing (ggplot2Exe defaultConfiguration)
+        , _gnuplotPrec       = GNUPlotPrecursor      Nothing (gnuplotExe defaultConfiguration)
+        , _graphvizPrec      = GraphvizPrecursor     Nothing (graphvizExe defaultConfiguration)
         }
 
 
@@ -136,27 +169,11 @@ data MathematicaPrecursor   = MathematicaPrecursor  {_mathematicaPreamble  :: !(
 data OctavePrecursor        = OctavePrecursor       {_octavePreamble       :: !(Maybe FilePath), _octaveExe       :: !FilePath}
 data GGPlot2Precursor       = GGPlot2Precursor      {_ggplot2Preamble      :: !(Maybe FilePath), _ggplot2Exe      :: !FilePath}
 data GNUPlotPrecursor       = GNUPlotPrecursor      {_gnuplotPreamble      :: !(Maybe FilePath), _gnuplotExe      :: !FilePath}
-data GraphvizPrecursor      = GraphvizPrecursor     {_graphvizPreamble     :: !(Maybe FilePath), _graphvizExe    :: !FilePath}
-
-instance Default LoggingPrecursor where
-    def = LoggingPrecursor (logVerbosity def) Nothing -- _logFilePath=Nothing implies log to stderr
-
-instance Default MatplotlibPrecursor where
-    def = MatplotlibPrecursor Nothing (matplotlibTightBBox def) (matplotlibTransparent def) (matplotlibExe def)
-
-instance Default MatlabPrecursor        where def = MatlabPrecursor       Nothing (matlabExe def)
-instance Default PlotlyPythonPrecursor  where def = PlotlyPythonPrecursor Nothing (plotlyPythonExe def)
-instance Default PlotlyRPrecursor       where def = PlotlyRPrecursor      Nothing (plotlyRExe def)
-instance Default MathematicaPrecursor   where def = MathematicaPrecursor  Nothing (mathematicaExe def)
-instance Default OctavePrecursor        where def = OctavePrecursor       Nothing (octaveExe def)
-instance Default GGPlot2Precursor       where def = GGPlot2Precursor      Nothing (ggplot2Exe def)
-instance Default GNUPlotPrecursor       where def = GNUPlotPrecursor      Nothing (gnuplotExe def)
-instance Default GraphvizPrecursor      where def = GraphvizPrecursor     Nothing (graphvizExe def)
-
+data GraphvizPrecursor      = GraphvizPrecursor     {_graphvizPreamble     :: !(Maybe FilePath), _graphvizExe     :: !FilePath}
 
 instance FromJSON LoggingPrecursor where
     parseJSON (Object v) = 
-        LoggingPrecursor <$> v .:? "verbosity" .!= (logVerbosity def)
+        LoggingPrecursor <$> v .:? "verbosity" .!= (logVerbosity defaultConfiguration)
                          <*> v .:? "filepath"
     parseJSON _ = fail $ mconcat ["Could not parse logging configuration. "]
 
@@ -164,65 +181,65 @@ instance FromJSON MatplotlibPrecursor where
     parseJSON (Object v) = 
         MatplotlibPrecursor
             <$> v .:? (tshow PreambleK)
-            <*> v .:? (tshow MatplotlibTightBBoxK)   .!= (matplotlibTightBBox def) 
-            <*> v .:? (tshow MatplotlibTransparentK) .!= (matplotlibTransparent def)
-            <*> v .:? (tshow ExecutableK)  .!= (matplotlibExe def)
+            <*> v .:? (tshow MatplotlibTightBBoxK)   .!= (matplotlibTightBBox defaultConfiguration) 
+            <*> v .:? (tshow MatplotlibTransparentK) .!= (matplotlibTransparent defaultConfiguration)
+            <*> v .:? (tshow ExecutableK)  .!= (matplotlibExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Matplotlib, " configuration."]
 
 instance FromJSON MatlabPrecursor where
-    parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (matlabExe def)
+    parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (matlabExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Matlab, " configuration."]
 
 instance FromJSON PlotlyPythonPrecursor where
-    parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyPythonExe def)
+    parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyPythonExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyPython, " configuration."]
 
 instance FromJSON PlotlyRPrecursor where
-    parseJSON (Object v) = PlotlyRPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyRExe def)
+    parseJSON (Object v) = PlotlyRPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyRExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyR, " configuration."]
 
 instance FromJSON MathematicaPrecursor where
-    parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (mathematicaExe def)
+    parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (mathematicaExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Mathematica, " configuration."]
 
 instance FromJSON OctavePrecursor where
-    parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (octaveExe def)
+    parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (octaveExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Octave, " configuration."]
 
 instance FromJSON GGPlot2Precursor where
-    parseJSON (Object v) = GGPlot2Precursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (ggplot2Exe def)
+    parseJSON (Object v) = GGPlot2Precursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (ggplot2Exe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show GGPlot2, " configuration."]
 
 instance FromJSON GNUPlotPrecursor where
-    parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (gnuplotExe def)
+    parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (gnuplotExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show GNUPlot, " configuration."]
 
 instance FromJSON GraphvizPrecursor where
-    parseJSON (Object v) = GraphvizPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (graphvizExe def)
+    parseJSON (Object v) = GraphvizPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (graphvizExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Graphviz, " configuration."]
 
 
 instance FromJSON ConfigPrecursor where
-    parseJSON (Null) = return def -- In case of empty file
+    parseJSON (Null) = return defaultConfigPrecursor -- In case of empty file
     parseJSON (Object v) = do
         
-        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory def)
-        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource def)
-        _defaultDPI        <- v .:? (tshow DpiK)           .!= (_defaultDPI def)
-        _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat def)
-        _captionFormat     <- v .:? (tshow CaptionFormatK) .!= (_captionFormat def)
+        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory defaultConfigPrecursor)
+        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource defaultConfigPrecursor)
+        _defaultDPI        <- v .:? (tshow DpiK)           .!= (_defaultDPI defaultConfigPrecursor)
+        _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat defaultConfigPrecursor)
+        _captionFormat     <- v .:? (tshow CaptionFormatK) .!= (_captionFormat defaultConfigPrecursor)
 
-        _logPrec           <- v .:? "logging"              .!= def
+        _logPrec           <- v .:? "logging"              .!= _logPrec defaultConfigPrecursor
 
-        _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= def
-        _matlabPrec        <- v .:? (cls Matlab)           .!= def
-        _plotlyPythonPrec  <- v .:? (cls PlotlyPython)     .!= def
-        _plotlyRPrec       <- v .:? (cls PlotlyR)          .!= def
-        _mathematicaPrec   <- v .:? (cls Mathematica)      .!= def
-        _octavePrec        <- v .:? (cls Octave)           .!= def
-        _ggplot2Prec       <- v .:? (cls GGPlot2)          .!= def
-        _gnuplotPrec       <- v .:? (cls GNUPlot)          .!= def
-        _graphvizPrec      <- v .:? (cls Graphviz)         .!= def
+        _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= _matplotlibPrec defaultConfigPrecursor
+        _matlabPrec        <- v .:? (cls Matlab)           .!= _matlabPrec defaultConfigPrecursor
+        _plotlyPythonPrec  <- v .:? (cls PlotlyPython)     .!= _plotlyPythonPrec defaultConfigPrecursor
+        _plotlyRPrec       <- v .:? (cls PlotlyR)          .!= _plotlyRPrec defaultConfigPrecursor
+        _mathematicaPrec   <- v .:? (cls Mathematica)      .!= _mathematicaPrec defaultConfigPrecursor
+        _octavePrec        <- v .:? (cls Octave)           .!= _octavePrec defaultConfigPrecursor
+        _ggplot2Prec       <- v .:? (cls GGPlot2)          .!= _ggplot2Prec defaultConfigPrecursor
+        _gnuplotPrec       <- v .:? (cls GNUPlot)          .!= _gnuplotPrec defaultConfigPrecursor
+        _graphvizPrec      <- v .:? (cls Graphviz)         .!= _graphvizPrec defaultConfigPrecursor
 
         return $ ConfigPrecursor{..}
     parseJSON _          = fail "Could not parse configuration."

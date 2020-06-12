@@ -31,7 +31,6 @@ module Text.Pandoc.Filter.Plot.Monad (
 
 import           Control.Monad.Reader
 
-import           Data.Default.Class          (Default, def)
 import           Data.Text                   (Text)
 
 import           Text.Pandoc.Definition      (Format(..))
@@ -122,39 +121,3 @@ data Configuration = Configuration
     , matplotlibTightBBox   :: !Bool       -- ^ Whether or not to make Matplotlib figures tight by default.
     , matplotlibTransparent :: !Bool       -- ^ Whether or not to make Matplotlib figures transparent by default.
     } deriving (Eq, Show)
-
-
-instance Default Configuration where
-    def = Configuration
-          { defaultDirectory  = "plots/"
-          , defaultWithSource = False
-          , defaultDPI        = 80
-          , defaultSaveFormat = PNG
-          , captionFormat     = Format "markdown+tex_math_dollars"
-
-          , logVerbosity      = Warning
-          , logSink           = StdErr
-          
-          , matplotlibPreamble  = mempty
-          , plotlyPythonPreamble= mempty
-          , plotlyRPreamble     = mempty
-          , matlabPreamble      = mempty
-          , mathematicaPreamble = mempty
-          , octavePreamble      = mempty
-          , ggplot2Preamble     = mempty
-          , gnuplotPreamble     = mempty
-          , graphvizPreamble    = mempty
-
-          , matplotlibExe       = if isWindows then "python" else "python3"
-          , matlabExe           = "matlab"
-          , plotlyPythonExe     = if isWindows then "python" else "python3"
-          , plotlyRExe          = "Rscript"
-          , mathematicaExe      = "math"
-          , octaveExe           = "octave"
-          , ggplot2Exe          = "Rscript"
-          , gnuplotExe          = "gnuplot"
-          , graphvizExe         = "dot"
-          
-          , matplotlibTightBBox   = False
-          , matplotlibTransparent = False
-          }

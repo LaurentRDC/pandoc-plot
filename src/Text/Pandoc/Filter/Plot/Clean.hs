@@ -22,7 +22,6 @@ import           Control.Monad.Reader             (forM)
 
 import qualified Data.ByteString.Lazy             as B
 import           Data.Char                        (toLower)
-import           Data.Default.Class               (def)
 import           Data.List                        (nub)
 import           Data.Maybe                       (fromMaybe, catMaybes)
 
@@ -66,7 +65,7 @@ readDoc :: FilePath -> IO Pandoc
 readDoc fp = handleError =<< (runIO $ do
         let fmt = fromMaybe mempty (formatFromFilePath fp)
         (reader, exts) <- P.getReader fmt
-        let readerOpts = def {P.readerExtensions = exts}
+        let readerOpts = defaultReaderOptions {P.readerExtensions = exts}
         case reader of 
             P.TextReader fct -> do
                 t <- liftIO $ Text.readFile fp 
