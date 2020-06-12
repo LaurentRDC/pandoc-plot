@@ -5,26 +5,20 @@ This module was inspired by pandoc-crossref
 
 module ManPage ( embedManualHtml ) where
 
-import           Control.DeepSeq            (($!!))
-
 import           Data.String 
 import qualified Data.Text                  as T
+import qualified Data.Text.IO               as TIO
 
 import           Language.Haskell.TH.Syntax
 
 import qualified Text.Pandoc                as P
 import           Text.Pandoc.Highlighting   (pygments)
 
-import System.IO
-
 docFile :: FilePath
 docFile = "README.md"
 
 readDocFile :: IO String
-readDocFile = withFile docFile ReadMode $ \h -> do
-    hSetEncoding h utf8
-    cont <- hGetContents h
-    return $!! cont
+readDocFile = TIO.readFile docFile >>= return . T.unpack 
 
 readerOpts :: P.ReaderOptions
 readerOpts = P.def { P.readerExtensions = P.githubMarkdownExtensions

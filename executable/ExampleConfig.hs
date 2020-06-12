@@ -3,22 +3,17 @@
 module ExampleConfig ( embedExampleConfig ) where
 
 
-import           Control.DeepSeq            (($!!))
-
 import           Data.String
+import           Data.Text                  (unpack)
+import qualified Data.Text.IO               as TIO
 
 import           Language.Haskell.TH.Syntax
-
-import System.IO
 
 docFile :: FilePath
 docFile = "example-config.yml"
 
 readDocFile :: IO String
-readDocFile = withFile docFile ReadMode $ \h -> do
-    hSetEncoding h utf8
-    cont <- hGetContents h
-    return $!! cont
+readDocFile = TIO.readFile docFile >>= return . unpack
 
 embedExampleConfig :: Q Exp
 embedExampleConfig = do
