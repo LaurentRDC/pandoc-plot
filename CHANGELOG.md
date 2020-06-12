@@ -19,6 +19,8 @@ logging:
     filepath: log.txt
 ````
 
+* Removed dependencies `turtle`, `temporary`, `deepseq`, and `data-default-class`
+
 Release 0.6.1.0
 ---------------
 
