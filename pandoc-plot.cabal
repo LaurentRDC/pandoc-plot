@@ -64,7 +64,7 @@ library
         , async              >= 2     && < 3
         , shakespeare        >= 2.0   && < 3
         , text               >= 1     && < 2
-        , time
+        , time               >= 1     && < 2
         , typed-process      >= 0.2.1 && < 1
         , yaml               >= 0.8   && < 1
         , mtl                >= 2.2   && < 2.3
