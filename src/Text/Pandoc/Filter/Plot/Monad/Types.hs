@@ -94,7 +94,7 @@ type Script = Text
 -- | Result of checking scripts for problems
 data CheckResult
     = CheckPassed
-    | CheckFailed String
+    | CheckFailed Text
     deriving (Eq)
 
 instance Semigroup CheckResult where

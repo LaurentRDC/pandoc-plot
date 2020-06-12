@@ -91,6 +91,8 @@ module Text.Pandoc.Filter.Plot (
 
 import Control.Concurrent.Async          (mapConcurrently)
 
+import Data.Text                         (Text, unpack)
+
 import Text.Pandoc.Definition            (Pandoc(..), Block)
 import Text.Pandoc.Walk                  (walkM, Walkable)
 
@@ -155,11 +157,11 @@ makeEither conf block = runPlotM conf (go block)
 
 
 data PandocPlotError
-    = ScriptRuntimeError String Int
-    | ScriptChecksFailedError String
+    = ScriptRuntimeError Text Int
+    | ScriptChecksFailedError Text
     | ToolkitNotInstalledError Toolkit
 
 instance Show PandocPlotError where
     show (ScriptRuntimeError _ exitcode) = "ERROR (pandoc-plot) The script failed with exit code " <> show exitcode <> "."
-    show (ScriptChecksFailedError msg)   = "ERROR (pandoc-plot) A script check failed with message: " <> msg <> "."
+    show (ScriptChecksFailedError msg)   = "ERROR (pandoc-plot) A script check failed with message: " <> unpack msg <> "."
     show (ToolkitNotInstalledError tk)   = "ERROR (pandoc-plot) The " <> show tk <> " toolkit is required but not installed."

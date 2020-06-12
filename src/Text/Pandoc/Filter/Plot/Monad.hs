@@ -14,6 +14,8 @@ module Text.Pandoc.Filter.Plot.Monad (
       Configuration(..)
     , PlotM
     , runPlotM
+    -- * Running external commands
+    , runCommand
     -- * Logging
     , Verbosity(..)
     , LogSink(..)
@@ -31,7 +33,15 @@ module Text.Pandoc.Filter.Plot.Monad (
 
 import           Control.Monad.Reader
 
-import           Data.Text                   (Text)
+import           Data.ByteString.Lazy        (toStrict)
+import           Data.Text                   (Text, pack, unpack)
+import           Data.Text.Encoding          (decodeUtf8With)
+import           Data.Text.Encoding.Error    (lenientDecode)
+
+import           System.Exit                 (ExitCode (..))
+import           System.Process.Typed        ( readProcessInterleaved, shell
+                                             , setStdout, setStderr, byteStringOutput
+                                             )
 
 import           Text.Pandoc.Definition      (Format(..))
 
@@ -66,6 +76,22 @@ warning t = lift $ log Warning $ "WARN | " <> t
 
 info :: Text -> PlotM ()
 info t = lift $ log Info $ "INFO | " <> t
+
+
+-- | Run a command within the @PlotM@ monad. Stdout and Stderr
+-- are read and decoded. Logging happens at the debug level.
+runCommand :: Text -> PlotM (ExitCode, Text)
+runCommand command = do
+    (ec, processOutput') <- liftIO 
+                        $ readProcessInterleaved 
+                        $ setStdout byteStringOutput
+                        $ setStderr byteStringOutput 
+                        $ shell (unpack command)
+    let processOutput = decodeUtf8With lenientDecode $ toStrict processOutput'
+    debug $ mconcat [ "Running command \n    "
+                    , command, "\n ended with exit code ", pack . show $ ec
+                    , " and output \n", processOutput] 
+    return (ec, processOutput)
 
 
 -- | The @Configuration@ type holds the default values to use

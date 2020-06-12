@@ -21,13 +21,10 @@ module Text.Pandoc.Filter.Plot.Scripting
 
 import           Control.Monad.Reader
 
-import           Data.ByteString.Lazy              (toStrict)
 import           Data.Hashable                     (hash)
 import           Data.Maybe                        (fromMaybe)
-import qualified Data.Text                         as T
+import           Data.Text                         (Text, pack, unpack)
 import qualified Data.Text.IO                      as T
-import           Data.Text.Encoding                (decodeUtf8With)
-import           Data.Text.Encoding.Error          (lenientDecode)
 
 import           System.Directory                  (createDirectoryIfMissing,
                                                     doesFileExist, getTemporaryDirectory)
@@ -35,8 +32,6 @@ import           System.Exit                       (ExitCode (..))
 import           System.FilePath                   (addExtension,
                                                     normalise, replaceExtension,
                                                     takeDirectory, (</>))
-import           System.Process.Typed              ( readProcessInterleaved, shell
-                                                   , setStdout, setStderr, byteStringOutput)
 
 import           Text.Pandoc.Builder               (fromList, imageWith, link,
                                                     para, toList)
@@ -64,21 +59,21 @@ runScriptIfNecessary spec = do
         other         -> return other
 
     where
-        logScriptResult ScriptSuccess = debug . T.pack . show $ ScriptSuccess 
-        logScriptResult r             = err   . T.pack . show $ r
+        logScriptResult ScriptSuccess = debug . pack . show $ ScriptSuccess 
+        logScriptResult r             = err   . pack . show $ r
 
 
 -- | Possible result of running a script
 data ScriptResult
     = ScriptSuccess
-    | ScriptChecksFailed String   -- Message
-    | ScriptFailure String Int    -- Command and exit code
+    | ScriptChecksFailed Text   -- Message
+    | ScriptFailure Text Int    -- Command and exit code
     | ToolkitNotInstalled Toolkit -- Script failed because toolkit is not installed
 
 instance Show ScriptResult where
     show ScriptSuccess            = "Script success."
-    show (ScriptChecksFailed msg) = "Script checks failed: " <> msg
-    show (ScriptFailure msg ec)   = mconcat ["Script failed with exit code ", show ec, " and the following message: ", msg]
+    show (ScriptChecksFailed msg) = unpack $ "Script checks failed: " <> msg
+    show (ScriptFailure msg ec)   = mconcat ["Script failed with exit code ", show ec, " and the following message: ", unpack msg]
     show (ToolkitNotInstalled tk) = (show tk) <> " toolkit not installed."
 
 
@@ -106,17 +101,8 @@ runTempScript spec@FigureSpec{..} = do
                                         , oScriptPath = scriptPath
                                         , oFigurePath = figurePath spec
                                         }
-            command_ <- T.unpack <$> (command toolkit outputSpec)
-            debug $ "Running command " <> (T.pack command_)
-
-            (ec, processOutput) <- liftIO 
-                                    $ readProcessInterleaved 
-                                    $ setStdout byteStringOutput
-                                    $ setStderr byteStringOutput 
-                                    $ shell command_
-
-            debug $ "Command output: " <> (decodeUtf8With lenientDecode $ toStrict processOutput)
-
+            command_ <- command toolkit outputSpec
+            (ec, _) <- runCommand command_
             case ec of
                 ExitSuccess      -> return   ScriptSuccess
                 ExitFailure code -> do
@@ -135,7 +121,7 @@ runTempScript spec@FigureSpec{..} = do
 toImage :: Format       -- ^ text format of the caption
         -> FigureSpec 
         -> Block
-toImage fmt spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig:" caption'
+toImage fmt spec = head . toList $ para $ imageWith attrs' (pack target') "fig:" caption'
     -- To render images as figures with captions, the target title
     -- must be "fig:"
     -- Janky? yes
@@ -143,7 +129,7 @@ toImage fmt spec = head . toList $ para $ imageWith attrs' (T.pack target') "fig
         attrs'       = blockAttrs spec
         target'      = figurePath spec
         withSource'  = withSource spec
-        srcLink      = link (T.pack $ replaceExtension target' ".txt") mempty "Source code"
+        srcLink      = link (pack $ replaceExtension target' ".txt") mempty "Source code"
         captionText  = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
         captionLinks = mconcat [" (", srcLink, ")"]
         caption'     = if withSource' then captionText <> captionLinks else captionText
