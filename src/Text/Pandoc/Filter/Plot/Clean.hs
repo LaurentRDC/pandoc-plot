@@ -44,12 +44,17 @@ import Text.Pandoc.Filter.Plot.Monad
 
 
 -- | Clean all output related to pandoc-plot. This includes output directories specified 
--- in the configuration and in the document/block. Note that *all* files in pandoc-plot output 
--- directories will be removed.
+-- in the configuration and in the document/block, as well as log files. 
+-- Note that *all* files in pandoc-plot output directories will be removed.
 --
 -- The cleaned directories are returned.
 cleanOutputDirs :: Walkable Block b => Configuration -> b -> IO [FilePath]
 cleanOutputDirs conf doc = do
+    
+    case logSink conf of 
+        LogFile fp -> removePathForcibly fp
+        _          -> return ()
+    
     directories <- sequence $ query (\b -> [outputDir b]) doc
     forM (nub . catMaybes $ directories) removeDir
     where

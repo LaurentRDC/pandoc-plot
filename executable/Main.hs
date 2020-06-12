@@ -116,7 +116,7 @@ commandParser = optional $ subparser $ mconcat
                 )  
             , command "clean" (
                 info (cleanP <**> helper) ( 
-                    progDesc "Clean output directories where figures from FILE might be stored.\
+                    progDesc "Clean output directories where figures from FILE and log files might be stored.\
                               \ WARNING: All files in those directories will be deleted." 
                     )
                 )

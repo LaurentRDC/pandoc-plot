@@ -56,7 +56,7 @@ library
           base               >= 4.11  && <5
         , bytestring
         , containers
-        , directory
+        , directory          >= 1.2.7 && < 2
         , filepath           >= 1.4   && < 2
         , hashable           >= 1     && < 2
         , pandoc             >= 2.8   && < 3
