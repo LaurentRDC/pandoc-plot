@@ -35,7 +35,7 @@ gnuplotCommand OutputSpec{..} = do
 gnuplotAvailable :: PlotM Bool
 gnuplotAvailable = do
     exe <- executable GNUPlot 
-    liftIO $ commandSuccess [st|#{exe} -h|]
+    commandSuccess [st|#{exe} -h|]
 
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script

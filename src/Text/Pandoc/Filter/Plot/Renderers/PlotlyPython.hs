@@ -36,7 +36,7 @@ plotlyPythonCommand OutputSpec{..} = do
 plotlyPythonAvailable :: PlotM Bool
 plotlyPythonAvailable = do
     exe <- executable PlotlyPython
-    liftIO $ commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
+    commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
 
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script

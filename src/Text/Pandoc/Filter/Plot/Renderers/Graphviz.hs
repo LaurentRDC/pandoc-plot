@@ -38,7 +38,7 @@ graphvizCommand OutputSpec{..} = do
 graphvizAvailable :: PlotM Bool
 graphvizAvailable = do
     exe <- executable Graphviz
-    liftIO $ commandSuccess [st|#{exe} -?|]
+    commandSuccess [st|#{exe} -?|]
 
 
 -- Graphviz export is entirely based on command-line arguments

@@ -28,9 +28,7 @@ import           Data.Text                     (Text, unpack)
 
 import           System.Directory              (findExecutable)
 import           System.Exit                   (ExitCode(..))
-import           System.Process.Typed          (runProcess, shell, 
-                                                setStdout, setStderr, 
-                                                nullStream)
+
 import           Text.Shakespeare.Text         (st)
 
 import           Text.Pandoc.Filter.Plot.Monad
@@ -38,12 +36,9 @@ import           Text.Pandoc.Filter.Plot.Monad
 
 -- | Check that the supplied command results in
 -- an exit code of 0 (i.e. no errors)
-commandSuccess :: Text -> IO Bool
+commandSuccess :: Text -> PlotM Bool
 commandSuccess s = do
-    ec <- runProcess 
-            $ setStdout nullStream 
-            $ setStderr nullStream 
-            $ shell (unpack s)
+    (ec, _) <- runCommand s
     return $ ec == ExitSuccess
 
 

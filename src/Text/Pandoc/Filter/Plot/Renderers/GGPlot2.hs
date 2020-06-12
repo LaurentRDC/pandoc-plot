@@ -36,7 +36,7 @@ ggplot2Command OutputSpec{..} = do
 ggplot2Available :: PlotM Bool
 ggplot2Available = do
     exe <- executable GGPlot2
-    liftIO $ commandSuccess [st|#{exe} -e 'library("ggplot2")'|]
+    commandSuccess [st|#{exe} -e 'library("ggplot2")'|]
 
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script

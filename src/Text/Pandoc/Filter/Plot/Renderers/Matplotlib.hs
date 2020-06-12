@@ -61,7 +61,7 @@ matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "tran
 matplotlibAvailable :: PlotM Bool
 matplotlibAvailable = do
     exe <- executable Matplotlib
-    liftIO $ commandSuccess [st|#{exe} -c "import matplotlib"|]
+    commandSuccess [st|#{exe} -c "import matplotlib"|]
 
 
 -- | Check if `matplotlib.pyplot.show()` calls are present in the script,

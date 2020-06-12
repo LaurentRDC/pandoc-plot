@@ -36,7 +36,7 @@ plotlyRCommand OutputSpec{..} = do
 plotlyRAvailable :: PlotM Bool
 plotlyRAvailable = do
     exe <- executable GGPlot2
-    liftIO $ commandSuccess [st|#{exe} -e 'library("plotly")'|]
+    commandSuccess [st|#{exe} -e 'library("plotly")'|]
 
 
 -- Based on the following documentation:

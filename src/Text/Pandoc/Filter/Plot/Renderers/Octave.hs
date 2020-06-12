@@ -36,7 +36,7 @@ octaveCommand OutputSpec{..} = do
 octaveAvailable :: PlotM Bool
 octaveAvailable = do
     exe <- executable Octave
-    liftIO $ commandSuccess [st|#{exe} -h|]
+    commandSuccess [st|#{exe} -h|]
 
 
 octaveCapture :: FigureSpec -> FilePath -> Script

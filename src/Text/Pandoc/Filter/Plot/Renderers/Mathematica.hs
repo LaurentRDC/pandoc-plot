@@ -35,7 +35,7 @@ mathematicaCommand OutputSpec{..} = do
 mathematicaAvailable :: PlotM Bool
 mathematicaAvailable = do
     exe <- executable Mathematica
-    liftIO $ commandSuccess [st|#{exe} -h|] -- TODO: test this
+    commandSuccess [st|#{exe} -h|] -- TODO: test this
 
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script
