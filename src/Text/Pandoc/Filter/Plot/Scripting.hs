@@ -59,7 +59,7 @@ runScriptIfNecessary spec = do
         other         -> return other
 
     where
-        logScriptResult ScriptSuccess = debug . pack . show $ ScriptSuccess 
+        logScriptResult ScriptSuccess = return () 
         logScriptResult r             = err   . pack . show $ r
 
 

@@ -39,7 +39,7 @@ import           Data.Text.Encoding          (decodeUtf8With)
 import           Data.Text.Encoding.Error    (lenientDecode)
 
 import           System.Exit                 (ExitCode (..))
-import           System.Process.Typed        ( readProcessInterleaved, shell
+import           System.Process.Typed        ( readProcessStderr, shell, nullStream
                                              , setStdout, setStderr, byteStringOutput
                                              )
 
@@ -63,19 +63,19 @@ runPlotM conf v =
 
 
 debug :: Text -> PlotM ()
-debug t = lift $ log Debug $ "DEBUG| " <> t
+debug t = lift $ log "DEBUG| " Debug t
 
 
 err :: Text -> PlotM ()
-err t = lift $ log Error $ "ERROR| " <> t
+err t = lift $ log "ERROR| " Error t
 
 
 warning :: Text -> PlotM ()
-warning t = lift $ log Warning $ "WARN | " <> t
+warning t = lift $ log "WARN | " Warning t
 
 
 info :: Text -> PlotM ()
-info t = lift $ log Info $ "INFO | " <> t
+info t = lift $ log "INFO | " Info t
 
 
 -- | Run a command within the @PlotM@ monad. Stdout and Stderr
@@ -83,14 +83,17 @@ info t = lift $ log Info $ "INFO | " <> t
 runCommand :: Text -> PlotM (ExitCode, Text)
 runCommand command = do
     (ec, processOutput') <- liftIO 
-                        $ readProcessInterleaved 
-                        $ setStdout byteStringOutput
+                        $ readProcessStderr 
+                        $ setStdout nullStream
                         $ setStderr byteStringOutput 
                         $ shell (unpack command)
     let processOutput = decodeUtf8With lenientDecode $ toStrict processOutput'
-    debug $ mconcat [ "Running command \n    "
-                    , command, "\n ended with exit code ", pack . show $ ec
-                    , " and output \n", processOutput] 
+    debug $ mconcat [ "Running command\n"
+                    , "    ", command, "\n"
+                    , "ended with exit code ", pack . show $ ec
+                    ,  if processOutput /= mempty then " and output\n" <> "    " <> processOutput else mempty
+                    , "\n"
+                    ] 
     return (ec, processOutput)
 
 

@@ -75,13 +75,17 @@ runLoggingM' v f m = do
     liftIO $ f t'
     return r
 
+
 -- | General logging function.
 -- Input text will be decomposed into lines, with each
--- line becoming a log line.
-log :: Verbosity -> Text -> LoggingM ()
-log v t = do
+-- line becoming a log line.    
+log :: Text       -- ^ Header  
+    -> Verbosity  
+    -> Text       -- ^ Message
+    -> LoggingM ()
+log h v t = do
     timestamp <- liftIO $ getSystemTime
-    tell [(v, timestamp, l <> newline) | l <- T.lines t]
+    tell [(v, timestamp, h <> l <> newline) | l <- T.lines t]
 
 
 newline :: Text
