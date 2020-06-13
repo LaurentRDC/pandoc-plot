@@ -29,11 +29,11 @@ import           Data.List                   (sortOn)
 import           Data.String                 (IsString(..))
 import           Data.Text                   (Text, unpack)
 import qualified Data.Text                   as T
-import qualified Data.Text.IO                as TIO
+import           Data.Text.IO                (hPutStr)
 import           Data.Time.Clock.System      (getSystemTime, SystemTime(..))
 import           Data.Yaml
 
-import           System.IO                   (stderr)
+import           System.IO                   (stderr, withFile, IOMode (AppendMode) )
 
 import           Prelude                     hiding (log, fst, snd)
 
@@ -59,8 +59,8 @@ type LoggingM = WriterT [LogMessage] IO
 
 runLoggingM :: Verbosity -> LogSink -> LoggingM a -> IO a
 runLoggingM Silent _       = runLoggingM' Silent $ mapM_ (return . trd)
-runLoggingM v StdErr       = runLoggingM' v $ mapM_ (TIO.hPutStrLn stderr . trd)
-runLoggingM v (LogFile fp) = runLoggingM' v $ mapM_ (TIO.appendFile fp . trd)
+runLoggingM v StdErr       = runLoggingM' v $ mapM_ (hPutStr stderr . trd)
+runLoggingM v (LogFile fp) = runLoggingM' v $ mapM_ (\m -> withFile fp AppendMode $ \h -> hPutStr h (trd m))
 
 
 runLoggingM' :: Verbosity                -- ^ Minimum verbosity to keep
@@ -85,11 +85,7 @@ log :: Text       -- ^ Header
     -> LoggingM ()
 log h v t = do
     timestamp <- liftIO $ getSystemTime
-    tell [(v, timestamp, h <> l <> newline) | l <- T.lines t]
-
-
-newline :: Text
-newline = "\n"
+    tell [(v, timestamp, h <> l <> "\n") | l <- T.lines t]
 
 
 instance IsString Verbosity where
@@ -107,11 +103,14 @@ instance FromJSON Verbosity where
     parseJSON (String t) = pure $ fromString . unpack $ t
     parseJSON _ = fail $ "Could not parse the logging verbosity."
 
+
 fst :: (a,b,c) -> a
 fst (a,_,_) = a
 
+
 snd :: (a,b,c) -> b
 snd (_,b,_) = b
+
 
 trd :: (a,b,c) -> c
 trd (_,_,c) = c
