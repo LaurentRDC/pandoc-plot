@@ -274,9 +274,9 @@ Available options:
 
 Available commands:
   toolkits                 Show information on toolkits and exit.
-  clean                    Clean output directories where figures from FILE
-                           might be stored. WARNING: All files in those
-                           directories will be deleted.
+  clean                    Clean output directories where figures from FILE and
+                           log files might be stored. WARNING: All files in
+                           those directories will be deleted.
   write-example-config     Write example configuration to a file and exit.
 
 More information can be found via the manual (pandoc-plot --manual) or the repository README, located at
@@ -541,6 +541,26 @@ matlabplot:
     web page. High-resolution figures are not affected. For example,
     `transparent: true`.
 
+#### Logging
+
+If you are running `pandoc-plot` on a large document, you might want to
+turn on logging. You can do so via the configuration file as follows:
+
+``` yaml
+logging:
+    # Possible verbosity values: debug, error, warning, info, silent
+    # debug level shows all messages
+    # error level shows all but debug messages, etc.
+    verbosity: info
+    
+    # OPTIONAL: log to file
+    # Remove line below to log to stderr
+    filepath: log.txt
+```
+
+By default, `pandoc-plot` logs warnings and errors to the standard error
+stream only.
+
 ### Other commands
 
 #### Finding installed toolkits
@@ -579,8 +599,8 @@ Here is the full help text for the `clean` command:
 
 ``` bash
 Usage: pandoc-plot.exe clean [--config PATH] FILE
-  Clean output directories where figures from FILE might be stored. WARNING: All
-  files in those directories will be deleted.
+  Clean output directories where figures from FILE and log files might be
+  stored. WARNING: All files in those directories will be deleted.
 
 Available options:
   --config PATH            Path to optional configuration file.
