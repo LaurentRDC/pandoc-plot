@@ -23,6 +23,7 @@ Do not edit manually
   - [Detailed usage](#detailed-usage)
       - [As a filter](#as-a-filter)
       - [Parameters and options](#parameters-and-options)
+      - [Syntax](#syntax)
       - [Configuration](#configuration)
       - [Other commands](#other-commands)
   - [Installation](#installation)
@@ -311,7 +312,8 @@ the toolkit you want to use. `pandoc-plot` will run the code and capture
 the figure output. There can only be **one** figure per code block.
 
 There are parameters that affect the figure that will be included in
-your document. Here are all the possible general parameters:
+your document. Here are all the possible general parameters, in Markdown
+syntax:
 
 ```` markdown
   ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
@@ -319,9 +321,11 @@ your document. Here are all the possible general parameters:
   ```
 ````
 
+See [Syntax](#syntax) for other input formats, such as Latex.
+
   - `cls` must be one of the following: `matplotlib`, `matlabplot`,
     `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`,
-    `gnuplot`
+    `gnuplot`, or `graphviz`.
 
 All following parameters are optional, with their default values
 controlled by the [configuration](#configuration)
@@ -354,6 +358,42 @@ controlled by the [configuration](#configuration)
     raw LaTeX would be parsed correctly provided that
     `caption_format=markdown+raw_tex`. See Pandoc’s guide on [Specifying
     formats](https://pandoc.org/MANUAL.html#specifying-formats).
+
+### Syntax
+
+#### Markdown
+
+```` markdown
+  ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
+  # script content
+  ```
+````
+
+Simple example using the `matplotlib` toolkit:
+
+```` markdown
+  ```{.matplotlib caption="Figure" source=true}
+  # script content
+  ```
+````
+
+#### LaTeX
+
+Note that the `minted` LaTeX package need not be installed.
+
+``` latex
+\begin{minted}[directory=(path), caption=(text), format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP), source=(true|false), preamble=(path), dpi=(integer), executable=(path), caption_format=(text)]{cls}
+...
+\end{minted}
+```
+
+Simple example using the `ggplot2` toolkit:
+
+``` latex
+\begin{minted}[format=png, caption=This is a figure]{ggplot2}
+...
+\end{minted}
+```
 
 #### Code highlighting
 
