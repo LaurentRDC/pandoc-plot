@@ -22,8 +22,8 @@ Do not edit manually
         pandoc-crossref](#compatibility-with-pandoc-crossref)
   - [Detailed usage](#detailed-usage)
       - [As a filter](#as-a-filter)
-      - [Parameters and options](#parameters-and-options)
       - [Syntax](#syntax)
+      - [Parameters and options](#parameters-and-options)
       - [Configuration](#configuration)
       - [Other commands](#other-commands)
   - [Installation](#installation)
@@ -305,23 +305,55 @@ so:
 pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
 ```
 
-### Parameters and options
+### Syntax
 
-`pandoc-plot` looks for code blocks with a specific class, depending on
-the toolkit you want to use. `pandoc-plot` will run the code and capture
-the figure output. There can only be **one** figure per code block.
+The syntax for code blocks in documents is shown below. `pandoc-plot`
+looks for code blocks with a specific class, depending on the toolkit
+you want to use. `pandoc-plot` will run the code and capture the figure
+output. There can only be **one** figure per code block.
+
+The possible parameters and options are described in [further
+below](#parameters-and-options).
+
+#### Markdown
+
+```` markdown
+  ```{.cls param1=value1 param2=value2 ...}
+  # script content
+  ```
+````
+
+#### LaTeX
+
+Note that the `minted` LaTeX package need not be installed.
+
+``` latex
+\begin{minted}[param1=value1, param2=value2, ...]{cls}
+...
+\end{minted}
+```
+
+### Parameters and options
 
 There are parameters that affect the figure that will be included in
 your document. Here are all the possible general parameters, in Markdown
 syntax:
 
 ```` markdown
-  ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
+  ```{.cls 
+      .language
+      directory=(path) 
+      caption=(text) 
+      format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) 
+      source=(true|false) 
+      preamble=(path) 
+      dpi=(integer) 
+      executable=(path) 
+      caption_format=(text)
+      }
   # script content
   ```
 ````
-
-See [Syntax](#syntax) for other input formats, such as Latex.
 
   - `cls` must be one of the following: `matplotlib`, `matlabplot`,
     `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`,
@@ -330,6 +362,10 @@ See [Syntax](#syntax) for other input formats, such as Latex.
 All following parameters are optional, with their default values
 controlled by the [configuration](#configuration)
 
+  - `language` specifies the programming language used in this block.
+    This parameter is ignored by `pandoc-plot`, but your text editor may
+    use it to highlight code. See [Code
+    highlighting](#code-highlighting) below.
   - `directory` is a path to the directory where the figure and source
     code will be saved. You cannot control the file name. This path is
     either absolute, or relative from the working directory where you
@@ -359,42 +395,6 @@ controlled by the [configuration](#configuration)
     `caption_format=markdown+raw_tex`. See Pandoc’s guide on [Specifying
     formats](https://pandoc.org/MANUAL.html#specifying-formats).
 
-### Syntax
-
-#### Markdown
-
-```` markdown
-  ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
-  # script content
-  ```
-````
-
-Simple example using the `matplotlib` toolkit:
-
-```` markdown
-  ```{.matplotlib caption="Figure" source=true}
-  # script content
-  ```
-````
-
-#### LaTeX
-
-Note that the `minted` LaTeX package need not be installed.
-
-``` latex
-\begin{minted}[directory=(path), caption=(text), format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP), source=(true|false), preamble=(path), dpi=(integer), executable=(path), caption_format=(text)]{cls}
-...
-\end{minted}
-```
-
-Simple example using the `ggplot2` toolkit:
-
-``` latex
-\begin{minted}[format=png, caption=This is a figure]{ggplot2}
-...
-\end{minted}
-```
-
 #### Code highlighting
 
 If your editor supports code highlighting in code blocks, you can also
@@ -406,21 +406,29 @@ include the programming language. In Markdown:
   ```
 ````
 
-For example, for Matplotlib plots:
+or Latex:
+
+``` latex
+  \begin{minted}[(options)]{language, cls}
+  # script content
+  \end{minted}
+```
+
+For example, for GGPlot2 figures:
 
 ```` markdown
-  ```{.python .matplotlib}
+  ```{.r .ggplot2 caption=Highlighted code block}
   # script content
   ```
 ````
 
-or for GGPlot2 figures:
+or (Latex):
 
-```` markdown
-  ```{.r .ggplot2}
+``` latex
+  \begin{minted}[caption=Highlighted code block]{r, ggplot2}
   # script content
-  ```
-````
+  \end{minted}
+```
 
 This way, you benefit from code highlighting *and* `pandoc-plot`.
 

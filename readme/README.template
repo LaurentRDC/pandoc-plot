@@ -201,48 +201,16 @@ You can chain other filters with it (e.g., [`pandoc-crossref`](https://github.co
 pandoc --filter pandoc-plot --filter pandoc-crossref -i input.md -o output.html
 ```
 
-### Parameters and options
-
-`pandoc-plot` looks for code blocks with a specific class, depending on the toolkit you want to use. `pandoc-plot` will run the code and capture the figure output. There can only be **one** figure per code block.
-
-There are parameters that affect the figure that will be included in your document. Here are all the possible general parameters, in Markdown syntax:
-
-````markdown
-  ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
-  # script content
-  ```
-
-````
-
-See [Syntax](#syntax) for other input formats, such as Latex.
-
-* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, or `graphviz`.
-
-All following parameters are optional, with their default values controlled by the [configuration](#configuration)
-
-* `directory` is a path to the directory where the figure and source code will be saved. You cannot control the file name. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
-* `caption` is the caption text. The format of the caption is specified in the `caption_format` parameter, described below.
-* `format` is the desired filetype for the resulting figure. Possible values for `format` are [`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`, `TIF`, `WEBP`]. Not all toolkits support all formats. See `pandoc-plot toolkits` for toolkit-specific information regarding save formats.
-* `source` is a boolean toggle that determines whether the source code should be linked in the caption or not. Possible values are [`true`, `True`, `false`, `False`].
-* `preamble` is a path to a script that will be included as a preamble to the content of the code block. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
-* `dpi` is the pixel density of the figure in dots-per-inch. Possible values are positive integers. Not all toolkits respect this.
-* `executable` is a path to the executable to use (e.g. `C:\\python3.exe`) or the name of the executable (e.g. `python3`).
-* `caption_format` is the text format of the caption. Possible values are exactly the same as `pandoc`'s format specification, usually `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with raw LaTeX would be parsed correctly provided that `caption_format=markdown+raw_tex`. See Pandoc's guide on [Specifying formats](https://pandoc.org/MANUAL.html#specifying-formats).
-
 ### Syntax
+
+The syntax for code blocks in documents is shown below. `pandoc-plot` looks for code blocks with a specific class, depending on the toolkit you want to use. `pandoc-plot` will run the code and capture the figure output. There can only be **one** figure per code block.
+
+The possible parameters and options are described in [further below](#parameters-and-options).
 
 #### Markdown
 
 ````markdown
-  ```{.cls directory=(path) caption=(text) format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) source=(true|false) preamble=(path) dpi=(integer) executable=(path) caption_format=(text)}
-  # script content
-  ```
-````
-
-Simple example using the `matplotlib` toolkit:
-
-````markdown
-  ```{.matplotlib caption="Figure" source=true}
+  ```{.cls param1=value1 param2=value2 ...}
   # script content
   ```
 ````
@@ -251,18 +219,45 @@ Simple example using the `matplotlib` toolkit:
 
 Note that the `minted` LaTeX package need not be installed.
 ````latex
-\begin{minted}[directory=(path), caption=(text), format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP), source=(true|false), preamble=(path), dpi=(integer), executable=(path), caption_format=(text)]{cls}
+\begin{minted}[param1=value1, param2=value2, ...]{cls}
 ...
 \end{minted}
 ````
 
-Simple example using the `ggplot2` toolkit:
+### Parameters and options
 
-````latex
-\begin{minted}[format=png, caption=This is a figure]{ggplot2}
-...
-\end{minted}
+There are parameters that affect the figure that will be included in your document. Here are all the possible general parameters, in Markdown syntax:
+
+````markdown
+  ```{.cls 
+      .language
+      directory=(path) 
+      caption=(text) 
+      format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) 
+      source=(true|false) 
+      preamble=(path) 
+      dpi=(integer) 
+      executable=(path) 
+      caption_format=(text)
+      }
+  # script content
+  ```
+
 ````
+
+* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, or `graphviz`.
+
+All following parameters are optional, with their default values controlled by the [configuration](#configuration)
+
+* `language` specifies the programming language used in this block. This parameter is ignored by `pandoc-plot`, but your text editor may use it to highlight code. See [Code highlighting](#code-highlighting) below.
+* `directory` is a path to the directory where the figure and source code will be saved. You cannot control the file name. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
+* `caption` is the caption text. The format of the caption is specified in the `caption_format` parameter, described below.
+* `format` is the desired filetype for the resulting figure. Possible values for `format` are [`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`, `TIF`, `WEBP`]. Not all toolkits support all formats. See `pandoc-plot toolkits` for toolkit-specific information regarding save formats.
+* `source` is a boolean toggle that determines whether the source code should be linked in the caption or not. Possible values are [`true`, `True`, `false`, `False`].
+* `preamble` is a path to a script that will be included as a preamble to the content of the code block. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
+* `dpi` is the pixel density of the figure in dots-per-inch. Possible values are positive integers. Not all toolkits respect this.
+* `executable` is a path to the executable to use (e.g. `C:\\python3.exe`) or the name of the executable (e.g. `python3`).
+* `caption_format` is the text format of the caption. Possible values are exactly the same as `pandoc`'s format specification, usually `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with raw LaTeX would be parsed correctly provided that `caption_format=markdown+raw_tex`. See Pandoc's guide on [Specifying formats](https://pandoc.org/MANUAL.html#specifying-formats).
 
 #### Code highlighting
 
@@ -274,20 +269,28 @@ If your editor supports code highlighting in code blocks, you can also include t
   ```
 ````
 
-For example, for Matplotlib plots:
+or Latex:
+
+````latex
+  \begin{minted}[(options)]{language, cls}
+  # script content
+  \end{minted}
+````
+
+For example, for GGPlot2 figures:
 
 ````markdown
-  ```{.python .matplotlib}
+  ```{.r .ggplot2 caption=Highlighted code block}
   # script content
   ```
 ````
 
-or for GGPlot2 figures:
+or (Latex):
 
-````markdown
-  ```{.r .ggplot2}
+````latex
+  \begin{minted}[caption=Highlighted code block]{r, ggplot2}
   # script content
-  ```
+  \end{minted}
 ````
 
 This way, you benefit from code highlighting *and* `pandoc-plot`.
