@@ -3,8 +3,7 @@
 
 module Common where
 
-import           Control.Monad                    (unless)
-import           Control.Monad.Reader
+import           Control.Monad                    (unless, when)
 
 import           Data.List                        (isInfixOf, isSuffixOf)
 import           Data.Monoid                      ((<>))
