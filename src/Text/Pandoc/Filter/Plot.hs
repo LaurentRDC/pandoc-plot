@@ -89,8 +89,7 @@ module Text.Pandoc.Filter.Plot (
     , readDoc
     ) where
 
-import Control.Concurrent.Async          (mapConcurrently)
-
+import Control.Concurrent.Async.Lifted   (mapConcurrently)
 import Data.Text                         (Text, unpack)
 
 import Text.Pandoc.Definition            (Pandoc(..), Block)
@@ -108,8 +107,9 @@ import Text.Pandoc.Filter.Plot.Internal
 plotTransform :: Configuration -- ^ Configuration for default values
               -> Pandoc        -- ^ Input document
               -> IO Pandoc
-plotTransform conf (Pandoc meta blocks) =
-    mapConcurrently (makePlot conf) blocks >>= return . Pandoc meta
+plotTransform conf (Pandoc meta blocks) = 
+    runPlotM conf $ mapConcurrently make blocks 
+        >>= return . Pandoc meta
 
 
 -- | Highest-level function that can be walked over a Pandoc tree.
@@ -127,33 +127,26 @@ makePlot :: Walkable Block a
          => Configuration -- ^ Configuration for default values
          -> a             -- ^ Input block or document
          -> IO a
-makePlot conf = walkM (make conf)
+makePlot conf = runPlotM conf . walkM make
 
 
-make :: Configuration
-     -> Block 
-     -> IO Block
-make conf blk = 
-    either (const (return blk) ) return =<< makeEither conf blk
+make :: Block -> PlotM Block
+make blk = either (const (return blk) ) return =<< makeEither blk
 
 
-makeEither :: Configuration 
-           -> Block 
-           -> IO (Either PandocPlotError Block)
-makeEither conf block = runPlotM conf (go block)
+makeEither :: Block -> PlotM (Either PandocPlotError Block)
+makeEither block = 
+    parseFigureSpec block 
+        >>= maybe 
+                (return $ Right block)
+                (\s -> runScriptIfNecessary s >>= handleResult s)
     where
-        go :: Block -> PlotM (Either PandocPlotError Block)
-        go blk = parseFigureSpec blk
-                    >>= maybe
-                        (return $ Right blk)
-                        (\s -> runScriptIfNecessary s >>= handleResult s)
-            where
-                -- Logging of errors has been taken care of in @runScriptIfNecessary@ 
-                handleResult :: FigureSpec -> ScriptResult -> PlotM (Either PandocPlotError Block)
-                handleResult spec ScriptSuccess          = return $ Right $ toImage (captionFormat conf) spec
-                handleResult _ (ScriptFailure msg code)  = return $ Left (ScriptRuntimeError msg code) 
-                handleResult _ (ScriptChecksFailed msg)  = return $ Left (ScriptChecksFailedError msg)
-                handleResult _ (ToolkitNotInstalled tk') = return $ Left (ToolkitNotInstalledError tk') 
+        -- Logging of errors has been taken care of in @runScriptIfNecessary@ 
+        handleResult :: FigureSpec -> ScriptResult -> PlotM (Either PandocPlotError Block)
+        handleResult spec ScriptSuccess = ask >>= \c -> return $ Right $ toImage (captionFormat c) spec
+        handleResult _ (ScriptFailure msg code)       = return $ Left (ScriptRuntimeError msg code) 
+        handleResult _ (ScriptChecksFailed msg)       = return $ Left (ScriptChecksFailedError msg)
+        handleResult _ (ToolkitNotInstalled tk')      = return $ Left (ToolkitNotInstalledError tk') 
 
 
 data PandocPlotError

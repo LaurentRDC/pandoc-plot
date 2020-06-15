@@ -61,7 +61,7 @@ library
         , hashable           >= 1     && < 2
         , pandoc             >= 2.8   && < 3
         , pandoc-types       >= 1.20  && < 2
-        , async              >= 2     && < 3
+        , lifted-async       >= 0.10  && < 1
         , shakespeare        >= 2.0   && < 3
         , text               >= 1     && < 2
         , time               >= 1     && < 2

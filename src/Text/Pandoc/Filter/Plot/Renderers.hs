@@ -30,7 +30,7 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , OutputSpec(..)
 ) where
 
-import           Control.Concurrent.Async                      (forConcurrently)
+import           Control.Concurrent.Async.Lifted               (forConcurrently)
 
 import           Data.List                                     ((\\))
 import           Data.Map.Strict                               (Map)
@@ -175,9 +175,8 @@ unavailableToolkits conf = runPlotM conf unavailableToolkitsM
 -- | Monadic version of @availableToolkits@.
 availableToolkitsM :: PlotM [Toolkit]
 availableToolkitsM = do
-    conf <- ask
-    mtks <- liftIO $ forConcurrently toolkits $  \tk -> do
-        available <- runPlotM conf $ toolkitAvailable tk
+    mtks <- forConcurrently toolkits $  \tk -> do
+        available <- toolkitAvailable tk
         if available
             then return $ Just tk
             else return Nothing
