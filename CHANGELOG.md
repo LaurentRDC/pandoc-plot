@@ -19,7 +19,7 @@ logging:
     filepath: log.txt
 ````
 
-* Removed dependencies `turtle`, `temporary`, `deepseq`, and `data-default-class`, resulting in improved build times by ~10%!
+* Removed dependencies `turtle`, `temporary`, `deepseq`, and `data-default-class`, resulting in improved build times by ~10%, and makes the executable smaller by 15-20%!
 
 Release 0.6.1.0
 ---------------
