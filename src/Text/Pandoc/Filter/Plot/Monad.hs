@@ -13,6 +13,7 @@ This module defines the @PlotM@ monad and related capabilities.
 module Text.Pandoc.Filter.Plot.Monad (
       Configuration(..)
     , PlotM
+    , RuntimeEnv(..)
     , runPlotM
     -- * Running external commands
     , runCommand
@@ -27,14 +28,19 @@ module Text.Pandoc.Filter.Plot.Monad (
     , liftIO
     , ask
     , asks
+    , asksConfig
     -- * Base types
     , module Text.Pandoc.Filter.Plot.Monad.Types
 ) where
+
+
+import           Control.Concurrent.Chan     (writeChan)
 
 import           Control.Monad.Reader
 
 import           Data.ByteString.Lazy        (toStrict)
 import           Data.Text                   (Text, pack, unpack)
+import qualified Data.Text                   as T
 import           Data.Text.Encoding          (decodeUtf8With)
 import           Data.Text.Encoding.Error    (lenientDecode)
 
@@ -47,35 +53,58 @@ import           Text.Pandoc.Definition      (Format(..))
 
 import           Prelude                     hiding (log, fst, snd)
 
-import Text.Pandoc.Filter.Plot.Monad.Logging
+import Text.Pandoc.Filter.Plot.Monad.Logging as Log
 import Text.Pandoc.Filter.Plot.Monad.Types
 
+
 -- | pandoc-plot monad
-type PlotM a = ReaderT Configuration LoggingM a
+type PlotM a = ReaderT RuntimeEnv IO a
 
 
--- | Evaluate a @PlotM@ action 
+data RuntimeEnv = 
+    RuntimeEnv { envConfig :: Configuration
+               , envLogger :: Logger
+               }
+
+-- | Get access to configuration within the @PlotM@ monad.
+asksConfig :: (Configuration -> a) -> PlotM a
+asksConfig f = asks (f . envConfig)
+
+
+-- | Evaluate a @PlotM@ action.
 runPlotM :: Configuration -> PlotM a -> IO a
 runPlotM conf v = 
     let verbosity = logVerbosity conf
         sink      = logSink conf 
-    in runLoggingM verbosity sink (runReaderT v conf)
+    in withLogger verbosity sink $ 
+        \logger -> runReaderT v (RuntimeEnv conf logger)
 
 
 debug :: Text -> PlotM ()
-debug t = lift $ log "DEBUG| " Debug t
+debug t = log "DEBUG| " Debug t
 
 
 err :: Text -> PlotM ()
-err t = lift $ log "ERROR| " Error t
+err t = log "ERROR| " Error t
 
 
 warning :: Text -> PlotM ()
-warning t = lift $ log "WARN | " Warning t
+warning t = log "WARN | " Warning t
 
 
 info :: Text -> PlotM ()
-info t = lift $ log "INFO | " Info t
+info t = log "INFO | " Info t
+
+
+-- | General purpose logging. Messages with verbosity level lower than
+-- should be logged are ignored.
+log :: Text -> Verbosity -> Text -> PlotM ()
+log h v t = do
+    logger <- asks envLogger
+    when (v >= lVerbosity logger) $ 
+        liftIO $ do
+            let lines' = [l' | l' <- T.lines t]
+            forM_ lines' $ \l -> writeChan (lChannel logger) (Just (h <> l <> "\n"))
 
 
 -- | Run a command within the @PlotM@ monad. Stdout and Stderr

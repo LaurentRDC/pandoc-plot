@@ -40,7 +40,7 @@ matlabCommand OutputSpec{..} = do
 -- Therefore, we cannot rely on this behavior to know if matlab is present, 
 -- like other toolkits.
 matlabAvailable :: PlotM Bool
-matlabAvailable = asks matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <> exeExtension))
+matlabAvailable = asksConfig matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <> exeExtension))
 
 
 matlabCapture :: FigureSpec -> FilePath -> Script

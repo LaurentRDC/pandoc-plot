@@ -56,15 +56,15 @@ tryToFindExe fp = findExecutable fp >>= maybe (return fp) return
 -- | Path to the executable of a toolkit. If the executable can
 -- be found, then it will be the full path to it.
 executable :: Toolkit -> PlotM FilePath
-executable Matplotlib   = asks matplotlibExe   >>= liftIO . tryToFindExe
-executable PlotlyPython = asks plotlyPythonExe >>= liftIO . tryToFindExe
-executable PlotlyR      = asks plotlyRExe      >>= liftIO . tryToFindExe
-executable Matlab       = asks matlabExe       >>= liftIO . tryToFindExe
-executable Mathematica  = asks mathematicaExe  >>= liftIO . tryToFindExe
-executable Octave       = asks octaveExe       >>= liftIO . tryToFindExe
-executable GGPlot2      = asks ggplot2Exe      >>= liftIO . tryToFindExe
-executable GNUPlot      = asks gnuplotExe      >>= liftIO . tryToFindExe
-executable Graphviz     = asks graphvizExe     >>= liftIO . tryToFindExe
+executable Matplotlib   = asksConfig matplotlibExe   >>= liftIO . tryToFindExe
+executable PlotlyPython = asksConfig plotlyPythonExe >>= liftIO . tryToFindExe
+executable PlotlyR      = asksConfig plotlyRExe      >>= liftIO . tryToFindExe
+executable Matlab       = asksConfig matlabExe       >>= liftIO . tryToFindExe
+executable Mathematica  = asksConfig mathematicaExe  >>= liftIO . tryToFindExe
+executable Octave       = asksConfig octaveExe       >>= liftIO . tryToFindExe
+executable GGPlot2      = asksConfig ggplot2Exe      >>= liftIO . tryToFindExe
+executable GNUPlot      = asksConfig gnuplotExe      >>= liftIO . tryToFindExe
+executable Graphviz     = asksConfig graphvizExe     >>= liftIO . tryToFindExe
 
 
 -- | Internal description of all information 
