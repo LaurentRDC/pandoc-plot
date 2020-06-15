@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LightSource, Normalize
 
+import time
+time.sleep(0.25)
 
 def display_colorbar():
     """Display a correct numeric colorbar for a shaded plot."""

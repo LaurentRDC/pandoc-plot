@@ -4,6 +4,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import time
+time.sleep(0.25)
 
 # setup the figure and axes
 fig = plt.figure(figsize=(8, 3))

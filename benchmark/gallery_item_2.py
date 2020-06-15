@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
+import time
+time.sleep(0.25)
+
 
 #-----------------------------------------------------------------------------
 # Analytical test function

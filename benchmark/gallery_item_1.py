@@ -3,6 +3,9 @@
 #       
 import matplotlib.pyplot as plt
 
+import time
+time.sleep(0.25)
+
 # Pie chart, where the slices will be ordered and plotted counter-clockwise:
 labels = 'Frogs', 'Hogs', 'Dogs', 'Logs'
 sizes = [15, 30, 45, 10]
