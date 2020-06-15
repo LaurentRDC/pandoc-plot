@@ -1,4 +1,4 @@
-resolver: lts-15.16 # GHC 8.8.3
+resolver: lts-16.0 # GHC 8.8.3
 
 packages:
 - .
