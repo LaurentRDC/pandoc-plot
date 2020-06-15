@@ -21,7 +21,7 @@ main =
     ]
 
 plotConfig :: Configuration
-plotConfig = defaultConfiguration {logVerbosity=Debug, logSink = LogFile "here.txt"}
+plotConfig = defaultConfiguration {logVerbosity=Silent, logSink =StdErr}
 
 cleanupEnv :: IO ()
 cleanupEnv = cleanOutputDirs plotConfig benchDoc >> return ()
