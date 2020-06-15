@@ -4,7 +4,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 Release 0.7.0.0
 ---------------
-
+* Added documentation on using `pandoc-plot` with LaTeX documents as well.
 * Added preliminary support for logging to `pandoc-plot`. You can turn on this feature in the configuration as follows:
 
 ````yaml
@@ -19,7 +19,7 @@ logging:
     filepath: log.txt
 ````
 
-* Removed dependencies `turtle`, `temporary`, `deepseq`, and `data-default-class`
+* Removed dependencies `turtle`, `temporary`, `deepseq`, and `data-default-class`, resulting in improved build times by ~10%!
 
 Release 0.6.1.0
 ---------------
