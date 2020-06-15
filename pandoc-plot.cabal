@@ -122,7 +122,7 @@ benchmark benchmark-pandoc-plot
     build-depends:   base
                    , pandoc-plot
                    , pandoc-types
-                   , criterion          >= 1.0 && < 1.6
+                   , criterion          >= 1.0 && < 2
                    , template-haskell   > 2.7 && < 3
                    , text
     ghc-options:   -Wall -Wcompat -rtsopts -O2 -threaded -with-rtsopts=-N

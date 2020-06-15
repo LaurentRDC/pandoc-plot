@@ -19,8 +19,8 @@ galleryItem fp = do
         strToExp :: String -> Q Exp
         strToExp s = return $ VarE 'fromString `AppE` LitE (StringL s)
 
-galleryItem1 :: Q Exp
+galleryItem1, galleryItem2, galleryItem3, galleryItem4 :: Q Exp
 galleryItem1 = galleryItem "benchmark/gallery_item_1.py"
-
-galleryItem2 :: Q Exp
 galleryItem2 = galleryItem "benchmark/gallery_item_2.py"
+galleryItem3 = galleryItem "benchmark/gallery_item_3.py"
+galleryItem4 = galleryItem "benchmark/gallery_item_4.py"
