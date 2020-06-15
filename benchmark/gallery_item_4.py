@@ -1,6 +1,7 @@
 # Example from
 #   https://matplotlib.org/gallery/specialty_plots/advanced_hillshading.html#sphx-glr-gallery-specialty-plots-advanced-hillshading-py
 #
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LightSource, Normalize
 
