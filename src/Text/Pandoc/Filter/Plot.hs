@@ -108,8 +108,7 @@ plotTransform :: Configuration -- ^ Configuration for default values
               -> Pandoc        -- ^ Input document
               -> IO Pandoc
 plotTransform conf (Pandoc meta blocks) = 
-    runPlotM conf $ mapConcurrently make blocks 
-        >>= return . Pandoc meta
+    runPlotM conf $ mapConcurrently make blocks >>= return . Pandoc meta
 
 
 -- | Highest-level function that can be walked over a Pandoc tree.
@@ -130,10 +129,13 @@ makePlot :: Walkable Block a
 makePlot conf = runPlotM conf . walkM make
 
 
+-- | Try to process the block with `pandoc-plot`. If a failure happens (or the block)
+-- was not meant to become a figure, return the block as-is.
 make :: Block -> PlotM Block
 make blk = either (const (return blk) ) return =<< makeEither blk
 
 
+-- | Try to process the block with `pandoc-plot`, documenting the error.
 makeEither :: Block -> PlotM (Either PandocPlotError Block)
 makeEither block = 
     parseFigureSpec block 
