@@ -64,10 +64,9 @@ library
         , lifted-async       >= 0.10  && < 1
         , shakespeare        >= 2.0   && < 3
         , text               >= 1     && < 2
-        , time               >= 1     && < 2
         , typed-process      >= 0.2.1 && < 1
         , yaml               >= 0.8   && < 1
-        , mtl                >= 2.2   && < 2.3
+        , mtl                >= 2.2   && < 3
     default-language: Haskell2010
 
 executable pandoc-plot
