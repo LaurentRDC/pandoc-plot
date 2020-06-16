@@ -80,25 +80,18 @@ runPlotM conf v =
         \logger -> runReaderT v (RuntimeEnv conf logger)
 
 
-debug :: Text -> PlotM ()
-debug t = log "DEBUG| " Debug t
+debug, err, warning, info :: Text -> PlotM ()
+debug     = log "DEBUG| " Debug 
+err       = log "ERROR| " Error 
+warning   = log "WARN | " Warning 
+info      = log "INFO | " Info 
 
 
-err :: Text -> PlotM ()
-err t = log "ERROR| " Error t
-
-
-warning :: Text -> PlotM ()
-warning t = log "WARN | " Warning t
-
-
-info :: Text -> PlotM ()
-info t = log "INFO | " Info t
-
-
--- | General purpose logging. Messages with verbosity level lower than
--- should be logged are ignored.
-log :: Text -> Verbosity -> Text -> PlotM ()
+-- | General purpose logging. 
+log :: Text      -- ^ Header.
+    -> Verbosity -- ^ Verbosity of the message.
+    -> Text      -- ^ Message (can be multiple lines).
+    -> PlotM ()
 log h v t = do
     logger <- asks envLogger
     when (v >= lVerbosity logger) $ 
@@ -107,8 +100,9 @@ log h v t = do
             forM_ lines' $ \l -> writeChan (lChannel logger) (Just (h <> l <> "\n"))
 
 
--- | Run a command within the @PlotM@ monad. Stdout and Stderr
--- are read and decoded. Logging happens at the debug level.
+-- | Run a command within the @PlotM@ monad. Stderr stream
+-- is read and decoded, while Stdout is ignored. 
+-- Logging happens at the debug level.
 runCommand :: Text -> PlotM (ExitCode, Text)
 runCommand command = do
     (ec, processOutput') <- liftIO 
