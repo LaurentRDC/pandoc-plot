@@ -131,7 +131,7 @@ runCommand command = do
 --     ---
 --     title: My document
 --     author: John Doe
---     plot-configuration: /path/to/file.yml
+--     plot-configuration: path\to\file.yml
 --     ---     
 -- @
 --
