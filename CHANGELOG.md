@@ -5,7 +5,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 0.7.1.0
 ---------------
 
-* Added multi-threaded logging.
+* Better multi-threaded logging. Only one thread (the logging thread) performs IO on the log file. This prevents hang-ups when working on large documents. 
 
 Release 0.7.0.0
 ---------------
