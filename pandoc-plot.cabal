@@ -20,10 +20,6 @@ extra-source-files:
     stack.yaml
     example-config.yml
 
-    tests/fixtures/*.yml
-    tests/includes/*
-    tests/integration.md
-
 source-repository head
     type: git
     location: https://github.com/LaurentRDC/pandoc-plot
