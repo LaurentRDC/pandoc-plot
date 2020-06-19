@@ -33,7 +33,6 @@ module Text.Pandoc.Filter.Plot.Monad.Types (
 import           Data.Char              (toLower)
 import           Data.Hashable          (hash)
 import           Data.List              (intersperse)
-import           Data.Semigroup         (Semigroup (..))
 import           Data.String            (IsString (..))
 import           Data.Text              (Text)
 import           Data.Yaml
