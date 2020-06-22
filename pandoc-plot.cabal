@@ -1,6 +1,6 @@
+cabal-version:  2.2
 name:           pandoc-plot
 version:        0.7.1.0
-cabal-version:  >= 1.12
 synopsis:       A Pandoc filter to include figures generated from code blocks using your plotting toolkit of choice.
 description:    A Pandoc filter to include figures generated from code blocks. Keep the document and code in the same location. Output is captured and included as a figure.
 category:       Text
@@ -9,7 +9,7 @@ homepage:       https://github.com/LaurentRDC/pandoc-plot#readme
 bug-reports:    https://github.com/LaurentRDC/pandoc-plot/issues
 author:         Laurent P. René de Cotret
 maintainer:     Laurent P. René de Cotret
-license:        GPL-2
+license:        GPL-2.0-or-later
 license-file:   LICENSE
 build-type:     Simple
 tested-with:    GHC == 8.6.5, GHC == 8.8.3
@@ -48,6 +48,8 @@ library
         Text.Pandoc.Filter.Plot.Monad
         Text.Pandoc.Filter.Plot.Monad.Logging
         Text.Pandoc.Filter.Plot.Monad.Types
+    autogen-modules:
+        Paths_pandoc_plot
     hs-source-dirs:
         src
     ghc-options: 
