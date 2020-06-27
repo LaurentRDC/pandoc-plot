@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.7.2.0
+---------------
+
+* Removed dependency on `open-browser` package.
+
 Release 0.7.1.0
 ---------------
 

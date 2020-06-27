@@ -39,7 +39,7 @@ import           Text.Pandoc.JSON                 (toJSONFilter)
 
 import           Text.ParserCombinators.ReadP     (readP_to_S)
 
-import           Web.Browser                      (openBrowser)
+import           OpenFile                         (openFile)
 
 import qualified Data.Version                     as V
 import           Paths_pandoc_plot                (version)
@@ -256,8 +256,7 @@ showManPage = do
     setLocaleEncoding utf8 -- This is required to write the manual file, for some reason.
     manualPath <- (</> "pandoc-plot-manual.html") <$> getTemporaryDirectory
     TIO.writeFile manualPath $(embedManualHtml)
-    openBrowser ("file:///" <> manualPath)
-    return ()
+    openFile ("file:///" <> manualPath)
 
 -- | Use Doc type directly because of newline formatting
 footer' :: P.Doc
