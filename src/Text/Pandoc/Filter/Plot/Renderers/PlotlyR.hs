@@ -42,7 +42,7 @@ plotlyRAvailable = do
 -- Based on the following documentation:
 --    https://plotly.com/r/static-image-export/
 plotlyRCapture :: FigureSpec -> FilePath -> Script
-plotlyRCapture FigureSpec{..} fname = [st|
+plotlyRCapture _ fname = [st|
 library(plotly) # just in case
 if (!require("processx")) install.packages("processx")
 orca(last_plot(), file = "#{fname}")

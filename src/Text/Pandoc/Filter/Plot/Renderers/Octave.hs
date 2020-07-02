@@ -40,6 +40,6 @@ octaveAvailable = do
 
 
 octaveCapture :: FigureSpec -> FilePath -> Script
-octaveCapture FigureSpec{..} fname = [st|
+octaveCapture _ fname = [st|
 saveas(gcf, '#{fname}')
 |]

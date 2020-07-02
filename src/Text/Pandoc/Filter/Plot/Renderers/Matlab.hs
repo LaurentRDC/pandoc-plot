@@ -44,6 +44,6 @@ matlabAvailable = asksConfig matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <
 
 
 matlabCapture :: FigureSpec -> FilePath -> Script
-matlabCapture FigureSpec{..} fname = [st|
+matlabCapture _ fname = [st|
 saveas(gcf, '#{fname}')
 |]
