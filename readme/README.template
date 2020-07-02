@@ -446,6 +446,14 @@ To install in the current environment:
 conda install -c conda-forge pandoc-plot
 ```
 
+### winget
+
+You can install `pandoc-plot` from the [Windows Package Manager](https://github.com/microsoft/winget-cli) `winget` (just like `pandoc`). To install:
+
+```sh
+winget install pandoc-plot
+```
+
 ### From Hackage/Stackage
 
 `pandoc-plot` is available on [Hackage](http://hackage.haskell.org/package/pandoc-plot) and [Stackage](https://www.stackage.org/nightly/package/pandoc-plot). Using the [`cabal-install`](https://www.haskell.org/cabal/) tool:

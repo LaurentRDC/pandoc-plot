@@ -29,6 +29,7 @@ Do not edit manually
   - [Installation](#installation)
       - [Binaries and Installers](#binaries-and-installers)
       - [conda](#conda)
+      - [winget](#winget)
       - [From Hackage/Stackage](#from-hackagestackage)
       - [From source](#from-source)
   - [Warning](#warning)
@@ -699,6 +700,16 @@ To install in the current environment:
 
 ``` sh
 conda install -c conda-forge pandoc-plot
+```
+
+### winget
+
+You can install `pandoc-plot` from the [Windows Package
+Manager](https://github.com/microsoft/winget-cli) `winget` (just like
+`pandoc`). To install:
+
+``` sh
+winget install pandoc-plot
 ```
 
 ### From Hackage/Stackage
