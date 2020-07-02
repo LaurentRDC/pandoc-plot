@@ -7,6 +7,7 @@ Release 0.7.2.0
 
 * Removed dependency on `open-browser` package.
 * Starting with this version, `pandoc` 2.9 is **no longer supported** due to a breaking API change in `pandoc` 2.10.
+* Executables are now built with GHC 8.10.1
 
 Release 0.7.1.0
 ---------------

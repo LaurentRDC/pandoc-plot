@@ -32,20 +32,11 @@ jobs:
     vmImage: ubuntu-latest
     os: linux
 
-# There are strange problems with CI on Windows, where builds with GHC 8.8.*
-# always fail. Therefore, we distinguish between builds on Ubuntu and Windows
-# and use an older compiler on Windows.
-# See here for bug reports:
-#   https://gitlab.haskell.org/ghc/ghc/issues/17599
-#   https://gitlab.haskell.org/ghc/ghc/issues/17926
-#
-# Disabling Windows CI until GHC 8.10.1
-#
-# - template: ./.azure/azure-windows-template.yml
-#   parameters:
-#    name: Windows
-#    vmImage: windows-latest
-#    os: windows
+- template: ./.azure/azure-windows-template.yml
+  parameters:
+   name: Windows
+   vmImage: windows-latest
+   os: windows
 
 - template: ./.azure/azure-macos-template.yml
   parameters:
