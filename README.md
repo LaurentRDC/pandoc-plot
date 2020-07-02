@@ -64,7 +64,7 @@ it in an HTML page:
 pandoc --filter pandoc-plot input.md --output output.html
 ```
 
-*Note that pandoc-plot only works with pandoc \>= 2.8 because of some
+*Note that pandoc-plot only works with pandoc \>= 2.10 because of some
 breaking changes in pandoc’s API.*
 
 ## Supported toolkits
