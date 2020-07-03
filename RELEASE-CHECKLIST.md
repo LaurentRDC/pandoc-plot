@@ -6,7 +6,6 @@
 [ ] Tag release in git.
     `git tag -a "version" && git push origin "version"`
 [ ] Download artifacts from Azure pipelines and upload to new GitHub release.
-    For the Windows executable, use locally-built. CI does not work reliably using GHC 8.8.3.
 [ ] Run `build-setup.ps1` to create Windows installer
 [ ] Upload to Hackage: `stack upload .`
 
@@ -16,3 +15,8 @@
 [ ] Rerender feedstock: `conda smithy rerender -c auto` 
 [ ] Pull request to upstream: https://github.com/conda-forge/pandoc-plot-feedstock
 [ ] Once tests pass, merge.
+
+## winget package
+[ ] Create branch on `winget-pkgs`
+[ ] Create new manifest in `manifests/LaurentPRenedeCotret/pandoc-plot`
+[ ] Pull request to upstream: https://github.com/microsoft/winget-pkgs
