@@ -28,7 +28,7 @@ openFile
 openFileWindows :: FilePath -> IO ()
 openFileWindows fp = 
     -- Call looks like: cmd /c 'start "" "my_filepath.html"'
-    runProcess_ $ shell $ mconcat ["cmd /c 'start ", quoted mempty, " ", quoted fp, "'"]
+    runProcess_ $ shell $ mconcat ["cmd /c start ", quoted mempty, " ", quoted fp]
     where
         quoted f = mconcat ["\"", f, "\""]
 
