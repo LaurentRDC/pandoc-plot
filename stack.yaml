@@ -13,7 +13,7 @@ extra-deps:
 #   https://downloads.haskell.org/ghc/latest/docs/html/users_guide/flags.html#miscellaneous-compiler-options
 # and here:
 #   https://ghc.gitlab.haskell.org/ghc/doc/users_guide/runtime_control.html
-ghc-options:
-  pandoc: -j "+RTS -A64m -RTS"
-  pandoc-citeproc: -j "+RTS -A64m -RTS"
-  $targets: -j "+RTS -A64m -RTS"
+# ghc-options:
+#   pandoc: -j "+RTS -A64m -RTS"
+#   pandoc-citeproc: -j "+RTS -A64m -RTS"
+#   $targets: -j "+RTS -A64m -RTS"
