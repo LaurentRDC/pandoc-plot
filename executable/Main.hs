@@ -159,7 +159,9 @@ toJSONFilterWithConfig = do
 -- indicates whether the Pandoc version is new enough or not.
 checkRuntimePandocVersion :: IO Bool
 checkRuntimePandocVersion = do
-    let minimumPandocVersion = V.Version [2,10,0,0] []
+    -- Please note that for some reason, makeVersion [2, 10, 0, 0] > makeVersion [2, 10]
+    let minimumPandocVersion = V.makeVersion [2, 10]
+    
     -- Pandoc runs filters in an environment with two variables:
     -- PANDOV_VERSION and PANDOC_READER_OPTS
     -- We can use the former to ensure that people are not using pandoc < 2.10
