@@ -1,1 +1,0 @@
-stack exec -- pandoc --standalone --toc --include-before-body=docs/header.md --filter=pandoc-include-code docs/README.template -t gfm -o README.md
