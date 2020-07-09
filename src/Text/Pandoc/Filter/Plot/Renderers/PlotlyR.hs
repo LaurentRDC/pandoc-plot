@@ -24,7 +24,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
 plotlyRSupportedSaveFormats :: [SaveFormat]
-plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS]
+plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, HTML]
 
 
 plotlyRCommand :: OutputSpec -> PlotM Text
@@ -39,10 +39,27 @@ plotlyRAvailable = do
     commandSuccess [st|#{exe} -e 'library("plotly")'|]
 
 
+plotlyRCapture :: FigureSpec -> FilePath -> Script
+plotlyRCapture spec@FigureSpec{..} fname = case saveFormat of
+    HTML -> plotlyRCaptureHtml spec fname
+    _    -> plotlyRCaptureStatic spec fname
+
+
+-- Based on the following discussion:
+--    https://stackoverflow.com/q/34580095
+plotlyRCaptureHtml :: FigureSpec -> FilePath -> Script
+plotlyRCaptureHtml _ fname = [st|
+library(plotly) # just in case
+library(htmlwidgets)
+p <- last_plot()
+htmlwidgets::saveWidget(as_widget(p), "#{fname}")
+|]
+
+
 -- Based on the following documentation:
 --    https://plotly.com/r/static-image-export/
-plotlyRCapture :: FigureSpec -> FilePath -> Script
-plotlyRCapture _ fname = [st|
+plotlyRCaptureStatic :: FigureSpec -> FilePath -> Script
+plotlyRCaptureStatic _ fname = [st|
 library(plotly) # just in case
 if (!require("processx")) install.packages("processx")
 orca(last_plot(), file = "#{fname}")
