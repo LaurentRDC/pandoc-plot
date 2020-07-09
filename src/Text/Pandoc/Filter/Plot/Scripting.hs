@@ -126,13 +126,23 @@ toImage fmt spec = head . toList $ para $ imageWith attrs' (pack target') "fig:"
     -- must be "fig:"
     -- Janky? yes
     where
-        attrs'       = blockAttrs spec
+        attrs'       = withInteractiveAttrs $ blockAttrs spec
         target'      = figurePath spec
         withSource'  = withSource spec
         srcLink      = link (pack $ replaceExtension target' ".txt") mempty "Source code"
         captionText  = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
         captionLinks = mconcat [" (", srcLink, ")"]
         caption'     = if withSource' then captionText <> captionLinks else captionText
+        -- for HTML plots, pandoc will replace the <img> tag with an <embed> tag
+        -- We include extra attributes with the <embed> tag in mind.
+        -- TODO: find way to have HTML "figure" full-width without hardcoding width
+        withInteractiveAttrs (a, b, c) = 
+            if saveFormat spec == HTML
+                then (a, b, c <> [ ("type", "text/html")
+                                    , ("width", "600")
+                                    , ("height", "600")
+                                    ])
+                else (a, b, c)
 
 
 -- | Determine the temp script path from Figure specifications

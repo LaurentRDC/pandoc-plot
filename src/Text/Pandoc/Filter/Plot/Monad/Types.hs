@@ -179,6 +179,7 @@ data SaveFormat
     | GIF   -- ^ GIF format
     | TIF   -- ^ Tagged image format
     | WEBP  -- ^ WebP image format
+    | HTML  -- ^ HTML for interactive plots.
     deriving (Bounded, Enum, Eq, Show, Generic)
 
 instance IsString SaveFormat where
@@ -194,6 +195,7 @@ instance IsString SaveFormat where
         | s `elem` ["jpg", "jpeg", "JPG", "JPEG", ".jpg", ".jpeg"] = JPG
         | s `elem` ["tif", "tiff", "TIF", "TIFF", ".tif", ".tiff"] = TIF
         | s `elem` ["webp", "WEBP", ".webp"] = WEBP
+        | s `elem` ["html", "HTML", ".html"] = HTML
         | otherwise = error $
                 mconcat [ s
                         , " is not one of valid save format : "
