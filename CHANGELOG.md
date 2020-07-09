@@ -2,6 +2,21 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.8.0.0
+---------------
+
+* Added a new output format, HTML, to produce interactive plots. Not all renderers support it; at this time, you can try with Plotly/Python and Plotly/R as follows:
+
+````markdown
+
+```{.plotly_python format=html}
+import plotly.express as px
+df = px.data.election()
+fig = px.scatter_ternary(df, a="Joly", b="Coderre", c="Bergeron")
+```
+
+````
+
 Release 0.7.2.1
 ---------------
 
