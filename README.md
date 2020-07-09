@@ -6,9 +6,7 @@
 
 `pandoc-plot` turns code blocks present in your documents (Markdown, LaTeX, etc.) into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
 
-<p align="center">
-  [Overview](#overview) | [Supported toolkits](#supported-toolkits) | [Installation](#installation)
-</p>
+[Overview](#overview) | [Supported toolkits](#supported-toolkits) | [Installation](#installation)
 
 ## Overview
 
