@@ -38,9 +38,9 @@ import           System.IO                    (stderr, withFile, IOMode (AppendM
 
 -- | Verbosity of the logger.
 data Verbosity = Debug    -- ^ Log all messages, including debug messages.
-               | Error    -- ^ Log information, warnings, and errors.
-               | Warning  -- ^ Log information and warning messages.
-               | Info     -- ^ Only log information messages.
+               | Info     -- ^ Log information, warning, and error messages.
+               | Warning  -- ^ Log warning and error messages.
+               | Error    -- ^ Only log errors.
                | Silent   -- ^ Don't log anything. 
                deriving (Eq, Ord, Show)
 

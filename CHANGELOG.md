@@ -6,6 +6,7 @@ Release 0.7.2.1
 ---------------
 
 * Fixed an issue where the `pandoc` version was not parsed properly, giving rise to errors when running `pandoc-plot`.
+* Fixed an issue where logging errors were not always displayed.
 
 Release 0.7.2.0
 ---------------
