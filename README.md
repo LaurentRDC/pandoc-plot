@@ -345,7 +345,7 @@ syntax:
       .language
       directory=(path) 
       caption=(text) 
-      format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP) 
+      format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP|HTML) 
       source=(true|false) 
       preamble=(path) 
       dpi=(integer) 
@@ -375,9 +375,11 @@ controlled by the [configuration](#configuration)
     specified in the `caption_format` parameter, described below.
   - `format` is the desired filetype for the resulting figure. Possible
     values for `format` are \[`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`,
-    `TIF`, `WEBP`\]. Not all toolkits support all formats. See
+    `TIF`, `WEBP`, `HTML`\]. Not all toolkits support all formats. See
     `pandoc-plot toolkits` for toolkit-specific information regarding
-    save formats.
+    save formats. The `HTML` format is special; it can produce
+    standalone, offline, interactive plots. As such, it only makes sense
+    to use this format when creating HTML documents.
   - `source` is a boolean toggle that determines whether the source code
     should be linked in the caption or not. Possible values are
     \[`true`, `True`, `false`, `False`\].
