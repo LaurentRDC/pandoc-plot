@@ -84,7 +84,9 @@ executable pandoc-plot
     ghc-options: -Wall -Wcompat -threaded -rtsopts -with-rtsopts=-N
     build-depends:
           base                  >= 4.11 && <5
+        , containers
         , directory
+        , doctemplates
         , filepath
         , githash               >= 0.1.3.0 && < 1
         , optparse-applicative  >= 0.14 && < 1

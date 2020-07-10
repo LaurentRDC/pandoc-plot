@@ -379,3 +379,8 @@ makePlotPandocCompiler =
     defaultHakyllWriterOptions
     (unsafeCompiler . plotTransform defaultConfiguration)
 ```
+
+## Warning
+
+Do not run this filter on unknown documents. There is nothing in
+`pandoc-plot` that can stop a script from performing **evil actions**.

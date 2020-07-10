@@ -6,8 +6,6 @@
 
 `pandoc-plot` turns code blocks present in your documents (Markdown, LaTeX, etc.) into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
 
-[Overview](#overview) | [Supported toolkits](#supported-toolkits) | [Installation](#installation)
-
 ## Overview
 
 This program is a [Pandoc](https://pandoc.org/) filter. It can therefore
@@ -136,8 +134,3 @@ git clone https://github.com/LaurentRDC/pandoc-plot
 cd pandoc-plot
 stack install # Alternatively, `cabal install`
 ```
-
-## Warning
-
-Do not run this filter on unknown documents. There is nothing in
-`pandoc-plot` that can stop a script from performing **evil actions**.

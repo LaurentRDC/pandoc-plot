@@ -17,6 +17,8 @@ fig = px.scatter_ternary(df, a="Joly", b="Coderre", c="Bergeron")
 
 ````
 
+* Separated the detailed information from `README.md` and into a proper `MANUAL.md`. This is now the information which will be shown with `pandoc-plot --manual`.
+
 Release 0.7.2.1
 ---------------
 
