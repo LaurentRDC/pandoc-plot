@@ -30,25 +30,26 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , OutputSpec(..)
 ) where
 
-import           Control.Concurrent.Async.Lifted               (forConcurrently)
+import Control.Concurrent.Async.Lifted               (forConcurrently)
 
-import           Data.List                                     ((\\))
-import           Data.Map.Strict                               (Map)
-import           Data.Maybe                                    (catMaybes)
-import           Data.Text                                     (Text)
+import Data.List                                     ((\\))
+import Data.Map.Strict                               (Map)
+import Data.Maybe                                    (catMaybes)
+import Data.Text                                     (Text)
 
-import           Text.Pandoc.Filter.Plot.Renderers.Mathematica
-import           Text.Pandoc.Filter.Plot.Renderers.Matlab
-import           Text.Pandoc.Filter.Plot.Renderers.Matplotlib
-import           Text.Pandoc.Filter.Plot.Renderers.Octave
-import           Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
-import           Text.Pandoc.Filter.Plot.Renderers.PlotlyR
-import           Text.Pandoc.Filter.Plot.Renderers.GGPlot2
-import           Text.Pandoc.Filter.Plot.Renderers.GNUPlot
-import           Text.Pandoc.Filter.Plot.Renderers.Graphviz
-import           Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, OutputSpec(..))
+import Text.Pandoc.Filter.Plot.Renderers.Mathematica
+import Text.Pandoc.Filter.Plot.Renderers.Matlab
+import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
+import Text.Pandoc.Filter.Plot.Renderers.Octave
+import Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
+import Text.Pandoc.Filter.Plot.Renderers.PlotlyR
+import Text.Pandoc.Filter.Plot.Renderers.GGPlot2
+import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
+import Text.Pandoc.Filter.Plot.Renderers.Graphviz
+import Text.Pandoc.Filter.Plot.Renderers.Bokeh
+import Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, OutputSpec(..))
 
-import           Text.Pandoc.Filter.Plot.Monad
+import Text.Pandoc.Filter.Plot.Monad
 
 
 -- Extension for script files, e.g. ".py", or ".m".
@@ -62,6 +63,7 @@ scriptExtension Octave       = ".m"
 scriptExtension GGPlot2      = ".r"
 scriptExtension GNUPlot      = ".gp"
 scriptExtension Graphviz     = ".dot"
+scriptExtension Bokeh        = ".py"
 
 
 -- Make a string into a comment
@@ -75,6 +77,7 @@ comment Octave       = mappend "% "
 comment GGPlot2      = mappend "# "
 comment GNUPlot      = mappend "# "
 comment Graphviz     = mappend "// "
+comment Bokeh        = mappend "# "
 
 
 -- | The function that maps from configuration to the preamble.
@@ -88,6 +91,7 @@ preambleSelector Octave       = octavePreamble
 preambleSelector GGPlot2      = ggplot2Preamble
 preambleSelector GNUPlot      = gnuplotPreamble
 preambleSelector Graphviz     = graphvizPreamble
+preambleSelector Bokeh        = bokehPreamble
 
 
 -- | Save formats supported by this renderer.
@@ -101,6 +105,7 @@ supportedSaveFormats Octave       = octaveSupportedSaveFormats
 supportedSaveFormats GGPlot2      = ggplot2SupportedSaveFormats
 supportedSaveFormats GNUPlot      = gnuplotSupportedSaveFormats
 supportedSaveFormats Graphviz     = graphvizSupportedSaveFormats
+supportedSaveFormats Bokeh        = bokehSupportedSaveFormats
 
 
 -- Checks to perform before running a script. If ANY check fails,
@@ -108,6 +113,7 @@ supportedSaveFormats Graphviz     = graphvizSupportedSaveFormats
 -- blocking operations to occur.
 scriptChecks :: Toolkit -> [Script -> CheckResult]
 scriptChecks Matplotlib = [matplotlibCheckIfShow]
+scriptChecks Bokeh      = [bokehCheckIfShow]
 scriptChecks _ = mempty
 
 
@@ -132,6 +138,7 @@ command Octave       = octaveCommand
 command GGPlot2      = ggplot2Command
 command GNUPlot      = gnuplotCommand
 command Graphviz     = graphvizCommand
+command Bokeh        = bokehCommand
 
 
 -- | Script fragment required to capture a figure.
@@ -145,6 +152,7 @@ capture Octave       = octaveCapture
 capture GGPlot2      = ggplot2Capture
 capture GNUPlot      = gnuplotCapture
 capture Graphviz     = graphvizCapture 
+capture Bokeh        = bokehCapture
 
 
 -- | Check if a toolkit is available, based on the current configuration
@@ -158,6 +166,7 @@ toolkitAvailable Octave       = octaveAvailable
 toolkitAvailable GGPlot2      = ggplot2Available
 toolkitAvailable GNUPlot      = gnuplotAvailable
 toolkitAvailable Graphviz     = graphvizAvailable
+toolkitAvailable Bokeh        = bokehAvailable
 
 
 -- | List of toolkits available on this machine.

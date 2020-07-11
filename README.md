@@ -57,7 +57,8 @@ breaking changes in pandoc’s API.*
     Octave](https://www.gnu.org/software/octave/);
   - `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
   - `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
-  - `graphviz`: graphs using the [Graphviz](http://graphviz.org/)
+  - `graphviz`: graphs using [Graphviz](http://graphviz.org/);
+  - `bokeh`: plots using the [Bokeh](https://bokeh.org/) visualization library;
 
 To know which toolkits are useable on *your machine* (and which ones are
 not available), you can check with the `toolkits` command:

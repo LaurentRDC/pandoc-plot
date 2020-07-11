@@ -9,6 +9,7 @@ import           Data.List                        (isInfixOf, isSuffixOf)
 import           Data.Monoid                      ((<>))
 import           Data.String                      (fromString)
 import           Data.Text                        (Text, pack, unpack)
+import qualified Data.Text                        as T
 
 import           Test.Tasty
 import           Test.Tasty.HUnit
@@ -72,6 +73,7 @@ testFileInclusion tk =
         include GGPlot2      = "tests/includes/ggplot2.r"
         include GNUPlot      = "tests/includes/gnuplot.gp"
         include Graphviz     = "tests/includes/graphviz.dot"
+        include Bokeh        = "tests/includes/bokeh.py"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -266,6 +268,10 @@ trivialContent Octave       = "figure('visible', 'off')\nplot (-10:0.1:10);"
 trivialContent GGPlot2      = "library(ggplot2)\nggplot()\n"
 trivialContent GNUPlot      = "plot sin(x)"
 trivialContent Graphviz     = "digraph {A -> B [label=\"test\"];}"
+trivialContent Bokeh        = T.unlines [ "from bokeh.plotting import figure"
+                                        , "p = figure(title='simple line example')"
+                                        , "p.line([1,2,3,4], [5,6,7,8])"
+                                        ]
 
 
 addCaption :: String -> Block -> Block

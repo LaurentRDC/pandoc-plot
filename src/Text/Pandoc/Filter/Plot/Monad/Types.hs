@@ -58,6 +58,7 @@ data Toolkit
     | GGPlot2
     | GNUPlot
     | Graphviz
+    | Bokeh
     deriving (Bounded, Eq, Enum, Generic)
 
 
@@ -72,6 +73,7 @@ instance Show Toolkit where
     show GGPlot2      = "ggplot2"
     show GNUPlot      = "gnuplot"
     show Graphviz     = "graphviz"
+    show Bokeh        = "Python/Bokeh"
 
 
 -- | Class name which will trigger the filter
@@ -85,6 +87,7 @@ cls Octave       = "octaveplot"
 cls GGPlot2      = "ggplot2"
 cls GNUPlot      = "gnuplot"
 cls Graphviz     = "graphviz"
+cls Bokeh        = "bokeh"
 
 
 type Script = Text

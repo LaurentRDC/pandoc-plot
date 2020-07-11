@@ -87,3 +87,7 @@ gnuplot:
 graphviz:
   # preamble: graphviz.dot
   executable: dot
+
+bokeh:
+  # preamble: bokeh.py
+  executable: python

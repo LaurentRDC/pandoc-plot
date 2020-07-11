@@ -114,7 +114,7 @@ runCommand command = do
     debug $ mconcat [ "Running command\n"
                     , "    ", command, "\n"
                     , "ended with exit code ", pack . show $ ec
-                    ,  if processOutput /= mempty then " and output\n" <> "    " <> processOutput else mempty
+                    ,  if processOutput /= mempty then (" and output\n" <> "    " <> processOutput) else mempty
                     , "\n"
                     ] 
     return (ec, processOutput)
@@ -159,6 +159,7 @@ data Configuration = Configuration
     , ggplot2Preamble       :: !Script     -- ^ The default preamble script for the GGPlot2 toolkit.
     , gnuplotPreamble       :: !Script     -- ^ The default preamble script for the gnuplot toolkit.
     , graphvizPreamble      :: !Script     -- ^ The default preamble script for the Graphviz toolkit.
+    , bokehPreamble         :: !Script     -- ^ The default preamble script for the Python/Bokeh toolkit.
     
     , matplotlibExe         :: !FilePath   -- ^ The executable to use to generate figures using the matplotlib toolkit.
     , matlabExe             :: !FilePath   -- ^ The executable to use to generate figures using the MATLAB toolkit.
@@ -169,6 +170,7 @@ data Configuration = Configuration
     , ggplot2Exe            :: !FilePath   -- ^ The executable to use to generate figures using the GGPlot2 toolkit.
     , gnuplotExe            :: !FilePath   -- ^ The executable to use to generate figures using the gnuplot toolkit.
     , graphvizExe           :: !FilePath   -- ^ The executable to use to generate figures using the Graphviz toolkit.
+    , bokehExe              :: !FilePath   -- ^ The executable to use to generate figures using the Python/Bokeh toolkit.
     
     , matplotlibTightBBox   :: !Bool       -- ^ Whether or not to make Matplotlib figures tight by default.
     , matplotlibTransparent :: !Bool       -- ^ Whether or not to make Matplotlib figures transparent by default.

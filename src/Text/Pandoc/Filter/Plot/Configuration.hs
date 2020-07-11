@@ -62,21 +62,24 @@ defaultConfiguration =
         , ggplot2Preamble     = mempty
         , gnuplotPreamble     = mempty
         , graphvizPreamble    = mempty
+        , bokehPreamble       = mempty
 
-        , matplotlibExe       = if isWindows then "python" else "python3"
+        , matplotlibExe       = python
         , matlabExe           = "matlab"
-        , plotlyPythonExe     = if isWindows then "python" else "python3"
+        , plotlyPythonExe     = python
         , plotlyRExe          = "Rscript"
         , mathematicaExe      = "math"
         , octaveExe           = "octave"
         , ggplot2Exe          = "Rscript"
         , gnuplotExe          = "gnuplot"
         , graphvizExe         = "dot"
+        , bokehExe            = python
         
         , matplotlibTightBBox   = False
         , matplotlibTransparent = False
         }
-
+        where
+            python = if isWindows then "python" else "python3"
 
 -- | Extact path to configuration from the metadata in a Pandoc document.
 -- The path to the configuration file should be under the @plot-configuration@ key.
@@ -126,6 +129,7 @@ data ConfigPrecursor = ConfigPrecursor
     , _ggplot2Prec       :: !GGPlot2Precursor
     , _gnuplotPrec       :: !GNUPlotPrecursor
     , _graphvizPrec      :: !GraphvizPrecursor
+    , _bokehPrec         :: !BokehPrecursor
     }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -148,6 +152,7 @@ defaultConfigPrecursor =
         , _ggplot2Prec       = GGPlot2Precursor      Nothing (ggplot2Exe defaultConfiguration)
         , _gnuplotPrec       = GNUPlotPrecursor      Nothing (gnuplotExe defaultConfiguration)
         , _graphvizPrec      = GraphvizPrecursor     Nothing (graphvizExe defaultConfiguration)
+        , _bokehPrec         = BokehPrecursor        Nothing (bokehExe defaultConfiguration)
         }
 
 
@@ -170,6 +175,7 @@ data OctavePrecursor        = OctavePrecursor       {_octavePreamble       :: !(
 data GGPlot2Precursor       = GGPlot2Precursor      {_ggplot2Preamble      :: !(Maybe FilePath), _ggplot2Exe      :: !FilePath}
 data GNUPlotPrecursor       = GNUPlotPrecursor      {_gnuplotPreamble      :: !(Maybe FilePath), _gnuplotExe      :: !FilePath}
 data GraphvizPrecursor      = GraphvizPrecursor     {_graphvizPreamble     :: !(Maybe FilePath), _graphvizExe     :: !FilePath}
+data BokehPrecursor         = BokehPrecursor        {_bokehPreamble        :: !(Maybe FilePath), _bokehExe        :: !FilePath}
 
 instance FromJSON LoggingPrecursor where
     parseJSON (Object v) = 
@@ -218,6 +224,11 @@ instance FromJSON GraphvizPrecursor where
     parseJSON (Object v) = GraphvizPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (graphvizExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Graphviz, " configuration."]
 
+instance FromJSON BokehPrecursor where
+    parseJSON (Object v) = BokehPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (bokehExe defaultConfiguration)
+    parseJSON _ = fail $ mconcat ["Could not parse ", show Bokeh, " configuration."]
+
+
 
 instance FromJSON ConfigPrecursor where
     parseJSON (Null) = return defaultConfigPrecursor -- In case of empty file
@@ -240,6 +251,7 @@ instance FromJSON ConfigPrecursor where
         _ggplot2Prec       <- v .:? (cls GGPlot2)          .!= _ggplot2Prec defaultConfigPrecursor
         _gnuplotPrec       <- v .:? (cls GNUPlot)          .!= _gnuplotPrec defaultConfigPrecursor
         _graphvizPrec      <- v .:? (cls Graphviz)         .!= _graphvizPrec defaultConfigPrecursor
+        _bokehPrec         <- v .:? (cls Bokeh)            .!= _bokehPrec defaultConfigPrecursor 
 
         return $ ConfigPrecursor{..}
     parseJSON _          = fail "Could not parse configuration."
@@ -268,6 +280,7 @@ renderConfig ConfigPrecursor{..} = do
         ggplot2Exe      = _ggplot2Exe _ggplot2Prec
         gnuplotExe      = _gnuplotExe _gnuplotPrec
         graphvizExe     = _graphvizExe _graphvizPrec
+        bokehExe        = _bokehExe _bokehPrec
     
     matplotlibPreamble   <- readPreamble (_matplotlibPreamble _matplotlibPrec)
     matlabPreamble       <- readPreamble (_matlabPreamble _matlabPrec)
@@ -278,6 +291,7 @@ renderConfig ConfigPrecursor{..} = do
     ggplot2Preamble      <- readPreamble (_ggplot2Preamble _ggplot2Prec)
     gnuplotPreamble      <- readPreamble (_gnuplotPreamble _gnuplotPrec)
     graphvizPreamble     <- readPreamble (_graphvizPreamble _graphvizPrec)
+    bokehPreamble        <- readPreamble (_bokehPreamble _bokehPrec)
 
     return Configuration{..}
     where

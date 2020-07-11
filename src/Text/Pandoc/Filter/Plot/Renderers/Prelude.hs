@@ -9,7 +9,6 @@ Portability : portable
 
 Prelude for renderers, containing some helpful utilities.
 -}
-
 module Text.Pandoc.Filter.Plot.Renderers.Prelude (
 
       module Prelude
@@ -65,6 +64,7 @@ executable Octave       = asksConfig octaveExe       >>= liftIO . tryToFindExe
 executable GGPlot2      = asksConfig ggplot2Exe      >>= liftIO . tryToFindExe
 executable GNUPlot      = asksConfig gnuplotExe      >>= liftIO . tryToFindExe
 executable Graphviz     = asksConfig graphvizExe     >>= liftIO . tryToFindExe
+executable Bokeh        = asksConfig bokehExe        >>= liftIO . tryToFindExe
 
 
 -- | Internal description of all information 
