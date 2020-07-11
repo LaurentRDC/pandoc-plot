@@ -95,6 +95,7 @@ Do not edit manually
 <li><a href="#captions">Captions</a></li>
 <li><a href="#link-to-source-code">Link to source code</a></li>
 <li><a href="#preamble-scripts">Preamble scripts</a></li>
+<li><a href="#support-for-interative-plots">Support for interative plots</a></li>
 <li><a href="#performance">Performance</a></li>
 <li><a href="#compatibility-with-pandoc-crossref">Compatibility with pandoc-crossref</a></li>
 </ul></li>
@@ -166,6 +167,8 @@ Do not edit manually
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="kw">\end</span>{<span class="ex">minted</span>}</span></code></pre></div>
 <p>This <code>preamble</code> parameter is perfect for longer documents with many plots. Simply define the style you want in a separate script! You can also import packages this way, or define functions you often use.</p>
+<h3 id="support-for-interative-plots">Support for interative plots</h3>
+<p>Starting with version 0.8.0.0, <code>pandoc-plot</code> supports the creation of interactive plots (if a toolkit supports it). All you need to do is set the save format to <code>html</code>. The resulting plot is fully self-contained, so it can be displayed offline.</p>
 <h3 id="performance">Performance</h3>
 <p><code>pandoc-plot</code> minimizes work, only generating figures if it absolutely must, i.e. if the content has changed. <code>pandoc-plot</code> will save the hash of the source code used to generate a figure in its filename. Before generating a figure, <code>pandoc-plot</code> will check it this figure already exists based on the hash of its source! This also means that there is no way to directly name figures.</p>
 <p>Moreover, starting with version 0.5.0.0, <code>pandoc-plot</code> takes advantage of multicore CPUs, rendering figures <strong>in parallel</strong>.</p>
@@ -240,7 +243,7 @@ Do not edit manually
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a><span class="in">  # script content</span></span>
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a><span class="in">  ```</span></span></code></pre></div>
 <ul>
-<li><code>cls</code> must be one of the following: <code>matplotlib</code>, <code>matlabplot</code>, <code>plotly_python</code>, <code>plotly_r</code>, <code>mathplot</code>, <code>octaveplot</code>, <code>ggplot2</code>, <code>gnuplot</code>, or <code>graphviz</code>.</li>
+<li><code>cls</code> must be one of the following: <code>matplotlib</code>, <code>matlabplot</code>, <code>plotly_python</code>, <code>plotly_r</code>, <code>mathplot</code>, <code>octaveplot</code>, <code>ggplot2</code>, <code>gnuplot</code>, or <code>graphviz</code>, <code>bokeh</code>.</li>
 </ul>
 <p>All following parameters are optional, with their default values controlled by the <a href="#configuration">configuration</a></p>
 <ul>
@@ -363,7 +366,11 @@ files. Here are <strong>all</strong> the possible parameters:</p>
 <span id="cb21-86"><a href="#cb21-86" aria-hidden="true"></a><span class="co"># The possible parameters for the graphviz toolkit</span></span>
 <span id="cb21-87"><a href="#cb21-87" aria-hidden="true"></a><span class="fu">graphviz</span><span class="kw">:</span></span>
 <span id="cb21-88"><a href="#cb21-88" aria-hidden="true"></a><span class="co">  # preamble: graphviz.dot</span></span>
-<span id="cb21-89"><a href="#cb21-89" aria-hidden="true"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> dot</span></span></code></pre></div>
+<span id="cb21-89"><a href="#cb21-89" aria-hidden="true"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> dot</span></span>
+<span id="cb21-90"><a href="#cb21-90" aria-hidden="true"></a></span>
+<span id="cb21-91"><a href="#cb21-91" aria-hidden="true"></a><span class="fu">bokeh</span><span class="kw">:</span></span>
+<span id="cb21-92"><a href="#cb21-92" aria-hidden="true"></a><span class="co">  # preamble: bokeh.py</span></span>
+<span id="cb21-93"><a href="#cb21-93" aria-hidden="true"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span></code></pre></div>
 <p>A file like the above sets the <strong>default</strong> values; you can still override them in documents directly.</p>
 <p>The easiest way to specify configuration for <code>pandoc-plot</code> is to place a <code>.pandoc-plot.yml</code> file in the current working directory. You can also specify a configuration file in document metadata, under the <code>plot-configuration</code> key. For example, in Markdown:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="co">---</span></span>

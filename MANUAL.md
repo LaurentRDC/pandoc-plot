@@ -13,6 +13,7 @@ Do not edit manually
       - [Captions](#captions)
       - [Link to source code](#link-to-source-code)
       - [Preamble scripts](#preamble-scripts)
+      - [Support for interative plots](#support-for-interative-plots)
       - [Performance](#performance)
       - [Compatibility with pandoc-crossref](#compatibility-with-pandoc-crossref)
   - [Detailed usage](#detailed-usage)
@@ -122,6 +123,10 @@ The equivalent LaTeX usage is as follows:
 ```
 
 This `preamble` parameter is perfect for longer documents with many plots. Simply define the style you want in a separate script\! You can also import packages this way, or define functions you often use.
+
+### Support for interative plots
+
+Starting with version 0.8.0.0, `pandoc-plot` supports the creation of interactive plots (if a toolkit supports it). All you need to do is set the save format to `html`. The resulting plot is fully self-contained, so it can be displayed offline.
 
 ### Performance
 
@@ -242,7 +247,7 @@ There are parameters that affect the figure that will be included in your docume
   ```
 ````
 
-  - `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, or `graphviz`.
+  - `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, or `graphviz`, `bokeh`.
 
 All following parameters are optional, with their default values controlled by the [configuration](#configuration)
 
@@ -387,6 +392,10 @@ gnuplot:
 graphviz:
   # preamble: graphviz.dot
   executable: dot
+
+bokeh:
+  # preamble: bokeh.py
+  executable: python
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.

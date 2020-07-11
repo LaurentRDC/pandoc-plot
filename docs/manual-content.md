@@ -100,6 +100,10 @@ The equivalent LaTeX usage is as follows:
 
 This `preamble` parameter is perfect for longer documents with many plots. Simply define the style you want in a separate script! You can also import packages this way, or define functions you often use.
 
+### Support for interative plots
+
+Starting with version 0.8.0.0, `pandoc-plot` supports the creation of interactive plots (if a toolkit supports it). All you need to do is set the save format to `html`. The resulting plot is fully self-contained, so it can be displayed offline.
+
 ### Performance
 
 `pandoc-plot` minimizes work, only generating figures if it absolutely must, i.e. if the content has changed. `pandoc-plot` will save the hash of the source code used to generate a figure in its filename. Before generating a figure, `pandoc-plot` will check it this figure already exists based on the hash of its source! This also means that there is no way to directly name figures.
@@ -195,7 +199,7 @@ There are parameters that affect the figure that will be included in your docume
 
 ````
 
-* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, or `graphviz`.
+* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, or `graphviz`, `bokeh`.
 
 All following parameters are optional, with their default values controlled by the [configuration](#configuration)
 
