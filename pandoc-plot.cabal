@@ -17,6 +17,8 @@ extra-source-files:
     CHANGELOG.md
     LICENSE
     README.md
+    MANUAL.md
+    docs/MANUAL.html
     stack.yaml
     example-config.yml
 

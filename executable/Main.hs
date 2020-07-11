@@ -65,9 +65,10 @@ main = join $ execParser opts
     where 
         opts = info (optparse <**> helper)
             (fullDesc
-            <> progDesc "This pandoc filter generates plots from code blocks using a multitude of possible renderers. \
-                        \This allows to keep documentation and figures in perfect synchronicity."
-            <> header "pandoc-plot - generate figures directly in documents using your plotting toolkit of choice."
+            <> progDesc "This pandoc filter generates plots from code blocks using a multitude of \
+                        \possible renderers. This allows to keep documentation and figures in \
+                        \perfect synchronicity."
+            <> header (mconcat ["pandoc-plot ", V.showVersion version, " - generate figures directly in documents"])
             <> footerDoc (Just footer')
             )
         
@@ -263,8 +264,7 @@ showManPage = do
 -- | Use Doc type directly because of newline formatting
 footer' :: P.Doc
 footer' = mconcat 
-    [ P.text "More information can be found via the manual (pandoc-plot --manual) or the repository README, located at"
-    , P.line
-    , P.indent 4 $ P.text "https://github.com/LaurentRDC/pandoc-plot"
-    , P.line
+    [ P.text "More information can be found via the manual (pandoc-plot --manual) or the"
+    , P.line 
+    , P.text "repository README, located at https://github.com/LaurentRDC/pandoc-plot"
     ]

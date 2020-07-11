@@ -71,6 +71,11 @@ The `toolkits` command is described in its own section below.
 **Wish your plotting toolkit of choice was available? Please [raise an
 issue](https://github.com/LaurentRDC/pandoc-plot/issues)\!**
 
+## Documentation
+
+You can find more information in the documentation, available either in the
+source repository file `MANUAL.md`, or via the command `pandoc-plot --manual`.
+
 ## Installation
 
 ### Binaries and Installers

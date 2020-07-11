@@ -22,12 +22,14 @@ source: false
 # This can be changed in the document specifically as well.
 dpi: 80
 
-# Default format in which to save the figures. This can be specified individually as well.
+# Default format in which to save the figures. This can be specified 
+# individually as well.
 format: PNG
 
-# Text format for the captions. Unfortunately, there is no way to detect this automatically.
-# You can use the same notation as Pandoc's --from parameter, specified here:
-# https://pandoc.org/MANUAL.html#option--from
+# Text format for the captions. Unfortunately, there is no way to detect
+# this automatically. You can use the same notation as Pandoc's --from 
+# parameter, specified here: 
+#     https://pandoc.org/MANUAL.html#option--from
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
 
