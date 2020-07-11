@@ -68,6 +68,6 @@ __current_plot = next(obj for obj in globals().values() if isinstance(obj, Plot)
 |]
     where  
         write = case saveFormat of
-            HTML -> [st|save(__current_plot, filename="#{fname}", resources=INLINE)|]
-            PNG  -> [st|export_png(obj = __current_plot, filename="#{fname}")|]
+            HTML -> [st|save(__current_plot, filename=r"#{fname}", resources=INLINE)|]
+            PNG  -> [st|export_png(obj = __current_plot, filename=r"#{fname}")|]
             fmt  -> error $ "Save format not supported: " <> show fmt
