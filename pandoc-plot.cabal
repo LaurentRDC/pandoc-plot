@@ -89,7 +89,6 @@ executable pandoc-plot
           base                  >= 4.11 && <5
         , containers
         , directory
-        , doctemplates
         , filepath
         , githash               >= 0.1.3.0 && < 1
         , optparse-applicative  >= 0.14 && < 1
