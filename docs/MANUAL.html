@@ -243,7 +243,7 @@ Do not edit manually
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a><span class="in">  # script content</span></span>
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a><span class="in">  ```</span></span></code></pre></div>
 <ul>
-<li><code>cls</code> must be one of the following: <code>matplotlib</code>, <code>matlabplot</code>, <code>plotly_python</code>, <code>plotly_r</code>, <code>mathplot</code>, <code>octaveplot</code>, <code>ggplot2</code>, <code>gnuplot</code>, or <code>graphviz</code>, <code>bokeh</code>.</li>
+<li><code>cls</code> must be one of the following: <code>matplotlib</code>, <code>matlabplot</code>, <code>plotly_python</code>, <code>plotly_r</code>, <code>mathplot</code>, <code>octaveplot</code>, <code>ggplot2</code>, <code>gnuplot</code>, <code>graphviz</code>, <code>bokeh</code>, <code>plotsjl</code>.</li>
 </ul>
 <p>All following parameters are optional, with their default values controlled by the <a href="#configuration">configuration</a></p>
 <ul>
@@ -370,7 +370,11 @@ files. Here are <strong>all</strong> the possible parameters:</p>
 <span id="cb21-90"><a href="#cb21-90" aria-hidden="true"></a></span>
 <span id="cb21-91"><a href="#cb21-91" aria-hidden="true"></a><span class="fu">bokeh</span><span class="kw">:</span></span>
 <span id="cb21-92"><a href="#cb21-92" aria-hidden="true"></a><span class="co">  # preamble: bokeh.py</span></span>
-<span id="cb21-93"><a href="#cb21-93" aria-hidden="true"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span></code></pre></div>
+<span id="cb21-93"><a href="#cb21-93" aria-hidden="true"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
+<span id="cb21-94"><a href="#cb21-94" aria-hidden="true"></a></span>
+<span id="cb21-95"><a href="#cb21-95" aria-hidden="true"></a><span class="fu">plotsjl</span><span class="kw">:</span></span>
+<span id="cb21-96"><a href="#cb21-96" aria-hidden="true"></a><span class="co">  # preamble: plotsjl.jl</span></span>
+<span id="cb21-97"><a href="#cb21-97" aria-hidden="true"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> julia</span></span></code></pre></div>
 <p>A file like the above sets the <strong>default</strong> values; you can still override them in documents directly.</p>
 <p>The easiest way to specify configuration for <code>pandoc-plot</code> is to place a <code>.pandoc-plot.yml</code> file in the current working directory. You can also specify a configuration file in document metadata, under the <code>plot-configuration</code> key. For example, in Markdown:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="co">---</span></span>

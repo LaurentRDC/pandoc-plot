@@ -247,7 +247,7 @@ There are parameters that affect the figure that will be included in your docume
   ```
 ````
 
-  - `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, or `graphviz`, `bokeh`.
+  - `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, `graphviz`, `bokeh`, `plotsjl`.
 
 All following parameters are optional, with their default values controlled by the [configuration](#configuration)
 
@@ -396,6 +396,10 @@ graphviz:
 bokeh:
   # preamble: bokeh.py
   executable: python
+
+plotsjl:
+  # preamble: plotsjl.jl
+  executable: julia
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.
