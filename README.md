@@ -75,7 +75,7 @@ issue](https://github.com/LaurentRDC/pandoc-plot/issues)\!**
 ## Documentation
 
 You can find more information in the documentation, available either in the
-source repository file `MANUAL.md`, or via the command `pandoc-plot --manual`.
+source repository file `MANUAL.md`, on the [webpage](https://laurentrdc.github.io/pandoc-plot/MANUAL.html), or via the command `pandoc-plot --manual`.
 
 ## Installation
 
