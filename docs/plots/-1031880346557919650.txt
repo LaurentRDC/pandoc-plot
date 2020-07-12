@@ -7,6 +7,8 @@ from bokeh.plotting import figure
 from bokeh.transform import linear_cmap
 from bokeh.util.hex import hexbin
 
+np.random.seed(23)
+
 n = 50000
 x = np.random.standard_normal(n)
 y = np.random.standard_normal(n)
