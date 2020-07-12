@@ -89,10 +89,25 @@
 -->
 <p><code>pandoc-plot</code> is a <a href="https://pandoc.org">pandoc</a> filter to generate figures from code blocks in documents. This page is generated <a href="index.md">from Markdown</a> using <code>pandoc-plot</code>, so you can get a sense of what is possible.</p>
 <ul class="incremental">
-<li><a href="https://github.com/LaurentRDC/pandoc-plot">Source repository</a></li>
-<li><a href="MANUAL.html">Documentation</a></li>
+<li><a href="#supported-toolkits">Supported toolkits</a></li>
 <li><a href="#simple-examples">Simple examples</a></li>
 <li><a href="#interactive-plots">Interactive plots</a></li>
+<li><a href="https://github.com/LaurentRDC/pandoc-plot">Source repository</a></li>
+<li><a href="MANUAL.html">Documentation</a></li>
+</ul>
+<h2 id="supported-toolkits">Supported toolkits</h2>
+<p><code>pandoc-plot</code> currently supports the following plotting toolkits (<strong>installed separately</strong>):</p>
+<ul class="incremental">
+<li><code>matplotlib</code>: plots using the <a href="https://matplotlib.org/">matplotlib</a> Python library;</li>
+<li><code>plotly_python</code> : plots using the <a href="https://plotly.com/python/">plotly</a> Python library;</li>
+<li><code>plotly_r</code>: plots using the <a href="https://plotly.com/r/">plotly</a> R library</li>
+<li><code>matlabplot</code>: plots using <a href="https://www.mathworks.com/">MATLAB</a>;</li>
+<li><code>mathplot</code> : plots using <a href="https://www.wolfram.com/mathematica/">Mathematica</a>;</li>
+<li><code>octaveplot</code>: plots using <a href="https://www.gnu.org/software/octave/">GNU Octave</a>;</li>
+<li><code>ggplot2</code>: plots using <a href="https://ggplot2.tidyverse.org/">ggplot2</a>;</li>
+<li><code>gnuplot</code>: plots using <a href="http://www.gnuplot.info/">gnuplot</a>;</li>
+<li><code>graphviz</code>: graphs using <a href="http://graphviz.org/">Graphviz</a>;</li>
+<li><code>bokeh</code>: plots using the <a href="https://bokeh.org/">Bokeh</a> visualization library;</li>
 </ul>
 <h2 id="simple-examples">Simple examples</h2>
 <p>Here’s the simplest way to create a figure in Markdown:</p>
@@ -120,7 +135,7 @@
 <h2 id="interactive-plots">Interactive plots</h2>
 <p><code>pandoc-plot</code> supports interactive plots for certain toolkits. Here’s an example using <a href="https://bokeh.org"><code>bokeh</code></a>:</p>
 <figure>
-<embed src="plots\-1031880346557919650.html" class="bokeh" type="text/html" width="600" height="600" /><figcaption>Move around in the plot by using your mouse. This gallery example was modified from <a href="https://docs.bokeh.org/en/latest/docs/gallery/hex_tile.html">here</a>.</figcaption>
+<embed src="plots\2082258366939946359.html" class="python bokeh" type="text/html" width="600" height="600" /><figcaption>Move around in the plot by using your mouse. This gallery example was modified from <a href="https://docs.bokeh.org/en/latest/docs/gallery/hex_tile.html">here</a>.</figcaption>
 </figure>
 </body>
 </html>

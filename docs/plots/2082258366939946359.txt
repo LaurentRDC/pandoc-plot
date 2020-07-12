@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from bokeh.io import output_file, show
 from bokeh.plotting import figure
 from bokeh.transform import linear_cmap
 from bokeh.util.hex import hexbin

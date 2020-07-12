@@ -8,10 +8,31 @@ plot-configuration: plot-config.yml
 
 `pandoc-plot` is a [pandoc](https://pandoc.org) filter to generate figures from code blocks in documents. This page is generated [from Markdown](index.md) using `pandoc-plot`, so you can get a sense of what is possible. 
 
-- [Source repository](https://github.com/LaurentRDC/pandoc-plot)
-- [Documentation](MANUAL.html)
+- [Supported toolkits](#supported-toolkits)
 - [Simple examples](#simple-examples)
 - [Interactive plots](#interactive-plots)
+- [Source repository](https://github.com/LaurentRDC/pandoc-plot)
+- [Documentation](MANUAL.html)
+
+## Supported toolkits
+
+`pandoc-plot` currently supports the following plotting toolkits
+(**installed separately**):
+
+  - `matplotlib`: plots using the [matplotlib](https://matplotlib.org/)
+    Python library;
+  - `plotly_python` : plots using the
+    [plotly](https://plotly.com/python/) Python library;
+  - `plotly_r`: plots using the [plotly](https://plotly.com/r/) R
+    library
+  - `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
+  - `mathplot` : plots using
+    [Mathematica](https://www.wolfram.com/mathematica/);
+  - `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
+  - `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
+  - `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
+  - `graphviz`: graphs using [Graphviz](http://graphviz.org/);
+  - `bokeh`: plots using the [Bokeh](https://bokeh.org/) visualization library;
 
 ## Simple examples
 
@@ -61,10 +82,9 @@ c = ax.scatter(theta, r, c=colors, s=area, cmap='hsv', alpha=0.75)
 
 `pandoc-plot` supports interactive plots for certain toolkits. Here's an example using [`bokeh`](https://bokeh.org):
 
-```{.bokeh format=html caption="Move around in the plot by using your mouse. This gallery example was modified from [here](https://docs.bokeh.org/en/latest/docs/gallery/hex_tile.html)."}
+```{.python .bokeh format=html caption="Move around in the plot by using your mouse. This gallery example was modified from [here](https://docs.bokeh.org/en/latest/docs/gallery/hex_tile.html)."}
 import numpy as np
 
-from bokeh.io import output_file, show
 from bokeh.plotting import figure
 from bokeh.transform import linear_cmap
 from bokeh.util.hex import hexbin
