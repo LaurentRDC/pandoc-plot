@@ -59,6 +59,7 @@ breaking changes in pandoc’s API.*
   - `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
   - `graphviz`: graphs using [Graphviz](http://graphviz.org/);
   - `bokeh`: plots using the [Bokeh](https://bokeh.org/) visualization library;
+  - `plotsjl`: plots using the [Julia `Plots.jl`](http://docs.plotsjl.org/latest/) package.
 
 To know which toolkits are useable on *your machine* (and which ones are
 not available), you can check with the `toolkits` command:

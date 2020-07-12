@@ -28,11 +28,13 @@ plot-configuration: plot-config.yml
   - `matlabplot`: plots using [MATLAB](https://www.mathworks.com/);
   - `mathplot` : plots using
     [Mathematica](https://www.wolfram.com/mathematica/);
-  - `octaveplot`: plots using [GNU Octave](https://www.gnu.org/software/octave/);
+  - `octaveplot`: plots using [GNU
+    Octave](https://www.gnu.org/software/octave/);
   - `ggplot2`: plots using [ggplot2](https://ggplot2.tidyverse.org/);
   - `gnuplot`: plots using [gnuplot](http://www.gnuplot.info/);
   - `graphviz`: graphs using [Graphviz](http://graphviz.org/);
   - `bokeh`: plots using the [Bokeh](https://bokeh.org/) visualization library;
+  - `plotsjl`: plots using the [Julia `Plots.jl`](http://docs.plotsjl.org/latest/) package.
 
 ## Simple examples
 
