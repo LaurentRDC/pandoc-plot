@@ -65,6 +65,7 @@ executable GGPlot2      = asksConfig ggplot2Exe      >>= liftIO . tryToFindExe
 executable GNUPlot      = asksConfig gnuplotExe      >>= liftIO . tryToFindExe
 executable Graphviz     = asksConfig graphvizExe     >>= liftIO . tryToFindExe
 executable Bokeh        = asksConfig bokehExe        >>= liftIO . tryToFindExe
+executable Plotsjl   = asksConfig plotsjlExe   >>= liftIO . tryToFindExe
 
 
 -- | Internal description of all information 

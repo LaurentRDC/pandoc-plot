@@ -59,6 +59,7 @@ data Toolkit
     | GNUPlot
     | Graphviz
     | Bokeh
+    | Plotsjl
     deriving (Bounded, Eq, Enum, Generic)
 
 
@@ -74,6 +75,7 @@ instance Show Toolkit where
     show GNUPlot      = "gnuplot"
     show Graphviz     = "graphviz"
     show Bokeh        = "Python/Bokeh"
+    show Plotsjl      = "Julia/Plots.jl"
 
 
 -- | Class name which will trigger the filter
@@ -88,6 +90,7 @@ cls GGPlot2      = "ggplot2"
 cls GNUPlot      = "gnuplot"
 cls Graphviz     = "graphviz"
 cls Bokeh        = "bokeh"
+cls Plotsjl      = "plotsjl"
 
 
 type Script = Text

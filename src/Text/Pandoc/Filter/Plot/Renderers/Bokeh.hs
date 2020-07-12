@@ -10,7 +10,7 @@ Maintainer  : laurent.decotret@outlook.com
 Stability   : internal
 Portability : portable
 
-Rendering Plotly-python code blocks
+Rendering Bokeh code blocks
 -}
 
 module Text.Pandoc.Filter.Plot.Renderers.Bokeh (

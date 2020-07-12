@@ -47,6 +47,7 @@ import Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
 import Text.Pandoc.Filter.Plot.Renderers.Graphviz
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
+import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
 import Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, OutputSpec(..))
 
 import Text.Pandoc.Filter.Plot.Monad
@@ -64,6 +65,7 @@ scriptExtension GGPlot2      = ".r"
 scriptExtension GNUPlot      = ".gp"
 scriptExtension Graphviz     = ".dot"
 scriptExtension Bokeh        = ".py"
+scriptExtension Plotsjl   = ".jl"
 
 
 -- Make a string into a comment
@@ -78,6 +80,7 @@ comment GGPlot2      = mappend "# "
 comment GNUPlot      = mappend "# "
 comment Graphviz     = mappend "// "
 comment Bokeh        = mappend "# "
+comment Plotsjl   = mappend "# "
 
 
 -- | The function that maps from configuration to the preamble.
@@ -92,6 +95,7 @@ preambleSelector GGPlot2      = ggplot2Preamble
 preambleSelector GNUPlot      = gnuplotPreamble
 preambleSelector Graphviz     = graphvizPreamble
 preambleSelector Bokeh        = bokehPreamble
+preambleSelector Plotsjl   = plotsjlPreamble
 
 
 -- | Save formats supported by this renderer.
@@ -106,6 +110,7 @@ supportedSaveFormats GGPlot2      = ggplot2SupportedSaveFormats
 supportedSaveFormats GNUPlot      = gnuplotSupportedSaveFormats
 supportedSaveFormats Graphviz     = graphvizSupportedSaveFormats
 supportedSaveFormats Bokeh        = bokehSupportedSaveFormats
+supportedSaveFormats Plotsjl   = plotsjlSupportedSaveFormats
 
 
 -- Checks to perform before running a script. If ANY check fails,
@@ -139,6 +144,7 @@ command GGPlot2      = ggplot2Command
 command GNUPlot      = gnuplotCommand
 command Graphviz     = graphvizCommand
 command Bokeh        = bokehCommand
+command Plotsjl   = plotsjlCommand
 
 
 -- | Script fragment required to capture a figure.
@@ -153,6 +159,7 @@ capture GGPlot2      = ggplot2Capture
 capture GNUPlot      = gnuplotCapture
 capture Graphviz     = graphvizCapture 
 capture Bokeh        = bokehCapture
+capture Plotsjl   = plotsjlCapture
 
 
 -- | Check if a toolkit is available, based on the current configuration
@@ -167,6 +174,7 @@ toolkitAvailable GGPlot2      = ggplot2Available
 toolkitAvailable GNUPlot      = gnuplotAvailable
 toolkitAvailable Graphviz     = graphvizAvailable
 toolkitAvailable Bokeh        = bokehAvailable
+toolkitAvailable Plotsjl   = plotsjlAvailable
 
 
 -- | List of toolkits available on this machine.

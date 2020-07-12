@@ -63,6 +63,7 @@ defaultConfiguration =
         , gnuplotPreamble     = mempty
         , graphvizPreamble    = mempty
         , bokehPreamble       = mempty
+        , plotsjlPreamble  = mempty
 
         , matplotlibExe       = python
         , matlabExe           = "matlab"
@@ -74,6 +75,7 @@ defaultConfiguration =
         , gnuplotExe          = "gnuplot"
         , graphvizExe         = "dot"
         , bokehExe            = python
+        , plotsjlExe       = "julia"
         
         , matplotlibTightBBox   = False
         , matplotlibTransparent = False
@@ -130,6 +132,7 @@ data ConfigPrecursor = ConfigPrecursor
     , _gnuplotPrec       :: !GNUPlotPrecursor
     , _graphvizPrec      :: !GraphvizPrecursor
     , _bokehPrec         :: !BokehPrecursor
+    , _plotsjlPrec       :: !PlotsjlPrecursor
     }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -153,6 +156,7 @@ defaultConfigPrecursor =
         , _gnuplotPrec       = GNUPlotPrecursor      Nothing (gnuplotExe defaultConfiguration)
         , _graphvizPrec      = GraphvizPrecursor     Nothing (graphvizExe defaultConfiguration)
         , _bokehPrec         = BokehPrecursor        Nothing (bokehExe defaultConfiguration)
+        , _plotsjlPrec       = PlotsjlPrecursor      Nothing (plotsjlExe defaultConfiguration)
         }
 
 
@@ -176,6 +180,7 @@ data GGPlot2Precursor       = GGPlot2Precursor      {_ggplot2Preamble      :: !(
 data GNUPlotPrecursor       = GNUPlotPrecursor      {_gnuplotPreamble      :: !(Maybe FilePath), _gnuplotExe      :: !FilePath}
 data GraphvizPrecursor      = GraphvizPrecursor     {_graphvizPreamble     :: !(Maybe FilePath), _graphvizExe     :: !FilePath}
 data BokehPrecursor         = BokehPrecursor        {_bokehPreamble        :: !(Maybe FilePath), _bokehExe        :: !FilePath}
+data PlotsjlPrecursor       = PlotsjlPrecursor      {_plotsjlPreamble      :: !(Maybe FilePath), _plotsjlExe      :: !FilePath}
 
 instance FromJSON LoggingPrecursor where
     parseJSON (Object v) = 
@@ -228,6 +233,9 @@ instance FromJSON BokehPrecursor where
     parseJSON (Object v) = BokehPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (bokehExe defaultConfiguration)
     parseJSON _ = fail $ mconcat ["Could not parse ", show Bokeh, " configuration."]
 
+instance FromJSON PlotsjlPrecursor where
+    parseJSON (Object v) = PlotsjlPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotsjlExe defaultConfiguration)
+    parseJSON _ = fail $ mconcat ["Could not parse ", show Plotsjl, " configuration."]
 
 
 instance FromJSON ConfigPrecursor where
@@ -252,6 +260,7 @@ instance FromJSON ConfigPrecursor where
         _gnuplotPrec       <- v .:? (cls GNUPlot)          .!= _gnuplotPrec defaultConfigPrecursor
         _graphvizPrec      <- v .:? (cls Graphviz)         .!= _graphvizPrec defaultConfigPrecursor
         _bokehPrec         <- v .:? (cls Bokeh)            .!= _bokehPrec defaultConfigPrecursor 
+        _plotsjlPrec       <- v .:? (cls Plotsjl)          .!= _plotsjlPrec defaultConfigPrecursor
 
         return $ ConfigPrecursor{..}
     parseJSON _          = fail "Could not parse configuration."
@@ -281,6 +290,7 @@ renderConfig ConfigPrecursor{..} = do
         gnuplotExe      = _gnuplotExe _gnuplotPrec
         graphvizExe     = _graphvizExe _graphvizPrec
         bokehExe        = _bokehExe _bokehPrec
+        plotsjlExe      = _plotsjlExe _plotsjlPrec
     
     matplotlibPreamble   <- readPreamble (_matplotlibPreamble _matplotlibPrec)
     matlabPreamble       <- readPreamble (_matlabPreamble _matlabPrec)
@@ -292,6 +302,7 @@ renderConfig ConfigPrecursor{..} = do
     gnuplotPreamble      <- readPreamble (_gnuplotPreamble _gnuplotPrec)
     graphvizPreamble     <- readPreamble (_graphvizPreamble _graphvizPrec)
     bokehPreamble        <- readPreamble (_bokehPreamble _bokehPrec)
+    plotsjlPreamble      <- readPreamble (_plotsjlPreamble _plotsjlPrec)
 
     return Configuration{..}
     where
