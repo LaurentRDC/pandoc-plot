@@ -1,0 +1,11 @@
+
+directory: docs/plots
+source: true
+caption_format: markdown+tex_math_dollars
+format: PNG
+
+matplotlib:
+  transparent: true
+
+logging:
+  verbosity: info
