@@ -91,3 +91,7 @@ graphviz:
 bokeh:
   # preamble: bokeh.py
   executable: python
+
+plotsjl:
+  # preamble: plotsjl.jl
+  executable: julia
