@@ -75,6 +75,7 @@ testExampleConfiguration =
         -- even on other OSes
         let config = defaultConfiguration { matplotlibExe = "python"
                                           , plotlyPythonExe = "python"
+                                          , bokehExe = "python"
                                           }
 
         parsedConfig <- configuration "example-config.yml"
