@@ -1,7 +1,14 @@
+.\mkmanual
+
+cd docs/
+
+stack exec -- pandoc-plot clean index.md
+
 stack exec -- pandoc `
                 --standalone `
                 --css=theme.css `
                 --filter pandoc-plot `
-                -M "plot-configuration=docs/plot-config.yml" `
-                -i docs/index.md `
-                -o docs/index.html
+                -i index.md `
+                -o index.html
+
+cd ..

@@ -1,5 +1,5 @@
 
-directory: docs/plots
+directory: plots
 source: true
 caption_format: markdown+tex_math_dollars
 format: PNG
