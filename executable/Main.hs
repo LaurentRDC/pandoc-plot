@@ -1,7 +1,9 @@
 {-# LANGUAGE ApplicativeDo     #-}
 {-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE CPP #-}
 
 module Main where
 
@@ -26,7 +28,8 @@ import           System.IO                        (hPutStrLn, stderr)
 import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform,
                                                    defaultConfiguration, 
-                                                   configuration, Configuration(..))
+                                                   configuration, Configuration(..),
+                                                   pandocPlotVersion)
 import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats, 
                                                    toolkits, readDoc, 
                                                    cleanOutputDirs, 
@@ -42,7 +45,6 @@ import           Text.ParserCombinators.ReadP     (readP_to_S)
 import           OpenFile                         (openFile)
 
 import qualified Data.Version                     as V
-import           Paths_pandoc_plot                (version)
 
 import           ManPage                          (embedManualHtml)
 import           ExampleConfig                    (embedExampleConfig)
@@ -65,10 +67,13 @@ main = join $ execParser opts
     where 
         opts = info (optparse <**> helper)
             (fullDesc
-            <> progDesc "This pandoc filter generates plots from code blocks using a multitude of \
-                        \possible renderers. This allows to keep documentation and figures in \
-                        \perfect synchronicity."
-            <> header (mconcat ["pandoc-plot ", V.showVersion version, " - generate figures directly in documents"])
+            <> progDesc (unlines 
+                ["This pandoc filter generates plots from code blocks using a multitude of "
+                , "possible renderers. This allows to keep documentation and figures in"
+                , "perfect synchronicity."
+                ]
+            )
+            <> header (mconcat ["pandoc-plot ", V.showVersion pandocPlotVersion, " - generate figures directly in documents"])
             <> footerDoc (Just footer')
             )
         
@@ -82,7 +87,7 @@ main = join $ execParser opts
             return $ go flag_ command_ input
         
         go :: Maybe Flag -> Maybe Command -> Maybe String -> IO ()
-        go (Just Version)          _ _ = putStrLn (V.showVersion version)
+        go (Just Version)          _ _ = putStrLn (V.showVersion pandocPlotVersion)
         go (Just FullVersion)      _ _ = showFullVersion
         go (Just Manual)           _ _ = showManPage
         go _ (Just (Toolkits mfp))   _ = showAvailableToolkits mfp
@@ -117,10 +122,13 @@ commandParser = optional $ subparser $ mconcat
                 )  
             , command "clean" (
                 info (cleanP <**> helper) ( 
-                    progDesc "Clean output directories where figures from FILE and log files might be stored.\
-                              \ WARNING: All files in those directories will be deleted." 
-                    )
+                    progDesc (unlines 
+                        [ "Clean output directories where figures from FILE and log files might be stored."
+                        , "WARNING: All files in those directories will be deleted."
+                        ]
+                    ) 
                 )
+            )
             , command "write-example-config" (
                 info (writeConfigP <**> helper) (progDesc "Write example configuration to a file and exit.")
                 )
@@ -196,13 +204,13 @@ localConfig = do
 
 showFullVersion :: IO ()
 showFullVersion = do
-    putStrLn $ "pandoc-plot " <> (V.showVersion version)
+    putStrLn $ "pandoc-plot " <> (V.showVersion pandocPlotVersion)
     putStrLn $ "Git revision " <> gitrev
-    putStrLn $ mconcat [ "Compiled with pandoc "
-                        , (unpack pandocVersion)
-                        , " and pandoc-types "
-                        , V.showVersion pandocTypesVersion
-                        ]
+    putStrLn $ mconcat 
+        [ "Compiled with pandoc " , (unpack pandocVersion)
+        , " and pandoc-types " , V.showVersion pandocTypesVersion
+        , " using GHC ", TOOL_VERSION_ghc -- Constant defined by CPP
+        ]
     where
         -- In certain environments (e.g. Hackage when building documentation),
         -- there is no git information. 

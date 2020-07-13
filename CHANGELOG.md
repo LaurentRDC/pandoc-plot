@@ -20,6 +20,7 @@ fig = px.scatter_ternary(df, a="Joly", b="Coderre", c="Bergeron")
 * Added a new toolkit, [`bokeh`](https://bokeh.org/). This toolkit can take advantage of the new HTML interactive output.
 * Added a new toolkit, [`plotsjl`](http://docs.juliaplots.org/latest/).
 * Separated the detailed information from `README.md` and into a proper `MANUAL.md`. This is now the information which will be shown with `pandoc-plot --manual`.
+* Exposed the `pandoc-plot` version via `Text.Pandoc.Filter.Plot.pandocPlotVersion`.
 
 Release 0.7.2.1
 ---------------

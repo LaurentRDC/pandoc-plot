@@ -25,7 +25,9 @@ attribute will trigger the filter:
 *   @octaveplot@ for GNU Octave plots;
 *   @ggplot2@ for ggplot2-based R plots;
 *   @gnuplot@ for gnuplot plots;
-*   @graphviz@ for Graphviz graphs.
+*   @graphviz@ for Graphviz graphs;
+*   @bokeh@ for Bokeh-based Python plots;
+*   @plotsjl@ for Plots.jl-based Julia plots;
 
 For example, in Markdown:
 
@@ -82,6 +84,8 @@ module Text.Pandoc.Filter.Plot (
     -- * Determining available plotting toolkits
     , availableToolkits
     , unavailableToolkits
+    -- * Version information
+    , pandocPlotVersion
     -- * For testing and internal purposes ONLY
     , make
     , makeEither
@@ -91,12 +95,14 @@ module Text.Pandoc.Filter.Plot (
 
 import Control.Concurrent.Async.Lifted   (mapConcurrently)
 import Data.Text                         (Text, unpack)
+import Data.Version                      (Version)
+
+import Paths_pandoc_plot                 (version)
 
 import Text.Pandoc.Definition            (Pandoc(..), Block)
 import Text.Pandoc.Walk                  (walkM, Walkable)
 
 import Text.Pandoc.Filter.Plot.Internal
-
 
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
 -- into figures. This function will operate on blocks in parallel if possible.
@@ -127,6 +133,13 @@ makePlot :: Walkable Block a
          -> a             -- ^ Input block or document
          -> IO a
 makePlot conf = runPlotM conf . walkM make
+
+
+-- | The version of the pandoc-plot package.
+--
+-- @since 0.8.0.0
+pandocPlotVersion :: Version
+pandocPlotVersion = version
 
 
 -- | Try to process the block with `pandoc-plot`. If a failure happens (or the block)
