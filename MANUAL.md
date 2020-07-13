@@ -414,7 +414,7 @@ plot-configuration: /path/to/file.yml
 ---
 ```
 
-or on the command line, using pandoc’s `-M/--metadata` flag:
+or on the command line, using the pandoc `-M/--metadata` flag:
 
 ``` bash
 pandoc --filter pandoc-plot -M plot-configuration=/path/to/file.yml ...
