@@ -1,4 +1,4 @@
-.\mkmanual
+.\tools\mkmanual
 
 cd docs/
 
