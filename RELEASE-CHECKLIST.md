@@ -1,6 +1,7 @@
 # Release checklist
 
-[ ] Render the README with `mkreadme.ps1`
+[ ] Render the website with `mksite.ps1`
+[ ] Render the manual with `mkmanual.ps1`
 [ ] Update CHANGELOG.md if necessary.
 [ ] Run Azure pipelines to make sure tests pass.
 [ ] Tag release in git.
