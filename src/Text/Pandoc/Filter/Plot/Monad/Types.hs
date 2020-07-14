@@ -42,7 +42,7 @@ import           System.Info            (os)
 
 import           Text.Pandoc.Definition (Attr)
 
-
+-- | List of supported toolkits.
 toolkits :: [Toolkit]
 toolkits = enumFromTo minBound maxBound
 
@@ -93,6 +93,7 @@ cls Bokeh        = "bokeh"
 cls Plotsjl      = "plotsjl"
 
 
+-- | Source context for plotting scripts
 type Script = Text
 
 

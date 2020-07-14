@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 1.0.0.0
+---------------
+
+* The module `Text.Pandoc.Filter.Plot.Internal` is no longer exposed; instead, everything relevant is exposed by the `Text.Pandoc.Filter.Plot` module.
+
 Release 0.8.0.0
 ---------------
 

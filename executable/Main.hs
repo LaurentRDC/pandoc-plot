@@ -29,8 +29,8 @@ import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    plotTransform,
                                                    defaultConfiguration, 
                                                    configuration, Configuration(..),
-                                                   pandocPlotVersion)
-import           Text.Pandoc.Filter.Plot.Internal (cls, supportedSaveFormats, 
+                                                   pandocPlotVersion, cls, 
+                                                   supportedSaveFormats, 
                                                    toolkits, readDoc, 
                                                    cleanOutputDirs, 
                                                    configurationPathMeta,
@@ -252,7 +252,10 @@ clean :: Maybe FilePath -- Use configuration file?
 clean mfp fp = do
     doc <- readDoc fp
     -- Note the priority for configuration:
-    -- (1) path of argument --config (2) document metadata (3) local .pandoc-plot.yml (4) default config
+    --   (1) path of argument --config 
+    --   (2) document metadata 
+    --   (3) local .pandoc-plot.yml 
+    --   (4) default config
     conf <- maybe localConfig configuration $ firstJusts [configurationPathMeta doc, mfp]
     putStrLn $ "Cleaning output directories for " <> fp
     cleanedDirs <- cleanOutputDirs conf doc

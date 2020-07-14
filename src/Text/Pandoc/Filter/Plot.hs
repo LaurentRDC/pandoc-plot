@@ -82,15 +82,30 @@ module Text.Pandoc.Filter.Plot (
     , SaveFormat(..)
     , Script
     -- * Determining available plotting toolkits
+    , Toolkit(..)
     , availableToolkits
     , unavailableToolkits
+    , toolkits
+    , supportedSaveFormats
     -- * Version information
     , pandocPlotVersion
     -- * For testing and internal purposes ONLY
+    -- ** Running the @PlotM@ monad
     , make
     , makeEither
+    , PlotM
+    , runPlotM
     , PandocPlotError(..)
+    -- ** Code block parameters
+    , InclusionKey(..)
+    , inclusionKeys
+    -- ** Utilities
+    , extension
     , readDoc
+    , captionReader
+    , cls
+    , configurationPathMeta
+    , executable
     ) where
 
 import Control.Concurrent.Async.Lifted   (mapConcurrently)

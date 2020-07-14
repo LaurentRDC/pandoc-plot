@@ -15,7 +15,6 @@ import           Test.Tasty
 import           Test.Tasty.HUnit
 
 import           Text.Pandoc.Filter.Plot
-import           Text.Pandoc.Filter.Plot.Internal
 
 import qualified Text.Pandoc.Builder              as B
 import qualified Text.Pandoc.Definition           as B

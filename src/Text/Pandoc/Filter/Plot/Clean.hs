@@ -64,7 +64,7 @@ cleanOutputDirs conf doc = do
         removeDir d = removePathForcibly d >> return d
 
 
--- | Read document, guessing what extensions and reader options are appropriate. If
+-- | Read a document, guessing what extensions and reader options are appropriate. If
 -- the file cannot be read for any reason, an error is thrown.
 readDoc :: FilePath -> IO Pandoc
 readDoc fp = handleError =<< (runIO $ do
