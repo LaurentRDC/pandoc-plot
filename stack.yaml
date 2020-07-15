@@ -8,8 +8,8 @@ extra-deps:
 - hslua-1.1.2@sha256:6c231b2af447430d1ed04f065d40bb6882ece93cc7f32f4051dc99deb69beeae,9694
 - jira-wiki-markup-1.3.2@sha256:b5f0901208a0ee07aff60f5356aeb851b7aa7950c75a18a15fd34247a35886d8,3819
 # For development
-- git: https://github.com/LaurentRDC/pandoc-include-code.git
-  commit: 162ae92edc80601bde8450bf933c0127e8c2b53a
+- git: https://github.com/owickstrom/pandoc-include-code.git
+  commit: d5cbdc86eb1abcd9561c0965ac423d7011378ddb
 - ghc-check-0.3.0.1@sha256:651d9b2b75a5cbdb3c942117801bfa566079bcaf20360e4d0959f9e575c30b39,1070
   
 # Faster compilation.
