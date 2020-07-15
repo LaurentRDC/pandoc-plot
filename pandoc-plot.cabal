@@ -67,7 +67,7 @@ library
         , filepath           >= 1.4   && < 2
         , hashable           >= 1     && < 2
         , pandoc             >= 2.10  && < 3
-        , pandoc-types       >= 1.21  && < 2
+        , pandoc-types       >= 1.21  && < 1.22
         , lifted-async       >= 0.10  && < 1
         , shakespeare        >= 2.0   && < 3
         , text               >= 1     && < 2
