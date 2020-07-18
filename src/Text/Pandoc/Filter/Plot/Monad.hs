@@ -102,7 +102,8 @@ log h v t = do
 
 -- | Run a command within the @PlotM@ monad. Stderr stream
 -- is read and decoded, while Stdout is ignored. 
--- Logging happens at the debug level.
+-- Logging happens at the debug level if the command succeeds, or at
+-- the error level if it does not succeed..
 runCommand :: Text -> PlotM (ExitCode, Text)
 runCommand command = do
     (ec, processOutput') <- liftIO 
@@ -111,12 +112,21 @@ runCommand command = do
                         $ setStderr byteStringOutput 
                         $ shell (unpack command)
     let processOutput = decodeUtf8With lenientDecode $ toStrict processOutput'
-    debug $ mconcat [ "Running command\n"
-                    , "    ", command, "\n"
-                    , "ended with exit code ", pack . show $ ec
-                    ,  if processOutput /= mempty then (" and output\n" <> "    " <> processOutput) else mempty
-                    , "\n"
-                    ] 
+        logFunc = if ec == ExitSuccess
+                    then debug
+                    else err
+        message = T.unlines [ "Running command"
+                            , "    " <> command
+                            , "ended with exit code " <> (pack . show $ ec)
+                            ] 
+        errorMessage = if processOutput == mempty 
+            then mempty 
+            else T.unlines [ "*******"
+                           , processOutput
+                           , "*******"
+                           ]
+    
+    logFunc $ message <> errorMessage
     return (ec, processOutput)
 
 
