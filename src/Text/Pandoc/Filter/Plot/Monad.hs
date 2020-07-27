@@ -29,6 +29,7 @@ module Text.Pandoc.Filter.Plot.Monad (
     , ask
     , asks
     , asksConfig
+    , silence
     -- * Base types
     , module Text.Pandoc.Filter.Plot.Monad.Types
 ) where
@@ -65,6 +66,12 @@ data RuntimeEnv =
     RuntimeEnv { envConfig :: Configuration
                , envLogger :: Logger
                }
+
+
+-- | Modify the runtime environment to be silent.
+silence :: PlotM a -> PlotM a
+silence = local (\(RuntimeEnv c l) -> RuntimeEnv c l{lVerbosity = Silent})
+
 
 -- | Get access to configuration within the @PlotM@ monad.
 asksConfig :: (Configuration -> a) -> PlotM a

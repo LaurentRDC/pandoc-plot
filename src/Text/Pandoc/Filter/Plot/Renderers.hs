@@ -65,7 +65,7 @@ scriptExtension GGPlot2      = ".r"
 scriptExtension GNUPlot      = ".gp"
 scriptExtension Graphviz     = ".dot"
 scriptExtension Bokeh        = ".py"
-scriptExtension Plotsjl   = ".jl"
+scriptExtension Plotsjl      = ".jl"
 
 
 -- Make a string into a comment
@@ -80,7 +80,7 @@ comment GGPlot2      = mappend "# "
 comment GNUPlot      = mappend "# "
 comment Graphviz     = mappend "// "
 comment Bokeh        = mappend "# "
-comment Plotsjl   = mappend "# "
+comment Plotsjl      = mappend "# "
 
 
 -- | The function that maps from configuration to the preamble.
@@ -95,7 +95,7 @@ preambleSelector GGPlot2      = ggplot2Preamble
 preambleSelector GNUPlot      = gnuplotPreamble
 preambleSelector Graphviz     = graphvizPreamble
 preambleSelector Bokeh        = bokehPreamble
-preambleSelector Plotsjl   = plotsjlPreamble
+preambleSelector Plotsjl      = plotsjlPreamble
 
 
 -- | Save formats supported by this renderer.
@@ -110,7 +110,7 @@ supportedSaveFormats GGPlot2      = ggplot2SupportedSaveFormats
 supportedSaveFormats GNUPlot      = gnuplotSupportedSaveFormats
 supportedSaveFormats Graphviz     = graphvizSupportedSaveFormats
 supportedSaveFormats Bokeh        = bokehSupportedSaveFormats
-supportedSaveFormats Plotsjl   = plotsjlSupportedSaveFormats
+supportedSaveFormats Plotsjl      = plotsjlSupportedSaveFormats
 
 
 -- Checks to perform before running a script. If ANY check fails,
@@ -144,7 +144,7 @@ command GGPlot2      = ggplot2Command
 command GNUPlot      = gnuplotCommand
 command Graphviz     = graphvizCommand
 command Bokeh        = bokehCommand
-command Plotsjl   = plotsjlCommand
+command Plotsjl      = plotsjlCommand
 
 
 -- | Script fragment required to capture a figure.
@@ -159,7 +159,7 @@ capture GGPlot2      = ggplot2Capture
 capture GNUPlot      = gnuplotCapture
 capture Graphviz     = graphvizCapture 
 capture Bokeh        = bokehCapture
-capture Plotsjl   = plotsjlCapture
+capture Plotsjl      = plotsjlCapture
 
 
 -- | Check if a toolkit is available, based on the current configuration
@@ -174,7 +174,7 @@ toolkitAvailable GGPlot2      = ggplot2Available
 toolkitAvailable GNUPlot      = gnuplotAvailable
 toolkitAvailable Graphviz     = graphvizAvailable
 toolkitAvailable Bokeh        = bokehAvailable
-toolkitAvailable Plotsjl   = plotsjlAvailable
+toolkitAvailable Plotsjl      = plotsjlAvailable
 
 
 -- | List of toolkits available on this machine.
@@ -190,8 +190,10 @@ unavailableToolkits conf = runPlotM conf unavailableToolkitsM
 
 
 -- | Monadic version of @availableToolkits@.
+--
+-- Note that logging is disabled
 availableToolkitsM :: PlotM [Toolkit]
-availableToolkitsM = do
+availableToolkitsM = silence $ do
     mtks <- forConcurrently toolkits $  \tk -> do
         available <- toolkitAvailable tk
         if available
