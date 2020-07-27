@@ -139,9 +139,9 @@ toImage fmt spec = head . toList $ para $ imageWith attrs' (pack target') "fig:"
         withInteractiveAttrs (a, b, c) = 
             if saveFormat spec == HTML
                 then (a, b, c <> [ ("type", "text/html")
-                                    , ("width", "600")
-                                    , ("height", "600")
-                                    ])
+                                 , ("style", "width:100%;height:100%;")
+                                 ]
+                     )
                 else (a, b, c)
 
 
