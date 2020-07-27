@@ -120,8 +120,12 @@ runTempScript spec@FigureSpec{..} = do
 -- be run in another function.
 toImage :: Format       -- ^ text format of the caption
         -> FigureSpec 
-        -> Block
-toImage fmt spec = head . toList $ para $ imageWith attrs' (pack target') "fig:" caption'
+        -> PlotM Block
+toImage fmt spec = return 
+                 . head 
+                 . toList 
+                 . para 
+                 $ imageWith attrs' (pack target') "fig:" caption'
     -- To render images as figures with captions, the target title
     -- must be "fig:"
     -- Janky? yes
