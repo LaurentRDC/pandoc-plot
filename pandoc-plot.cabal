@@ -1,6 +1,6 @@
 cabal-version:  2.2
 name:           pandoc-plot
-version:        1.0.0.0
+version:        0.9.0.0
 synopsis:       A Pandoc filter to include figures generated from code blocks using your plotting toolkit of choice.
 description:    A Pandoc filter to include figures generated from code blocks. Keep the document and code in the same location. Output is captured and included as a figure.
 category:       Text
