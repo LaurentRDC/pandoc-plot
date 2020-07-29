@@ -5,6 +5,7 @@ import           Control.Monad                    (forM_)
 
 import qualified Data.Map.Strict                  as Map
 import           Data.Text                        (Text, unpack)
+import qualified Data.Text                        as T
 
 import           Test.Tasty
 import           Test.Tasty.HUnit
@@ -33,6 +34,11 @@ main = do
         , testGroup
             "Parsing tests"
             [ testCaptionReader ]
+        , testGroup
+            "HTML embedding tests"
+            [ testHtmlBodyEmbedding
+            , testHtmlEmbedding 
+            ]
         , testGroup
             "Toolkit tests"
             (toolkitSuite <$> available)
@@ -105,3 +111,45 @@ testCaptionReader =
             parsed = captionReader fmt caption
 
         assertEqual "" expected parsed
+
+
+testHtmlBodyEmbedding :: TestTree
+testHtmlBodyEmbedding = 
+    testCase "HTML body can be extracted from file" $ do
+        let html=T.unlines ["<!DOCTYPE html>"
+                           ,"<html lang=\"en\">"
+                           ,"  <head>"
+                           ,"    <meta charset=\"utf-8\">"
+                           ,"    <title>title</title>"
+                           ,"    <link rel=\"stylesheet\" href=\"style.css\">"
+                           ,"  </head>"
+                           ,"  <body>"
+                           ,"    <p>Hello</p>"
+                           ,"  </body>"
+                           ,"</html>"
+                           ]
+            extracted = extractPlot html
+            expected = "\n    <p>Hello</p>"
+
+        assertEqual "" expected extracted 
+
+testHtmlEmbedding :: TestTree
+testHtmlEmbedding = 
+    testCase "HTML body and head scripts can be extracted from file" $ do
+        let html=T.unlines ["<!DOCTYPE html>"
+                           ,"<html lang=\"en\">"
+                           ,"  <head>"
+                           ,"    <meta charset=\"utf-8\">"
+                           ,"    <title>title</title>"
+                           ,"    <link rel=\"stylesheet\" href=\"style.css\">"
+                           ,"    <script src=\"script.js\"></script>"
+                           ,"  </head>"
+                           ,"  <body>"
+                           ,"    <p>Hello</p>"
+                           ,"  </body>"
+                           ,"</html>"
+                           ]
+            extracted = extractPlot html
+            expected = "<script src=\"script.js\"></script>\n    <p>Hello</p>"
+
+        assertEqual "" expected extracted

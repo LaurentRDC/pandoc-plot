@@ -1,4 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -18,14 +17,22 @@ import           Data.Text                (Text, pack)
 
 import           Text.HTML.TagSoup
 
-import           Text.Shakespeare.Text    (st)
+-- | Extract the plot-relevant content from inside of a full HTML document.
+-- Scripts contained in the <head> tag are extracted, as well as the entirety of the
+-- <body> tag.
+extractPlot :: Text -> Text
+extractPlot t = let tags = parseTagsFast t  
+                in mconcat $ renderTags <$> (headScripts tags <> [htmlBody tags])
+
 
 parseTagsFast :: Text -> [Tag Text]
 parseTagsFast = canonicalizeTags . parseTagsOptions parseOptionsFast
 
 
 inside :: String -> [Tag Text] -> [Tag Text]
-inside t = takeWhile (~/= TagClose (pack t)) . dropWhile (~/= TagOpen t [])
+inside t = init . tail . tgs
+    where
+        tgs = takeWhile (~/= TagClose (pack t)) . dropWhile (~/= TagOpen t [])
 
 
 htmlHead :: [Tag Text] -> [Tag Text]
@@ -37,16 +44,4 @@ htmlBody = inside "body"
 
 
 headScripts :: [Tag Text] -> [[Tag Text]]
-headScripts = sections (~== "<scripts>") . htmlHead
-
-
-extractPlot :: Text -> Text
-extractPlot t = 
-    let tags = parseTagsFast t  
-    in [st|
-<div>
-#{mconcat $ renderTags <$> headScripts tags}
-
-#{renderTags $ htmlBody tags}
-</div>
-|]
+headScripts = partitions (~== "<script>") . htmlHead
