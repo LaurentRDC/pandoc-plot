@@ -62,12 +62,12 @@ bokehCapture :: FigureSpec -> FilePath -> Script
 bokehCapture FigureSpec{..} fname = [st|
 from bokeh.io import export_png, export_svgs, save
 from bokeh.models import Plot
-from bokeh.resources import INLINE
+from bokeh.resources import CDN
 __current_plot = next(obj for obj in globals().values() if isinstance(obj, Plot))
 #{write}
 |]
     where  
         write = case saveFormat of
-            HTML -> [st|save(__current_plot, filename=r"#{fname}", resources=INLINE)|]
+            HTML -> [st|save(__current_plot, filename=r"#{fname}", resources=CDN)|]
             PNG  -> [st|export_png(obj = __current_plot, filename=r"#{fname}")|]
             fmt  -> error $ "Save format not supported: " <> show fmt

@@ -38,12 +38,11 @@ plotlyPythonAvailable = do
     exe <- executable PlotlyPython
     commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
 
-
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
 plotlyPythonCapture FigureSpec{..} fname = [st|
 import plotly.graph_objects as go
 __current_plotly_figure = next(obj for obj in globals().values() if type(obj) == go.Figure)
-__current_plotly_figure.#{write_method}(r"#{fname}")
+__current_plotly_figure.#{write_method}(r"#{fname}"#{extra_args})
 |]
     where
         -- Note: the default behaviour for HTML export is
@@ -51,4 +50,7 @@ __current_plotly_figure.#{write_method}(r"#{fname}")
         --       that the resulting file can be used completely offline   
         write_method = case saveFormat of
             HTML -> "write_html"::Text
-            _    -> "write_image"::Text
+            _    -> "write_image"
+        extra_args = case saveFormat of
+            HTML -> ", include_plotlyjs='cdn'"::Text
+            _    -> mempty
