@@ -7,6 +7,7 @@ Release 1.0.0.0
 
 * The module `Text.Pandoc.Filter.Plot.Internal` is no longer exposed; instead, everything relevant is exposed by the `Text.Pandoc.Filter.Plot` module.
 * Fixed an issue where script errors would be logged as debug messages.
+* Interactive plots are now embedded directly in output (#7).
 
 Release 0.8.0.0
 ---------------
