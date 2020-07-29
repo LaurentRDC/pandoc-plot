@@ -100,7 +100,7 @@ The equivalent LaTeX usage is as follows:
 
 This `preamble` parameter is perfect for longer documents with many plots. Simply define the style you want in a separate script! You can also import packages this way, or define functions you often use.
 
-### Support for interative plots
+### Support for interactive plots
 
 Starting with version 0.8.0.0, `pandoc-plot` supports the creation of interactive plots (if a toolkit supports it). All you need to do is set the save format to `html`. The resulting plot is fully self-contained, so it can be displayed offline.
 
@@ -248,6 +248,20 @@ or (Latex):
 ````
 
 This way, you benefit from code highlighting *and* `pandoc-plot`.
+
+### Interactive HTML figures
+
+Interactive HTML figures are available for a few toolkits, e.g. `bokeh`. To make a figure interactive, use the output format `format=html`. This only makes sense if your output file is also HTML. 
+
+You can take a look at the [demonstration page](https://laurentrdc.github.io/pandoc-plot/) for an example result.
+
+Many interactive plots rely on javascript scripts stored on the internet. If you want to have a self-contained document that can be viewed offline -- or you want your document to work for the next 10 years --, you can use pandoc's `--self-contained` flag:
+
+```bash
+pandoc --self-contained --filter pandoc-plot -i mydoc.md -o webpage.html 
+```
+
+The resulting output `webpage.html` will contain everything, at the cost of size.
 
 ### Configuration
 
