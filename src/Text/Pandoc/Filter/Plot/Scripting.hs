@@ -16,13 +16,12 @@ module Text.Pandoc.Filter.Plot.Scripting
     ( ScriptResult(..)
     , runTempScript
     , runScriptIfNecessary
-    , toImage
+    , figurePath
     ) where
 
 import           Control.Monad.Reader
 
 import           Data.Hashable                     (hash)
-import           Data.Maybe                        (fromMaybe)
 import           Data.Text                         (Text, pack, unpack)
 import qualified Data.Text.IO                      as T
 
@@ -33,11 +32,6 @@ import           System.FilePath                   (addExtension,
                                                     normalise, replaceExtension,
                                                     takeDirectory, (</>))
 
-import           Text.Pandoc.Builder               (fromList, imageWith, link,
-                                                    para, toList)
-import           Text.Pandoc.Definition            (Block (..), Format)
-
-import           Text.Pandoc.Filter.Plot.Parse     (captionReader)
 import           Text.Pandoc.Filter.Plot.Renderers
 import           Text.Pandoc.Filter.Plot.Monad
 
@@ -113,40 +107,6 @@ runTempScript spec@FigureSpec{..} = do
                     if toolkitInstalled
                         then return $ ScriptFailure command_ code
                         else return $ ToolkitNotInstalled toolkit
-
-
--- | Convert a @FigureSpec@ to a Pandoc block component.
--- Note that the script to generate figure files must still
--- be run in another function.
-toImage :: Format       -- ^ text format of the caption
-        -> FigureSpec 
-        -> PlotM Block
-toImage fmt spec = return 
-                 . head 
-                 . toList 
-                 . para 
-                 $ imageWith attrs' (pack target') "fig:" caption'
-    -- To render images as figures with captions, the target title
-    -- must be "fig:"
-    -- Janky? yes
-    where
-        attrs'       = withInteractiveAttrs $ blockAttrs spec
-        target'      = figurePath spec
-        withSource'  = withSource spec
-        srcLink      = link (pack $ replaceExtension target' ".txt") mempty "Source code"
-        captionText  = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
-        captionLinks = mconcat [" (", srcLink, ")"]
-        caption'     = if withSource' then captionText <> captionLinks else captionText
-        -- for HTML plots, pandoc will replace the <img> tag with an <embed> tag
-        -- We include extra attributes with the <embed> tag in mind.
-        -- TODO: find way to have HTML "figure" full-width without hardcoding width
-        withInteractiveAttrs (a, b, c) = 
-            if saveFormat spec == HTML
-                then (a, b, c <> [ ("type", "text/html")
-                                 , ("style", "width:100%;height:100%;")
-                                 ]
-                     )
-                else (a, b, c)
 
 
 -- | Determine the temp script path from Figure specifications

@@ -178,7 +178,7 @@ makeEither block =
         handleResult _ (ScriptFailure msg code)       = return $ Left (ScriptRuntimeError msg code) 
         handleResult _ (ScriptChecksFailed msg)       = return $ Left (ScriptChecksFailedError msg)
         handleResult _ (ToolkitNotInstalled tk')      = return $ Left (ToolkitNotInstalledError tk') 
-        handleResult spec ScriptSuccess = asks envConfig >>= \c -> Right <$> toImage (captionFormat c) spec
+        handleResult spec ScriptSuccess = asks envConfig >>= \c -> Right <$> toFigure (captionFormat c) spec
 
 
 data PandocPlotError

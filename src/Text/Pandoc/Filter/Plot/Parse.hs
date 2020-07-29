@@ -19,11 +19,11 @@ module Text.Pandoc.Filter.Plot.Parse (
       plotToolkit
     , parseFigureSpec
     , captionReader
-    , defaultReaderOptions
 ) where
 
 import           Control.Monad                     (join, when)
 
+import           Data.Default                      (def)
 import           Data.List                         (intersperse)
 import qualified Data.Map.Strict                   as Map
 import           Data.Maybe                        (fromMaybe, listToMaybe)
@@ -40,8 +40,7 @@ import           Text.Pandoc.Definition            (Block (..), Inline,
                                                     Pandoc (..), Format(..))
 
 import           Text.Pandoc.Class                 (runPure)
-import           Text.Pandoc.Extensions            (emptyExtensions)
-import           Text.Pandoc.Options               (ReaderOptions (..), TrackChanges(..))
+import           Text.Pandoc.Options               (ReaderOptions (..))
 import           Text.Pandoc.Readers               (getReader, Reader(..))
 
 import           Text.Pandoc.Filter.Plot.Renderers
@@ -115,7 +114,7 @@ plotToolkit _ = Nothing
 captionReader :: Format -> Text -> Maybe [Inline]
 captionReader (Format f) t = either (const Nothing) (Just . extractFromBlocks) $ runPure $ do
     (reader, exts) <- getReader f
-    let readerOpts = defaultReaderOptions {readerExtensions = exts}
+    let readerOpts = def {readerExtensions = exts}
     -- Assuming no ByteString readers...
     case reader of
         TextReader fct -> fct readerOpts t
@@ -134,19 +133,3 @@ readBool :: Text -> Bool
 readBool s | s `elem` ["True",  "true",  "'True'",  "'true'",  "1"] = True
            | s `elem` ["False", "false", "'False'", "'false'", "0"] = False
            | otherwise = error $ unpack $ mconcat ["Could not parse '", s, "' into a boolean. Please use 'True' or 'False'"]
-
-
--- | Default reader options, straight out of Text.Pandoc.Options
-defaultReaderOptions :: ReaderOptions
-defaultReaderOptions = 
-    ReaderOptions
-        { readerExtensions            = emptyExtensions
-        , readerStandalone            = False
-        , readerColumns               = 80
-        , readerTabStop               = 4
-        , readerIndentedCodeClasses   = []
-        , readerAbbreviations         = mempty
-        , readerDefaultImageExtension = ""
-        , readerTrackChanges          = AcceptChanges
-        , readerStripComments         = False
-        }
