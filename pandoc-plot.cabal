@@ -52,6 +52,7 @@ library
         Text.Pandoc.Filter.Plot.Monad
         Text.Pandoc.Filter.Plot.Monad.Logging
         Text.Pandoc.Filter.Plot.Monad.Types
+        Text.Pandoc.Filter.Plot.Embed
     autogen-modules:
         Paths_pandoc_plot
     hs-source-dirs:
@@ -70,6 +71,7 @@ library
         , pandoc-types       >= 1.21  && < 1.22
         , lifted-async       >= 0.10  && < 1
         , shakespeare        >= 2.0   && < 3
+        , tagsoup            >= 0.14  && < 1
         , text               >= 1     && < 2
         , typed-process      >= 0.2.1 && < 1
         , yaml               >= 0.8   && < 1

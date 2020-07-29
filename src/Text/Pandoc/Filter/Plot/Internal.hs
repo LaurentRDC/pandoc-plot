@@ -18,6 +18,7 @@ module Text.Pandoc.Filter.Plot.Internal (
     , module Text.Pandoc.Filter.Plot.Configuration
     , module Text.Pandoc.Filter.Plot.Clean
     , module Text.Pandoc.Filter.Plot.Monad
+    , module Text.Pandoc.Filter.Plot.Embed
  ) where
 
 import Text.Pandoc.Filter.Plot.Parse
@@ -26,3 +27,4 @@ import Text.Pandoc.Filter.Plot.Scripting
 import Text.Pandoc.Filter.Plot.Configuration
 import Text.Pandoc.Filter.Plot.Clean
 import Text.Pandoc.Filter.Plot.Monad
+import Text.Pandoc.Filter.Plot.Embed

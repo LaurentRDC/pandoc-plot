@@ -106,6 +106,8 @@ module Text.Pandoc.Filter.Plot (
     , cls
     , configurationPathMeta
     , executable
+    -- ** Embedding HTML content
+    , extractPlot
     ) where
 
 import Control.Concurrent.Async.Lifted   (mapConcurrently)
