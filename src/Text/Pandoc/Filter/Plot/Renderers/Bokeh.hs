@@ -27,7 +27,7 @@ import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
 bokehSupportedSaveFormats :: [SaveFormat]
-bokehSupportedSaveFormats = [PNG, HTML]
+bokehSupportedSaveFormats = [PNG, SVG, HTML]
 
 
 bokehCommand :: OutputSpec -> PlotM Text
@@ -69,5 +69,6 @@ __current_plot = next(obj for obj in globals().values() if isinstance(obj, Plot)
     where  
         write = case saveFormat of
             HTML -> [st|save(__current_plot, filename=r"#{fname}", resources=CDN)|]
+            SVG  -> [st|__current_plot.output_backend="svg"; export_svgs(__current_plot, filename=r"#{fname}")|]
             PNG  -> [st|export_png(obj = __current_plot, filename=r"#{fname}")|]
             fmt  -> error $ "Save format not supported: " <> show fmt
