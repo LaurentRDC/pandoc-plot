@@ -7,6 +7,7 @@ Release 0.8.2.0
 
 * The `bokeh` toolkit now supports exporting plots as SVGs (#8).
 * Better heuristic to determine what `bokeh` plot to save. This allows the user to export plots like the [`bokeh.layouts` module](https://docs.bokeh.org/en/latest/docs/user_guide/layout.html#creating-layouts).
+* Added support for the `dpi` parameter in `graphviz` and `mathematica`.
 
 Release 0.8.1.0
 ---------------
