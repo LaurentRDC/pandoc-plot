@@ -108,6 +108,14 @@ Manager](https://github.com/microsoft/winget-cli) `winget` (just like
 winget install pandoc-plot
 ```
 
+### Arch Linux
+
+You can install `pandoc-plot` from the [archlinux user repository](https://aur.archlinux.org/packages/pandoc-plot-bin/) as `pandoc-plot-bin`. You can install using e.g. `yay`:
+
+```sh
+yay -S pandoc-plot-bin
+```
+
 ### From Hackage/Stackage
 
 `pandoc-plot` is available on
