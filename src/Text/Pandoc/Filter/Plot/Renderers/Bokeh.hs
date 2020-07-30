@@ -56,19 +56,22 @@ bokehCheckIfShow s =
             ]
 
 
--- TODO: should we capture a Document instead of a Plot?
---       For some reason, saving the current document was not working
 bokehCapture :: FigureSpec -> FilePath -> Script
 bokehCapture FigureSpec{..} fname = [st|
 from bokeh.io import export_png, export_svgs, save
-from bokeh.models import Plot
+from bokeh.models import Model
 from bokeh.resources import CDN
-__current_plot = next(obj for obj in globals().values() if isinstance(obj, Plot))
+
+# The heuristic to determine the current Model is to find all objects which are
+# at least subclasses of bokeh.models.Model, and then find the one which was
+# created last. This is a dirty hack, so if you're reading this, don't hesitate to
+# suggest something else.
+__current_model = [obj for obj in globals().values() if isinstance(obj, Model)][-1]
 #{write}
 |]
     where  
         write = case saveFormat of
-            HTML -> [st|save(__current_plot, filename=r"#{fname}", resources=CDN)|]
-            SVG  -> [st|__current_plot.output_backend="svg"; export_svgs(__current_plot, filename=r"#{fname}")|]
-            PNG  -> [st|export_png(obj = __current_plot, filename=r"#{fname}")|]
+            HTML -> [st|save(__current_model, filename=r"#{fname}", resources=CDN)|]
+            SVG  -> [st|__current_model.output_backend="svg"; export_svgs(__current_model, filename=r"#{fname}")|]
+            PNG  -> [st|export_png(obj = __current_model, filename=r"#{fname}")|]
             fmt  -> error $ "Save format not supported: " <> show fmt
