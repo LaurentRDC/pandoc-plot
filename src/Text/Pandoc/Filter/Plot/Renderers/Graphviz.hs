@@ -32,7 +32,8 @@ graphvizCommand :: OutputSpec -> PlotM Text
 graphvizCommand OutputSpec{..} = do
     exe <- executable Graphviz
     let fmt = fmap toLower . show . saveFormat $ oFigureSpec
-    return [st|#{exe} -T#{fmt} -o "#{oFigurePath}" "#{oScriptPath}"|]
+        dpi' = dpi oFigureSpec
+    return [st|#{exe} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]
 
 
 graphvizAvailable :: PlotM Bool
