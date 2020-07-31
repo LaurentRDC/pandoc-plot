@@ -84,6 +84,32 @@ c = ax.scatter(theta, r, c=colors, s=area, cmap='hsv', alpha=0.75)
 
 `pandoc-plot` supports interactive plots for certain toolkits. Here's an example using [`bokeh`](https://bokeh.org):
 
+````markdown
+```{.python .bokeh format=html caption="Move around in the plot by using your mouse. This gallery example was modified from [here](https://docs.bokeh.org/en/latest/docs/gallery/hex_tile.html)."}
+import numpy as np
+
+from bokeh.plotting import figure
+from bokeh.transform import linear_cmap
+from bokeh.util.hex import hexbin
+
+np.random.seed(23)
+
+n = 50000
+x = np.random.standard_normal(n)
+y = np.random.standard_normal(n)
+
+bins = hexbin(x, y, 0.1)
+
+p = figure(title="Interactive plotting with Bokeh", tools="wheel_zoom,pan,reset", match_aspect=True, background_fill_color='#440154', plot_width=550, plot_height=550)
+
+p.grid.visible = False
+
+p.hex_tile(q="q", r="r", size=0.1, line_color=None, source=bins,
+           fill_color=linear_cmap('counts', 'Viridis256', 0, max(bins.counts)))
+
+```
+````
+
 ```{.python .bokeh format=html caption="Move around in the plot by using your mouse. This gallery example was modified from [here](https://docs.bokeh.org/en/latest/docs/gallery/hex_tile.html)."}
 import numpy as np
 
