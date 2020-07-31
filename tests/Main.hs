@@ -22,7 +22,7 @@ main = do
     available <- availableToolkits defaultTestConfig
     unavailable <- unavailableToolkits defaultTestConfig
     forM_ unavailable $ \tk -> do
-        putStrLn $ show tk <> " is not availble. Its tests will be skipped."
+        putStrLn $ show tk <> " is not available. Its tests will be skipped."
 
     defaultMain $ testGroup "All tests"
         [ testGroup
