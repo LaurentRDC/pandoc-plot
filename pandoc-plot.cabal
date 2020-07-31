@@ -88,9 +88,7 @@ executable pandoc-plot
         Paths_pandoc_plot
     hs-source-dirs:
         executable
-    ghc-options: -Wall -Wcompat -threaded -static -rtsopts -with-rtsopts=-N
-    cc-options: -static
-    ld-options: -static -pthread
+    ghc-options: -Wall -Wcompat -threaded -rtsopts -with-rtsopts=-N
     build-depends:
           base                  >= 4.11 && <5
         , containers
