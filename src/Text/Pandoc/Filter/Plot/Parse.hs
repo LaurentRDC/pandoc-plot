@@ -23,18 +23,22 @@ module Text.Pandoc.Filter.Plot.Parse (
 
 import           Control.Monad                     (join, when)
 
+import           Data.Char                         (isSpace)
 import           Data.Default                      (def)
+import           Data.Hashable                     (hash)
 import           Data.List                         (intersperse)
 import qualified Data.Map.Strict                   as Map
 import           Data.Maybe                        (fromMaybe, listToMaybe)
 import           Data.String                       (fromString)
 import           Data.Text                         (Text, pack, unpack)
+import qualified Data.Text                         as T
 import qualified Data.Text.IO                      as TIO
 import           Data.Version                      (showVersion)
 
 import           Paths_pandoc_plot                 (version)
 
-import           System.FilePath                   (makeValid)
+import           System.Directory                  (doesFileExist, getModificationTime)
+import           System.FilePath                   (makeValid, normalise)
 
 import           Text.Pandoc.Definition            (Block (..), Inline,
                                                     Pandoc (..), Format(..))
@@ -92,6 +96,9 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = do
                 extraAttrs     = Map.toList extraAttrs'
                 blockAttrs     = (id', classes, filteredAttrs)
 
+            let dependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
+            dependenciesHash <- fmap hash $ sequence $ fileHash <$> dependencies
+
             -- This is the first opportunity to check save format compatibility
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
             when (not saveFormatSupported) $ do
@@ -133,3 +140,28 @@ readBool :: Text -> Bool
 readBool s | s `elem` ["True",  "true",  "'True'",  "'true'",  "1"] = True
            | s `elem` ["False", "false", "'False'", "'false'", "0"] = False
            | otherwise = error $ unpack $ mconcat ["Could not parse '", s, "' into a boolean. Please use 'True' or 'False'"]
+
+
+-- | Parse a list of file dependencies such as /[foo.bar, hello.txt]/
+parseFileDependencies :: Text -> [FilePath]
+parseFileDependencies t
+    | t == mempty = mempty
+    | otherwise   = fmap normalise 
+                      . fmap unpack 
+                      . fmap (T.dropAround isSpace) -- Remove leading/trailing whitespace on filenames
+                      . T.splitOn "," 
+                      . T.dropAround (\c -> c `elem` ['[', ']']) $ t
+
+
+-- As a proxy for the state of a file dependency, we use the modification time
+-- This is much faster than actual file hashing
+fileHash :: FilePath -> PlotM Int
+fileHash fp = do
+    fileExists <- liftIO $ doesFileExist fp
+    if fileExists
+        then do
+            debug $ "Found dependency " <> pack fp
+            liftIO . fmap (hash . show) . getModificationTime $ fp
+        else do 
+            err $ mconcat ["Dependency ", pack fp, " does not exist."] 
+            return 0

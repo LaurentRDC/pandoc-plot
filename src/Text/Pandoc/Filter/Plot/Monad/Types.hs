@@ -123,6 +123,7 @@ data InclusionKey
     | PreambleK
     | DpiK
     | ExecutableK
+    | DependenciesK
     | MatplotlibTightBBoxK
     | MatplotlibTransparentK
     deriving (Bounded, Eq, Enum)
@@ -138,6 +139,7 @@ instance Show InclusionKey where
     show PreambleK              = "preamble"
     show DpiK                   = "dpi"
     show ExecutableK            = "executable"
+    show DependenciesK          = "dependencies"
     show MatplotlibTightBBoxK   = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
 
@@ -153,15 +155,16 @@ inclusionKeys = enumFromTo (minBound::InclusionKey) maxBound
 -- It is assumed that once a @FigureSpec@ has been created, no configuration
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
-    { toolkit    :: !Toolkit        -- ^ Plotting toolkit to use for this figure.
-    , caption    :: !Text           -- ^ Figure caption.
-    , withSource :: !Bool           -- ^ Append link to source code in caption.
-    , script     :: !Script         -- ^ Source code for the figure.
-    , saveFormat :: !SaveFormat     -- ^ Save format of the figure.
-    , directory  :: !FilePath       -- ^ Directory where to save the file.
-    , dpi        :: !Int            -- ^ Dots-per-inch of figure.
-    , extraAttrs :: ![(Text, Text)] -- ^ Renderer-specific extra attributes.
-    , blockAttrs :: !Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
+    { toolkit          :: !Toolkit        -- ^ Plotting toolkit to use for this figure.
+    , caption          :: !Text           -- ^ Figure caption.
+    , withSource       :: !Bool           -- ^ Append link to source code in caption.
+    , script           :: !Script         -- ^ Source code for the figure.
+    , saveFormat       :: !SaveFormat     -- ^ Save format of the figure.
+    , directory        :: !FilePath       -- ^ Directory where to save the file.
+    , dpi              :: !Int            -- ^ Dots-per-inch of figure.
+    , dependenciesHash :: !Int            -- ^ Hash of files on which this figure depends, e.g. data files.
+    , extraAttrs       :: ![(Text, Text)] -- ^ Renderer-specific extra attributes.
+    , blockAttrs       :: !Attr           -- ^ Attributes not related to @pandoc-plot@ will be propagated.
     }
 
 
@@ -172,7 +175,7 @@ data FigureSpec = FigureSpec
 -- For example, changing the caption should not require running the figure again.
 figureContentHash :: FigureSpec -> Int
 figureContentHash FigureSpec{..} = 
-    hash (fromEnum toolkit, script, fromEnum saveFormat, directory, dpi, extraAttrs)
+    hash (fromEnum toolkit, script, fromEnum saveFormat, directory, dpi, dependenciesHash, extraAttrs)
 
 
 -- | Generated figure file format supported by pandoc-plot.
