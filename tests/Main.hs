@@ -150,6 +150,6 @@ testHtmlEmbedding =
                            ,"</html>"
                            ]
             extracted = extractPlot html
-            expected = "<script src=\"script.js\"></script>\n    <p>Hello</p>"
+            expected = "<script src=\"script.js\" defer></script>\n    <p>Hello</p>"
 
         assertEqual "" expected extracted

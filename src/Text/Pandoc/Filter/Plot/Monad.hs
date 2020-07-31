@@ -177,7 +177,7 @@ data Configuration = Configuration
     , gnuplotPreamble       :: !Script     -- ^ The default preamble script for the gnuplot toolkit.
     , graphvizPreamble      :: !Script     -- ^ The default preamble script for the Graphviz toolkit.
     , bokehPreamble         :: !Script     -- ^ The default preamble script for the Python/Bokeh toolkit.
-    , plotsjlPreamble    :: !Script     -- ^ The default preamble script for the Julia/Plots.jl toolkit.
+    , plotsjlPreamble       :: !Script     -- ^ The default preamble script for the Julia/Plots.jl toolkit.
     
     , matplotlibExe         :: !FilePath   -- ^ The executable to use to generate figures using the matplotlib toolkit.
     , matlabExe             :: !FilePath   -- ^ The executable to use to generate figures using the MATLAB toolkit.
@@ -189,7 +189,7 @@ data Configuration = Configuration
     , gnuplotExe            :: !FilePath   -- ^ The executable to use to generate figures using the gnuplot toolkit.
     , graphvizExe           :: !FilePath   -- ^ The executable to use to generate figures using the Graphviz toolkit.
     , bokehExe              :: !FilePath   -- ^ The executable to use to generate figures using the Python/Bokeh toolkit.
-    , plotsjlExe         :: !FilePath   -- ^ The executable to use to generate figures using the Julia/Plots.jl toolkit.
+    , plotsjlExe            :: !FilePath   -- ^ The executable to use to generate figures using the Julia/Plots.jl toolkit.
     
     , matplotlibTightBBox   :: !Bool       -- ^ Whether or not to make Matplotlib figures tight by default.
     , matplotlibTransparent :: !Bool       -- ^ Whether or not to make Matplotlib figures transparent by default.

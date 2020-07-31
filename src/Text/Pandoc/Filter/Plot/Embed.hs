@@ -17,6 +17,7 @@ module Text.Pandoc.Filter.Plot.Embed (
 ) where
 
 import           Data.Default                      (def)
+import           Data.List                         (nub)
 import           Data.Maybe                        (fromMaybe)
 import           Data.Text                         (Text, pack)
 import qualified Data.Text.IO                      as T
@@ -99,7 +100,8 @@ writeHtml is = liftIO $ handleError $ runPure $ writeHtml5String def document
 -- <body> tag.
 extractPlot :: Text -> Text
 extractPlot t = let tags = canonicalizeTags $ parseTagsOptions parseOptionsFast t  
-                in mconcat $ renderTags <$> (headScripts tags <> [htmlBody tags])
+                    extracted = headScripts tags <> [htmlBody tags]
+                in mconcat $ renderTags <$> (deferScripts <$> extracted)
     where
         headScripts = partitions (~== ("<script>"::String)) . htmlHead
 
@@ -115,3 +117,30 @@ htmlHead = inside "head"
 
 htmlBody :: [Tag Text] -> [Tag Text]
 htmlBody = inside "body"
+
+
+-- | Replace /<script src=...>/ tags with /<script src=... defer>/,
+-- and inline scripts as /<script type="module">/.
+-- This makes scripts execute only after HTML parsing has finished.
+deferScripts :: [Tag Text] -> [Tag Text]
+deferScripts = fmap (\tag -> if isExternalScript tag 
+                                then defer tag 
+                                else if isInlineScript tag 
+                                    then modularize tag 
+                                    else tag)
+    where
+        isExternalScript :: Tag Text -> Bool
+        isExternalScript (TagOpen "script" attrs) = "src" `elem` (fst . unzip $ attrs)
+        isExternalScript _ = False
+
+        isInlineScript :: Tag Text -> Bool
+        isInlineScript (TagOpen "script" attrs) = "src" `notElem` (fst . unzip $ attrs)
+        isInlineScript _ = False
+
+        defer :: Tag Text -> Tag Text
+        defer (TagOpen "script" attrs) = TagOpen "script" . nub $ attrs <> [("defer", mempty)]
+        defer t = t
+
+        modularize :: Tag Text -> Tag Text
+        modularize (TagOpen "script" attrs) = TagOpen "script" . nub $ attrs <> [("type", "module")]
+        modularize t = t
