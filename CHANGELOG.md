@@ -5,10 +5,10 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 0.8.2.0
 ---------------
 
-* Added the `dependencies` argument, which tells `pandoc-plot` what files are important to a particular figure (#10). If a file listed in `dependencies` changes (for example, a data file), `pandoc-plot` will re-render the associated figure.
 * The `bokeh` toolkit now supports exporting plots as SVGs (#8).
-* Better heuristic to determine what `bokeh` plot to save. This allows the user to export plots like the [`bokeh.layouts` module](https://docs.bokeh.org/en/latest/docs/user_guide/layout.html#creating-layouts).
 * Interactive plots relying on javascript scripts will now defer loading the scripts (#9). 
+* Added the `dependencies` argument, which tells `pandoc-plot` what files are important to a particular figure (#10). If a file listed in `dependencies` changes (for example, a data file), `pandoc-plot` will re-render the associated figure.
+* Better heuristic to determine what `bokeh` plot to save. This allows the user to export plots like the [`bokeh.layouts` module](https://docs.bokeh.org/en/latest/docs/user_guide/layout.html#creating-layouts).
 * Added support for the `dpi` parameter in `graphviz` and `mathematica`.
 
 Release 0.8.1.0
