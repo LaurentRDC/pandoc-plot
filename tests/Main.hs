@@ -133,6 +133,7 @@ testHtmlBodyEmbedding =
 
         assertEqual "" expected extracted 
 
+
 testHtmlEmbedding :: TestTree
 testHtmlEmbedding = 
     testCase "HTML body and head scripts can be extracted from file" $ do

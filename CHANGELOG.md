@@ -2,7 +2,7 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-Release 0.8.2.0
+Release 0.9.0.0
 ---------------
 
 * The `bokeh` toolkit now supports exporting plots as SVGs (#8).
