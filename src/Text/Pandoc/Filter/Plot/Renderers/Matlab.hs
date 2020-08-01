@@ -42,10 +42,12 @@ matlabCommand OutputSpec{..} = do
 matlabAvailable :: PlotM Bool
 matlabAvailable = asksConfig matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <> exeExtension))
 
--- TODO: Matlab 2020a introduced a new exportgraphics() function
--- which supports a DPI parameter!
--- https://www.mathworks.com/help/matlab/ref/exportgraphics.html
+
 matlabCapture :: FigureSpec -> FilePath -> Script
-matlabCapture _ fname = [st|
-saveas(gcf, '#{fname}')
+matlabCapture FigureSpec{..} fname = [st|
+if exist("exportgraphics")>0
+    exportgraphics(gcf, '#{fname}', 'Resolution', #{dpi});
+else
+    saveas(gcf, '#{fname}');
+end
 |]

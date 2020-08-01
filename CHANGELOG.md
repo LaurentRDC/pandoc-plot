@@ -10,6 +10,7 @@ Release 0.9.0.0
 * Added the `dependencies` argument, which tells `pandoc-plot` what files are important to a particular figure (#10). If a file listed in `dependencies` changes (for example, a data file), `pandoc-plot` will re-render the associated figure.
 * Better heuristic to determine what `bokeh` plot to save. This allows the user to export plots like the [`bokeh.layouts` module](https://docs.bokeh.org/en/latest/docs/user_guide/layout.html#creating-layouts).
 * Added support for the `dpi` parameter in `graphviz` and `mathematica`.
+* Added support for MATLAB's new `exportgraphics` function introduced in MATLAB 2020a. Older versions fallback to using `saveas`.
 
 Release 0.8.1.0
 ---------------
