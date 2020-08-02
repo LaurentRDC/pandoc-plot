@@ -259,7 +259,7 @@ All following parameters are optional, with their default values controlled by t
   - `source` is a boolean toggle that determines whether the source code should be linked in the caption or not. Possible values are \[`true`, `True`, `false`, `False`\].
   - `preamble` is a path to a script that will be included as a preamble to the content of the code block. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
   - `dpi` is the pixel density of the figure in dots-per-inch. Possible values are positive integers. Not all toolkits respect this.
-  - `dependencies` is a list of files that affect the figure, for example data files. If one of those files changes, `pandoc-plot` will re-render the associated figure. Format is a comma-separated list, e.g. `dependencies=[data.txt, foo.bar]`.
+  - `dependencies` is a list of files/directories that affect the figure, for example data files. If one of those files/directories changes, `pandoc-plot` will re-render the associated figure. Format is a comma-separated list, e.g. `dependencies=[data.txt, foo.bar, ~/wtv]`.
   - `executable` is a path to the executable to use (e.g. `C:\\python3.exe`) or the name of the executable (e.g. `python3`).
   - `caption_format` is the text format of the caption. Possible values are exactly the same as `pandoc`’s format specification, usually `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with raw LaTeX would be parsed correctly provided that `caption_format=markdown+raw_tex`. See Pandoc’s guide on [Specifying formats](https://pandoc.org/MANUAL.html#specifying-formats).
 
