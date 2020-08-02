@@ -142,7 +142,7 @@ readBool s | s `elem` ["True",  "true",  "'True'",  "'true'",  "1"] = True
            | otherwise = error $ unpack $ mconcat ["Could not parse '", s, "' into a boolean. Please use 'True' or 'False'"]
 
 
--- | Parse a list of file dependencies such as /[foo.bar, hello.txt]/
+-- | Parse a list of file dependencies such as /[foo.bar, hello.txt]/.
 parseFileDependencies :: Text -> [FilePath]
 parseFileDependencies t
     | t == mempty = mempty
