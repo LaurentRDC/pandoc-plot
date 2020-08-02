@@ -28,3 +28,4 @@ stack.yaml.lock
 # Installer-related
 installer/setup*
 installer/*.exe
+.pandoc-plot.yml
