@@ -46,18 +46,19 @@ import           Text.Shakespeare.Text             (st)
 toFigure :: Format       -- ^ text format of the caption
          -> FigureSpec 
          -> PlotM Block
-toFigure fmt spec = builder attrs' target' caption'
+toFigure fmt spec = do
+    target <- figurePath spec
+    let srcLink = link (pack $ replaceExtension target ".txt") mempty "Source code"
+        attrs'       = blockAttrs spec
+        withSource'  = withSource spec
+        captionText  = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
+        captionLinks = mconcat [" (", srcLink, ")"]
+        caption'     = if withSource' then captionText <> captionLinks else captionText
+    builder attrs' target caption'
     where
         builder      = if saveFormat spec == HTML
                         then interactiveBlock
                         else figure
-        attrs'       = blockAttrs spec
-        target'      = figurePath spec
-        withSource'  = withSource spec
-        srcLink      = link (pack $ replaceExtension target' ".txt") mempty "Source code"
-        captionText  = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
-        captionLinks = mconcat [" (", srcLink, ")"]
-        caption'     = if withSource' then captionText <> captionLinks else captionText
 
 
 figure :: Attr

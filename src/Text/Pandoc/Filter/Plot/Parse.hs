@@ -25,7 +25,6 @@ import           Control.Monad                     (join, when)
 
 import           Data.Char                         (isSpace)
 import           Data.Default                      (def)
-import           Data.Hashable                     (hash)
 import           Data.List                         (intersperse)
 import qualified Data.Map.Strict                   as Map
 import           Data.Maybe                        (fromMaybe, listToMaybe)
@@ -37,7 +36,6 @@ import           Data.Version                      (showVersion)
 
 import           Paths_pandoc_plot                 (version)
 
-import           System.Directory                  (doesFileExist, getModificationTime)
 import           System.FilePath                   (makeValid, normalise)
 
 import           Text.Pandoc.Definition            (Block (..), Inline,
@@ -97,8 +95,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = do
                 blockAttrs     = (id', classes, filteredAttrs)
 
             let dependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
-            dependenciesHash <- fmap hash $ sequence $ fileHash <$> dependencies
-
+            
             -- This is the first opportunity to check save format compatibility
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
             when (not saveFormatSupported) $ do
@@ -151,17 +148,3 @@ parseFileDependencies t
                       . fmap (T.dropAround isSpace) -- Remove leading/trailing whitespace on filenames
                       . T.splitOn "," 
                       . T.dropAround (\c -> c `elem` ['[', ']']) $ t
-
-
--- As a proxy for the state of a file dependency, we use the modification time
--- This is much faster than actual file hashing
-fileHash :: FilePath -> PlotM Int
-fileHash fp = do
-    fileExists <- liftIO $ doesFileExist fp
-    if fileExists
-        then do
-            debug $ "Found dependency " <> pack fp
-            liftIO . fmap (hash . show) . getModificationTime $ fp
-        else do 
-            err $ mconcat ["Dependency ", pack fp, " does not exist."] 
-            return 0

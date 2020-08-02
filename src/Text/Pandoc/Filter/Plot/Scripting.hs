@@ -39,9 +39,10 @@ import           Text.Pandoc.Filter.Plot.Monad
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
 runScriptIfNecessary spec = do
-    liftIO $ createDirectoryIfMissing True . takeDirectory $ figurePath spec
+    target <- figurePath spec
+    liftIO $ createDirectoryIfMissing True . takeDirectory $ target
 
-    fileAlreadyExists <- liftIO . doesFileExist $ figurePath spec
+    fileAlreadyExists <- liftIO . doesFileExist $ target
     result <- if fileAlreadyExists
                 then return ScriptSuccess
                 else runTempScript spec
@@ -49,7 +50,9 @@ runScriptIfNecessary spec = do
     logScriptResult result
 
     case result of
-        ScriptSuccess -> liftIO $ T.writeFile (sourceCodePath spec) (script spec) >> return ScriptSuccess
+        ScriptSuccess -> do
+            scp <- sourceCodePath spec
+            liftIO $ T.writeFile scp (script spec) >> return ScriptSuccess
         other         -> return other
 
     where
@@ -83,7 +86,8 @@ runTempScript spec@FigureSpec{..} = do
         CheckFailed msg -> return $ ScriptChecksFailed msg
         CheckPassed -> do
             scriptPath <- tempScriptPath spec
-            let captureFragment = (capture toolkit) spec (figurePath spec)
+            target <- figurePath spec
+            let captureFragment = (capture toolkit) spec target
                 -- Note: for gnuplot, the capture string must be placed
                 --       BEFORE plotting happens. Since this is only really an
                 --       issue for gnuplot, we have a special case.
@@ -93,7 +97,7 @@ runTempScript spec@FigureSpec{..} = do
             liftIO $ T.writeFile scriptPath scriptWithCapture
             let outputSpec = OutputSpec { oFigureSpec = spec
                                         , oScriptPath = scriptPath
-                                        , oFigurePath = figurePath spec
+                                        , oFigurePath = target
                                         }
             command_ <- command toolkit outputSpec
             (ec, _) <- runCommand command_
@@ -125,16 +129,28 @@ tempScriptPath FigureSpec{..} = do
 
 
 -- | Determine the path to the source code that generated the figure.
-sourceCodePath :: FigureSpec -> FilePath
-sourceCodePath = normalise . flip replaceExtension ".txt" . figurePath
+sourceCodePath :: FigureSpec -> PlotM FilePath
+sourceCodePath = fmap normalise . fmap (flip replaceExtension ".txt") . figurePath
+
+
+-- | Hash of the content of a @FigureSpec@. Note that unlike usual hashes,
+-- two @FigureSpec@ with the same @figureContentHash@ does not mean that they are equal!
+--
+-- Not all parts of a FigureSpec are related to running code.
+-- For example, changing the caption should not require running the figure again.
+figureContentHash :: FigureSpec -> PlotM Int
+figureContentHash FigureSpec{..} = do
+    dependenciesHash <- sequence $ fileHash <$> dependencies
+    return $ hash (fromEnum toolkit, script, fromEnum saveFormat, directory, dpi, dependenciesHash, extraAttrs)
 
 
 -- | Determine the path a figure should have.
 -- The path for this file is unique to the content of the figure,
 -- so that @figurePath@ can be used to determine whether a figure should
 -- be rendered again or not.
-figurePath :: FigureSpec -> FilePath
-figurePath spec = normalise $ directory spec </> stem spec
-  where
-    stem = flip addExtension ext . show . figureContentHash
-    ext  = extension . saveFormat $ spec
+figurePath :: FigureSpec -> PlotM FilePath
+figurePath spec = do
+    fh <- figureContentHash spec
+    let    ext  = extension . saveFormat $ spec
+           stem = flip addExtension ext . show $ fh
+    return $ normalise $ directory spec </> stem
