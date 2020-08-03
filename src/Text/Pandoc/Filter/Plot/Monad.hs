@@ -207,6 +207,7 @@ data Configuration = Configuration
     , defaultWithSource     :: !Bool       -- ^ The default behavior of whether or not to include links to source code and high-res
     , defaultDPI            :: !Int        -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
     , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
+    , defaultDependencies   :: ![FilePath] -- ^ List of files/directories on which all figures depend.
     , captionFormat         :: !Format     -- ^ Caption format, in the same notation as Pandoc format, e.g. "markdown+tex_math_dollars"
 
     , logVerbosity          :: !Verbosity  -- ^ Level of logging verbosity.

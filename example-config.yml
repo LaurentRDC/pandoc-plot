@@ -26,6 +26,13 @@ dpi: 80
 # individually as well.
 format: PNG
 
+# Default files/directories on which all figures depend. If any of these files/directories
+# changes, all figures will be re-rendered.
+# Dependencies specified in code blocks will be appended to this list.
+dependencies:
+  - file1.txt
+  - file2.txt
+
 # Text format for the captions. Unfortunately, there is no way to detect
 # this automatically. You can use the same notation as Pandoc's --from 
 # parameter, specified here: 

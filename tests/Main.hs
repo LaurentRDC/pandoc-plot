@@ -82,6 +82,7 @@ testExampleConfiguration =
         let config = defaultConfiguration { matplotlibExe = "python"
                                           , plotlyPythonExe = "python"
                                           , bokehExe = "python"
+                                          , defaultDependencies = ["file1.txt", "file2.txt"]
                                           }
 
         parsedConfig <- configuration "example-config.yml"

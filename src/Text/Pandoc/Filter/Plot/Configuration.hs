@@ -44,14 +44,15 @@ configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
 defaultConfiguration :: Configuration
 defaultConfiguration = 
     Configuration
-        { defaultDirectory  = "plots/"
-        , defaultWithSource = False
-        , defaultDPI        = 80
-        , defaultSaveFormat = PNG
-        , captionFormat     = Format "markdown+tex_math_dollars"
+        { defaultDirectory    = "plots/"
+        , defaultWithSource   = False
+        , defaultDPI          = 80
+        , defaultSaveFormat   = PNG
+        , defaultDependencies = mempty
+        , captionFormat       = Format "markdown+tex_math_dollars"
 
-        , logVerbosity      = Warning
-        , logSink           = StdErr
+        , logVerbosity        = Warning
+        , logSink             = StdErr
         
         , matplotlibPreamble  = mempty
         , plotlyPythonPreamble= mempty
@@ -63,7 +64,7 @@ defaultConfiguration =
         , gnuplotPreamble     = mempty
         , graphvizPreamble    = mempty
         , bokehPreamble       = mempty
-        , plotsjlPreamble  = mempty
+        , plotsjlPreamble     = mempty
 
         , matplotlibExe       = python
         , matlabExe           = "matlab"
@@ -75,7 +76,7 @@ defaultConfiguration =
         , gnuplotExe          = "gnuplot"
         , graphvizExe         = "dot"
         , bokehExe            = python
-        , plotsjlExe       = "julia"
+        , plotsjlExe          = "julia"
         
         , matplotlibTightBBox   = False
         , matplotlibTransparent = False
@@ -114,49 +115,51 @@ configurationPathMeta (Pandoc meta _) =
 -- but we want to read those files before building a full
 -- @Configuration@ value.
 data ConfigPrecursor = ConfigPrecursor
-    { _defaultDirectory  :: !FilePath    -- ^ The default directory where figures will be saved.
-    , _defaultWithSource :: !Bool        -- ^ The default behavior of whether or not to include links to source code and high-res
-    , _defaultDPI        :: !Int         -- ^ The default dots-per-inch value for generated figures. Renderers might ignore this.
-    , _defaultSaveFormat :: !SaveFormat  -- ^ The default save format of generated figures.
-    , _captionFormat     :: !Format      -- ^ Caption format in Pandoc notation, e.g. "markdown+tex_math_dollars".
+    { _defaultDirectory    :: !FilePath    
+    , _defaultWithSource   :: !Bool        
+    , _defaultDPI          :: !Int         
+    , _defaultSaveFormat   :: !SaveFormat  
+    , _defaultDependencies :: ![FilePath]  
+    , _captionFormat       :: !Format
     
-    , _logPrec           :: !LoggingPrecursor
+    , _logPrec             :: !LoggingPrecursor
 
-    , _matplotlibPrec    :: !MatplotlibPrecursor
-    , _matlabPrec        :: !MatlabPrecursor
-    , _plotlyPythonPrec  :: !PlotlyPythonPrecursor
-    , _plotlyRPrec       :: !PlotlyRPrecursor
-    , _mathematicaPrec   :: !MathematicaPrecursor
-    , _octavePrec        :: !OctavePrecursor
-    , _ggplot2Prec       :: !GGPlot2Precursor
-    , _gnuplotPrec       :: !GNUPlotPrecursor
-    , _graphvizPrec      :: !GraphvizPrecursor
-    , _bokehPrec         :: !BokehPrecursor
-    , _plotsjlPrec       :: !PlotsjlPrecursor
+    , _matplotlibPrec      :: !MatplotlibPrecursor
+    , _matlabPrec          :: !MatlabPrecursor
+    , _plotlyPythonPrec    :: !PlotlyPythonPrecursor
+    , _plotlyRPrec         :: !PlotlyRPrecursor
+    , _mathematicaPrec     :: !MathematicaPrecursor
+    , _octavePrec          :: !OctavePrecursor
+    , _ggplot2Prec         :: !GGPlot2Precursor
+    , _gnuplotPrec         :: !GNUPlotPrecursor
+    , _graphvizPrec        :: !GraphvizPrecursor
+    , _bokehPrec           :: !BokehPrecursor
+    , _plotsjlPrec         :: !PlotsjlPrecursor
     }
 
 defaultConfigPrecursor :: ConfigPrecursor
 defaultConfigPrecursor =  
     ConfigPrecursor
-        { _defaultDirectory  = defaultDirectory defaultConfiguration
-        , _defaultWithSource = defaultWithSource defaultConfiguration
-        , _defaultDPI        = defaultDPI defaultConfiguration
-        , _defaultSaveFormat = defaultSaveFormat defaultConfiguration
-        , _captionFormat     = captionFormat defaultConfiguration
+        { _defaultDirectory    = defaultDirectory defaultConfiguration
+        , _defaultWithSource   = defaultWithSource defaultConfiguration
+        , _defaultDPI          = defaultDPI defaultConfiguration
+        , _defaultSaveFormat   = defaultSaveFormat defaultConfiguration
+        , _defaultDependencies = defaultDependencies defaultConfiguration
+        , _captionFormat       = captionFormat defaultConfiguration
 
-        , _logPrec           = LoggingPrecursor (logVerbosity defaultConfiguration) Nothing -- _logFilePath=Nothing implies log to stderr
+        , _logPrec             = LoggingPrecursor (logVerbosity defaultConfiguration) Nothing -- _logFilePath=Nothing implies log to stderr
         
-        , _matplotlibPrec    = MatplotlibPrecursor Nothing (matplotlibTightBBox defaultConfiguration) (matplotlibTransparent defaultConfiguration) (matplotlibExe defaultConfiguration)
-        , _matlabPrec        = MatlabPrecursor Nothing (matlabExe defaultConfiguration)
-        , _plotlyPythonPrec  = PlotlyPythonPrecursor Nothing (plotlyPythonExe defaultConfiguration)
-        , _plotlyRPrec       = PlotlyRPrecursor      Nothing (plotlyRExe defaultConfiguration)
-        , _mathematicaPrec   = MathematicaPrecursor  Nothing (mathematicaExe defaultConfiguration)
-        , _octavePrec        = OctavePrecursor       Nothing (octaveExe defaultConfiguration)
-        , _ggplot2Prec       = GGPlot2Precursor      Nothing (ggplot2Exe defaultConfiguration)
-        , _gnuplotPrec       = GNUPlotPrecursor      Nothing (gnuplotExe defaultConfiguration)
-        , _graphvizPrec      = GraphvizPrecursor     Nothing (graphvizExe defaultConfiguration)
-        , _bokehPrec         = BokehPrecursor        Nothing (bokehExe defaultConfiguration)
-        , _plotsjlPrec       = PlotsjlPrecursor      Nothing (plotsjlExe defaultConfiguration)
+        , _matplotlibPrec      = MatplotlibPrecursor   Nothing (matplotlibTightBBox defaultConfiguration) (matplotlibTransparent defaultConfiguration) (matplotlibExe defaultConfiguration)
+        , _matlabPrec          = MatlabPrecursor       Nothing (matlabExe defaultConfiguration)
+        , _plotlyPythonPrec    = PlotlyPythonPrecursor Nothing (plotlyPythonExe defaultConfiguration)
+        , _plotlyRPrec         = PlotlyRPrecursor      Nothing (plotlyRExe defaultConfiguration)
+        , _mathematicaPrec     = MathematicaPrecursor  Nothing (mathematicaExe defaultConfiguration)
+        , _octavePrec          = OctavePrecursor       Nothing (octaveExe defaultConfiguration)
+        , _ggplot2Prec         = GGPlot2Precursor      Nothing (ggplot2Exe defaultConfiguration)
+        , _gnuplotPrec         = GNUPlotPrecursor      Nothing (gnuplotExe defaultConfiguration)
+        , _graphvizPrec        = GraphvizPrecursor     Nothing (graphvizExe defaultConfiguration)
+        , _bokehPrec           = BokehPrecursor        Nothing (bokehExe defaultConfiguration)
+        , _plotsjlPrec         = PlotsjlPrecursor      Nothing (plotsjlExe defaultConfiguration)
         }
 
 
@@ -242,25 +245,26 @@ instance FromJSON ConfigPrecursor where
     parseJSON (Null) = return defaultConfigPrecursor -- In case of empty file
     parseJSON (Object v) = do
         
-        _defaultDirectory  <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory defaultConfigPrecursor)
-        _defaultWithSource <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource defaultConfigPrecursor)
-        _defaultDPI        <- v .:? (tshow DpiK)           .!= (_defaultDPI defaultConfigPrecursor)
-        _defaultSaveFormat <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat defaultConfigPrecursor)
-        _captionFormat     <- v .:? (tshow CaptionFormatK) .!= (_captionFormat defaultConfigPrecursor)
+        _defaultDirectory    <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory defaultConfigPrecursor)
+        _defaultWithSource   <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource defaultConfigPrecursor)
+        _defaultDPI          <- v .:? (tshow DpiK)           .!= (_defaultDPI defaultConfigPrecursor)
+        _defaultSaveFormat   <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat defaultConfigPrecursor)
+        _defaultDependencies <- v .:? (tshow DependenciesK)  .!= (_defaultDependencies defaultConfigPrecursor)
+        _captionFormat       <- v .:? (tshow CaptionFormatK) .!= (_captionFormat defaultConfigPrecursor)
 
-        _logPrec           <- v .:? "logging"              .!= _logPrec defaultConfigPrecursor
+        _logPrec             <- v .:? "logging"              .!= _logPrec defaultConfigPrecursor
 
-        _matplotlibPrec    <- v .:? (cls Matplotlib)       .!= _matplotlibPrec defaultConfigPrecursor
-        _matlabPrec        <- v .:? (cls Matlab)           .!= _matlabPrec defaultConfigPrecursor
-        _plotlyPythonPrec  <- v .:? (cls PlotlyPython)     .!= _plotlyPythonPrec defaultConfigPrecursor
-        _plotlyRPrec       <- v .:? (cls PlotlyR)          .!= _plotlyRPrec defaultConfigPrecursor
-        _mathematicaPrec   <- v .:? (cls Mathematica)      .!= _mathematicaPrec defaultConfigPrecursor
-        _octavePrec        <- v .:? (cls Octave)           .!= _octavePrec defaultConfigPrecursor
-        _ggplot2Prec       <- v .:? (cls GGPlot2)          .!= _ggplot2Prec defaultConfigPrecursor
-        _gnuplotPrec       <- v .:? (cls GNUPlot)          .!= _gnuplotPrec defaultConfigPrecursor
-        _graphvizPrec      <- v .:? (cls Graphviz)         .!= _graphvizPrec defaultConfigPrecursor
-        _bokehPrec         <- v .:? (cls Bokeh)            .!= _bokehPrec defaultConfigPrecursor 
-        _plotsjlPrec       <- v .:? (cls Plotsjl)          .!= _plotsjlPrec defaultConfigPrecursor
+        _matplotlibPrec      <- v .:? (cls Matplotlib)       .!= _matplotlibPrec defaultConfigPrecursor
+        _matlabPrec          <- v .:? (cls Matlab)           .!= _matlabPrec defaultConfigPrecursor
+        _plotlyPythonPrec    <- v .:? (cls PlotlyPython)     .!= _plotlyPythonPrec defaultConfigPrecursor
+        _plotlyRPrec         <- v .:? (cls PlotlyR)          .!= _plotlyRPrec defaultConfigPrecursor
+        _mathematicaPrec     <- v .:? (cls Mathematica)      .!= _mathematicaPrec defaultConfigPrecursor
+        _octavePrec          <- v .:? (cls Octave)           .!= _octavePrec defaultConfigPrecursor
+        _ggplot2Prec         <- v .:? (cls GGPlot2)          .!= _ggplot2Prec defaultConfigPrecursor
+        _gnuplotPrec         <- v .:? (cls GNUPlot)          .!= _gnuplotPrec defaultConfigPrecursor
+        _graphvizPrec        <- v .:? (cls Graphviz)         .!= _graphvizPrec defaultConfigPrecursor
+        _bokehPrec           <- v .:? (cls Bokeh)            .!= _bokehPrec defaultConfigPrecursor 
+        _plotsjlPrec         <- v .:? (cls Plotsjl)          .!= _plotsjlPrec defaultConfigPrecursor
 
         return $ ConfigPrecursor{..}
     parseJSON _          = fail "Could not parse configuration."
@@ -268,14 +272,15 @@ instance FromJSON ConfigPrecursor where
 
 renderConfig :: ConfigPrecursor -> IO Configuration
 renderConfig ConfigPrecursor{..} = do
-    let defaultDirectory  = _defaultDirectory
-        defaultWithSource = _defaultWithSource
-        defaultDPI        = _defaultDPI
-        defaultSaveFormat = _defaultSaveFormat
-        captionFormat     = _captionFormat
+    let defaultDirectory    = _defaultDirectory
+        defaultWithSource   = _defaultWithSource
+        defaultDPI          = _defaultDPI
+        defaultSaveFormat   = _defaultSaveFormat
+        defaultDependencies = _defaultDependencies
+        captionFormat       = _captionFormat
 
-        logVerbosity = _logVerbosity _logPrec
-        logSink      = maybe StdErr LogFile (_logFilePath _logPrec)
+        logVerbosity        = _logVerbosity _logPrec
+        logSink             = maybe StdErr LogFile (_logFilePath _logPrec)
 
         matplotlibTightBBox   = _matplotlibTightBBox _matplotlibPrec
         matplotlibTransparent = _matplotlibTransparent _matplotlibPrec

@@ -94,7 +94,8 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = do
                 extraAttrs     = Map.toList extraAttrs'
                 blockAttrs     = (id', classes, filteredAttrs)
 
-            let dependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
+            let blockDependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
+                dependencies = (defaultDependencies conf) <> blockDependencies
             
             -- This is the first opportunity to check save format compatibility
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
