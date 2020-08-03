@@ -69,7 +69,7 @@ figure :: Attr
 -- must be "fig:"
 -- Janky? yes
 figure as fp caption' = return . head . toList . para $ 
-                       imageWith as (pack fp) "fig:" caption'
+                        imageWith as (pack fp) "fig:" caption'
 
 
 interactiveBlock :: Attr
@@ -77,6 +77,9 @@ interactiveBlock :: Attr
                  -> Inlines
                  -> PlotM Block
 interactiveBlock _ fp caption' = do
+    -- TODO: should we instead include the scripts in the "include-after"
+    --       template variable?
+    --       See https://github.com/jgm/pandoc/issues/6582
     htmlpage <- liftIO $ T.readFile fp
     renderedCaption <- writeHtml caption'
     return $ RawBlock "html5" [st|
@@ -101,47 +104,44 @@ writeHtml is = liftIO $ handleError $ runPure $ writeHtml5String def document
 -- <body> tag.
 extractPlot :: Text -> Text
 extractPlot t = let tags = canonicalizeTags $ parseTagsOptions parseOptionsFast t  
-                    extracted = headScripts tags <> [htmlBody tags]
+                    extracted = headScripts tags <> [inside "body" $ tags]
                 in mconcat $ renderTags <$> (deferScripts <$> extracted)
     where
-        headScripts = partitions (~== ("<script>"::String)) . htmlHead
+        headScripts = partitions (~== ("<script>"::String)) . inside "head"
 
+
+-- | Get content inside a tag, e.g. /inside "body"/ returns all tags
+-- between /<body>/ and /</body>/
 inside :: Text -> [Tag Text] -> [Tag Text]
 inside t = init . tail . tgs
     where
         tgs = takeWhile (~/= TagClose t) . dropWhile (~/= TagOpen t [])
 
 
-htmlHead :: [Tag Text] -> [Tag Text]
-htmlHead = inside "head"
+data ScriptTag = InlineScript [Attribute Text]
+               | ExternalScript [Attribute Text]
 
 
-htmlBody :: [Tag Text] -> [Tag Text]
-htmlBody = inside "body"
+fromTag :: Tag Text -> Maybe ScriptTag
+fromTag (TagOpen "script" attrs) = 
+    Just $ if "src" `elem` (fst . unzip $ attrs) 
+        then ExternalScript attrs
+        else InlineScript attrs
+fromTag _ = Nothing
+
+
+toTag :: ScriptTag -> Tag Text
+toTag (InlineScript t)   = TagOpen "script" t
+toTag (ExternalScript t) = TagOpen "script" t
+
+
+deferScript :: ScriptTag -> ScriptTag
+deferScript (InlineScript   attrs) = InlineScript   $ nub $ attrs <> [("type", "module")]
+deferScript (ExternalScript attrs) = ExternalScript $ nub $ attrs <> [("defer", mempty)]
 
 
 -- | Replace /<script src=...>/ tags with /<script src=... defer>/,
 -- and inline scripts as /<script type="module">/.
 -- This makes scripts execute only after HTML parsing has finished.
 deferScripts :: [Tag Text] -> [Tag Text]
-deferScripts = fmap (\tag -> if isExternalScript tag 
-                                then defer tag 
-                                else if isInlineScript tag 
-                                    then modularize tag 
-                                    else tag)
-    where
-        isExternalScript :: Tag Text -> Bool
-        isExternalScript (TagOpen "script" attrs) = "src" `elem` (fst . unzip $ attrs)
-        isExternalScript _ = False
-
-        isInlineScript :: Tag Text -> Bool
-        isInlineScript (TagOpen "script" attrs) = "src" `notElem` (fst . unzip $ attrs)
-        isInlineScript _ = False
-
-        defer :: Tag Text -> Tag Text
-        defer (TagOpen "script" attrs) = TagOpen "script" . nub $ attrs <> [("defer", mempty)]
-        defer t = t
-
-        modularize :: Tag Text -> Tag Text
-        modularize (TagOpen "script" attrs) = TagOpen "script" . nub $ attrs <> [("type", "module")]
-        modularize t = t
+deferScripts = fmap (\t -> maybe t (toTag . deferScript) (fromTag t))

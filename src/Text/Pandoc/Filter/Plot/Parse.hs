@@ -92,7 +92,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = do
                 directory      = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory conf) (tshow DirectoryK) attrs'
                 dpi            = fromMaybe defDPI $ (read . unpack) <$> Map.lookup (tshow DpiK) attrs'
                 extraAttrs     = Map.toList extraAttrs'
-                blockAttrs     = (id', classes, filteredAttrs)
+                blockAttrs     = (id', filter (/= cls toolkit) classes, filteredAttrs)
 
             let blockDependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
                 dependencies = (defaultDependencies conf) <> blockDependencies

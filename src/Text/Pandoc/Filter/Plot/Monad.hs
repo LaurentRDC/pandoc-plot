@@ -149,6 +149,9 @@ runCommand command = do
 -- Plot state consists of a map of filepaths to hashes
 -- This allows multiple plots to depend on the same file/directory, and the file hashes
 -- will only be calculated once. This is OK because pandoc-plot will not run for long.
+-- We note that because figures are rendered possibly in parallel, access to 
+-- the state must be synchronized; otherwise, each thread might compute its own
+-- hashes.
 type FileHash  = Int
 type PlotState = MVar (Map FilePath FileHash)
 
