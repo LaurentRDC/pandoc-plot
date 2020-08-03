@@ -152,7 +152,7 @@ runCommand command = do
 -- We note that because figures are rendered possibly in parallel, access to 
 -- the state must be synchronized; otherwise, each thread might compute its own
 -- hashes.
-type FileHash  = Int
+type FileHash  = Word
 type PlotState = MVar (Map FilePath FileHash)
 
 
@@ -181,7 +181,7 @@ fileHash path = do
     fileHash' fp = do
         fileExists <- liftIO $ doesFileExist fp
         if fileExists
-            then liftIO . fmap (hash . show) . getModificationTime $ fp
+            then liftIO . fmap (fromIntegral . hash . show) . getModificationTime $ fp
             else err (mconcat ["Dependency ", pack fp, " does not exist."]) >> return 0 
 
 

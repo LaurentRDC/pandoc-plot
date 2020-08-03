@@ -138,10 +138,10 @@ sourceCodePath = fmap normalise . fmap (flip replaceExtension ".txt") . figurePa
 --
 -- Not all parts of a FigureSpec are related to running code.
 -- For example, changing the caption should not require running the figure again.
-figureContentHash :: FigureSpec -> PlotM Int
+figureContentHash :: FigureSpec -> PlotM Word
 figureContentHash FigureSpec{..} = do
     dependenciesHash <- sequence $ fileHash <$> dependencies
-    return $ hash (fromEnum toolkit, script, fromEnum saveFormat, directory, dpi, dependenciesHash, extraAttrs)
+    return $ fromIntegral $ hash (fromEnum toolkit, script, fromEnum saveFormat, directory, dpi, dependenciesHash, extraAttrs)
 
 
 -- | Determine the path a figure should have.
