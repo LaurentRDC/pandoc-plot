@@ -26,6 +26,12 @@ source-repository head
     type: git
     location: https://github.com/LaurentRDC/pandoc-plot
 
+
+flag static
+    description: Statically-linked binary
+    manual: True
+    default: False
+
 library
     exposed-modules:
         Text.Pandoc.Filter.Plot
@@ -90,7 +96,7 @@ executable pandoc-plot
         executable
     ghc-options: -Wall -Wcompat -threaded -rtsopts -with-rtsopts=-N
     -- Build static executables on Linux only
-    if (!os(darwin) && !os(windows))
+    if flag(static)
         ld-options: -static -pthread
     build-depends:
           base                  >= 4.11 && <5
