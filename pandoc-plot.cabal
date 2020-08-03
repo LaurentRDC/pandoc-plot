@@ -89,7 +89,9 @@ executable pandoc-plot
     hs-source-dirs:
         executable
     ghc-options: -Wall -Wcompat -threaded -rtsopts -with-rtsopts=-N
-    ld-options: -static -pthread
+    -- Build static executables on Linux only
+    if (!os(darwin) && !os(windows))
+        ld-options: -static -pthread
     build-depends:
           base                  >= 4.11 && <5
         , containers
