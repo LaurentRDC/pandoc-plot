@@ -25,6 +25,8 @@ import           Data.Hashable                     (hash)
 import           Data.Text                         (Text, pack, unpack)
 import qualified Data.Text.IO                      as T
 
+import           Paths_pandoc_plot                 (version)
+
 import           System.Directory                  (createDirectoryIfMissing,
                                                     doesFileExist, getTemporaryDirectory)
 import           System.Exit                       (ExitCode (..))
@@ -141,7 +143,18 @@ sourceCodePath = fmap normalise . fmap (flip replaceExtension ".txt") . figurePa
 figureContentHash :: FigureSpec -> PlotM Word
 figureContentHash FigureSpec{..} = do
     dependenciesHash <- sequence $ fileHash <$> dependencies
-    return $ fromIntegral $ hash (fromEnum toolkit, script, fromEnum saveFormat, directory, dpi, dependenciesHash, extraAttrs)
+    -- hash looks strange because instances only exist for 7-tuples or less
+    return $ fromIntegral 
+           $ hash ( (fromEnum toolkit
+                    , script
+                    , fromEnum saveFormat
+                    , directory)
+                  , ( dpi
+                    , dependenciesHash
+                    , extraAttrs
+                    , show version -- Included version because capture
+                    )              -- scripts may change between releases
+                  )
 
 
 -- | Determine the path a figure should have.
