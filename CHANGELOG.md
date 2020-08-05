@@ -2,6 +2,18 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.9.1.0
+---------------
+
+* Added the `file` parameter, which allows the user to read figure content from a file instead of using the code block content in documents. This is especially useful for complex figures, where you might want to have the help of your tooling in an IDE, for instance. Here's an example:
+
+````markdown
+
+```{.matplotlib file=myplot.py}
+```
+
+````
+
 Release 0.9.0.0
 ---------------
 

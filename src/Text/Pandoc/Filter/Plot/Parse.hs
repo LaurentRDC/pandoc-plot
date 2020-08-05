@@ -27,7 +27,7 @@ import           Data.Char                         (isSpace)
 import           Data.Default                      (def)
 import           Data.List                         (intersperse)
 import qualified Data.Map.Strict                   as Map
-import           Data.Maybe                        (fromMaybe, listToMaybe)
+import           Data.Maybe                        (fromMaybe, listToMaybe, isJust, fromJust)
 import           Data.String                       (fromString)
 import           Data.Text                         (Text, pack, unpack)
 import qualified Data.Text                         as T
@@ -55,7 +55,7 @@ tshow = pack . show
 -- If an environment is detected, but the save format is incompatible,
 -- an error will be thrown.
 parseFigureSpec :: Block -> PlotM (Maybe FigureSpec)
-parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = 
+parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = 
     sequence $ fmap figureSpec 
              $ plotToolkit block >>= hasToolkit
     where
@@ -80,6 +80,9 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) content) =
                 defSaveFmt = defaultSaveFormat conf
                 defDPI = defaultDPI conf
 
+            -- Decide between reading from file or using document content
+            content <- parseContent block
+
             let caption        = Map.findWithDefault mempty (tshow CaptionK) attrs'
                 withSource     = fromMaybe defWithSource $ readBool <$> Map.lookup (tshow WithSourceK) attrs'
                 script         = mconcat $ intersperse "\n" [header, includeScript, content]
@@ -101,6 +104,22 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) content) =
 
 parseFigureSpec _ = return Nothing
 
+
+-- | Parse script content from a block, if possible.
+-- The script content can either come from a file
+-- or from the code block itself. If both are present,
+-- the file is preferred.
+parseContent :: Block -> PlotM Script
+parseContent (CodeBlock (_, _, attrs) content) = do
+    let attrs' = Map.fromList attrs
+        mfile  = unpack <$> Map.lookup (tshow FileK) attrs'
+    when (content /= mempty && isJust mfile) $ do
+        err $ mconcat [ 
+            "Figure refers to a file (", pack $ fromJust mfile
+            , ") but also has content in the document.\nThe file content will be preferred."
+            ]
+    maybe (return content) (liftIO . TIO.readFile) mfile
+parseContent _ = return mempty
 
 -- | Determine which toolkit should be used to render the plot
 -- from a code block, if any.

@@ -122,6 +122,7 @@ data InclusionKey
     | DpiK
     | ExecutableK
     | DependenciesK
+    | FileK
     | MatplotlibTightBBoxK
     | MatplotlibTransparentK
     deriving (Bounded, Eq, Enum)
@@ -138,6 +139,7 @@ instance Show InclusionKey where
     show DpiK                   = "dpi"
     show ExecutableK            = "executable"
     show DependenciesK          = "dependencies"
+    show FileK                  = "file"
     show MatplotlibTightBBoxK   = "tight_bbox"
     show MatplotlibTransparentK = "transparent"
 

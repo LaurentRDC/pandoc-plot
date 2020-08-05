@@ -52,6 +52,7 @@ Here are the possible attributes what pandoc-plot understands for ALL toolkits:
     * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.
     * @dependencies=[...]@: Specify files/directories on which a figure depends, e.g. data file. Figures will be re-rendered if one of those file/directory changes.
     * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
+    * @file=...@: Path to a file from which to read the content of the figure. The content of the code block will be ignored.
 
 Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a 
 YAML file. 
