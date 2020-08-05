@@ -55,16 +55,11 @@ tshow = pack . show
 -- If an environment is detected, but the save format is incompatible,
 -- an error will be thrown.
 parseFigureSpec :: Block -> PlotM (Maybe FigureSpec)
-parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = do
-    let toolkit = plotToolkit block
-    case toolkit of
-        Nothing -> return Nothing
-        Just tk -> do
-            if not (cls tk `elem` classes)
-                then return Nothing
-                else Just <$> figureSpec tk
-
+parseFigureSpec block@(CodeBlock (id', classes, attrs) content) = 
+    sequence $ fmap figureSpec 
+             $ plotToolkit block >>= hasToolkit
     where
+        hasToolkit    = \tk -> if cls tk `elem` classes then return tk else Nothing
         attrs'        = Map.fromList attrs
         preamblePath  = unpack <$> Map.lookup (tshow PreambleK) attrs'
 
