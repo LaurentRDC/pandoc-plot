@@ -36,7 +36,8 @@ import           Data.Version                      (showVersion)
 
 import           Paths_pandoc_plot                 (version)
 
-import           System.FilePath                   (makeValid, normalise)
+import           System.FilePath                   (makeValid)
+import           System.Directory                  (canonicalizePath)
 
 import           Text.Pandoc.Definition            (Block (..), Inline,
                                                     Pandoc (..), Format(..))
@@ -92,8 +93,8 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) =
                 extraAttrs     = Map.toList extraAttrs'
                 blockAttrs     = (id', filter (/= cls toolkit) classes, filteredAttrs)
 
-            let blockDependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
-                dependencies = (defaultDependencies conf) <> blockDependencies
+            blockDependencies <- parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
+            let dependencies = (defaultDependencies conf) <> blockDependencies
             
             -- This is the first opportunity to check save format compatibility
             let saveFormatSupported = saveFormat `elem` (supportedSaveFormats toolkit)
@@ -112,7 +113,7 @@ parseFigureSpec _ = return Nothing
 parseContent :: Block -> PlotM Script
 parseContent (CodeBlock (_, _, attrs) content) = do
     let attrs' = Map.fromList attrs
-        mfile  = unpack <$> Map.lookup (tshow FileK) attrs'
+    mfile  <- liftIO $ sequence $ fmap canonicalizePath $ unpack <$> Map.lookup (tshow FileK) attrs'
     when (content /= mempty && isJust mfile) $ do
         err $ mconcat [ 
             "Figure refers to a file (", pack $ fromJust mfile
@@ -155,11 +156,10 @@ readBool s | s `elem` ["True",  "true",  "'True'",  "'true'",  "1"] = True
 
 
 -- | Parse a list of file dependencies such as /[foo.bar, hello.txt]/.
-parseFileDependencies :: Text -> [FilePath]
+parseFileDependencies :: Text -> PlotM [FilePath]
 parseFileDependencies t
-    | t == mempty = mempty
-    | otherwise   = fmap normalise 
-                      . fmap unpack 
-                      . fmap (T.dropAround isSpace) -- Remove leading/trailing whitespace on filenames
-                      . T.splitOn "," 
-                      . T.dropAround (\c -> c `elem` ['[', ']']) $ t
+    | t == mempty = return mempty
+    | otherwise   = sequence $ 
+                        fmap (liftIO . canonicalizePath . unpack . T.dropAround isSpace) 
+                            . T.splitOn "," 
+                            . T.dropAround (\c -> c `elem` ['[', ']']) $ t
