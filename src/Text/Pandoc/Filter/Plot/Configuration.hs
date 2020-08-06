@@ -1,7 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
-
-
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020

@@ -1,4 +1,3 @@
-
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
