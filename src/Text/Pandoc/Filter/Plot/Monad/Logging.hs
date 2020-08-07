@@ -27,6 +27,7 @@ import           Control.Concurrent.MVar      (MVar, newEmptyMVar, putMVar, take
 import           Control.Monad                (forever)
 
 import           Data.Char                    (toLower)
+import           Data.List                    (intercalate)
 import           Data.String                  (IsString(..))
 import           Data.Text                    (Text, unpack)
 import           Data.Text.IO                 (hPutStr)
@@ -42,7 +43,7 @@ data Verbosity = Debug    -- ^ Log all messages, including debug messages.
                | Warning  -- ^ Log warning and error messages.
                | Error    -- ^ Only log errors.
                | Silent   -- ^ Don't log anything. 
-               deriving (Eq, Ord, Show)
+               deriving (Eq, Ord, Show, Enum, Bounded)
 
 
 -- | Description of the possible ways to sink log messages.
@@ -98,9 +99,12 @@ instance IsString Verbosity where
         | ls == "warning" = Warning
         | ls == "error"   = Error
         | ls == "debug"   = Debug
-        | otherwise = error $ "Unrecognized verbosity " <> s
+        | otherwise = errorWithoutStackTrace $ mconcat ["Unrecognized verbosity \"", s, "\". Valid choices are: " ] <> choices
         where
             ls = toLower <$> s
+            choices = intercalate ", " 
+                    $ fmap (fmap toLower . show) 
+                    $ enumFromTo minBound (maxBound::Verbosity)
 
 instance FromJSON Verbosity where
     parseJSON (String t) = pure $ fromString . unpack $ t
