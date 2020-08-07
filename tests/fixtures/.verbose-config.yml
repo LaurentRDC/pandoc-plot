@@ -1,2 +1,3 @@
 logging:
   verbosity: debug
+  filepath: log.txt
