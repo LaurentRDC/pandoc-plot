@@ -7,7 +7,7 @@
 
 module Main where
 
-import           Control.Monad                    (join, forM_, when, msum)
+import           Control.Monad                    (join, when, msum)
 
 import           Data.List                        (intersperse, (\\))
 import           Data.Text                        (unpack)
@@ -257,9 +257,7 @@ clean mfp fp = do
     --   (3) local .pandoc-plot.yml 
     --   (4) default config
     conf <- maybe localConfig configuration $ firstJusts [configurationPathMeta doc, mfp]
-    putStrLn $ "Cleaning output directories for " <> fp
-    cleanedDirs <- cleanOutputDirs conf doc
-    forM_ cleanedDirs $ \d -> putStrLn $ "Removed directory " <> d
+    cleanOutputDirs conf doc >> return ()
     where
         firstJusts :: [Maybe a] -> Maybe a
         firstJusts = msum

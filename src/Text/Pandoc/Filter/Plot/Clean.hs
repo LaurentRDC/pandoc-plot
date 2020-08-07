@@ -14,6 +14,7 @@ Utilities to clean pandoc-plot output directories.
 
 module Text.Pandoc.Filter.Plot.Clean (
       cleanOutputDirs
+    , outputDirs
     , readDoc
 ) where
 
@@ -26,7 +27,7 @@ import           Data.Default                     (def)
 import           Data.List                        (nub)
 import           Data.Maybe                       (fromMaybe, catMaybes)
 
-import           Data.Text                        (Text)
+import           Data.Text                        (Text, pack)
 import qualified Data.Text.IO                     as Text
 
 import           System.Directory                 (removePathForcibly)
@@ -49,20 +50,40 @@ import Text.Pandoc.Filter.Plot.Monad
 -- Note that *all* files in pandoc-plot output directories will be removed.
 --
 -- The cleaned directories are returned.
-cleanOutputDirs :: Walkable Block b => Configuration -> b -> IO [FilePath]
-cleanOutputDirs conf doc = do
-    
+cleanOutputDirs :: Walkable Block b 
+                => Configuration -> b -> IO [FilePath]
+cleanOutputDirs conf = runPlotM conf . cleanOutputDirsM
+
+
+-- | Analyze a document to determine where would the pandoc-plot output directories be.
+outputDirs :: Walkable Block b 
+           => b -> PlotM [FilePath]
+outputDirs = fmap (nub . catMaybes) 
+           . sequence 
+           . query (\b -> [parseFigureSpec b >>= return . fmap directory])
+
+
+-- PlotM version of @cleanOutputDirs@
+cleanOutputDirsM :: Walkable Block b 
+                 => b -> PlotM [FilePath]
+cleanOutputDirsM doc = do
+    conf <- asksConfig id
     case logSink conf of 
-        LogFile fp -> removePathForcibly fp
-        _          -> return ()
+        LogFile path -> do
+            info $ "Removing log file " <> pack path
+            liftIO $ removePathForcibly path
+        _            -> return ()
     
-    directories <- sequence $ query (\b -> [outputDir b]) doc
-    forM (nub . catMaybes $ directories) removeDir
-    where
-        outputDir b = runPlotM conf (parseFigureSpec b >>= return . fmap directory)
-        
-        removeDir :: FilePath -> IO FilePath
-        removeDir d = removePathForcibly d >> return d
+    directories <- outputDirs doc
+
+    forM directories $ \fp -> do
+        info $ "Removing directory " <> pack fp
+        -- It is important to use `removePathForcibly` here, because it does 
+        -- not throw exceptions if the directory doesn't exist. This means
+        -- we do not have to check in advance if directories are nested in our 
+        -- list of directories.
+        liftIO $ removePathForcibly fp
+        return fp
 
 
 -- | Read a document, guessing what extensions and reader options are appropriate. If

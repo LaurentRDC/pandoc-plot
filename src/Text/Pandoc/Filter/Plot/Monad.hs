@@ -97,10 +97,10 @@ runPlotM conf v = do
 
 
 debug, err, warning, info :: Text -> PlotM ()
-debug     = log "DEBUG| " Debug 
-err       = log "ERROR| " Error 
-warning   = log "WARN | " Warning 
-info      = log "INFO | " Info 
+debug     = log "DEBUG | " Debug 
+err       = log "ERROR | " Error 
+warning   = log "WARN  | " Warning 
+info      = log "INFO  | " Info 
 
 
 -- | General purpose logging. 
