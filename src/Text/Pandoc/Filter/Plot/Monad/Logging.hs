@@ -99,7 +99,7 @@ instance IsString Verbosity where
         | ls == "warning" = Warning
         | ls == "error"   = Error
         | ls == "debug"   = Debug
-        | otherwise = errorWithoutStackTrace $ mconcat ["Unrecognized verbosity \"", s, "\". Valid choices are: " ] <> choices
+        | otherwise = errorWithoutStackTrace $ mconcat ["Unrecognized verbosity '", s, "'. Valid choices are: " ] <> choices
         where
             ls = toLower <$> s
             choices = intercalate ", " 

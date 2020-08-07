@@ -196,7 +196,7 @@ instance IsString SaveFormat where
         | s `elem` ["tif", "tiff", "TIF", "TIFF", ".tif", ".tiff"] = TIF
         | s `elem` ["webp", "WEBP", ".webp"] = WEBP
         | s `elem` ["html", "HTML", ".html"] = HTML
-        | otherwise = error $
+        | otherwise = errorWithoutStackTrace $
                 mconcat [ s
                         , " is not one of valid save format : "
                         , mconcat $ intersperse ", " $ show <$> saveFormats

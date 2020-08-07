@@ -84,4 +84,4 @@ matplotlibCheckIfShow s =
 readBool :: Text -> Bool
 readBool s | s `elem` ["True",  "true",  "'True'",  "'true'",  "1"] = True
            | s `elem` ["False", "false", "'False'", "'false'", "0"] = False
-           | otherwise = error $ unpack $ mconcat ["Could not parse '", s, "' into a boolean. Please use 'True' or 'False'"]
+           | otherwise = errorWithoutStackTrace $ unpack $ mconcat ["Could not parse '", s, "' into a boolean. Please use 'True' or 'False'"]

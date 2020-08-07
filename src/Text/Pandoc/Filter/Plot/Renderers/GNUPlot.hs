@@ -52,4 +52,4 @@ terminalString EPS = "postscript eps"
 terminalString GIF = "gif"
 terminalString JPG = "jpeg"
 terminalString PDF = "pdfcairo"
-terminalString fmt = error $ "gnuplot: unsupported save format" <> show fmt
+terminalString fmt = errorWithoutStackTrace $ "gnuplot: unsupported save format" <> show fmt

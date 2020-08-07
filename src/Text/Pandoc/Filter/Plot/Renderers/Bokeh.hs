@@ -74,4 +74,4 @@ __current_model = [obj for obj in globals().values() if isinstance(obj, Model)][
             HTML -> [st|save(__current_model, filename=r"#{fname}", resources=CDN)|]
             SVG  -> [st|__current_model.output_backend="svg"; export_svgs(__current_model, filename=r"#{fname}")|]
             PNG  -> [st|export_png(obj = __current_model, filename=r"#{fname}")|]
-            fmt  -> error $ "Save format not supported: " <> show fmt
+            fmt  -> errorWithoutStackTrace $ "Save format not supported: " <> show fmt

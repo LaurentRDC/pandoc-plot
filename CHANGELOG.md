@@ -13,6 +13,8 @@ Release 0.9.1.0
 ```
 
 ````
+* Better error messages when specifying logger verbosity.
+* Cleaning output directories with `pandoc-plot clean` now follows configuration values for logging. 
 
 Release 0.9.0.0
 ---------------
