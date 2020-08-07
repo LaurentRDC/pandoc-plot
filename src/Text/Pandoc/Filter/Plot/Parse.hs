@@ -116,8 +116,12 @@ parseContent (CodeBlock (_, _, attrs) content) = do
             "Figure refers to a file (", pack $ fromJust mfile
             , ") but also has content in the document.\nThe file content will be preferred."
             ]
-    maybe (return content) (liftIO . TIO.readFile) mfile
+    let loadFromFile fp = do
+            info $ "Loading figure content from " <> pack fp
+            liftIO $ TIO.readFile fp
+    maybe (return content) loadFromFile mfile
 parseContent _ = return mempty
+
 
 -- | Determine which toolkit should be used to render the plot
 -- from a code block, if any.
