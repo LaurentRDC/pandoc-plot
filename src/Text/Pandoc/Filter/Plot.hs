@@ -44,14 +44,23 @@ The code block will be reworked into a script and the output figure will be capt
 
 Here are the possible attributes what pandoc-plot understands for ALL toolkits:
 
-    * @directory=...@ : Directory where to save the figure.
-    * @source=true|false@ : Whether or not to link the source code of this figure in the caption. Ideal for web pages, for example. Default is false.
-    * @format=...@: Format of the generated figure. This can be an extension or an acronym, e.g. @format=PNG@.
-    * @caption="..."@: Specify a plot caption (or alternate text). Format for captions is specified in the documentation for the @Configuration@ type.
+    * @directory=...@ : Directory where to save the figure. This path should be specified with 
+      respect to the current working directory, and not with respect to the document.
+    * @source=true|false@ : Whether or not to link the source code of this figure in the caption. 
+      Ideal for web pages, for example. Default is false.
+    * @format=...@: Format of the generated figure. This can be an extension or an acronym, 
+      e.g. @format=PNG@.
+    * @caption="..."@: Specify a plot caption (or alternate text). Format 
+      for captions is specified in the documentation for the @Configuration@ type.
     * @dpi=...@: Specify a value for figure resolution, or dots-per-inch. Certain toolkits ignore this.
-    * @dependencies=[...]@: Specify files/directories on which a figure depends, e.g. data file. Figures will be re-rendered if one of those file/directory changes.
-    * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over many figures.
-    * @file=...@: Path to a file from which to read the content of the figure. The content of the code block will be ignored.
+    * @dependencies=[...]@: Specify files/directories on which a figure depends, e.g. data file. 
+      Figures will be re-rendered if one of those file/directory changes. These paths should 
+      be specified with respect to the current working directory, and not with respect to the document.
+    * @preamble=...@: Path to a file to include before the code block. Ideal to avoid repetition over 
+      many figures.
+    * @file=...@: Path to a file from which to read the content of the figure. The content of the 
+      code block will be ignored. This path should be specified with respect to the current working 
+      directory, and not with respect to the document.
 
 Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a 
 YAML file. 
