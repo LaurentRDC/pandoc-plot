@@ -23,7 +23,9 @@ import qualified Data.Text.IO           as TIO
 import           Data.Yaml
 import           Data.Yaml.Config       (ignoreEnv, loadYamlSettings)
 
-import           Text.Pandoc.Definition (Format(..), Pandoc(..), MetaValue(..), lookupMeta)
+import           System.FilePath        (normalise)
+
+import           Text.Pandoc.Definition (Format(..), Pandoc(..), MetaValue(..), Inline(..), lookupMeta)
 
 import Text.Pandoc.Filter.Plot.Monad   
 
@@ -33,7 +35,7 @@ import Text.Pandoc.Filter.Plot.Monad
 -- If a key is not present, its value will be set
 -- to the default value. Parsing errors result in thrown exceptions.
 configuration :: FilePath -> IO Configuration
-configuration fp = (loadYamlSettings [fp] [] ignoreEnv) >>= renderConfig
+configuration fp = (loadYamlSettings [normalise fp] [] ignoreEnv) >>= renderConfig
 
 
 -- | Default configuration values.
@@ -105,8 +107,9 @@ configurationPathMeta :: Pandoc -> Maybe FilePath
 configurationPathMeta (Pandoc meta _) = 
         lookupMeta "plot-configuration" meta >>= getPath
     where
-        getPath (MetaString s) = Just (unpack s)
-        getPath _              = Nothing
+        getPath (MetaString t)        = Just (unpack t)
+        getPath (MetaInlines [Str s]) = Just (unpack s)
+        getPath _                     = Nothing
 
 
 -- We define a precursor type because preambles are best specified as file paths,

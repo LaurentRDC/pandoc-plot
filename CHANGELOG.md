@@ -15,6 +15,7 @@ Release 0.9.1.0
 ````
 * Better error messages when specifying logger verbosity.
 * Cleaning output directories with `pandoc-plot clean` now follows configuration values for logging. 
+* Fixed an issue where configuration in metadata did not get parsed properly.
 
 Release 0.9.0.0
 ---------------
