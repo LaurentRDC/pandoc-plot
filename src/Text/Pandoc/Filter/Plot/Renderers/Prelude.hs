@@ -25,7 +25,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
 import           Data.Maybe                    (isJust)
 import           Data.Text                     (Text, unpack)
 
-import           System.Directory              (findExecutable, canonicalizePath)
+import           System.Directory              (findExecutable)
 import           System.Exit                   (ExitCode(..))
 
 import           Text.Shakespeare.Text         (st)
@@ -43,9 +43,7 @@ commandSuccess s = do
 
 -- | Checks that an executable is available on path, at all.
 existsOnPath :: FilePath -> IO Bool
-existsOnPath fp = canonicalizePath fp 
-                    >>= findExecutable 
-                    >>= fmap isJust . return
+existsOnPath fp = findExecutable fp >>= fmap isJust . return
 
 
 -- | Try to find the executable and normalise its path.

@@ -27,10 +27,10 @@ import qualified Data.Text.IO                      as T
 import           Paths_pandoc_plot                 (version)
 
 import           System.Directory                  (createDirectoryIfMissing,
-                                                    doesFileExist, getTemporaryDirectory,
-                                                    canonicalizePath)
+                                                    doesFileExist, getTemporaryDirectory)
 import           System.Exit                       (ExitCode (..))
-import           System.FilePath                   (addExtension, replaceExtension,
+import           System.FilePath                   (addExtension,
+                                                    normalise, replaceExtension,
                                                     takeDirectory, (</>))
 
 import           Text.Pandoc.Filter.Plot.Renderers
@@ -131,7 +131,7 @@ tempScriptPath FigureSpec{..} = do
 
 -- | Determine the path to the source code that generated the figure.
 sourceCodePath :: FigureSpec -> PlotM FilePath
-sourceCodePath = fmap (flip replaceExtension ".txt") . figurePath
+sourceCodePath = fmap normalise . fmap (flip replaceExtension ".txt") . figurePath
 
 
 -- | Hash of the content of a @FigureSpec@. Note that unlike usual hashes,
@@ -165,4 +165,4 @@ figurePath spec = do
     fh <- figureContentHash spec
     let    ext  = extension . saveFormat $ spec
            stem = flip addExtension ext . show $ fh
-    liftIO $ canonicalizePath $ directory spec </> stem
+    return $ normalise $ directory spec </> stem
