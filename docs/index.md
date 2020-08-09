@@ -1,5 +1,4 @@
 ---
-title: pandoc-plot
 plot-configuration: plot-config.yml
 ---
 

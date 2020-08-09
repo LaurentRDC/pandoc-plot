@@ -12,7 +12,8 @@ stack exec -- pandoc-plot write-example-config --help | Out-File -FilePath  help
 stack exec -- pandoc `
                 --standalone `
                 --toc `
-                -M version=$version `
+                --metadata version=$version `
+                --metadata title="pandoc-plot $version manual" `
                 --wrap=preserve `
                 --filter=pandoc-include-code `
                 --template=docs/manual-template.md `
@@ -24,6 +25,7 @@ stack exec -- pandoc `
                 --standalone `
                 --self-contained `
                 --wrap=preserve `
+                --metadata title="pandoc-plot $version manual" `
                 --css=docs/theme.css `
                 MANUAL.md -o docs/MANUAL.html
 
