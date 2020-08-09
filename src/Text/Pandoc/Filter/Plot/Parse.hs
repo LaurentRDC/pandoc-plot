@@ -109,7 +109,7 @@ parseFigureSpec _ = return Nothing
 parseContent :: Block -> PlotM Script
 parseContent (CodeBlock (_, _, attrs) content) = do
     let attrs' = Map.fromList attrs
-        mfile  = unpack <$> Map.lookup (tshow FileK) attrs'
+        mfile  = normalise . unpack <$> Map.lookup (tshow FileK) attrs'
     when (content /= mempty && isJust mfile) $ do
         err $ mconcat [ 
             "Figure refers to a file (", pack $ fromJust mfile
