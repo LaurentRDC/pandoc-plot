@@ -45,4 +45,4 @@ graphvizAvailable = do
 -- Graphviz export is entirely based on command-line arguments
 -- so there is no need to modify the script itself.
 graphvizCapture :: FigureSpec -> FilePath -> Script
-graphvizCapture _ _ = mempty
+graphvizCapture FigureSpec{..} _ = script
