@@ -52,7 +52,14 @@ import Text.Pandoc.Filter.Plot.Monad
 -- The cleaned directories are returned.
 cleanOutputDirs :: Walkable Block b 
                 => Configuration -> b -> IO [FilePath]
-cleanOutputDirs conf = runPlotM conf . cleanOutputDirsM
+cleanOutputDirs conf doc = do
+    dirs <- runPlotM conf . cleanOutputDirsM $ doc
+    -- Deletion of the log file must be done outside of PlotM
+    -- to ensure the log file has been closed.
+    case logSink conf of 
+        LogFile path -> removePathForcibly path
+        _            -> return ()
+    return dirs
 
 
 -- | Analyze a document to determine where would the pandoc-plot output directories be.
@@ -67,15 +74,7 @@ outputDirs = fmap (nub . catMaybes)
 cleanOutputDirsM :: Walkable Block b 
                  => b -> PlotM [FilePath]
 cleanOutputDirsM doc = do
-    conf <- asksConfig id
-    case logSink conf of 
-        LogFile path -> do
-            info $ "Removing log file " <> pack path
-            liftIO $ removePathForcibly path
-        _            -> return ()
-    
     directories <- outputDirs doc
-
     forM directories $ \fp -> do
         info $ "Removing directory " <> pack fp
         -- It is important to use `removePathForcibly` here, because it does 
