@@ -39,6 +39,10 @@ mathematicaAvailable = do
 
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script
-mathematicaCapture FigureSpec{..} fname = [st|
+mathematicaCapture = appendCapture mathematicaCaptureFragment
+
+
+mathematicaCaptureFragment :: FigureSpec -> FilePath -> Script
+mathematicaCaptureFragment FigureSpec{..} fname = [st|
 Export["#{fname}", %, #{show saveFormat}, ImageResolution -> #{dpi}]
 |]

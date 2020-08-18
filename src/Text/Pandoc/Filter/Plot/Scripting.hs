@@ -88,13 +88,9 @@ runTempScript spec@FigureSpec{..} = do
         CheckPassed -> do
             scriptPath <- tempScriptPath spec
             target <- figurePath spec
-            let captureFragment = (capture toolkit) spec target
-                -- Note: for gnuplot, the capture string must be placed
-                --       BEFORE plotting happens. Since this is only really an
-                --       issue for gnuplot, we have a special case.
-                scriptWithCapture = if (toolkit == GNUPlot)
-                                        then mconcat [captureFragment, "\n", script]
-                                        else mconcat [script, "\n", captureFragment]
+            
+            let scriptWithCapture = (capture toolkit) spec target
+
             liftIO $ T.writeFile scriptPath scriptWithCapture
             let outputSpec = OutputSpec { oFigureSpec = spec
                                         , oScriptPath = scriptPath

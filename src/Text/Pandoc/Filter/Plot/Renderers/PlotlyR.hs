@@ -40,7 +40,11 @@ plotlyRAvailable = do
 
 
 plotlyRCapture :: FigureSpec -> FilePath -> Script
-plotlyRCapture spec@FigureSpec{..} fname = case saveFormat of
+plotlyRCapture = appendCapture plotlyRCaptureFragment
+
+
+plotlyRCaptureFragment :: FigureSpec -> FilePath -> Script
+plotlyRCaptureFragment spec@FigureSpec{..} fname = case saveFormat of
     HTML -> plotlyRCaptureHtml spec fname
     _    -> plotlyRCaptureStatic spec fname
 

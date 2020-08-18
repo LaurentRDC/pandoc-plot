@@ -44,7 +44,11 @@ matlabAvailable = asksConfig matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <
 
 
 matlabCapture :: FigureSpec -> FilePath -> Script
-matlabCapture FigureSpec{..} fname = [st|
+matlabCapture = appendCapture matlabCaptureFragment
+
+
+matlabCaptureFragment :: FigureSpec -> FilePath -> Script
+matlabCaptureFragment FigureSpec{..} fname = [st|
 if exist("exportgraphics")>0
     exportgraphics(gcf, '#{fname}', 'Resolution', #{dpi});
 else

@@ -1,4 +1,4 @@
-
+{-# LANGUAGE OverloadedStrings #-}
 {-|
 Module      : $header$
 Copyright   : (c) Laurent P René de Cotret, 2020
@@ -20,6 +20,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , existsOnPath
     , executable
     , OutputSpec(..)
+    , appendCapture
 ) where
 
 import           Data.Maybe                    (isJust)
@@ -66,6 +67,12 @@ executable GNUPlot      = asksConfig gnuplotExe      >>= liftIO . tryToFindExe
 executable Graphviz     = asksConfig graphvizExe     >>= liftIO . tryToFindExe
 executable Bokeh        = asksConfig bokehExe        >>= liftIO . tryToFindExe
 executable Plotsjl      = asksConfig plotsjlExe      >>= liftIO . tryToFindExe
+
+
+-- | A shortcut to append capture script fragments to scripts
+appendCapture :: (FigureSpec -> FilePath -> Script) 
+              ->  FigureSpec -> FilePath -> Script
+appendCapture f s fp = mconcat [script s, "\n", f s fp]
 
 
 -- | Internal description of all information 

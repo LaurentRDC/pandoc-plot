@@ -42,6 +42,10 @@ plotsjlAvailable = do
 
 
 plotsjlCapture :: FigureSpec -> FilePath -> Script
-plotsjlCapture _ fname = [st|
+plotsjlCapture = appendCapture plotsjlCaptureFragment
+
+
+plotsjlCaptureFragment :: FigureSpec -> FilePath -> Script
+plotsjlCaptureFragment _ fname = [st|
 savefig(raw"#{fname}")
 |]

@@ -39,10 +39,17 @@ gnuplotAvailable = do
 
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script
-gnuplotCapture FigureSpec{..} fname = [st|
+gnuplotCapture = prependCapture gnuplotCaptureFragment
+    where
+        prependCapture f s fp = mconcat [f s fp, "\n", script s]
+
+
+gnuplotCaptureFragment :: FigureSpec -> FilePath -> Script
+gnuplotCaptureFragment FigureSpec{..} fname = [st|
 set terminal #{terminalString saveFormat}
 set output '#{fname}'
 |]
+
 
 -- | Terminal name for supported save formats
 terminalString :: SaveFormat -> Text

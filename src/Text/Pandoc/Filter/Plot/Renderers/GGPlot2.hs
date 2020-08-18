@@ -40,7 +40,11 @@ ggplot2Available = do
 
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script
-ggplot2Capture FigureSpec{..} fname = [st|
+ggplot2Capture = appendCapture ggplot2CaptureFragment
+
+
+ggplot2CaptureFragment :: FigureSpec -> FilePath -> Script
+ggplot2CaptureFragment FigureSpec{..} fname = [st|
 library(ggplot2) # just in case
 ggsave("#{fname}", plot = last_plot(), dpi = #{dpi})
 |]

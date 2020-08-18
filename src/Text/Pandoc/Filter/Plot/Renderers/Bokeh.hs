@@ -57,7 +57,11 @@ bokehCheckIfShow s =
 
 
 bokehCapture :: FigureSpec -> FilePath -> Script
-bokehCapture FigureSpec{..} fname = [st|
+bokehCapture = appendCapture bokehCaptureFragment
+
+
+bokehCaptureFragment :: FigureSpec -> FilePath -> Script
+bokehCaptureFragment FigureSpec{..} fname = [st|
 from bokeh.io import export_png, export_svgs, save
 from bokeh.models import Model
 from bokeh.resources import CDN

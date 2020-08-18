@@ -38,8 +38,13 @@ plotlyPythonAvailable = do
     exe <- executable PlotlyPython
     commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
 
+
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
-plotlyPythonCapture FigureSpec{..} fname = [st|
+plotlyPythonCapture = appendCapture plotlyPythonCaptureFragment
+
+
+plotlyPythonCaptureFragment :: FigureSpec -> FilePath -> Script
+plotlyPythonCaptureFragment FigureSpec{..} fname = [st|
 import plotly.graph_objects as go
 __current_plotly_figure = next(obj for obj in globals().values() if type(obj) == go.Figure)
 __current_plotly_figure.#{write_method}(r"#{fname}"#{extra_args})

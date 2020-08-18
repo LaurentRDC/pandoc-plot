@@ -43,7 +43,11 @@ matplotlibCommand OutputSpec{..} = do
 
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script
-matplotlibCapture FigureSpec{..} fname = [st|
+matplotlibCapture = appendCapture matplotlibCaptureFragment
+
+
+matplotlibCaptureFragment :: FigureSpec -> FilePath -> Script
+matplotlibCaptureFragment FigureSpec{..} fname = [st|
 import matplotlib.pyplot as plt
 plt.savefig(r"#{fname}", dpi=#{dpi}, transparent=#{transparent}, bbox_inches=#{tightBox})
 |]
