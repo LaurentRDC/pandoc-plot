@@ -32,7 +32,7 @@ import           System.FilePath                  (takeExtensions, (</>))
 
 defaultTestConfig :: Configuration
 defaultTestConfig = defaultConfiguration { logVerbosity = Debug
-                                         , logSink = LogFile "test_log.txt"
+                                         , logSink = StdErr --LogFile "test_log.txt"
                                          }
 
 -------------------------------------------------------------------------------
