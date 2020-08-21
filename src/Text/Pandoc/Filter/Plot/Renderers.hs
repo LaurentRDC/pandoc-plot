@@ -132,7 +132,7 @@ parseExtraAttrs _          = return mempty
 -- The executable will need to be found first, hence the IO monad.
 command :: Toolkit 
         -> OutputSpec
-        -> PlotM Text
+        -> PlotM (FilePath, Text)
 command Matplotlib   = matplotlibCommand
 command PlotlyPython = plotlyPythonCommand
 command PlotlyR      = plotlyRCommand

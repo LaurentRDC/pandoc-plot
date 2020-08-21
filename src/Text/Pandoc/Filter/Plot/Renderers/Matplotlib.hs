@@ -36,10 +36,10 @@ matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-matplotlibCommand :: OutputSpec -> PlotM Text
+matplotlibCommand :: OutputSpec -> PlotM (FilePath, Text)
 matplotlibCommand OutputSpec{..} = do
-    exe <- executable Matplotlib
-    return [st|#{exe} "#{oScriptPath}"|]
+    (dir, exe) <- executable Matplotlib
+    return (dir, [st|#{exe} "#{oScriptPath}"|])
 
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script
@@ -64,8 +64,8 @@ matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "tran
 
 matplotlibAvailable :: PlotM Bool
 matplotlibAvailable = do
-    exe <- executable Matplotlib
-    commandSuccess [st|#{exe} -c "import matplotlib"|]
+    (dir, exe) <- executable Matplotlib
+    commandSuccess dir [st|#{exe} -c "import matplotlib"|]
 
 
 -- | Check if `matplotlib.pyplot.show()` calls are present in the script,

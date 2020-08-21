@@ -233,9 +233,9 @@ showAvailableToolkits mfp = do
     return unavailable >>= mapM_ (unavailToolkitInfo c)
     where
         toolkitInfo avail conf tk = do
-            exe <- runPlotM conf $ executable tk
+            (dir, exe) <- runPlotM conf $ executable tk
             putStrLn $ "Toolkit: " <> show tk
-            when avail $ putStrLn $ "    Executable: " <> exe
+            when avail $ putStrLn $ "    Executable: " <> (dir </> exe)
             putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)
             putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
             putStrLn mempty

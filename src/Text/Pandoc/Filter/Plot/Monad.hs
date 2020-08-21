@@ -57,6 +57,7 @@ import           System.Directory            (doesFileExist, getModificationTime
 import           System.Exit                 (ExitCode (..))
 import           System.Process.Typed        ( readProcessStderr, shell, nullStream
                                              , setStdout, setStderr, byteStringOutput
+                                             , setWorkingDir
                                              )
 import           Text.Pandoc.Definition      (Format(..))
 
@@ -119,13 +120,16 @@ log h v t = do
 -- | Run a command within the @PlotM@ monad. Stderr stream
 -- is read and decoded, while Stdout is ignored. 
 -- Logging happens at the debug level if the command succeeds, or at
--- the error level if it does not succeed..
-runCommand :: Text -> PlotM (ExitCode, Text)
-runCommand command = do
+-- the error level if it does not succeed.
+runCommand :: FilePath  -- Directory from which to run the command
+           -> Text      -- Command to run, including executable
+           -> PlotM (ExitCode, Text)
+runCommand wordir command = do
     (ec, processOutput') <- liftIO 
                         $ readProcessStderr 
                         $ setStdout nullStream
                         $ setStderr byteStringOutput 
+                        $ setWorkingDir wordir
                         $ shell (unpack command)
     let processOutput = decodeUtf8With lenientDecode $ toStrict processOutput'
         logFunc = if ec == ExitSuccess

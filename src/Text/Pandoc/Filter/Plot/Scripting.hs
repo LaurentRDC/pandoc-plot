@@ -27,7 +27,8 @@ import qualified Data.Text.IO                      as T
 import           Paths_pandoc_plot                 (version)
 
 import           System.Directory                  (createDirectoryIfMissing,
-                                                    doesFileExist, getTemporaryDirectory)
+                                                    doesFileExist, getTemporaryDirectory, 
+                                                    getCurrentDirectory)
 import           System.Exit                       (ExitCode (..))
 import           System.FilePath                   (addExtension,
                                                     normalise, replaceExtension,
@@ -88,16 +89,19 @@ runTempScript spec@FigureSpec{..} = do
         CheckPassed -> do
             scriptPath <- tempScriptPath spec
             target <- figurePath spec
-            
-            let scriptWithCapture = (capture toolkit) spec target
+            -- Commands are run from the executable directory,
+            -- so we need to tell the full absolute path where to save the
+            -- figure
+            curdir <- liftIO $ getCurrentDirectory
+            let scriptWithCapture = (capture toolkit) spec (curdir </> target)
 
             liftIO $ T.writeFile scriptPath scriptWithCapture
             let outputSpec = OutputSpec { oFigureSpec = spec
                                         , oScriptPath = scriptPath
                                         , oFigurePath = target
                                         }
-            command_ <- command toolkit outputSpec
-            (ec, _) <- runCommand command_
+            (exedir, command_) <- command toolkit outputSpec
+            (ec, _) <- runCommand exedir command_
             case ec of
                 ExitSuccess      -> return   ScriptSuccess
                 ExitFailure code -> do

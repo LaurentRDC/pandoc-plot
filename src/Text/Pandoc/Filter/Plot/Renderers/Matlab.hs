@@ -29,10 +29,10 @@ matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-matlabCommand :: OutputSpec -> PlotM Text
+matlabCommand :: OutputSpec -> PlotM (FilePath, Text)
 matlabCommand OutputSpec{..} = do
-    exe <- executable Matlab
-    return [st|#{exe} -batch "run('#{oScriptPath}')"|]
+    (dir, exe) <- executable Matlab
+    return (dir, [st|#{exe} -batch "run('#{oScriptPath}')"|])
 
 
 -- On Windows at least, "matlab -help"  actually returns -1, even though the
