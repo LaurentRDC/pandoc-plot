@@ -21,13 +21,14 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , executable
     , OutputSpec(..)
     , appendCapture
+    , toRPath
 ) where
 
 import           Data.Maybe                    (isJust)
 import           Data.Text                     (Text, unpack)
 
 import           System.Directory              (findExecutable)
-import           System.FilePath               (splitFileName)
+import           System.FilePath               (splitFileName, isPathSeparator)
 import           System.Exit                   (ExitCode(..))
 
 import           Text.Shakespeare.Text         (st)
@@ -84,3 +85,8 @@ data OutputSpec = OutputSpec
     , oScriptPath    :: FilePath      -- ^ Path to the script to render
     , oFigurePath    :: FilePath      -- ^ Figure output path
     } 
+
+
+-- | R paths use the '/' path separator
+toRPath :: FilePath -> FilePath
+toRPath = fmap (\c -> if isPathSeparator c then '/' else c)

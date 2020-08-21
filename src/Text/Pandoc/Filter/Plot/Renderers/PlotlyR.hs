@@ -20,6 +20,7 @@ module Text.Pandoc.Filter.Plot.Renderers.PlotlyR (
     , plotlyRAvailable
 ) where
 
+import qualified Data.Text as T
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
@@ -40,7 +41,11 @@ plotlyRAvailable = do
 
 
 plotlyRCapture :: FigureSpec -> FilePath -> Script
-plotlyRCapture = appendCapture plotlyRCaptureFragment
+plotlyRCapture fs fp = 
+    T.unlines [ "pdf(NULL)" -- Prevent the creation of empty Rplots.pdf
+              , script fs
+              , plotlyRCaptureFragment fs fp
+              ]
 
 
 plotlyRCaptureFragment :: FigureSpec -> FilePath -> Script
@@ -56,7 +61,7 @@ plotlyRCaptureHtml _ fname = [st|
 library(plotly) # just in case
 library(htmlwidgets)
 p <- last_plot()
-htmlwidgets::saveWidget(as_widget(p), "#{fname}")
+htmlwidgets::saveWidget(as_widget(p), "#{toRPath fname}")
 |]
 
 
@@ -67,5 +72,5 @@ plotlyRCaptureStatic _ fname = [st|
 library(plotly) # just in case
 if (!require("processx")) install.packages("processx")
 pdf(NULL)
-orca(last_plot(), file = "#{fname}")
+orca(last_plot(), file = "#{toRPath fname}")
 |]

@@ -20,6 +20,7 @@ module Text.Pandoc.Filter.Plot.Renderers.GGPlot2 (
     , ggplot2Available
 ) where
 
+import qualified Data.Text as T
 import           Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 
@@ -40,12 +41,15 @@ ggplot2Available = do
 
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script
-ggplot2Capture = appendCapture ggplot2CaptureFragment
+ggplot2Capture fs fp = 
+    T.unlines [ "pdf(NULL)" -- Prevent the creation of empty Rplots.pdf
+              , script fs
+              , ggplot2CaptureFragment fs fp
+              ]
 
 
 ggplot2CaptureFragment :: FigureSpec -> FilePath -> Script
 ggplot2CaptureFragment FigureSpec{..} fname = [st|
 library(ggplot2) # just in case
-pdf(NULL)
-ggsave("#{fname}", plot = last_plot(), dpi = #{dpi})
+ggsave("#{toRPath fname}", plot = last_plot(), dpi = #{dpi})
 |]

@@ -2,6 +2,12 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.9.2.0
+---------------
+
+* Fixed an issue where executables located on paths with spaces would not be invoked correctly (#12)
+* Fixed an issue where R-paths were not normalized correctly.
+
 Release 0.9.1.0
 ---------------
 
