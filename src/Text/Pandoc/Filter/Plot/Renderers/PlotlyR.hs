@@ -66,5 +66,6 @@ plotlyRCaptureStatic :: FigureSpec -> FilePath -> Script
 plotlyRCaptureStatic _ fname = [st|
 library(plotly) # just in case
 if (!require("processx")) install.packages("processx")
+pdf(NULL)
 orca(last_plot(), file = "#{fname}")
 |]
