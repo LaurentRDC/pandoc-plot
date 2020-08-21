@@ -66,6 +66,7 @@ testFileInclusion tk =
     where
         include Matplotlib   = "tests/includes/matplotlib.py"
         include PlotlyPython = "tests/includes/plotly-python.py"
+        include PlotlyR      = "tests/includes/plotly-r.r"
         include Matlab       = "tests/includes/matlabplot.m"
         include Mathematica  = "tests/includes/mathplot.m"
         include Octave       = "tests/includes/octave.m"
@@ -73,7 +74,7 @@ testFileInclusion tk =
         include GNUPlot      = "tests/includes/gnuplot.gp"
         include Graphviz     = "tests/includes/graphviz.dot"
         include Bokeh        = "tests/includes/bokeh.py"
-        include Plotsjl   = "tests/includes/plotsjl.jl"
+        include Plotsjl      = "tests/includes/plotsjl.jl"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -262,6 +263,7 @@ codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
 trivialContent :: Toolkit -> Script
 trivialContent Matplotlib   = "import matplotlib.pyplot as plt\n"
 trivialContent PlotlyPython = "import plotly.graph_objects as go; fit = go.Figure()\n"
+trivialContent PlotlyR      = "library(plotly)\nfig <- plot_ly(midwest, x = ~percollege, color = ~state, type = \"box\")"
 trivialContent Matlab       = "figure('visible', 'off')\n"
 trivialContent Mathematica  = "\n"
 trivialContent Octave       = "figure('visible', 'off')\nplot (-10:0.1:10);"
