@@ -120,8 +120,8 @@ runTempScript spec@FigureSpec{..} = do
 tempScriptPath :: FigureSpec -> PlotM FilePath
 tempScriptPath FigureSpec{..} = do
     let ext = scriptExtension toolkit
-    -- Note that matlab will refuse to process files that don't start with
-    -- a letter... so we append the renderer name
+    -- MATLAB will refuse to process files that don't start with
+    -- a letter
     -- Note that this hash is only so that we are running scripts from unique
     -- file names; it does NOT determine whether this figure should
     -- be rendered or not.

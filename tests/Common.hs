@@ -31,7 +31,9 @@ import           System.FilePath                  (takeExtensions, (</>))
 
 
 defaultTestConfig :: Configuration
-defaultTestConfig = defaultConfiguration {logVerbosity=Silent, logSink=StdErr}
+defaultTestConfig = defaultConfiguration { logVerbosity = Debug
+                                         , logSink = LogFile "test_log.txt"
+                                         }
 
 -------------------------------------------------------------------------------
 -- Test that plot files and source files are created when the filter is run
