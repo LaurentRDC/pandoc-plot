@@ -38,7 +38,7 @@ ggplot2Available = do
     case mexe of 
         Nothing -> return False
         Just (Executable dir exe) -> 
-            commandSuccess dir [st|#{exe} -e 'library("ggplot2")'|]
+            commandSuccess dir [st|#{exe} -e 'if(!require("ggplot2")) {quit(status=1)}'|]
 
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script
