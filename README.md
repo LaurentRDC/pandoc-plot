@@ -68,8 +68,6 @@ not available), you can check with the `toolkits` command:
 pandoc-plot toolkits
 ```
 
-The `toolkits` command is described in its own section below.
-
 **Wish your plotting toolkit of choice was available? Please [raise an
 issue](https://github.com/LaurentRDC/pandoc-plot/issues)\!**
 
