@@ -159,7 +159,7 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 `pandoc-plot` is a command line executable with a few functions. You can take a look at the help using the `-h`/`--help` flag:
 
 ``` bash
-pandoc-plot 0.9.1.0 - generate figures directly in documents
+pandoc-plot 0.9.2.0 - generate figures directly in documents
 
 Usage: pandoc-plot.EXE [(-v|--version) | --full-version | (-m|--manual)] 
                        [COMMAND] [AST]
