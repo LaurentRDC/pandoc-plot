@@ -28,16 +28,17 @@ plotlyRSupportedSaveFormats :: [SaveFormat]
 plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, HTML]
 
 
-plotlyRCommand :: OutputSpec -> PlotM (FilePath, Text)
-plotlyRCommand OutputSpec{..} = do
-    (dir, exe) <- executable PlotlyR
-    return (dir, [st|#{exe} "#{oScriptPath}"|])
+plotlyRCommand :: OutputSpec -> Text -> Text
+plotlyRCommand OutputSpec{..} exe = [st|#{exe} "#{oScriptPath}"|]
 
 
 plotlyRAvailable :: PlotM Bool
 plotlyRAvailable = do
-    (dir, exe) <- executable GGPlot2
-    commandSuccess dir [st|#{exe} -e 'library("plotly")'|]
+    mexe <- executable PlotlyR
+    case mexe of 
+        Nothing -> return False
+        Just (Executable dir exe) -> 
+            commandSuccess dir [st|#{exe} -e 'library("plotly")'|]
 
 
 plotlyRCapture :: FigureSpec -> FilePath -> Script

@@ -20,12 +20,13 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude (
     , existsOnPath
     , executable
     , OutputSpec(..)
+    , Executable(..)
     , appendCapture
     , toRPath
 ) where
 
 import           Data.Maybe                    (isJust)
-import           Data.Text                     (Text, unpack)
+import           Data.Text                     (Text, unpack, pack)
 
 import           System.Directory              (findExecutable)
 import           System.FilePath               (splitFileName, isPathSeparator)
@@ -35,6 +36,12 @@ import           Text.Shakespeare.Text         (st)
 
 import           Text.Pandoc.Filter.Plot.Monad
 
+data Executable = Executable FilePath Text
+
+
+exeFromPath :: FilePath -> Executable
+exeFromPath fp = let (dir, name) = splitFileName fp
+                 in Executable dir (pack name)
 
 -- | Check that the supplied command results in
 -- an exit code of 0 (i.e. no errors)
@@ -53,23 +60,23 @@ existsOnPath fp = findExecutable fp >>= fmap isJust . return
 
 -- | Try to find the executable and normalise its path.
 -- If it cannot be found, it is left unchanged - just in case.
-tryToFindExe :: String -> IO FilePath
-tryToFindExe fp = findExecutable fp >>= maybe (return fp) return
+tryToFindExe :: String -> IO (Maybe Executable)
+tryToFindExe fp = findExecutable fp >>= return . fmap exeFromPath
 
 
 -- | Path to (directory, executable) of a toolkit. 
-executable :: Toolkit -> PlotM (FilePath, FilePath)
-executable Matplotlib   = asksConfig matplotlibExe   >>= liftIO . tryToFindExe >>= return . splitFileName
-executable PlotlyPython = asksConfig plotlyPythonExe >>= liftIO . tryToFindExe >>= return . splitFileName
-executable PlotlyR      = asksConfig plotlyRExe      >>= liftIO . tryToFindExe >>= return . splitFileName
-executable Matlab       = asksConfig matlabExe       >>= liftIO . tryToFindExe >>= return . splitFileName
-executable Mathematica  = asksConfig mathematicaExe  >>= liftIO . tryToFindExe >>= return . splitFileName
-executable Octave       = asksConfig octaveExe       >>= liftIO . tryToFindExe >>= return . splitFileName
-executable GGPlot2      = asksConfig ggplot2Exe      >>= liftIO . tryToFindExe >>= return . splitFileName
-executable GNUPlot      = asksConfig gnuplotExe      >>= liftIO . tryToFindExe >>= return . splitFileName
-executable Graphviz     = asksConfig graphvizExe     >>= liftIO . tryToFindExe >>= return . splitFileName
-executable Bokeh        = asksConfig bokehExe        >>= liftIO . tryToFindExe >>= return . splitFileName 
-executable Plotsjl      = asksConfig plotsjlExe      >>= liftIO . tryToFindExe >>= return . splitFileName
+executable :: Toolkit -> PlotM (Maybe Executable)
+executable Matplotlib   = asksConfig matplotlibExe   >>= liftIO . tryToFindExe 
+executable PlotlyPython = asksConfig plotlyPythonExe >>= liftIO . tryToFindExe 
+executable PlotlyR      = asksConfig plotlyRExe      >>= liftIO . tryToFindExe 
+executable Matlab       = asksConfig matlabExe       >>= liftIO . tryToFindExe 
+executable Mathematica  = asksConfig mathematicaExe  >>= liftIO . tryToFindExe 
+executable Octave       = asksConfig octaveExe       >>= liftIO . tryToFindExe 
+executable GGPlot2      = asksConfig ggplot2Exe      >>= liftIO . tryToFindExe 
+executable GNUPlot      = asksConfig gnuplotExe      >>= liftIO . tryToFindExe 
+executable Graphviz     = asksConfig graphvizExe     >>= liftIO . tryToFindExe 
+executable Bokeh        = asksConfig bokehExe        >>= liftIO . tryToFindExe  
+executable Plotsjl      = asksConfig plotsjlExe      >>= liftIO . tryToFindExe 
 
 
 -- | A shortcut to append capture script fragments to scripts

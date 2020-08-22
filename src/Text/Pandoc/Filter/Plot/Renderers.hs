@@ -27,6 +27,7 @@ module Text.Pandoc.Filter.Plot.Renderers (
     , unavailableToolkits
     , unavailableToolkitsM
     , OutputSpec(..)
+    , Executable(..)
 ) where
 
 import Control.Concurrent.Async.Lifted               (forConcurrently)
@@ -47,7 +48,7 @@ import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
 import Text.Pandoc.Filter.Plot.Renderers.Graphviz
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
 import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
-import Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, OutputSpec(..))
+import Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, Executable(..), OutputSpec(..))
 
 import Text.Pandoc.Filter.Plot.Monad
 
@@ -132,7 +133,8 @@ parseExtraAttrs _          = return mempty
 -- The executable will need to be found first, hence the IO monad.
 command :: Toolkit 
         -> OutputSpec
-        -> PlotM (FilePath, Text)
+        -> Text                -- Executable name (e.g. "python3")
+        -> Text
 command Matplotlib   = matplotlibCommand
 command PlotlyPython = plotlyPythonCommand
 command PlotlyR      = plotlyRCommand

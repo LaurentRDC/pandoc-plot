@@ -116,6 +116,7 @@ module Text.Pandoc.Filter.Plot (
     , cls
     , configurationPathMeta
     , executable
+    , Executable(..)
     -- ** Embedding HTML content
     , extractPlot
     ) where

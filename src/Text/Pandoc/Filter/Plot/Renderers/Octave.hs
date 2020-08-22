@@ -27,16 +27,17 @@ octaveSupportedSaveFormats :: [SaveFormat]
 octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-octaveCommand :: OutputSpec -> PlotM (FilePath, Text)
-octaveCommand OutputSpec{..} = do
-    (dir, exe) <- executable Octave
-    return (dir, [st|#{exe} --no-gui --no-window-system "#{oScriptPath}"|])
+octaveCommand :: OutputSpec -> Text -> Text
+octaveCommand OutputSpec{..} exe = [st|#{exe} --no-gui --no-window-system "#{oScriptPath}"|]
 
 
 octaveAvailable :: PlotM Bool
 octaveAvailable = do
-    (dir, exe) <- executable Octave
-    commandSuccess dir [st|#{exe} -h|]
+    mexe <- executable Octave
+    case mexe of 
+        Nothing -> return False
+        Just (Executable dir exe) -> 
+            commandSuccess dir [st|#{exe} -h|]
 
 
 octaveCapture :: FigureSpec -> FilePath -> Script

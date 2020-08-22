@@ -89,29 +89,36 @@ runTempScript spec@FigureSpec{..} = do
         CheckPassed -> do
             scriptPath <- tempScriptPath spec
             target <- figurePath spec
-            -- Commands are run from the executable directory,
-            -- so we need to tell the full absolute path where to save the
-            -- figure
-            curdir <- liftIO $ getCurrentDirectory
-            let scriptWithCapture = (capture toolkit) spec (curdir </> target)
 
-            liftIO $ T.writeFile scriptPath scriptWithCapture
-            let outputSpec = OutputSpec { oFigureSpec = spec
-                                        , oScriptPath = scriptPath
-                                        , oFigurePath = target
-                                        }
-            (exedir, command_) <- command toolkit outputSpec
-            (ec, _) <- runCommand exedir command_
-            case ec of
-                ExitSuccess      -> return   ScriptSuccess
-                ExitFailure code -> do
-                    -- Two possible types of failures: either the script
-                    -- failed because the toolkit was not available, or
-                    -- because of a genuine error
-                    toolkitInstalled <- toolkitAvailable toolkit 
-                    if toolkitInstalled
-                        then return $ ScriptFailure command_ code
-                        else return $ ToolkitNotInstalled toolkit
+            -- Check if executable is present
+            exe <- executable toolkit
+            case exe of
+                Nothing -> error $ "Toolkit " <> show toolkit <> " is not installed."
+                Just (Executable exedir exename) -> do
+                    -- Commands are run from the executable directory,
+                    -- so we need to tell the full absolute path where to save the
+                    -- figure
+                    curdir <- liftIO $ getCurrentDirectory
+                    let scriptWithCapture = (capture toolkit) spec (curdir </> target)
+
+                    liftIO $ T.writeFile scriptPath scriptWithCapture
+                    let outputSpec = OutputSpec { oFigureSpec = spec
+                                                , oScriptPath = scriptPath
+                                                , oFigurePath = target
+                                                }
+
+                    let command_ = command toolkit outputSpec exename
+                    (ec, _) <- runCommand exedir command_
+                    case ec of
+                        ExitSuccess      -> return   ScriptSuccess
+                        ExitFailure code -> do
+                            -- Two possible types of failures: either the script
+                            -- failed because the toolkit was not available, or
+                            -- because of a genuine error
+                            toolkitInstalled <- toolkitAvailable toolkit 
+                            if toolkitInstalled
+                                then return $ ScriptFailure command_ code
+                                else return $ ToolkitNotInstalled toolkit
 
 
 -- | Determine the temp script path from Figure specifications

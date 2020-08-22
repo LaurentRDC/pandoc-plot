@@ -28,18 +28,20 @@ graphvizSupportedSaveFormats :: [SaveFormat]
 graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]
 
 
-graphvizCommand :: OutputSpec -> PlotM (FilePath, Text)
-graphvizCommand OutputSpec{..} = do
-    (dir, exe) <- executable Graphviz
+graphvizCommand :: OutputSpec -> Text -> Text
+graphvizCommand OutputSpec{..} exe = 
     let fmt = fmap toLower . show . saveFormat $ oFigureSpec
         dpi' = dpi oFigureSpec
-    return (dir, [st|#{exe} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|])
+    in [st|#{exe} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]
 
 
 graphvizAvailable :: PlotM Bool
 graphvizAvailable = do
-    (dir, exe) <- executable Graphviz
-    commandSuccess dir [st|#{exe} -?|]
+    mexe <- executable Graphviz
+    case mexe of 
+        Nothing -> return False
+        Just (Executable dir exe) -> 
+            commandSuccess dir [st|#{exe} -?|]
 
 
 -- Graphviz export is entirely based on command-line arguments

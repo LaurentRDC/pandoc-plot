@@ -10,6 +10,7 @@ module Main where
 import           Control.Monad                    (join, when, msum)
 
 import           Data.List                        (intersperse, (\\))
+import           Data.Maybe                       (fromJust)
 import           Data.Text                        (unpack)
 import qualified Data.Text.IO                     as TIO
 import           Data.Version                     (parseVersion, showVersion)
@@ -34,7 +35,7 @@ import           Text.Pandoc.Filter.Plot          (availableToolkits,
                                                    toolkits, readDoc, 
                                                    cleanOutputDirs, 
                                                    configurationPathMeta,
-                                                   executable, runPlotM)
+                                                   executable, runPlotM, Executable(..))
 
 import           Text.Pandoc                      (pandocVersion)
 import           Text.Pandoc.Definition           (pandocTypesVersion)
@@ -233,9 +234,10 @@ showAvailableToolkits mfp = do
     return unavailable >>= mapM_ (unavailToolkitInfo c)
     where
         toolkitInfo avail conf tk = do
-            (dir, exe) <- runPlotM conf $ executable tk
             putStrLn $ "Toolkit: " <> show tk
-            when avail $ putStrLn $ "    Executable: " <> (dir </> exe)
+            when avail $ do
+                Executable dir exe <- fmap fromJust $ runPlotM conf $ executable tk
+                putStrLn $ "    Executable: " <> (dir </> unpack exe)
             putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)
             putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
             putStrLn mempty

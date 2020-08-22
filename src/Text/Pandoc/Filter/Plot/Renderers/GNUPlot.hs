@@ -26,16 +26,17 @@ gnuplotSupportedSaveFormats :: [SaveFormat]
 gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]
 
 
-gnuplotCommand :: OutputSpec -> PlotM (FilePath, Text)
-gnuplotCommand OutputSpec{..} = do
-    (dir, exe) <- executable GNUPlot
-    return (dir, [st|#{exe} -c "#{oScriptPath}"|])
+gnuplotCommand :: OutputSpec -> Text -> Text
+gnuplotCommand OutputSpec{..} exe = [st|#{exe} -c "#{oScriptPath}"|]
 
 
 gnuplotAvailable :: PlotM Bool
 gnuplotAvailable = do
-    (dir, exe) <- executable GNUPlot
-    commandSuccess dir [st|"#{exe}" -h|]
+    mexe <- executable GNUPlot
+    case mexe of 
+        Nothing -> return False
+        Just (Executable dir exe) -> 
+            commandSuccess dir [st|"#{exe}" -h|]
 
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script

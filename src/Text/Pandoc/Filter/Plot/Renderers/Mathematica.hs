@@ -26,16 +26,17 @@ mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 
-mathematicaCommand :: OutputSpec -> PlotM (FilePath, Text)
-mathematicaCommand OutputSpec{..} = do
-    (dir, exe) <- executable Mathematica
-    return (dir, [st|#{exe} -script "#{oScriptPath}"|])
+mathematicaCommand :: OutputSpec -> Text -> Text
+mathematicaCommand OutputSpec{..} exe = [st|#{exe} -script "#{oScriptPath}"|]
 
 
 mathematicaAvailable :: PlotM Bool
 mathematicaAvailable = do
-    (dir, exe) <- executable Mathematica
-    commandSuccess dir [st|#{exe} -h|] -- TODO: test this
+    mexe <- executable Mathematica
+    case mexe of 
+        Nothing -> return False
+        Just (Executable dir exe) -> 
+            commandSuccess dir [st|#{exe} -h|] -- TODO: test this
 
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script

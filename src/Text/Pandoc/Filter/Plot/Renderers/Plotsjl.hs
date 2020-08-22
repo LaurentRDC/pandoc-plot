@@ -29,16 +29,17 @@ plotsjlSupportedSaveFormats :: [SaveFormat]
 plotsjlSupportedSaveFormats = [PNG, SVG, PDF]
 
 
-plotsjlCommand :: OutputSpec -> PlotM (FilePath, Text)
-plotsjlCommand OutputSpec{..} = do
-    (dir, exe) <- executable Plotsjl
-    return (dir, [st|#{exe} "#{oScriptPath}"|])
+plotsjlCommand :: OutputSpec -> Text -> Text
+plotsjlCommand OutputSpec{..} exe = [st|#{exe} "#{oScriptPath}"|]
 
 
 plotsjlAvailable :: PlotM Bool
 plotsjlAvailable = do
-    (dir, exe) <- executable Plotsjl
-    commandSuccess dir [st|#{exe} -e "using Plots"|]
+    mexe <- executable Plotsjl
+    case mexe of 
+        Nothing -> return False
+        Just (Executable dir exe) -> 
+            commandSuccess dir [st|#{exe} -e "using Plots"|]
 
 
 plotsjlCapture :: FigureSpec -> FilePath -> Script

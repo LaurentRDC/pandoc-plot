@@ -30,16 +30,16 @@ bokehSupportedSaveFormats :: [SaveFormat]
 bokehSupportedSaveFormats = [PNG, SVG, HTML]
 
 
-bokehCommand :: OutputSpec -> PlotM (FilePath, Text)
-bokehCommand OutputSpec{..} = do
-    (dir, exe) <- executable Bokeh
-    return (dir, [st|#{exe} "#{oScriptPath}"|])
+bokehCommand :: OutputSpec -> Text -> Text
+bokehCommand OutputSpec{..} exe = [st|#{exe} "#{oScriptPath}"|]
 
 
 bokehAvailable :: PlotM Bool
 bokehAvailable = do
-    (dir, exe) <- executable Bokeh
-    commandSuccess dir [st|#{exe} -c "import bokeh; import selenium"|]
+    mexe <- executable Bokeh
+    case mexe of 
+        Nothing -> return False
+        Just (Executable dir exe) -> commandSuccess dir [st|#{exe} -c "import bokeh; import selenium"|]
 
 
 -- | Check if `matplotlib.pyplot.show()` calls are present in the script,
