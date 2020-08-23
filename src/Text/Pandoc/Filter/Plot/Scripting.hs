@@ -91,6 +91,9 @@ runTempScript spec@FigureSpec{..} = do
             target <- figurePath spec
 
             -- Check if executable is present
+            -- Note that checking if the toolkit if fully configured is much more involved,
+            -- and so we only check if the toolkit is appropriately installed if there is
+            -- an error.
             exe <- executable toolkit
             case exe of
                 Nothing -> error $ "Toolkit " <> show toolkit <> " is not installed."
