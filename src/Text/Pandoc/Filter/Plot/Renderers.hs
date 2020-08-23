@@ -48,7 +48,7 @@ import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
 import Text.Pandoc.Filter.Plot.Renderers.Graphviz
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
 import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
-import Text.Pandoc.Filter.Plot.Renderers.Prelude     (executable, Executable(..), OutputSpec(..))
+import Text.Pandoc.Filter.Plot.Renderers.Prelude     (OutputSpec(..))
 
 import Text.Pandoc.Filter.Plot.Monad
 

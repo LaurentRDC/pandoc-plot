@@ -25,6 +25,8 @@ module Text.Pandoc.Filter.Plot.Monad.Types (
     , extension
     , toolkits
     , inclusionKeys
+    , Executable(..)
+    , exeFromPath
     -- Utilities
     , isWindows
 ) where
@@ -32,10 +34,11 @@ module Text.Pandoc.Filter.Plot.Monad.Types (
 import           Data.Char              (toLower)
 import           Data.List              (intersperse)
 import           Data.String            (IsString (..))
-import           Data.Text              (Text)
+import           Data.Text              (Text, pack)
 import           Data.Yaml
 
 import           GHC.Generics           (Generic)
+import           System.FilePath        (splitFileName)
 import           System.Info            (os)
 
 import           Text.Pandoc.Definition (Attr)
@@ -58,7 +61,7 @@ data Toolkit
     | Graphviz
     | Bokeh
     | Plotsjl
-    deriving (Bounded, Eq, Enum, Generic)
+    deriving (Bounded, Eq, Enum, Generic, Ord)
 
 
 -- | This instance should only be used to display toolkit names
@@ -89,6 +92,15 @@ cls GNUPlot      = "gnuplot"
 cls Graphviz     = "graphviz"
 cls Bokeh        = "bokeh"
 cls Plotsjl      = "plotsjl"
+
+
+-- | Executable program and directory where it can be found.
+data Executable = Executable FilePath Text
+
+
+exeFromPath :: FilePath -> Executable
+exeFromPath fp = let (dir, name) = splitFileName fp
+                 in Executable dir (pack name)
 
 
 -- | Source context for plotting scripts

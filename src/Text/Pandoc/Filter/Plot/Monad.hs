@@ -19,6 +19,8 @@ module Text.Pandoc.Filter.Plot.Monad (
     , runCommand
     -- * Getting file hashes
     , fileHash
+    -- * Getting executables
+    , executable
     -- * Logging
     , Verbosity(..)
     , LogSink(..)
@@ -53,7 +55,7 @@ import qualified Data.Text                   as T
 import           Data.Text.Encoding          (decodeUtf8With)
 import           Data.Text.Encoding.Error    (lenientDecode)
 
-import           System.Directory            (doesFileExist, getModificationTime)
+import           System.Directory            (doesFileExist, getModificationTime, findExecutable)
 import           System.Exit                 (ExitCode (..))
 import           System.Process.Typed        ( readProcessStderr, shell, nullStream
                                              , setStdout, setStderr, byteStringOutput
@@ -90,7 +92,8 @@ asksConfig f = asks (f . envConfig)
 -- | Evaluate a @PlotM@ action.
 runPlotM :: Configuration -> PlotM a -> IO a
 runPlotM conf v = do
-    st <- newMVar mempty
+    st <- PlotState <$> newMVar mempty
+                    <*> newMVar mempty
     let verbosity = logVerbosity conf
         sink      = logSink conf 
     withLogger verbosity sink $ 
@@ -113,8 +116,7 @@ log h v t = do
     logger <- asks envLogger
     when (v >= lVerbosity logger) $ 
         liftIO $ do
-            let lines' = [l' | l' <- T.lines t]
-            forM_ lines' $ \l -> writeChan (lChannel logger) (Just (h <> l <> "\n"))
+            forM_ ( T.lines t) $ \l -> writeChan (lChannel logger) (Just (h <> l <> "\n"))
 
 
 -- | Run a command within the @PlotM@ monad. Stderr stream
@@ -150,22 +152,27 @@ runCommand wordir command = do
     return (ec, processOutput)
 
 
--- Plot state consists of a map of filepaths to hashes
+-- Plot state is used for caching.
+-- One part consists of a map of filepaths to hashes
 -- This allows multiple plots to depend on the same file/directory, and the file hashes
 -- will only be calculated once. This is OK because pandoc-plot will not run for long.
 -- We note that because figures are rendered possibly in parallel, access to 
 -- the state must be synchronized; otherwise, each thread might compute its own
 -- hashes.
+-- The other part is comprised of a map of toolkits to executables (possibly missing)
+-- This means that executable will be search for only once.
 type FileHash  = Word
-type PlotState = MVar (Map FilePath FileHash)
+data PlotState = 
+    PlotState (MVar (Map FilePath FileHash))
+              (MVar (Map Toolkit (Maybe Executable)))
 
 
 -- | Get a filehash. If the file hash has been computed before,
 -- it is reused. Otherwise, the filehash is calculated and stored.
 fileHash :: FilePath -> PlotM FileHash
 fileHash path = do
-    var <- get
-    hashes <- liftIO $ takeMVar var
+    PlotState varHashes varExes <- get
+    hashes <- liftIO $ takeMVar varHashes
     (fh, hashes') <- case M.lookup path hashes of
         Nothing -> do
             debug $ mconcat ["Calculating hash of dependency ", pack path]
@@ -175,8 +182,8 @@ fileHash path = do
         Just h -> do
             debug $ mconcat ["Hash of dependency ", pack path, " already calculated."]
             return (h, hashes)
-    liftIO $ putMVar var hashes'
-    put var
+    liftIO $ putMVar varHashes hashes'
+    put $ PlotState varHashes varExes
     return fh
     where
     -- As a proxy for the state of a file dependency, we use the modification time
@@ -187,6 +194,39 @@ fileHash path = do
         if fileExists
             then liftIO . fmap (fromIntegral . hash . show) . getModificationTime $ fp
             else err (mconcat ["Dependency ", pack fp, " does not exist."]) >> return 0 
+
+
+-- | Get an executable. If the executable has not been used before, 
+-- find it and store where it is. It will be re-used.
+executable :: Toolkit -> PlotM (Maybe Executable)
+executable tk = do
+    name <- exeSelector tk
+    PlotState varHashes varExes <- get
+    exes <- liftIO $ takeMVar varExes
+    (exe', exes') <- case M.lookup tk exes of
+        Nothing -> do
+            debug $ mconcat ["Looking for executable \"", pack name, "\" for ", pack $ show tk]
+            exe' <- liftIO $ findExecutable name >>= return . fmap exeFromPath
+            let exes' = M.insert tk exe' exes
+            return (exe', exes')
+        Just e -> do
+            debug $ mconcat ["Executable \"", pack name, "\" already found."]
+            return (e, exes)
+    liftIO $ putMVar varExes exes'
+    put $ PlotState varHashes varExes
+    return exe'
+    where
+        exeSelector Matplotlib   = asksConfig matplotlibExe  
+        exeSelector PlotlyPython = asksConfig plotlyPythonExe 
+        exeSelector PlotlyR      = asksConfig plotlyRExe      
+        exeSelector Matlab       = asksConfig matlabExe       
+        exeSelector Mathematica  = asksConfig mathematicaExe  
+        exeSelector Octave       = asksConfig octaveExe       
+        exeSelector GGPlot2      = asksConfig ggplot2Exe      
+        exeSelector GNUPlot      = asksConfig gnuplotExe      
+        exeSelector Graphviz     = asksConfig graphvizExe     
+        exeSelector Bokeh        = asksConfig bokehExe         
+        exeSelector Plotsjl      = asksConfig plotsjlExe 
 
 
 -- | The @Configuration@ type holds the default values to use

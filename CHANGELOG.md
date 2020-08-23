@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.9.3.0
+---------------
+
+* Added executable caching: repeated useage of a particular toolkit will be faster because executables are only looked-for once.
+
 Release 0.9.2.0
 ---------------
 
