@@ -15,6 +15,7 @@ import           Test.Tasty
 import           Test.Tasty.HUnit
 
 import           Text.Pandoc.Filter.Plot
+import           Text.Pandoc.Filter.Plot.Internal
 
 import qualified Text.Pandoc.Builder              as B
 import qualified Text.Pandoc.Definition           as B
@@ -32,7 +33,7 @@ import           System.FilePath                  (takeExtensions, (</>))
 
 defaultTestConfig :: Configuration
 defaultTestConfig = defaultConfiguration { logVerbosity = Silent
-                                         , logSink = StdErr --LogFile "test_log.txt"
+                                         , logSink = StdErr
                                          }
 
 -------------------------------------------------------------------------------

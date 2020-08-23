@@ -16,6 +16,7 @@ import           Text.Pandoc.JSON
 
 import           Common
 import           Text.Pandoc.Filter.Plot
+import           Text.Pandoc.Filter.Plot.Internal
 
 main :: IO ()
 main = do

@@ -35,9 +35,9 @@ flag static
 library
     exposed-modules:
         Text.Pandoc.Filter.Plot
+        Text.Pandoc.Filter.Plot.Internal
     other-modules:
         Paths_pandoc_plot
-        Text.Pandoc.Filter.Plot.Internal
         Text.Pandoc.Filter.Plot.Clean
         Text.Pandoc.Filter.Plot.Configuration
         Text.Pandoc.Filter.Plot.Parse

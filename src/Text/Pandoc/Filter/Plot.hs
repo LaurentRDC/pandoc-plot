@@ -77,10 +77,8 @@ Here is an example code block which will render a figure using gnuplot, in Markd
 @
 -}
 module Text.Pandoc.Filter.Plot (
-    -- * Operating on single Pandoc blocks
-      makePlot
     -- * Operating on whole Pandoc documents
-    , plotTransform
+      plotTransform
     -- * Cleaning output directories
     , cleanOutputDirs
     -- * Runtime configuration
@@ -99,26 +97,10 @@ module Text.Pandoc.Filter.Plot (
     , supportedSaveFormats
     -- * Version information
     , pandocPlotVersion
-    -- * For testing and internal purposes ONLY
-    -- ** Running the @PlotM@ monad
+    -- * For embedding, testing and internal purposes ONLY. Might change without notice.
     , make
     , makeEither
-    , PlotM
-    , runPlotM
     , PandocPlotError(..)
-    -- ** Code block parameters
-    , InclusionKey(..)
-    , inclusionKeys
-    -- ** Utilities
-    , extension
-    , readDoc
-    , captionReader
-    , cls
-    , configurationPathMeta
-    , executable
-    , Executable(..)
-    -- ** Embedding HTML content
-    , extractPlot
     ) where
 
 import Control.Concurrent.Async.Lifted   (mapConcurrently)
@@ -128,7 +110,6 @@ import Data.Version                      (Version)
 import Paths_pandoc_plot                 (version)
 
 import Text.Pandoc.Definition            (Pandoc(..), Block)
-import Text.Pandoc.Walk                  (walkM, Walkable)
 
 import Text.Pandoc.Filter.Plot.Internal
 
@@ -143,24 +124,6 @@ plotTransform :: Configuration -- ^ Configuration for default values
               -> IO Pandoc
 plotTransform conf (Pandoc meta blocks) = 
     runPlotM conf $ mapConcurrently make blocks >>= return . Pandoc meta
-
-
--- | Highest-level function that can be walked over a Pandoc tree.
--- All code blocks that have the appropriate class names will be considered
--- figures, e.g. @.matplotlib@.
---
--- This function can be made to operation on whole @Pandoc@ documents. However,
--- you should prefer the @plotTransform@ function for whole documents, as it
--- is optimized for parallel operations.
---
--- Failing to render a figure does not stop the filter, so that you may run the filter
--- on documents without having all necessary toolkits installed. In this case, error
--- messages are printed to stderr, and blocks are left unchanged.
-makePlot :: Walkable Block a
-         => Configuration -- ^ Configuration for default values
-         -> a             -- ^ Input block or document
-         -> IO a
-makePlot conf = runPlotM conf . walkM make
 
 
 -- | The version of the pandoc-plot package.
