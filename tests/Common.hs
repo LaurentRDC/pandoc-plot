@@ -50,6 +50,23 @@ testFileCreation tk =
         filesCreated <- length <$> listDirectory tempDir
         assertEqual "" 2 filesCreated
 
+
+-------------------------------------------------------------------------------
+-- Test that plot files and source files are created when the filter is run
+-- and the path of the files involves spaces. See Issue #2
+testFileCreationPathWithSpaces :: Toolkit -> TestTree
+testFileCreationPathWithSpaces tk =
+    testCase "writes output files in appropriate directory (with spaces)" $ do
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-file-creation-with-spaces-   -" <> postfix) <$> getTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
+        _ <- runPlotM defaultTestConfig $ make cb
+        filesCreated <- length <$> listDirectory tempDir
+        assertEqual "" 2 filesCreated
+
+
 -------------------------------------------------------------------------------
 -- Test that included files are found within the source
 testFileInclusion :: Toolkit -> TestTree

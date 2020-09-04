@@ -51,6 +51,7 @@ toolkitSuite :: Toolkit -> TestTree
 toolkitSuite tk =
     testGroup (show tk) $
         [ testFileCreation
+        , testFileCreationPathWithSpaces
         , testFileInclusion
         , testSaveFormat
         , testWithSource
