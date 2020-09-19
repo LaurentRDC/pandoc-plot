@@ -21,6 +21,21 @@ extra-source-files:
     docs/MANUAL.html
     stack.yaml
     example-config.yml
+    tests/fixtures/.config-meta.yml
+    tests/fixtures/.empty-config.yml
+    tests/fixtures/.verbose-config.yml
+    tests/fixtures/plotfile.py
+    tests/includes/bokeh.py
+    tests/includes/ggplot2.r
+    tests/includes/gnuplot.gp
+    tests/includes/graphviz.dot
+    tests/includes/mathplot.m
+    tests/includes/matlabplot.m
+    tests/includes/matplotlib.py
+    tests/includes/octave.m
+    tests/includes/plotly-python.py
+    tests/includes/plotly-r.r
+    tests/includes/plotsjl.jl
 
 source-repository head
     type: git
