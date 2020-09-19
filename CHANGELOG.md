@@ -5,15 +5,15 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 0.9.3.0
 ---------------
 
-* Added executable caching: repeated useage of a particular toolkit will be faster because executables are only looked-for once.
+* Added executable caching: repeated usage of a particular toolkit will be faster because executables are only looked-for once.
 * Reverting the change from 0.8.1.0: internal machinery of `pandoc-plot` has been moved to the `Text.Pandoc.Filter.Plot.Internal` module, where there is no guarantee of backwards-compatibility after 1.0.0.
 * Removed the `makePlot` function, which could not take advantage of multithreading and other key features of `pandoc-plot`.
-* Fixed an issue where files required for tests were missing from source tarballs.
+* Fixed an issue where files required for tests were missing from source tarballs (#13).
 
 Release 0.9.2.0
 ---------------
 
-* Fixed an issue where executables located on paths with spaces would not be invoked correctly (#12)
+* Fixed an issue where executables located on paths with spaces would not be invoked correctly (#12).
 * Fixed an issue where R-paths were not normalized correctly.
 * Fixed an issue where executables specified in configuration that did not exist would crash `pandoc-plot`.
 * Fixed an issue where some R-based toolkits appeared to be available, but were not.
