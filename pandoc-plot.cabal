@@ -25,6 +25,7 @@ extra-source-files:
     tests/fixtures/.empty-config.yml
     tests/fixtures/.verbose-config.yml
     tests/fixtures/plotfile.py
+    tests/fixtures/data.csv
     tests/includes/bokeh.py
     tests/includes/ggplot2.r
     tests/includes/gnuplot.gp

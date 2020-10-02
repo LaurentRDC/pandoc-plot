@@ -25,3 +25,15 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ```{.matplotlib file=tests/fixtures/plotfile.py caption="Example of plot included by file."}
 ```
+
+The following plot uses a file that is specified using a path relative
+from the location where pandoc-plot is called. Read issue #2 for context.
+```{.matplotlib}
+import numpy as np
+import matplotlib.pyplot as plt
+
+x, y = np.loadtxt("tests/fixtures/data.csv", delimiter=',', unpack=True)
+
+plt.figure()
+plt.plot(x,y)
+```
