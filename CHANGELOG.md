@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 0.9.4.0
+---------------
+
+* Fixed an issue where the current working directory was changed. This prevented users from referring to files in scripts with relative paths (#2).
+
 Release 0.9.3.0
 ---------------
 
