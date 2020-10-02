@@ -27,8 +27,8 @@ import qualified Data.Text.IO                      as T
 import           Paths_pandoc_plot                 (version)
 
 import           System.Directory                  (createDirectoryIfMissing,
-                                                    doesFileExist, getTemporaryDirectory, 
-                                                    getCurrentDirectory)
+                                                    doesFileExist, getTemporaryDirectory)
+import           System.Environment                (getEnv, setEnv)
 import           System.Exit                       (ExitCode (..))
 import           System.FilePath                   (addExtension,
                                                     normalise, replaceExtension,
@@ -65,8 +65,8 @@ runScriptIfNecessary spec = do
 -- | Possible result of running a script
 data ScriptResult
     = ScriptSuccess
-    | ScriptChecksFailed Text   -- Message
-    | ScriptFailure Text Int    -- Command and exit code
+    | ScriptChecksFailed Text     -- Message
+    | ScriptFailure Text Int      -- Command and exit code
     | ToolkitNotInstalled Toolkit -- Script failed because toolkit is not installed
 
 instance Show ScriptResult where
@@ -97,31 +97,33 @@ runTempScript spec@FigureSpec{..} = do
             exe <- executable toolkit
             case exe of
                 Nothing -> error $ "Toolkit " <> show toolkit <> " is not installed."
-                Just (Executable exedir exename) -> do
-                    -- Commands are run from the executable directory,
-                    -- so we need to tell the full absolute path where to save the
-                    -- figure
-                    curdir <- liftIO $ getCurrentDirectory
-                    let scriptWithCapture = (capture toolkit) spec (curdir </> target)
+                Just (Executable exedir exename) ->
+                    -- Change the PATH environment variable so the appropriate executable is 
+                    -- found first 
+                    withPrependedPath exedir $ do
+                        let scriptWithCapture = (capture toolkit) spec target
 
-                    liftIO $ T.writeFile scriptPath scriptWithCapture
-                    let outputSpec = OutputSpec { oFigureSpec = spec
-                                                , oScriptPath = scriptPath
-                                                , oFigurePath = target
-                                                }
+                        liftIO $ T.writeFile scriptPath scriptWithCapture
+                        let outputSpec = OutputSpec { oFigureSpec = spec
+                                                    , oScriptPath = scriptPath
+                                                    , oFigurePath = target
+                                                    }
 
-                    let command_ = command toolkit outputSpec exename
-                    (ec, _) <- runCommand exedir command_
-                    case ec of
-                        ExitSuccess      -> return   ScriptSuccess
-                        ExitFailure code -> do
-                            -- Two possible types of failures: either the script
-                            -- failed because the toolkit was not available, or
-                            -- because of a genuine error
-                            toolkitInstalled <- toolkitAvailable toolkit 
-                            if toolkitInstalled
-                                then return $ ScriptFailure command_ code
-                                else return $ ToolkitNotInstalled toolkit
+                        let command_ = command toolkit outputSpec exename
+                        -- It is important that the CWD be inherited from the 
+                        -- parent process. See #2.
+                        cwd <- asks envCWD
+                        (ec, _) <- runCommand cwd command_
+                        case ec of
+                            ExitSuccess      -> return   ScriptSuccess
+                            ExitFailure code -> do
+                                -- Two possible types of failures: either the script
+                                -- failed because the toolkit was not available, or
+                                -- because of a genuine error
+                                toolkitInstalled <- toolkitAvailable toolkit 
+                                if toolkitInstalled
+                                    then return $ ScriptFailure command_ code
+                                    else return $ ToolkitNotInstalled toolkit
 
 
 -- | Determine the temp script path from Figure specifications
@@ -176,3 +178,17 @@ figurePath spec = do
     let    ext  = extension . saveFormat $ spec
            stem = flip addExtension ext . show $ fh
     return $ normalise $ directory spec </> stem
+
+
+-- | Prepend a directory to the PATH environment variable for the duration
+-- of a computation.
+withPrependedPath :: FilePath -> PlotM a -> PlotM a
+withPrependedPath dir f = do
+    pathVar <- liftIO $ getEnv "PATH"
+    let pathVarPrepended = mconcat [dir, ";", pathVar]
+    liftIO $ setEnv "PATH" $ pathVarPrepended
+    r <- f
+    liftIO $ setEnv "PATH" pathVar
+    return r
+
+

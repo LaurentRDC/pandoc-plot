@@ -55,7 +55,9 @@ import qualified Data.Text                   as T
 import           Data.Text.Encoding          (decodeUtf8With)
 import           Data.Text.Encoding.Error    (lenientDecode)
 
-import           System.Directory            (doesFileExist, getModificationTime, findExecutable)
+import           System.Directory            ( doesFileExist, getModificationTime
+                                             , findExecutable, getCurrentDirectory
+                                             )
 import           System.Exit                 (ExitCode (..))
 import           System.Process.Typed        ( readProcessStderr, shell, nullStream
                                              , setStdout, setStderr, byteStringOutput
@@ -74,14 +76,15 @@ type PlotM a = StateT PlotState (ReaderT RuntimeEnv IO) a
 
 
 data RuntimeEnv = 
-    RuntimeEnv { envConfig :: Configuration
-               , envLogger :: Logger
+    RuntimeEnv { envConfig    :: Configuration
+               , envLogger    :: Logger
+               , envCWD       :: FilePath
                }
 
 
 -- | Modify the runtime environment to be silent.
 silence :: PlotM a -> PlotM a
-silence = local (\(RuntimeEnv c l) -> RuntimeEnv c l{lVerbosity = Silent})
+silence = local (\(RuntimeEnv c l d) -> RuntimeEnv c l{lVerbosity = Silent} d)
 
 
 -- | Get access to configuration within the @PlotM@ monad.
@@ -92,12 +95,13 @@ asksConfig f = asks (f . envConfig)
 -- | Evaluate a @PlotM@ action.
 runPlotM :: Configuration -> PlotM a -> IO a
 runPlotM conf v = do
+    cwd <- getCurrentDirectory
     st <- PlotState <$> newMVar mempty
                     <*> newMVar mempty
     let verbosity = logVerbosity conf
         sink      = logSink conf 
     withLogger verbosity sink $ 
-        \logger -> runReaderT (evalStateT v st) (RuntimeEnv conf logger)
+        \logger -> runReaderT (evalStateT v st) (RuntimeEnv conf logger cwd)
 
 
 debug, err, warning, info :: Text -> PlotM ()
