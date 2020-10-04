@@ -93,6 +93,7 @@ library
         , pandoc             >= 2.10  && < 3
         , pandoc-types       >= 1.21  && < 1.22
         , lifted-async       >= 0.10  && < 1
+        , lifted-base        >= 0.2   && < 1
         , shakespeare        >= 2.0   && < 3
         , tagsoup            >= 0.14  && < 1
         , text               >= 1     && < 2

@@ -18,6 +18,7 @@ module Text.Pandoc.Filter.Plot.Scripting
     , figurePath
     ) where
 
+import           Control.Exception.Lifted          (bracket)
 import           Control.Monad.Reader
 
 import           Data.Hashable                     (hash)
@@ -182,13 +183,17 @@ figurePath spec = do
 
 -- | Prepend a directory to the PATH environment variable for the duration
 -- of a computation.
+--
+-- This function is exception-safe; even if an exception happens during the
+-- computation, the PATH environment variable will be reverted back to
+-- its initial value.
 withPrependedPath :: FilePath -> PlotM a -> PlotM a
-withPrependedPath dir f = do
+withPrependedPath dir f = do 
     pathVar <- liftIO $ getEnv "PATH"
     let pathVarPrepended = mconcat [dir, ";", pathVar]
-    liftIO $ setEnv "PATH" $ pathVarPrepended
-    r <- f
-    liftIO $ setEnv "PATH" pathVar
-    return r
+    bracket 
+        (      liftIO $ setEnv "PATH" pathVarPrepended)
+        (\_ -> liftIO $ setEnv "PATH" pathVar)
+        (\_ -> f)
 
 
