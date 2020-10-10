@@ -20,7 +20,7 @@ module Text.Pandoc.Filter.Plot.Configuration (
 import           Data.Maybe             (fromMaybe)
 import           Data.Text              (Text, pack, unpack)
 import qualified Data.Text.IO           as TIO
-import           Data.Yaml
+import           Data.Yaml              ((.!=), (.:?), FromJSON(parseJSON), Value(Object, Null))
 import           Data.Yaml.Config       (ignoreEnv, loadYamlSettings)
 
 import           System.FilePath        (normalise)

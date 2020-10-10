@@ -31,7 +31,7 @@ import           Data.List                    (intercalate)
 import           Data.String                  (IsString(..))
 import           Data.Text                    (Text, unpack)
 import           Data.Text.IO                 (hPutStr)
-import           Data.Yaml
+import           Data.Yaml                    (FromJSON(parseJSON), Value(String))
 
 import           System.IO                    (stderr, withFile, IOMode (AppendMode) )
 

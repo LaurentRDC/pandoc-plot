@@ -35,7 +35,7 @@ import           Data.Char              (toLower)
 import           Data.List              (intersperse)
 import           Data.String            (IsString (..))
 import           Data.Text              (Text, pack)
-import           Data.Yaml
+import           Data.Yaml              (FromJSON, ToJSON(toJSON))
 
 import           GHC.Generics           (Generic)
 import           System.FilePath        (splitFileName)
