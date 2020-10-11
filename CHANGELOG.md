@@ -2,6 +2,12 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 1.0.0.0
+---------------
+
+* Added support for Pandoc 2.11. Unfortunately, there is no way to support prior versions of Pandoc at the same time.
+* With release 1.0.0.0, `pandoc-plot` has stabilized. The Haskell library API will not change until version 2+. 
+
 Release 0.9.4.0
 ---------------
 

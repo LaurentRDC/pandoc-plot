@@ -166,16 +166,16 @@ toJSONFilterWithConfig = do
         plotTransform c doc
 
 
--- | Check that the runtime version of Pandoc is at least 2.8. The return value
+-- | Check that the runtime version of Pandoc is at least 2.11. The return value
 -- indicates whether the Pandoc version is new enough or not.
 checkRuntimePandocVersion :: IO Bool
 checkRuntimePandocVersion = do
-    -- Please note that for some reason, makeVersion [2, 10, 0, 0] > makeVersion [2, 10]
-    let minimumPandocVersion = V.makeVersion [2, 10]
+    -- Please note that for some reason, makeVersion [2, 11, 0, 0] > makeVersion [2, 11]
+    let minimumPandocVersion = V.makeVersion [2, 11]
     
     -- Pandoc runs filters in an environment with two variables:
     -- PANDOV_VERSION and PANDOC_READER_OPTS
-    -- We can use the former to ensure that people are not using pandoc < 2.10
+    -- We can use the former to ensure that people are not using pandoc < 2.11
     pandocV <- lookupEnv "PANDOC_VERSION"
     case pandocV >>= readVersion of
         Nothing -> return True
@@ -183,7 +183,7 @@ checkRuntimePandocVersion = do
             then do
                 hPutStrLn stderr $ mconcat 
                     [ "ERROR (pandoc-plot) The pandoc-plot filter only "
-                    , "supports Pandoc 2.10 and newer. "
+                    , "supports Pandoc 2.11 and newer. "
                     , "but you are using Pandoc "
                     , showVersion v
                     ] 
