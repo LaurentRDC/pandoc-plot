@@ -5,7 +5,7 @@ module Common where
 
 import           Control.Monad                    (unless, when)
 
-import           Data.List                        (isInfixOf, isSuffixOf)
+import           Data.List                        (isInfixOf, isSuffixOf, (!!))
 import           Data.Monoid                      ((<>))
 import           Data.String                      (fromString)
 import           Data.Text                        (Text, pack, unpack)
@@ -146,6 +146,37 @@ testWithSource tk =
 
         extractImageCaption (Image _ c _) = c
         extractImageCaption _             = mempty
+
+-------------------------------------------------------------------------------
+-- Test that it is possible to change the source code label in captions
+testSourceLabel :: Toolkit -> TestTree
+testSourceLabel tk = 
+    testCase "appropriately changes the source code label" $ do
+        let postfix = unpack . cls $ tk
+        tempDir <- (</> "test-source-label-" <> postfix) <$> getTemporaryDirectory
+        ensureDirectoryExistsAndEmpty tempDir
+
+        -- Note that this test requires that the actual caption be empty
+        -- so that the caption is only the source code label
+        let withSource = addWithSource True 
+                      $ addDirectory tempDir 
+                      $ addCaption mempty  -- This test requires that the actual caption be empty
+                      $ codeBlock tk (trivialContent tk)
+        blockWithSource <- runPlotM defaultTestConfig{sourceCodeLabel="Test label"} $ make withSource
+        
+        -- The caption will look like [Space, Str "(", Link ... ]. Hence, we skip the first elements with (!!)
+        let resultCaption = linkLabel $ (!! 2) . B.toList $ extractCaption blockWithSource
+        assertEqual "" (B.str "Test label") resultCaption
+
+    where
+        extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
+        extractCaption _               = mempty
+
+        extractImageCaption (Image _ c _) = B.fromList c
+        extractImageCaption _             = mempty
+
+        linkLabel (B.Link _ ils _) = B.fromList ils
+        linkLabel _                = mempty
 
 -------------------------------------------------------------------------------
 -- Test that parameters in code blocks will override the defaults in configuration

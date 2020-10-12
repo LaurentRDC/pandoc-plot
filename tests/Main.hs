@@ -55,6 +55,7 @@ toolkitSuite tk =
         , testFileInclusion
         , testSaveFormat
         , testWithSource
+        , testSourceLabel
         , testOverrideConfiguration
         , testMarkdownFormattingCaption1
         , testMarkdownFormattingCaption2
