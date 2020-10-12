@@ -132,6 +132,7 @@ data InclusionKey
     | CaptionFormatK
     | PreambleK
     | DpiK
+    | SourceCodeLabelK
     | ExecutableK
     | DependenciesK
     | FileK
@@ -149,6 +150,7 @@ instance Show InclusionKey where
     show CaptionFormatK         = "caption_format"
     show PreambleK              = "preamble"
     show DpiK                   = "dpi"
+    show SourceCodeLabelK       = "source_label"
     show ExecutableK            = "executable"
     show DependenciesK          = "dependencies"
     show FileK                  = "file"

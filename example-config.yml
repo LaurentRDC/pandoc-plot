@@ -18,6 +18,11 @@ directory: plots/
 # Particularly useful for HTML output.
 source: false
 
+# Text label for links to source code.
+# You can change this label if you are writing a document in a non-English language. 
+# This only matters if `source` is set to `true`.
+source_label: Source code
+
 # Default density of figures in dots per inches (DPI). 
 # This can be changed in the document specifically as well.
 dpi: 80
@@ -39,6 +44,7 @@ dependencies:
 #     https://pandoc.org/MANUAL.html#option--from
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
+
 
 # Logging configuration
 logging:

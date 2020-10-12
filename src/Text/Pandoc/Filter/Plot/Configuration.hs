@@ -50,6 +50,7 @@ defaultConfiguration =
         , defaultSaveFormat   = PNG
         , defaultDependencies = mempty
         , captionFormat       = Format "markdown+tex_math_dollars"
+        , sourceCodeLabel     = "Source code"
 
         , logVerbosity        = Warning
         , logSink             = StdErr
@@ -122,6 +123,7 @@ data ConfigPrecursor = ConfigPrecursor
     , _defaultSaveFormat   :: !SaveFormat  
     , _defaultDependencies :: ![FilePath]  
     , _captionFormat       :: !Format
+    , _sourceCodeLabel     :: !Text
     
     , _logPrec             :: !LoggingPrecursor
 
@@ -147,6 +149,7 @@ defaultConfigPrecursor =
         , _defaultSaveFormat   = defaultSaveFormat defaultConfiguration
         , _defaultDependencies = defaultDependencies defaultConfiguration
         , _captionFormat       = captionFormat defaultConfiguration
+        , _sourceCodeLabel     = sourceCodeLabel defaultConfiguration
 
         , _logPrec             = LoggingPrecursor (logVerbosity defaultConfiguration) Nothing -- _logFilePath=Nothing implies log to stderr
         
@@ -246,26 +249,27 @@ instance FromJSON ConfigPrecursor where
     parseJSON (Null) = return defaultConfigPrecursor -- In case of empty file
     parseJSON (Object v) = do
         
-        _defaultDirectory    <- v .:? (tshow DirectoryK)     .!= (_defaultDirectory defaultConfigPrecursor)
-        _defaultWithSource   <- v .:? (tshow WithSourceK)    .!= (_defaultWithSource defaultConfigPrecursor)
-        _defaultDPI          <- v .:? (tshow DpiK)           .!= (_defaultDPI defaultConfigPrecursor)
-        _defaultSaveFormat   <- v .:? (tshow SaveFormatK)    .!= (_defaultSaveFormat defaultConfigPrecursor)
-        _defaultDependencies <- v .:? (tshow DependenciesK)  .!= (_defaultDependencies defaultConfigPrecursor)
-        _captionFormat       <- v .:? (tshow CaptionFormatK) .!= (_captionFormat defaultConfigPrecursor)
+        _defaultDirectory    <- v .:? (tshow DirectoryK)       .!= (_defaultDirectory defaultConfigPrecursor)
+        _defaultWithSource   <- v .:? (tshow WithSourceK)      .!= (_defaultWithSource defaultConfigPrecursor)
+        _defaultDPI          <- v .:? (tshow DpiK)             .!= (_defaultDPI defaultConfigPrecursor)
+        _defaultSaveFormat   <- v .:? (tshow SaveFormatK)      .!= (_defaultSaveFormat defaultConfigPrecursor)
+        _defaultDependencies <- v .:? (tshow DependenciesK)    .!= (_defaultDependencies defaultConfigPrecursor)
+        _captionFormat       <- v .:? (tshow CaptionFormatK)   .!= (_captionFormat defaultConfigPrecursor)
+        _sourceCodeLabel     <- v .:? (tshow SourceCodeLabelK) .!= (_sourceCodeLabel defaultConfigPrecursor)
 
-        _logPrec             <- v .:? "logging"              .!= _logPrec defaultConfigPrecursor
+        _logPrec             <- v .:? "logging"                .!= _logPrec defaultConfigPrecursor
 
-        _matplotlibPrec      <- v .:? (cls Matplotlib)       .!= _matplotlibPrec defaultConfigPrecursor
-        _matlabPrec          <- v .:? (cls Matlab)           .!= _matlabPrec defaultConfigPrecursor
-        _plotlyPythonPrec    <- v .:? (cls PlotlyPython)     .!= _plotlyPythonPrec defaultConfigPrecursor
-        _plotlyRPrec         <- v .:? (cls PlotlyR)          .!= _plotlyRPrec defaultConfigPrecursor
-        _mathematicaPrec     <- v .:? (cls Mathematica)      .!= _mathematicaPrec defaultConfigPrecursor
-        _octavePrec          <- v .:? (cls Octave)           .!= _octavePrec defaultConfigPrecursor
-        _ggplot2Prec         <- v .:? (cls GGPlot2)          .!= _ggplot2Prec defaultConfigPrecursor
-        _gnuplotPrec         <- v .:? (cls GNUPlot)          .!= _gnuplotPrec defaultConfigPrecursor
-        _graphvizPrec        <- v .:? (cls Graphviz)         .!= _graphvizPrec defaultConfigPrecursor
-        _bokehPrec           <- v .:? (cls Bokeh)            .!= _bokehPrec defaultConfigPrecursor 
-        _plotsjlPrec         <- v .:? (cls Plotsjl)          .!= _plotsjlPrec defaultConfigPrecursor
+        _matplotlibPrec      <- v .:? (cls Matplotlib)         .!= _matplotlibPrec defaultConfigPrecursor
+        _matlabPrec          <- v .:? (cls Matlab)             .!= _matlabPrec defaultConfigPrecursor
+        _plotlyPythonPrec    <- v .:? (cls PlotlyPython)       .!= _plotlyPythonPrec defaultConfigPrecursor
+        _plotlyRPrec         <- v .:? (cls PlotlyR)            .!= _plotlyRPrec defaultConfigPrecursor
+        _mathematicaPrec     <- v .:? (cls Mathematica)        .!= _mathematicaPrec defaultConfigPrecursor
+        _octavePrec          <- v .:? (cls Octave)             .!= _octavePrec defaultConfigPrecursor
+        _ggplot2Prec         <- v .:? (cls GGPlot2)            .!= _ggplot2Prec defaultConfigPrecursor
+        _gnuplotPrec         <- v .:? (cls GNUPlot)            .!= _gnuplotPrec defaultConfigPrecursor
+        _graphvizPrec        <- v .:? (cls Graphviz)           .!= _graphvizPrec defaultConfigPrecursor
+        _bokehPrec           <- v .:? (cls Bokeh)              .!= _bokehPrec defaultConfigPrecursor 
+        _plotsjlPrec         <- v .:? (cls Plotsjl)            .!= _plotsjlPrec defaultConfigPrecursor
 
         return $ ConfigPrecursor{..}
     parseJSON _          = fail "Could not parse configuration."
@@ -279,6 +283,7 @@ renderConfig ConfigPrecursor{..} = do
         defaultSaveFormat   = _defaultSaveFormat
         defaultDependencies = _defaultDependencies
         captionFormat       = _captionFormat
+        sourceCodeLabel     = _sourceCodeLabel
 
         logVerbosity        = _logVerbosity _logPrec
         logSink             = maybe StdErr LogFile (_logFilePath _logPrec)

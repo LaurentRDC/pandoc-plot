@@ -260,6 +260,7 @@ data Configuration = Configuration
     , defaultSaveFormat     :: !SaveFormat -- ^ The default save format of generated figures.
     , defaultDependencies   :: ![FilePath] -- ^ List of files/directories on which all figures depend.
     , captionFormat         :: !Format     -- ^ Caption format, in the same notation as Pandoc format, e.g. "markdown+tex_math_dollars"
+    , sourceCodeLabel       :: !Text       -- ^ The text label to which the source code is linked. Change this if you are writing non-english documents.
 
     , logVerbosity          :: !Verbosity  -- ^ Level of logging verbosity.
     , logSink               :: !LogSink    -- ^ Method of logging, i.e. printing to stderr or file.

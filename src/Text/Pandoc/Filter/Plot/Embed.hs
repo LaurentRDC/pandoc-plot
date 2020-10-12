@@ -27,7 +27,7 @@ import           System.FilePath                   (replaceExtension)
 import           Text.HTML.TagSoup
 
 import           Text.Pandoc.Builder               (fromList, imageWith, link,
-                                                    para, toList, Inlines)
+                                                    para, str, toList, Inlines)
 import           Text.Pandoc.Class                 (runPure)
 import           Text.Pandoc.Definition            (Pandoc(..), Block (..), Format, Attr)
 import           Text.Pandoc.Error                 (handleError)
@@ -48,7 +48,8 @@ toFigure :: Format       -- ^ text format of the caption
          -> PlotM Block
 toFigure fmt spec = do
     target <- figurePath spec
-    let srcLink = link (pack $ replaceExtension target ".txt") mempty "Source code"
+    sourceLabel <- asksConfig sourceCodeLabel -- Allow the possibility for non-english labels
+    let srcLink = link (pack $ replaceExtension target ".txt") mempty (str sourceLabel)
         attrs'       = blockAttrs spec
         withSource'  = withSource spec
         captionText  = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
