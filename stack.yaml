@@ -8,10 +8,10 @@ packages:
 compiler: ghc-8.10.1
 
 extra-deps:
-- pandoc-2.11
-- citeproc-0.1@sha256:0c82d6cf5be3d82d4f755e6a2075ce224b9f2bdb891f1417ca49f5e78ac4e26a,5355
-- commonmark-0.1.0.2@sha256:fbff7a2ade0ce7d699964a87f765e503a3a9e22542c05f0f02ba7aad64e38af4,3278
-- commonmark-extensions-0.2.0.1@sha256:647aa8dba5fd46984ddedc15c3693c9c4d9655503d42006576bd8f0dadf8cd39,3176
+- pandoc-2.11.1
+- citeproc-0.1.0.3@sha256:c73f601fad72d6d74312ae55895e16e2425d86467a16d9a6d1156c6c78d04b62,5395   
+- commonmark-0.1.1@sha256:a928f6a36a7e10dceed252a9bb8670c01affbe89d70d81d4ba8530ff86b841a7,3276   
+- commonmark-extensions-0.2.0.2@sha256:0fa1527b702eb0b95813ad2eac9c480d4735959a0712edf9f583b76eb88d51df,3178
 - commonmark-pandoc-0.2.0.1@sha256:529c6e2c6cabf61558b66a28123eafc1d90d3324be29819f59f024e430312c1f,1105
 
 # For development
