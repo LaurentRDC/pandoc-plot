@@ -1,56 +1,52 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE RecordWildCards   #-}
-{-|
-Module      : $header$
-Copyright   : (c) Laurent P René de Cotret, 2020
-License     : GNU GPL, version 2 or above
-Maintainer  : laurent.decotret@outlook.com
-Stability   : internal
-Portability : portable
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
-Rendering gnuplot plots code blocks
--}
+-- |
+-- Module      : $header$
+-- Copyright   : (c) Laurent P René de Cotret, 2020
+-- License     : GNU GPL, version 2 or above
+-- Maintainer  : laurent.decotret@outlook.com
+-- Stability   : internal
+-- Portability : portable
+--
+-- Rendering gnuplot plots code blocks
+module Text.Pandoc.Filter.Plot.Renderers.GNUPlot
+  ( gnuplotSupportedSaveFormats,
+    gnuplotCommand,
+    gnuplotCapture,
+    gnuplotAvailable,
+  )
+where
 
-module Text.Pandoc.Filter.Plot.Renderers.GNUPlot (
-      gnuplotSupportedSaveFormats
-    , gnuplotCommand
-    , gnuplotCapture
-    , gnuplotAvailable
-) where
-
-import           Text.Pandoc.Filter.Plot.Renderers.Prelude
+import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 gnuplotSupportedSaveFormats :: [SaveFormat]
 gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]
 
-
 gnuplotCommand :: OutputSpec -> Text -> Text
-gnuplotCommand OutputSpec{..} exe = [st|#{exe} -c "#{oScriptPath}"|]
-
+gnuplotCommand OutputSpec {..} exe = [st|#{exe} -c "#{oScriptPath}"|]
 
 gnuplotAvailable :: PlotM Bool
 gnuplotAvailable = do
-    mexe <- executable GNUPlot
-    case mexe of 
-        Nothing -> return False
-        Just (Executable dir exe) -> 
-            commandSuccess dir [st|"#{exe}" -h|]
-
+  mexe <- executable GNUPlot
+  case mexe of
+    Nothing -> return False
+    Just (Executable dir exe) ->
+      commandSuccess dir [st|"#{exe}" -h|]
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script
 gnuplotCapture = prependCapture gnuplotCaptureFragment
-    where
-        prependCapture f s fp = mconcat [f s fp, "\n", script s]
-
+  where
+    prependCapture f s fp = mconcat [f s fp, "\n", script s]
 
 gnuplotCaptureFragment :: FigureSpec -> FilePath -> Script
-gnuplotCaptureFragment FigureSpec{..} fname = [st|
+gnuplotCaptureFragment FigureSpec {..} fname =
+  [st|
 set terminal #{terminalString saveFormat}
 set output '#{fname}'
 |]
-
 
 -- | Terminal name for supported save formats
 terminalString :: SaveFormat -> Text

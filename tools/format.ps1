@@ -1,1 +1,1 @@
-Get-ChildItem -Path . -Recurse -Include "*.hs" | ForEach-Object{stylish-haskell -i $_.FullName}
+    Get-ChildItem -Path . -Recurse -Include "*.hs" | ForEach-Object{ormolu --mode inplace $_.FullName}
