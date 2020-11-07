@@ -115,6 +115,29 @@ import Data.Version (Version)
 import Paths_pandoc_plot (version)
 import Text.Pandoc.Definition (Block, Pandoc (..))
 import Text.Pandoc.Filter.Plot.Internal
+  ( Configuration (..),
+    FigureSpec,
+    LogSink (..),
+    PlotM,
+    RuntimeEnv (envConfig),
+    SaveFormat (..),
+    Script,
+    ScriptResult (..),
+    Toolkit (..),
+    Verbosity (..),
+    asks,
+    availableToolkits,
+    cleanOutputDirs,
+    configuration,
+    defaultConfiguration,
+    parseFigureSpec,
+    runPlotM,
+    runScriptIfNecessary,
+    supportedSaveFormats,
+    toFigure,
+    toolkits,
+    unavailableToolkits,
+  )
 
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
 -- into figures. This function will operate on blocks in parallel if possible.
