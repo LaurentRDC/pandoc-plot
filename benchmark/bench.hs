@@ -1,15 +1,30 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 import Criterion.Main
+  ( bench,
+    bgroup,
+    defaultMain,
+    envWithCleanup,
+    nfIO,
+  )
 import MatplotlibGallery
   ( galleryItem1,
     galleryItem2,
     galleryItem3,
     galleryItem4,
   )
-import Text.Pandoc.Definition
+import Text.Pandoc.Definition (Block (CodeBlock), Pandoc (..))
 import Text.Pandoc.Filter.Plot
-import Text.Pandoc.Filter.Plot.Internal
+  ( Configuration (logSink, logVerbosity),
+    LogSink (StdErr),
+    Script,
+    Toolkit (Matplotlib),
+    Verbosity (Silent),
+    cleanOutputDirs,
+    defaultConfiguration,
+    plotTransform,
+  )
+import Text.Pandoc.Filter.Plot.Internal (cls)
 
 main :: IO ()
 main =
@@ -17,8 +32,7 @@ main =
     [ envWithCleanup (return ()) (\_ -> cleanupEnv) $ \_ ->
         bgroup
           "main"
-          [ bench "filter-async" $ nfIO (plotTransform plotConfig benchDoc),
-            bench "filter" $ nfIO (makePlot plotConfig benchDoc)
+          [ bench "filter" $ nfIO (plotTransform plotConfig benchDoc)
           ]
     ]
 
