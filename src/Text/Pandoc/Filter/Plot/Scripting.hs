@@ -210,17 +210,14 @@ writeSource :: FigureSpec -> PlotM ()
 writeSource spec = do
   scp <- sourceCodePath spec
   let doc = Pandoc mempty [CodeBlock (mempty, [language (toolkit spec)], mempty) (script spec)]
-      template = runIdentity $ compileTemplate mempty sourceTemplate
-  case template of
-    Left s -> do
-      err . pack $ s
-      return ()
-    Right deftemplate -> do
-      let opts = def {writerTemplate = Just deftemplate}
-          -- Note that making the document self-contained is absolutely required so that the CSS for
-          -- syntax highlighting is included directly in the document.
-          t = either (const mempty) id $ runPure $ (writeHtml5String opts doc >>= makeSelfContained)
-      liftIO $ T.writeFile scp t
+      renderSource = \template -> do
+        let opts = def {writerTemplate = Just template}
+            -- Note that making the document self-contained is absolutely required so that the CSS for
+            -- syntax highlighting is included directly in the document.
+            t = either (const mempty) id $ runPure $ (writeHtml5String opts doc >>= makeSelfContained)
+        liftIO $ T.writeFile scp t
+
+  either (err . pack) (renderSource) $ runIdentity $ compileTemplate mempty sourceTemplate
 
 sourceTemplate :: Text
 sourceTemplate = pack $(sourceTemplate_)
