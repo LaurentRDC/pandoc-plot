@@ -152,8 +152,9 @@ tempScriptPath FigureSpec {..} = do
   liftIO $ (</> hashedPath) <$> getTemporaryDirectory
 
 -- | Determine the path to the source code that generated the figure.
+-- To ensure that the source code path is distinguished from HTML figures, we use the extension .src.html. 
 sourceCodePath :: FigureSpec -> PlotM FilePath
-sourceCodePath = fmap normalise . fmap (flip replaceExtension ".html") . figurePath
+sourceCodePath = fmap normalise . fmap (flip replaceExtension ".src.html") . figurePath
 
 -- | Hash of the content of a @FigureSpec@. Note that unlike usual hashes,
 -- two @FigureSpec@ with the same @figureContentHash@ does not mean that they are equal!
