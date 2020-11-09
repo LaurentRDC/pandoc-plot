@@ -13,6 +13,7 @@
 module Text.Pandoc.Filter.Plot.Renderers
   ( scriptExtension,
     comment,
+    language,
     preambleSelector,
     supportedSaveFormats,
     scriptChecks,
@@ -62,6 +63,21 @@ scriptExtension GNUPlot = ".gp"
 scriptExtension Graphviz = ".dot"
 scriptExtension Bokeh = ".py"
 scriptExtension Plotsjl = ".jl"
+
+-- | Language that is used by a toolkit. Specifically used
+-- to highlight the appropriate language in the external source code.
+language :: Toolkit -> Text
+language Matplotlib = "python"
+language PlotlyPython = "python"
+language PlotlyR = "r"
+language Matlab = "matlab"
+language Mathematica = "mathematica"
+language Octave = "matlab"
+language GGPlot2 = "r"
+language GNUPlot = "gnuplot"
+language Graphviz = "dot"
+language Bokeh = "python"
+language Plotsjl = "julia"
 
 -- Make a string into a comment
 comment :: Toolkit -> (Text -> Text)
