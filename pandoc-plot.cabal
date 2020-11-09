@@ -21,11 +21,15 @@ extra-source-files:
     docs/MANUAL.html
     stack.yaml
     example-config.yml
+
+    data/srctemplate.html
+
     tests/fixtures/.config-meta.yml
     tests/fixtures/.empty-config.yml
     tests/fixtures/.verbose-config.yml
     tests/fixtures/plotfile.py
     tests/fixtures/data.csv
+    
     tests/includes/bokeh.py
     tests/includes/ggplot2.r
     tests/includes/gnuplot.gp
@@ -58,6 +62,7 @@ library
         Text.Pandoc.Filter.Plot.Configuration
         Text.Pandoc.Filter.Plot.Parse
         Text.Pandoc.Filter.Plot.Scripting
+        Text.Pandoc.Filter.Plot.Scripting.Template
         Text.Pandoc.Filter.Plot.Renderers
         Text.Pandoc.Filter.Plot.Renderers.Prelude
         Text.Pandoc.Filter.Plot.Renderers.Matplotlib
@@ -96,6 +101,7 @@ library
         , lifted-base        >= 0.2   && < 1
         , shakespeare        >= 2.0   && < 3
         , tagsoup            >= 0.14  && < 1
+        , template-haskell   >  2.7   && < 3
         , text               >= 1     && < 2
         , typed-process      >= 0.2.1 && < 1
         , yaml               >= 0.8   && < 1

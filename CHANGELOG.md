@@ -6,6 +6,7 @@ Release 1.0.1.0
 ---------------
 
 * Added the ability to change the "Source code" label to other languages via configuration.
+* Added syntax highlighting to the linked source code.
 
 Release 1.0.0.0
 ---------------

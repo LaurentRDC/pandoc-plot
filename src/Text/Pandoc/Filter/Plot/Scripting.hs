@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 -- |
 -- Module      : $header$
@@ -20,10 +21,19 @@ where
 
 import Control.Exception.Lifted (bracket)
 import Control.Monad.Reader
+import Data.Default (def)
+import Data.Functor.Identity (Identity(..))
 import Data.Hashable (hash)
 import Data.Text (Text, pack, unpack)
 import qualified Data.Text.IO as T
 import Paths_pandoc_plot (version)
+
+import Text.Pandoc.Class (runPure)
+import Text.Pandoc.Definition
+import Text.Pandoc.Options  (WriterOptions(..))
+import Text.Pandoc.SelfContained (makeSelfContained)
+import Text.Pandoc.Templates
+import Text.Pandoc.Writers (writeHtml5String)
 import System.Directory
   ( createDirectoryIfMissing,
     doesFileExist,
@@ -40,6 +50,7 @@ import System.FilePath
   )
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Renderers
+import Text.Pandoc.Filter.Plot.Scripting.Template
 
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
@@ -56,9 +67,7 @@ runScriptIfNecessary spec = do
   logScriptResult result
 
   case result of
-    ScriptSuccess -> do
-      scp <- sourceCodePath spec
-      liftIO $ T.writeFile scp (script spec) >> return ScriptSuccess
+    ScriptSuccess -> writeSource spec >> return ScriptSuccess
     other -> return other
   where
     logScriptResult ScriptSuccess = return ()
@@ -144,7 +153,7 @@ tempScriptPath FigureSpec {..} = do
 
 -- | Determine the path to the source code that generated the figure.
 sourceCodePath :: FigureSpec -> PlotM FilePath
-sourceCodePath = fmap normalise . fmap (flip replaceExtension ".txt") . figurePath
+sourceCodePath = fmap normalise . fmap (flip replaceExtension ".html") . figurePath
 
 -- | Hash of the content of a @FigureSpec@. Note that unlike usual hashes,
 -- two @FigureSpec@ with the same @figureContentHash@ does not mean that they are equal!
@@ -195,3 +204,23 @@ withPrependedPath dir f = do
     (liftIO $ setEnv "PATH" pathVarPrepended)
     (\_ -> liftIO $ setEnv "PATH" pathVar)
     (\_ -> f)
+
+-- | Write the source code of a figure to an HTML file with appropriate syntax highlighting.
+writeSource :: FigureSpec -> PlotM ()
+writeSource spec = do
+  scp <- sourceCodePath spec 
+  let doc = Pandoc mempty [CodeBlock (mempty, [language (toolkit spec)], mempty) (script spec)]
+      template = runIdentity $ compileTemplate mempty sourceTemplate
+  case template of
+    Left s -> do
+      err . pack $ s
+      return ()
+    Right deftemplate -> do
+      let opts = def {writerTemplate = Just deftemplate}
+          -- Note that making the document self-contained is absolutely required so that the CSS for
+          -- syntax highlighting is included directly in the document.
+          t = either (const mempty) id $ runPure $ (writeHtml5String opts doc >>= makeSelfContained)
+      liftIO $ T.writeFile scp t
+
+sourceTemplate :: Text
+sourceTemplate = pack $(sourceTemplate_)

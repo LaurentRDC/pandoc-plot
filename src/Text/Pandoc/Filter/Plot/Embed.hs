@@ -52,7 +52,7 @@ toFigure ::
 toFigure fmt spec = do
   target <- figurePath spec
   sourceLabel <- asksConfig sourceCodeLabel -- Allow the possibility for non-english labels
-  let srcLink = link (pack $ replaceExtension target ".txt") mempty (str sourceLabel)
+  let srcLink = link (pack $ replaceExtension target ".html") mempty (str sourceLabel)
       attrs' = blockAttrs spec
       withSource' = withSource spec
       captionText = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
