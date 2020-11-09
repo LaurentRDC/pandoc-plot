@@ -3,8 +3,8 @@
 module Text.Pandoc.Filter.Plot.Scripting.Template (sourceTemplate_) where
 
 import Data.String (fromString)
-import System.FilePath ((</>))
 import Language.Haskell.TH.Syntax
+import System.FilePath ((</>))
 
 sourceTemplate_ :: Q Exp
 sourceTemplate_ = do

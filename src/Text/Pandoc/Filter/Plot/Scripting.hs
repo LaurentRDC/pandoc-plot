@@ -22,18 +22,11 @@ where
 import Control.Exception.Lifted (bracket)
 import Control.Monad.Reader
 import Data.Default (def)
-import Data.Functor.Identity (Identity(..))
+import Data.Functor.Identity (Identity (..))
 import Data.Hashable (hash)
 import Data.Text (Text, pack, unpack)
 import qualified Data.Text.IO as T
 import Paths_pandoc_plot (version)
-
-import Text.Pandoc.Class (runPure)
-import Text.Pandoc.Definition
-import Text.Pandoc.Options  (WriterOptions(..))
-import Text.Pandoc.SelfContained (makeSelfContained)
-import Text.Pandoc.Templates
-import Text.Pandoc.Writers (writeHtml5String)
 import System.Directory
   ( createDirectoryIfMissing,
     doesFileExist,
@@ -48,9 +41,15 @@ import System.FilePath
     takeDirectory,
     (</>),
   )
+import Text.Pandoc.Class (runPure)
+import Text.Pandoc.Definition
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Renderers
 import Text.Pandoc.Filter.Plot.Scripting.Template
+import Text.Pandoc.Options (WriterOptions (..))
+import Text.Pandoc.SelfContained (makeSelfContained)
+import Text.Pandoc.Templates
+import Text.Pandoc.Writers (writeHtml5String)
 
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
@@ -152,7 +151,7 @@ tempScriptPath FigureSpec {..} = do
   liftIO $ (</> hashedPath) <$> getTemporaryDirectory
 
 -- | Determine the path to the source code that generated the figure.
--- To ensure that the source code path is distinguished from HTML figures, we use the extension .src.html. 
+-- To ensure that the source code path is distinguished from HTML figures, we use the extension .src.html.
 sourceCodePath :: FigureSpec -> PlotM FilePath
 sourceCodePath = fmap normalise . fmap (flip replaceExtension ".src.html") . figurePath
 
@@ -209,7 +208,7 @@ withPrependedPath dir f = do
 -- | Write the source code of a figure to an HTML file with appropriate syntax highlighting.
 writeSource :: FigureSpec -> PlotM ()
 writeSource spec = do
-  scp <- sourceCodePath spec 
+  scp <- sourceCodePath spec
   let doc = Pandoc mempty [CodeBlock (mempty, [language (toolkit spec)], mempty) (script spec)]
       template = runIdentity $ compileTemplate mempty sourceTemplate
   case template of
