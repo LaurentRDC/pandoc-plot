@@ -79,7 +79,7 @@ testFileInclusion tk =
           )
     _ <- runPlotM defaultTestConfig $ make cb
     inclusion <- readFile (include tk)
-    sourcePath <- head . filter (isExtensionOf "html") <$> listDirectory tempDir
+    sourcePath <- head . filter (isExtensionOf ".src.html") <$> listDirectory tempDir
     src <- readFile (tempDir </> sourcePath)
     assertIsInfix inclusion src
   where
