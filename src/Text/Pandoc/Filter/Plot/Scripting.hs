@@ -16,6 +16,7 @@ module Text.Pandoc.Filter.Plot.Scripting
     runTempScript,
     runScriptIfNecessary,
     figurePath,
+    sourceCodePath,
   )
 where
 

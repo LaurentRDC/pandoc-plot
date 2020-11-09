@@ -21,7 +21,6 @@ import Data.List (nub)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
 import qualified Data.Text.IO as T
-import System.FilePath (replaceExtension)
 import Text.HTML.TagSoup
 import Text.Pandoc.Builder
   ( Inlines,
@@ -37,7 +36,7 @@ import Text.Pandoc.Definition (Attr, Block (..), Format, Pandoc (..))
 import Text.Pandoc.Error (handleError)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Parse (captionReader)
-import Text.Pandoc.Filter.Plot.Scripting (figurePath)
+import Text.Pandoc.Filter.Plot.Scripting (figurePath, sourceCodePath)
 import Text.Pandoc.Writers.HTML (writeHtml5String)
 import Text.Shakespeare.Text (st)
 
@@ -51,8 +50,9 @@ toFigure ::
   PlotM Block
 toFigure fmt spec = do
   target <- figurePath spec
+  scp <- pack <$> sourceCodePath spec
   sourceLabel <- asksConfig sourceCodeLabel -- Allow the possibility for non-english labels
-  let srcLink = link (pack $ replaceExtension target ".html") mempty (str sourceLabel)
+  let srcLink = link scp mempty (str sourceLabel)
       attrs' = blockAttrs spec
       withSource' = withSource spec
       captionText = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
