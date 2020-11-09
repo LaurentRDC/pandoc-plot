@@ -188,7 +188,8 @@ There are parameters that affect the figure that will be included in your docume
       directory=(path) 
       caption=(text) 
       format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP|HTML) 
-      source=(true|false) 
+      source=(true|True|false|False) 
+      source_label=(text)
       preamble=(path) 
       dpi=(integer)
       dependencies=[...]
@@ -203,19 +204,21 @@ There are parameters that affect the figure that will be included in your docume
 
 * `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, `graphviz`, `bokeh`, `plotsjl`.
 
-All following parameters are optional, with their default values controlled by the [configuration](#configuration)
+All following parameters are optional, with their default values controlled by the [configuration](#configuration).
 
 * `language` specifies the programming language used in this block. This parameter is ignored by `pandoc-plot`, but your text editor may use it to highlight code. See [Code highlighting](#code-highlighting) below.
 * `directory` is a path to the directory where the figure and source code will be saved. You cannot control the file name. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
 * `caption` is the caption text. The format of the caption is specified in the `caption_format` parameter, described below.
 * `format` is the desired filetype for the resulting figure. Possible values for `format` are [`PNG`, `PDF`, `SVG`, `JPG`, `EPS`, `GIF`, `TIF`, `WEBP`, `HTML`]. Not all toolkits support all formats. See `pandoc-plot toolkits` for toolkit-specific information regarding save formats. The `HTML` format is special; it can produce standalone, offline, interactive plots. As such, it only makes sense to use this format when creating HTML documents.
 * `source` is a boolean toggle that determines whether the source code should be linked in the caption or not. Possible values are [`true`, `True`, `false`, `False`].
+* `source_label` is the text that links to source code (if `source=true`). This is useful if you are writing text in a different language. The default is `source_label="Source Code"`. You might want to set this via the [configuration](#configuration) instead.
 * `preamble` is a path to a script that will be included as a preamble to the content of the code block. This path is either absolute, or relative from the working directory where you call `pandoc-plot`.
 * `dpi` is the pixel density of the figure in dots-per-inch. Possible values are positive integers. Not all toolkits respect this.
 * `dependencies` is a list of files/directories that affect the figure, for example data files. If one of those files/directories changes, `pandoc-plot` will re-render the associated figure. Format is a comma-separated list, e.g. `dependencies=[data.txt, foo.bar, ~/wtv]`. Values for `dependencies` in the configuration file will be appended to the values in a code block.
 * `file` is a path to a file from which to read the figure content. If this parameter is used, the content of the code block is ignored. By using this parameter, you can use all the standard tooling of your plotting toolkit of choice, which is especially useful for complex figures.
 * `executable` is a path to the executable to use (e.g. `C:\\python3.exe`) or the name of the executable (e.g. `python3`).
 * `caption_format` is the text format of the caption. Possible values are exactly the same as `pandoc`'s format specification, usually `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with raw LaTeX would be parsed correctly provided that `caption_format=markdown+raw_tex`. See Pandoc's guide on [Specifying formats](https://pandoc.org/MANUAL.html#specifying-formats).
+
 
 #### Code highlighting
 

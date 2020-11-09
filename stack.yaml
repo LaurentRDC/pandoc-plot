@@ -15,8 +15,8 @@ extra-deps:
 - commonmark-pandoc-0.2.0.1@sha256:529c6e2c6cabf61558b66a28123eafc1d90d3324be29819f59f024e430312c1f,1105
 
 # For development
-- git: https://github.com/owickstrom/pandoc-include-code.git
-  commit: d5cbdc86eb1abcd9561c0965ac423d7011378ddb
+- git: https://github.com/LaurentRDC/pandoc-include-code.git
+  commit: 13fb0ced5dd5669a300430fe89753f0c60f274dc
 - ghc-check-0.3.0.1@sha256:651d9b2b75a5cbdb3c942117801bfa566079bcaf20360e4d0959f9e575c30b39,1070
   
 # Faster compilation.
