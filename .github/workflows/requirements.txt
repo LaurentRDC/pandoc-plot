@@ -1,0 +1,3 @@
+numpy >= 1.17
+matplotlib >= 3
+bokeh >= 2
