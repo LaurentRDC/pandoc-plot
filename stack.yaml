@@ -1,4 +1,4 @@
-resolver: nightly-2020-10-11 # GHC 8.10.2
+resolver: nightly-2020-12-14 # GHC 8.10.2
 
 packages:
 - .
@@ -8,11 +8,14 @@ packages:
 compiler: ghc-8.10.1
 
 extra-deps:
-- pandoc-2.11.2
-- citeproc-0.2@sha256:72a6b976a1d3ff2107043cfeb942e278ce2b93f0e31752da86bc6431b862ae19,5431
+- pandoc-2.11.3.1
+- citeproc-0.3.0.1@sha256:1860a6757d5bc3ec149a434ed4011edb30155cb6ae92a1d83ccf3bd163bca0f1,5590
 - commonmark-0.1.1.2@sha256:c06ab05f0f224ab7982502a96e17952823a9b6dae8505fb35194b0baa9e2a975,3278
 - commonmark-extensions-0.2.0.4@sha256:6a437bcfa3c757af4262b71336513619990eafb5cfdc33e57a499c93ad225608,3184
 - commonmark-pandoc-0.2.0.1@sha256:529c6e2c6cabf61558b66a28123eafc1d90d3324be29819f59f024e430312c1f,1105
+- doctemplates-0.9@sha256:eb0bf957ba8571746f36f07ceca43d311a0e390a9fdcfde6909f9f9be85b3b28,3125
+- skylighting-0.10.2@sha256:9c395703ca61752f4491044443e87d5b87ed94bca78c0a00b5ebf4e4b8e59904,10031
+- skylighting-core-0.10.2@sha256:5070d9f08135cdb7c935c5936a4a76a9e1922ec846cd40d6e2837f42e7a9f29f,8159
 
 # For development
 - git: https://github.com/owickstrom/pandoc-include-code.git
