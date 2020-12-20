@@ -15,7 +15,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
     
     if: contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
-    name: stack ${{ matrix.os }}
+    name: pandoc-plot tests - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -48,7 +48,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install -r .github/workflows/requirements.txt
-        
+
     - name: Build
       run: |
         stack build --stack-yaml stack.yaml --test --no-run-tests
@@ -56,3 +56,16 @@ jobs:
     - name: Test
       run: |
         stack test --stack-yaml stack.yaml 
+    
+    - name: Build artifact
+      run: |
+        mkdir dist
+        stack install --stack-yaml stack.yaml --flag pandoc-plot:static --local-bin-path dist
+        cd dist
+        upx --best pandoc-plot
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: dist/pandoc-plot
+        name: 'pandoc-plot-${{matrix.os}}-x86_64'
