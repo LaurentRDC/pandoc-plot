@@ -36,9 +36,9 @@ jobs:
     - name: Build pandoc-plot and pandoc-include-code
       run: |
         stack upgrade
-        stack install --fast
-        stack install pandoc-include-code --fast
-        stack install pandoc --fast
+        stack install
+        stack install pandoc-include-code
+        stack install pandoc
     
     - name: Install Python dependencies
       run: |
@@ -49,7 +49,8 @@ jobs:
     # on my local machine (Win10)
     - name: Build documentation
       shell: pwsh
-      run: .\tools\mkmanual.ps1
+      run: |
+        .\tools\mkmanual.ps1
         
     - name: Build website
       run: |
