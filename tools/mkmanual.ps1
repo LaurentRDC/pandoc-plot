@@ -1,5 +1,3 @@
-stack install
-
 $version = stack exec -- pandoc-plot --version
 
 # Using ASCII encoding so that the Byte Order Mark is not included at the beginning of the file

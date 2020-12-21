@@ -1,0 +1,74 @@
+name: GH-Pages
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build-docs-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Haskell toolchain
+      uses: haskell/actions/setup@v1
+      with:
+        enable-stack: true
+        stack-version: 'latest'
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - uses: actions/cache@v2
+      name: Cache Haskell build artifacts
+      with:
+        path: ~/.stack
+        key: ${{ runner.os }}-v2-${{ hashFiles('stack.yaml.lock') }}
+
+    - uses: actions/cache@v2
+      name: Cache Python build artifacts
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-${{ hashFiles('.github/workflows/requirements.txt') }}
+
+    - name: Build pandoc-plot and pandoc-include-code
+      run: |
+        stack upgrade
+        stack install --fast
+        stack install pandoc-include-code --fast
+        stack install pandoc --fast
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r .github/workflows/requirements.txt
+    
+    # We use powershell because I need the script to also be useable 
+    # on my local machine (Win10)
+    - name: Build documentation
+      shell: pwsh
+      run: .\tools\mkmanual.ps1
+        
+    - name: Build website
+      run: |
+        cd docs
+        stack exec -- pandoc-plot clean index.md
+        VERSION=$(stack exec -- pandoc-plot --version)
+        mkdir build
+        stack exec -- pandoc --standalone \
+                             --css=theme.css \
+                             --filter pandoc-plot \
+                             --metadata title="pandoc-plot $VERSION" \
+                             -i index.md \
+                             -o build/index.html
+        mv -v MANUAL.html theme.css plots build
+
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: docs/build
+        CLEAN: true

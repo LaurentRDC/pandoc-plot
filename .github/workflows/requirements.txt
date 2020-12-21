@@ -1,0 +1,4 @@
+matplotlib >= 3
+bokeh >= 2
+selenium >= 3
+pandas >= 1
