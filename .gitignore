@@ -32,4 +32,4 @@ docs/MANUAL.html
 # Installer-related
 installer/setup*
 installer/*.exe
-.pandoc-plot.yml
+#.pandoc-plot.yml
