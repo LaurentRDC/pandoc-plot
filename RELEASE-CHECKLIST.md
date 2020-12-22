@@ -1,6 +1,5 @@
 # Release checklist
 
-[ ] Render the website with `mksite.ps1`
 [ ] Render the manual with `mkmanual.ps1`
 [ ] Update CHANGELOG.md if necessary.
 [ ] Run Azure pipelines to make sure tests pass.
