@@ -7,6 +7,7 @@ Release 1.0.1.0
 
 * Added the ability to change the "Source code" label to other languages via configuration.
 * Added syntax highlighting to the linked source code.
+* Fixed an issue where code blocks with unicode symbols (e.g. greek letters) would trip up pandoc-plot (#16).
 
 Release 1.0.0.0
 ---------------

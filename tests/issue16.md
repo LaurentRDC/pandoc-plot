@@ -1,3 +1,6 @@
+---
+plot-configuration: tests/fixtures/.verbose-config.yml
+---
 
 # Verifying that unicode symbols work with the PlotJL toolkit
 
