@@ -64,7 +64,9 @@ data Flag
   deriving (Eq)
 
 main :: IO ()
-main = join $ execParser opts
+main = do
+  setLocaleEncoding utf8
+  join $ execParser opts
   where
     opts =
       info
@@ -296,7 +298,6 @@ clean mfp fp = do
 
 showManPage :: IO ()
 showManPage = do
-  setLocaleEncoding utf8 -- This is required to write the manual file, for some reason.
   manualPath <- (</> "pandoc-plot-manual.html") <$> getTemporaryDirectory
   TIO.writeFile manualPath $(embedManualHtml)
   openFile ("file:///" <> manualPath)
