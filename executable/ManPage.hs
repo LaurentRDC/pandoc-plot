@@ -11,8 +11,8 @@ import Data.String (fromString)
 import Data.Text (unpack)
 import qualified Data.Text.IO as TIO
 import Language.Haskell.TH.Syntax
-import System.FilePath ((</>))
 import System.Directory (doesFileExist)
+import System.FilePath ((</>))
 
 docFile :: FilePath
 docFile = "docs" </> "MANUAL.html"
