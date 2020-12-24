@@ -27,8 +27,11 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 plotsjlSupportedSaveFormats :: [SaveFormat]
 plotsjlSupportedSaveFormats = [PNG, SVG, PDF]
 
+juliaCmdArgs :: Text
+juliaCmdArgs = "--threads auto"
+
 plotsjlCommand :: OutputSpec -> Text -> Text
-plotsjlCommand OutputSpec {..} exe = [st|#{exe} "#{oScriptPath}"|]
+plotsjlCommand OutputSpec {..} exe = [st|#{exe} #{juliaCmdArgs} "#{oScriptPath}"|]
 
 plotsjlAvailable :: PlotM Bool
 plotsjlAvailable = do
@@ -36,7 +39,7 @@ plotsjlAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|#{exe} -e "using Plots"|]
+      commandSuccess dir [st|#{exe} #{juliaCmdArgs} -e "using Plots"|]
 
 plotsjlCapture :: FigureSpec -> FilePath -> Script
 plotsjlCapture = appendCapture plotsjlCaptureFragment
