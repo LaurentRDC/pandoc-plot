@@ -84,7 +84,7 @@ defaultConfiguration =
       gnuplotCmdArgs = mempty,
       graphvizCmdArgs = mempty,
       bokehCmdArgs = mempty,
-      plotsjlCmdArgs = "--threads auto",
+      plotsjlCmdArgs = mempty,
       -- Extras
       matplotlibTightBBox = False,
       matplotlibTransparent = False

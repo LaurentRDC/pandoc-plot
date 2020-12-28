@@ -118,4 +118,4 @@ bokeh:
 plotsjl:
   # preamble: plotsjl.jl
   executable: julia
-  command_line_arguments: --threads auto
+  command_line_arguments:
