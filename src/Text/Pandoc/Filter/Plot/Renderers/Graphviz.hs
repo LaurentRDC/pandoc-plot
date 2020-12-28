@@ -26,11 +26,11 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 graphvizSupportedSaveFormats :: [SaveFormat]
 graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]
 
-graphvizCommand :: OutputSpec -> Text -> Text
-graphvizCommand OutputSpec {..} exe =
+graphvizCommand :: Text -> OutputSpec -> Text -> Text
+graphvizCommand cmdargs OutputSpec {..} exe =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
       dpi' = dpi oFigureSpec
-   in [st|#{exe} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]
+   in [st|#{exe} #{cmdargs} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]
 
 graphvizAvailable :: PlotM Bool
 graphvizAvailable = do

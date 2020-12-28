@@ -25,8 +25,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 plotlyPythonSupportedSaveFormats :: [SaveFormat]
 plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS, HTML]
 
-plotlyPythonCommand :: OutputSpec -> Text -> Text
-plotlyPythonCommand OutputSpec {..} exe = [st|#{exe} "#{oScriptPath}"|]
+plotlyPythonCommand :: Text -> OutputSpec -> Text -> Text
+plotlyPythonCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 plotlyPythonAvailable :: PlotM Bool
 plotlyPythonAvailable = do

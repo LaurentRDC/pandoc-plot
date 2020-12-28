@@ -26,8 +26,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
-ggplot2Command :: OutputSpec -> Text -> Text
-ggplot2Command OutputSpec {..} exe = [st|#{exe} "#{oScriptPath}"|]
+ggplot2Command :: Text -> OutputSpec -> Text -> Text
+ggplot2Command cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 ggplot2Available :: PlotM Bool
 ggplot2Available = do

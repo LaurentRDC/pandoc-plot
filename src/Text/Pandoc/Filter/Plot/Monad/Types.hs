@@ -123,6 +123,7 @@ data InclusionKey
   | DpiK
   | SourceCodeLabelK
   | ExecutableK
+  | CommandLineArgsK
   | DependenciesK
   | FileK
   | MatplotlibTightBBoxK
@@ -141,6 +142,7 @@ instance Show InclusionKey where
   show DpiK = "dpi"
   show SourceCodeLabelK = "source_label"
   show ExecutableK = "executable"
+  show CommandLineArgsK = "command_line_arguments"
   show DependenciesK = "dependencies"
   show FileK = "file"
   show MatplotlibTightBBoxK = "tight_bbox"

@@ -25,8 +25,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 gnuplotSupportedSaveFormats :: [SaveFormat]
 gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]
 
-gnuplotCommand :: OutputSpec -> Text -> Text
-gnuplotCommand OutputSpec {..} exe = [st|#{exe} -c "#{oScriptPath}"|]
+gnuplotCommand :: Text -> OutputSpec -> Text -> Text
+gnuplotCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} -c "#{oScriptPath}"|]
 
 gnuplotAvailable :: PlotM Bool
 gnuplotAvailable = do

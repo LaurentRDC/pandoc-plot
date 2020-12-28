@@ -26,8 +26,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-matlabCommand :: OutputSpec -> Text -> Text
-matlabCommand OutputSpec {..} exe = [st|#{exe} -batch "run('#{oScriptPath}')"|]
+matlabCommand :: Text -> OutputSpec -> Text -> Text
+matlabCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} -batch "run('#{oScriptPath}')"|]
 
 -- On Windows at least, "matlab -help"  actually returns -1, even though the
 -- help text is shown successfully!

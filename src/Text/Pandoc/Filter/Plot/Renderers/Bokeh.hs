@@ -28,8 +28,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 bokehSupportedSaveFormats :: [SaveFormat]
 bokehSupportedSaveFormats = [PNG, SVG, HTML]
 
-bokehCommand :: OutputSpec -> Text -> Text
-bokehCommand OutputSpec {..} exe = [st|#{exe} "#{oScriptPath}"|]
+bokehCommand :: Text -> OutputSpec -> Text -> Text
+bokehCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 bokehAvailable :: PlotM Bool
 bokehAvailable = do
@@ -38,7 +38,7 @@ bokehAvailable = do
     Nothing -> return False
     Just (Executable dir exe) -> commandSuccess dir [st|#{exe} -c "import bokeh; import selenium"|]
 
--- | Check if `matplotlib.pyplot.show()` calls are present in the script,
+-- | Check if `bokeh.io.show()` calls are present in the script,
 -- which would halt pandoc-plot
 bokehCheckIfShow :: Script -> CheckResult
 bokehCheckIfShow s =

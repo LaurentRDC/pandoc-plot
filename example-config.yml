@@ -60,51 +60,62 @@ matplotlib:
   tight_bbox: false
   transparent: false
   executable: python
+  command_line_arguments:
 
 # The possible parameters for the MATLAB toolkit
 matlabplot:
   # preamble: matlab.m
   executable: matlab
+  command_line_arguments:
 
 # The possible parameters for the Plotly/Python toolkit
 plotly_python:
   # preamble: plotly-python.py
   executable: python
+  command_line_arguments:
 
 # The possible parameters for the Plotly/R toolkit
 plotly_r:
   # preamble: plotly-r.r
   executable: Rscript
+  command_line_arguments:
 
 # The possible parameters for the Mathematica toolkit
 mathplot:
   # preamble: mathematica.m
   executable: math
+  command_line_arguments:
 
 # The possible parameters for the GNU Octave toolkit
 octaveplot:
   # preamble: octave.m
   executable: octave
+  command_line_arguments:
 
 # The possible parameters for the ggplot2 toolkit
 ggplot2:
   # preamble: ggplot2.r
   executable: Rscript
+  command_line_arguments:
 
 # The possible parameters for the gnuplot toolkit
 gnuplot:
   # preamble: gnuplot.gp
   executable: gnuplot
+  command_line_arguments:
 
 # The possible parameters for the graphviz toolkit
 graphviz:
   # preamble: graphviz.dot
   executable: dot
+  command_line_arguments:
 
 bokeh:
   # preamble: bokeh.py
   executable: python
+  command_line_arguments:
 
 plotsjl:
   # preamble: plotsjl.jl
   executable: julia
+  command_line_arguments: --threads auto

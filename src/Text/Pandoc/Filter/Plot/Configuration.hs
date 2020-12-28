@@ -49,6 +49,7 @@ defaultConfiguration =
       sourceCodeLabel = "Source code",
       logVerbosity = Warning,
       logSink = StdErr,
+      -- Preambles
       matplotlibPreamble = mempty,
       plotlyPythonPreamble = mempty,
       plotlyRPreamble = mempty,
@@ -60,6 +61,7 @@ defaultConfiguration =
       graphvizPreamble = mempty,
       bokehPreamble = mempty,
       plotsjlPreamble = mempty,
+      -- Executables
       matplotlibExe = python,
       matlabExe = "matlab",
       plotlyPythonExe = python,
@@ -71,6 +73,19 @@ defaultConfiguration =
       graphvizExe = "dot",
       bokehExe = python,
       plotsjlExe = "julia",
+      -- Command line arguments
+      matplotlibCmdArgs = mempty,
+      matlabCmdArgs = mempty,
+      plotlyPythonCmdArgs = mempty,
+      plotlyRCmdArgs = mempty,
+      mathematicaCmdArgs = mempty,
+      octaveCmdArgs = mempty,
+      ggplot2CmdArgs = mempty,
+      gnuplotCmdArgs = mempty,
+      graphvizCmdArgs = mempty,
+      bokehCmdArgs = mempty,
+      plotsjlCmdArgs = "--threads auto",
+      -- Extras
       matplotlibTightBBox = False,
       matplotlibTransparent = False
     }
@@ -140,17 +155,17 @@ defaultConfigPrecursor =
       _captionFormat = captionFormat defaultConfiguration,
       _sourceCodeLabel = sourceCodeLabel defaultConfiguration,
       _logPrec = LoggingPrecursor (logVerbosity defaultConfiguration) Nothing, -- _logFilePath=Nothing implies log to stderr
-      _matplotlibPrec = MatplotlibPrecursor Nothing (matplotlibTightBBox defaultConfiguration) (matplotlibTransparent defaultConfiguration) (matplotlibExe defaultConfiguration),
-      _matlabPrec = MatlabPrecursor Nothing (matlabExe defaultConfiguration),
-      _plotlyPythonPrec = PlotlyPythonPrecursor Nothing (plotlyPythonExe defaultConfiguration),
-      _plotlyRPrec = PlotlyRPrecursor Nothing (plotlyRExe defaultConfiguration),
-      _mathematicaPrec = MathematicaPrecursor Nothing (mathematicaExe defaultConfiguration),
-      _octavePrec = OctavePrecursor Nothing (octaveExe defaultConfiguration),
-      _ggplot2Prec = GGPlot2Precursor Nothing (ggplot2Exe defaultConfiguration),
-      _gnuplotPrec = GNUPlotPrecursor Nothing (gnuplotExe defaultConfiguration),
-      _graphvizPrec = GraphvizPrecursor Nothing (graphvizExe defaultConfiguration),
-      _bokehPrec = BokehPrecursor Nothing (bokehExe defaultConfiguration),
-      _plotsjlPrec = PlotsjlPrecursor Nothing (plotsjlExe defaultConfiguration)
+      _matplotlibPrec = MatplotlibPrecursor Nothing (matplotlibTightBBox defaultConfiguration) (matplotlibTransparent defaultConfiguration) (matplotlibExe defaultConfiguration) (matplotlibCmdArgs defaultConfiguration),
+      _matlabPrec = MatlabPrecursor Nothing (matlabExe defaultConfiguration) (matlabCmdArgs defaultConfiguration),
+      _plotlyPythonPrec = PlotlyPythonPrecursor Nothing (plotlyPythonExe defaultConfiguration) (plotlyPythonCmdArgs defaultConfiguration),
+      _plotlyRPrec = PlotlyRPrecursor Nothing (plotlyRExe defaultConfiguration) (plotlyRCmdArgs defaultConfiguration),
+      _mathematicaPrec = MathematicaPrecursor Nothing (mathematicaExe defaultConfiguration) (mathematicaCmdArgs defaultConfiguration),
+      _octavePrec = OctavePrecursor Nothing (octaveExe defaultConfiguration) (octaveCmdArgs defaultConfiguration),
+      _ggplot2Prec = GGPlot2Precursor Nothing (ggplot2Exe defaultConfiguration) (ggplot2CmdArgs defaultConfiguration),
+      _gnuplotPrec = GNUPlotPrecursor Nothing (gnuplotExe defaultConfiguration) (gnuplotCmdArgs defaultConfiguration),
+      _graphvizPrec = GraphvizPrecursor Nothing (graphvizExe defaultConfiguration) (graphvizCmdArgs defaultConfiguration),
+      _bokehPrec = BokehPrecursor Nothing (bokehExe defaultConfiguration) (bokehCmdArgs defaultConfiguration),
+      _plotsjlPrec = PlotsjlPrecursor Nothing (plotsjlExe defaultConfiguration) (plotsjlCmdArgs defaultConfiguration)
     }
 
 data LoggingPrecursor = LoggingPrecursor
@@ -163,28 +178,29 @@ data MatplotlibPrecursor = MatplotlibPrecursor
   { _matplotlibPreamble :: !(Maybe FilePath),
     _matplotlibTightBBox :: !Bool,
     _matplotlibTransparent :: !Bool,
-    _matplotlibExe :: !FilePath
+    _matplotlibExe :: !FilePath,
+    _matplotlibCmdArgs :: !Text
   }
 
-data MatlabPrecursor = MatlabPrecursor {_matlabPreamble :: !(Maybe FilePath), _matlabExe :: !FilePath}
+data MatlabPrecursor = MatlabPrecursor {_matlabPreamble :: !(Maybe FilePath), _matlabExe :: !FilePath, _matlabCmdArgs :: !Text}
 
-data PlotlyPythonPrecursor = PlotlyPythonPrecursor {_plotlyPythonPreamble :: !(Maybe FilePath), _plotlyPythonExe :: !FilePath}
+data PlotlyPythonPrecursor = PlotlyPythonPrecursor {_plotlyPythonPreamble :: !(Maybe FilePath), _plotlyPythonExe :: !FilePath, _plotlyPythonCmdArgs :: !Text}
 
-data PlotlyRPrecursor = PlotlyRPrecursor {_plotlyRPreamble :: !(Maybe FilePath), _plotlyRExe :: !FilePath}
+data PlotlyRPrecursor = PlotlyRPrecursor {_plotlyRPreamble :: !(Maybe FilePath), _plotlyRExe :: !FilePath, _plotlyRCmdArgs :: !Text}
 
-data MathematicaPrecursor = MathematicaPrecursor {_mathematicaPreamble :: !(Maybe FilePath), _mathematicaExe :: !FilePath}
+data MathematicaPrecursor = MathematicaPrecursor {_mathematicaPreamble :: !(Maybe FilePath), _mathematicaExe :: !FilePath, _mathematicaCmdArgs :: !Text}
 
-data OctavePrecursor = OctavePrecursor {_octavePreamble :: !(Maybe FilePath), _octaveExe :: !FilePath}
+data OctavePrecursor = OctavePrecursor {_octavePreamble :: !(Maybe FilePath), _octaveExe :: !FilePath, _octaveCmdArgs :: !Text}
 
-data GGPlot2Precursor = GGPlot2Precursor {_ggplot2Preamble :: !(Maybe FilePath), _ggplot2Exe :: !FilePath}
+data GGPlot2Precursor = GGPlot2Precursor {_ggplot2Preamble :: !(Maybe FilePath), _ggplot2Exe :: !FilePath, _ggplot2CmdArgs :: !Text}
 
-data GNUPlotPrecursor = GNUPlotPrecursor {_gnuplotPreamble :: !(Maybe FilePath), _gnuplotExe :: !FilePath}
+data GNUPlotPrecursor = GNUPlotPrecursor {_gnuplotPreamble :: !(Maybe FilePath), _gnuplotExe :: !FilePath, _gnuplotCmdArgs :: !Text}
 
-data GraphvizPrecursor = GraphvizPrecursor {_graphvizPreamble :: !(Maybe FilePath), _graphvizExe :: !FilePath}
+data GraphvizPrecursor = GraphvizPrecursor {_graphvizPreamble :: !(Maybe FilePath), _graphvizExe :: !FilePath, _graphvizCmdArgs :: !Text}
 
-data BokehPrecursor = BokehPrecursor {_bokehPreamble :: !(Maybe FilePath), _bokehExe :: !FilePath}
+data BokehPrecursor = BokehPrecursor {_bokehPreamble :: !(Maybe FilePath), _bokehExe :: !FilePath, _bokehCmdArgs :: !Text}
 
-data PlotsjlPrecursor = PlotsjlPrecursor {_plotsjlPreamble :: !(Maybe FilePath), _plotsjlExe :: !FilePath}
+data PlotsjlPrecursor = PlotsjlPrecursor {_plotsjlPreamble :: !(Maybe FilePath), _plotsjlExe :: !FilePath, _plotsjlCmdArgs :: !Text}
 
 instance FromJSON LoggingPrecursor where
   parseJSON (Object v) =
@@ -199,46 +215,47 @@ instance FromJSON MatplotlibPrecursor where
       <*> v .:? (tshow MatplotlibTightBBoxK) .!= (matplotlibTightBBox defaultConfiguration)
       <*> v .:? (tshow MatplotlibTransparentK) .!= (matplotlibTransparent defaultConfiguration)
       <*> v .:? (tshow ExecutableK) .!= (matplotlibExe defaultConfiguration)
+      <*> v .:? (tshow CommandLineArgsK) .!= (matplotlibCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Matplotlib, " configuration."]
 
 instance FromJSON MatlabPrecursor where
-  parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (matlabExe defaultConfiguration)
+  parseJSON (Object v) = MatlabPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (matlabExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (matlabCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Matlab, " configuration."]
 
 instance FromJSON PlotlyPythonPrecursor where
-  parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyPythonExe defaultConfiguration)
+  parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyPythonExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (plotlyPythonCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyPython, " configuration."]
 
 instance FromJSON PlotlyRPrecursor where
-  parseJSON (Object v) = PlotlyRPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyRExe defaultConfiguration)
+  parseJSON (Object v) = PlotlyRPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotlyRExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (plotlyRCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyR, " configuration."]
 
 instance FromJSON MathematicaPrecursor where
-  parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (mathematicaExe defaultConfiguration)
+  parseJSON (Object v) = MathematicaPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (mathematicaExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (mathematicaCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Mathematica, " configuration."]
 
 instance FromJSON OctavePrecursor where
-  parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (octaveExe defaultConfiguration)
+  parseJSON (Object v) = OctavePrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (octaveExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (octaveCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Octave, " configuration."]
 
 instance FromJSON GGPlot2Precursor where
-  parseJSON (Object v) = GGPlot2Precursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (ggplot2Exe defaultConfiguration)
+  parseJSON (Object v) = GGPlot2Precursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (ggplot2Exe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (ggplot2CmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show GGPlot2, " configuration."]
 
 instance FromJSON GNUPlotPrecursor where
-  parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (gnuplotExe defaultConfiguration)
+  parseJSON (Object v) = GNUPlotPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (gnuplotExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (gnuplotCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show GNUPlot, " configuration."]
 
 instance FromJSON GraphvizPrecursor where
-  parseJSON (Object v) = GraphvizPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (graphvizExe defaultConfiguration)
+  parseJSON (Object v) = GraphvizPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (graphvizExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (graphvizCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Graphviz, " configuration."]
 
 instance FromJSON BokehPrecursor where
-  parseJSON (Object v) = BokehPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (bokehExe defaultConfiguration)
+  parseJSON (Object v) = BokehPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (bokehExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (bokehCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Bokeh, " configuration."]
 
 instance FromJSON PlotsjlPrecursor where
-  parseJSON (Object v) = PlotsjlPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotsjlExe defaultConfiguration)
+  parseJSON (Object v) = PlotsjlPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotsjlExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (plotsjlCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Plotsjl, " configuration."]
 
 instance FromJSON ConfigPrecursor where
@@ -296,6 +313,18 @@ renderConfig ConfigPrecursor {..} = do
       graphvizExe = _graphvizExe _graphvizPrec
       bokehExe = _bokehExe _bokehPrec
       plotsjlExe = _plotsjlExe _plotsjlPrec
+
+      matplotlibCmdArgs = _matplotlibCmdArgs _matplotlibPrec
+      matlabCmdArgs = _matlabCmdArgs _matlabPrec
+      plotlyPythonCmdArgs = _plotlyPythonCmdArgs _plotlyPythonPrec
+      plotlyRCmdArgs = _plotlyRCmdArgs _plotlyRPrec
+      mathematicaCmdArgs = _mathematicaCmdArgs _mathematicaPrec
+      octaveCmdArgs = _octaveCmdArgs _octavePrec
+      ggplot2CmdArgs = _ggplot2CmdArgs _ggplot2Prec
+      gnuplotCmdArgs = _gnuplotCmdArgs _gnuplotPrec
+      graphvizCmdArgs = _graphvizCmdArgs _graphvizPrec
+      bokehCmdArgs = _bokehCmdArgs _bokehPrec
+      plotsjlCmdArgs = _plotsjlCmdArgs _plotsjlPrec
 
   matplotlibPreamble <- readPreamble (_matplotlibPreamble _matplotlibPrec)
   matlabPreamble <- readPreamble (_matlabPreamble _matlabPrec)

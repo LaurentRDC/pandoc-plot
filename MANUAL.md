@@ -159,7 +159,7 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 `pandoc-plot` is a command line executable with a few functions. You can take a look at the help using the `-h`/`--help` flag:
 
 ``` bash
-pandoc-plot 1.0.1.0 - generate figures directly in documents
+pandoc-plot 1.0.2.0 - generate figures directly in documents
 
 Usage: pandoc-plot.EXE [(-v|--version) | --full-version | (-m|--manual)] 
                        [COMMAND] [AST]
@@ -382,54 +382,65 @@ matplotlib:
   tight_bbox: false
   transparent: false
   executable: python
+  command_line_arguments:
 
 # The possible parameters for the MATLAB toolkit
 matlabplot:
   # preamble: matlab.m
   executable: matlab
+  command_line_arguments:
 
 # The possible parameters for the Plotly/Python toolkit
 plotly_python:
   # preamble: plotly-python.py
   executable: python
+  command_line_arguments:
 
 # The possible parameters for the Plotly/R toolkit
 plotly_r:
   # preamble: plotly-r.r
   executable: Rscript
+  command_line_arguments:
 
 # The possible parameters for the Mathematica toolkit
 mathplot:
   # preamble: mathematica.m
   executable: math
+  command_line_arguments:
 
 # The possible parameters for the GNU Octave toolkit
 octaveplot:
   # preamble: octave.m
   executable: octave
+  command_line_arguments:
 
 # The possible parameters for the ggplot2 toolkit
 ggplot2:
   # preamble: ggplot2.r
   executable: Rscript
+  command_line_arguments:
 
 # The possible parameters for the gnuplot toolkit
 gnuplot:
   # preamble: gnuplot.gp
   executable: gnuplot
+  command_line_arguments:
 
 # The possible parameters for the graphviz toolkit
 graphviz:
   # preamble: graphviz.dot
   executable: dot
+  command_line_arguments:
 
 bokeh:
   # preamble: bokeh.py
   executable: python
+  command_line_arguments:
 
 plotsjl:
   # preamble: plotsjl.jl
   executable: julia
+  command_line_arguments: --threads auto
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.
@@ -470,6 +481,26 @@ matplotlib:
 ``` yaml
 matlabplot:
   executable: "C:\Program Files\Matlab\R2019b\bin\matlab.exe"
+```
+
+#### Command-line arguments
+
+The `command_line_arguments` parameter available for all toolkits provides a way to customize the way interpreters are run. For example, if you want to run the `matplotlib` toolkit with all warnings shown:
+
+``` yaml
+# The possible parameters for the Matplotlib toolkit
+matplotlib:
+  executable: python
+  command_line_arguments: -Wa
+```
+
+Or if you want `julia` to use more than one thread:
+
+``` yaml
+# The possible parameters for the Matplotlib toolkit
+plotsjl:
+  executable: julia
+  command_line_arguments: --threads auto
 ```
 
 #### Toolkit-specific options

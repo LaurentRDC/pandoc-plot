@@ -25,8 +25,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-mathematicaCommand :: OutputSpec -> Text -> Text
-mathematicaCommand OutputSpec {..} exe = [st|#{exe} -script "#{oScriptPath}"|]
+mathematicaCommand :: Text -> OutputSpec -> Text -> Text
+mathematicaCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} -script "#{oScriptPath}"|]
 
 mathematicaAvailable :: PlotM Bool
 mathematicaAvailable = do

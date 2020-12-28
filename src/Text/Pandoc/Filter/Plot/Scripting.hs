@@ -120,8 +120,8 @@ runTempScript spec@FigureSpec {..} = do
                       oScriptPath = scriptPath,
                       oFigurePath = target
                     }
-
-            let command_ = command toolkit outputSpec exename
+            cmdargs <- commandLineArgs toolkit
+            let command_ = command toolkit cmdargs outputSpec exename
             -- It is important that the CWD be inherited from the
             -- parent process. See #2.
             cwd <- asks envCWD

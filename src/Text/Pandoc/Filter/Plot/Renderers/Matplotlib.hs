@@ -34,8 +34,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-matplotlibCommand :: OutputSpec -> Text -> Text
-matplotlibCommand OutputSpec {..} exe = [st|#{exe} "#{oScriptPath}"|]
+matplotlibCommand :: Text -> OutputSpec -> Text -> Text
+matplotlibCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script
 matplotlibCapture = appendCapture matplotlibCaptureFragment

@@ -25,8 +25,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 octaveSupportedSaveFormats :: [SaveFormat]
 octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-octaveCommand :: OutputSpec -> Text -> Text
-octaveCommand OutputSpec {..} exe = [st|#{exe} --no-gui --no-window-system "#{oScriptPath}"|]
+octaveCommand :: Text -> OutputSpec -> Text -> Text
+octaveCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} --no-gui --no-window-system "#{oScriptPath}"|]
 
 octaveAvailable :: PlotM Bool
 octaveAvailable = do

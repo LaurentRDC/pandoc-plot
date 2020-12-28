@@ -21,6 +21,7 @@ module Text.Pandoc.Filter.Plot.Renderers
     command,
     capture,
     executable,
+    commandLineArgs,
     toolkitAvailable,
     availableToolkits,
     availableToolkitsM,
@@ -121,6 +122,20 @@ supportedSaveFormats Graphviz = graphvizSupportedSaveFormats
 supportedSaveFormats Bokeh = bokehSupportedSaveFormats
 supportedSaveFormats Plotsjl = plotsjlSupportedSaveFormats
 
+-- | Command line arguments for the interpreter of a toolkit
+commandLineArgs :: Toolkit -> PlotM Text
+commandLineArgs Matplotlib = asksConfig matplotlibCmdArgs
+commandLineArgs PlotlyPython = asksConfig plotlyPythonCmdArgs
+commandLineArgs PlotlyR = asksConfig plotlyRCmdArgs
+commandLineArgs Matlab = asksConfig matlabCmdArgs
+commandLineArgs Mathematica = asksConfig mathematicaCmdArgs
+commandLineArgs Octave = asksConfig octaveCmdArgs
+commandLineArgs GGPlot2 = asksConfig ggplot2CmdArgs
+commandLineArgs GNUPlot = asksConfig gnuplotCmdArgs
+commandLineArgs Graphviz = asksConfig graphvizCmdArgs
+commandLineArgs Bokeh = asksConfig bokehCmdArgs
+commandLineArgs Plotsjl = asksConfig plotsjlCmdArgs
+
 -- Checks to perform before running a script. If ANY check fails,
 -- the figure is not rendered. This is to prevent, for example,
 -- blocking operations to occur.
@@ -139,6 +154,7 @@ parseExtraAttrs _ = return mempty
 -- The executable will need to be found first, hence the IO monad.
 command ::
   Toolkit ->
+  Text -> -- Command line arguments
   OutputSpec ->
   Text -> -- Executable name (e.g. "python3")
   Text

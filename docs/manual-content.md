@@ -319,6 +319,26 @@ matlabplot:
   executable: "C:\Program Files\Matlab\R2019b\bin\matlab.exe"
 ```
 
+#### Command-line arguments
+
+The `command_line_arguments` parameter available for all toolkits provides a way to customize the way interpreters are run. For example, if you want to run the `matplotlib` toolkit with all warnings shown:
+
+```yaml
+# The possible parameters for the Matplotlib toolkit
+matplotlib:
+  executable: python
+  command_line_arguments: -Wa
+```
+
+Or if you want `julia` to use more than one thread:
+
+```yaml
+# The possible parameters for the Matplotlib toolkit
+plotsjl:
+  executable: julia
+  command_line_arguments: --threads auto
+```
+
 #### Toolkit-specific options
 
 ##### Matplotlib

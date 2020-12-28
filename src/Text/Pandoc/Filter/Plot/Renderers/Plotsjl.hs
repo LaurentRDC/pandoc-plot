@@ -27,8 +27,8 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 plotsjlSupportedSaveFormats :: [SaveFormat]
 plotsjlSupportedSaveFormats = [PNG, SVG, PDF]
 
-plotsjlCommand :: OutputSpec -> Text -> Text
-plotsjlCommand OutputSpec {..} exe = [st|#{exe} "#{oScriptPath}"|]
+plotsjlCommand :: Text -> OutputSpec -> Text -> Text
+plotsjlCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 plotsjlAvailable :: PlotM Bool
 plotsjlAvailable = do

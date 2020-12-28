@@ -326,6 +326,28 @@ data Configuration = Configuration
     bokehExe :: !FilePath,
     -- | The executable to use to generate figures using the Julia/Plots.jl toolkit.
     plotsjlExe :: !FilePath,
+    -- | Command-line arguments to pass to the Python interpreter for the Matplotlib toolkit
+    matplotlibCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the MATLAB toolkit.
+    matlabCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Plotly/Python toolkit.
+    plotlyPythonCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Plotly/R toolkit.
+    plotlyRCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Mathematica toolkit.
+    mathematicaCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the GNU Octave toolkit.
+    octaveCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the GGPlot2 toolkit.
+    ggplot2CmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the gnuplot toolkit.
+    gnuplotCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Graphviz toolkit.
+    graphvizCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Python/Bokeh toolkit.
+    bokehCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Julia/Plots.jl toolkit.
+    plotsjlCmdArgs :: !Text,
     -- | Whether or not to make Matplotlib figures tight by default.
     matplotlibTightBBox :: !Bool,
     -- | Whether or not to make Matplotlib figures transparent by default.
