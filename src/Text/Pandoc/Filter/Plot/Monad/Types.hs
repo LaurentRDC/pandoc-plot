@@ -13,10 +13,12 @@
 -- This module defines base types in use in pandoc-plot
 module Text.Pandoc.Filter.Plot.Monad.Types
   ( Toolkit (..),
+    Renderer (..),
     Script,
     CheckResult (..),
     InclusionKey (..),
     FigureSpec (..),
+    OutputSpec (..),
     SaveFormat (..),
     cls,
     extension,
@@ -158,8 +160,8 @@ inclusionKeys = enumFromTo (minBound :: InclusionKey) maxBound
 -- It is assumed that once a @FigureSpec@ has been created, no configuration
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
 data FigureSpec = FigureSpec
-  { -- | Plotting toolkit to use for this figure.
-    toolkit :: !Toolkit,
+  { -- | Renderer to use for this figure.
+    renderer_ :: !Renderer,
     -- | Figure caption.
     caption :: !Text,
     -- | Append link to source code in caption.
@@ -222,7 +224,7 @@ instance IsString SaveFormat where
             mconcat $ intersperse ", " $ show <$> saveFormats
           ]
     where
-      saveFormats = (enumFromTo minBound maxBound) :: [SaveFormat]
+      saveFormats = enumFromTo minBound maxBound :: [SaveFormat]
 
 instance FromJSON SaveFormat -- TODO: test this parsing
 
@@ -235,3 +237,27 @@ extension fmt = mconcat [".", fmap toLower . show $ fmt]
 
 isWindows :: Bool
 isWindows = os `elem` ["mingw32", "win32", "cygwin32"] -- Aliases taken from cabal's Distribution.System module
+
+-- | Internal description of all information
+-- needed to output a figure.
+data OutputSpec = OutputSpec
+  { -- | Figure spec
+    oFigureSpec :: FigureSpec,
+    -- | Path to the script to render
+    oScriptPath :: FilePath,
+    -- | Figure output path
+    oFigurePath :: FilePath
+  }
+
+data Renderer = Renderer
+  { rendererToolkit :: Toolkit,
+    rendererExe :: Executable,
+    rendererCmdArgs :: Text,
+    rendererCapture :: FigureSpec -> FilePath -> Script,
+    rendererCommand :: Text -> OutputSpec -> Text -> Text,
+    rendererSupportedSaveFormats :: [SaveFormat],
+    rendererChecks :: [Script -> CheckResult],
+    rendererLanguage :: Text,
+    rendererComment :: Text -> Text,
+    rendererScriptExtension :: String
+  }

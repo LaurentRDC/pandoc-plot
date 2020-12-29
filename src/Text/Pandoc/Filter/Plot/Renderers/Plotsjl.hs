@@ -13,14 +13,36 @@
 --
 -- Rendering Julia/Plots.jl code blocks
 module Text.Pandoc.Filter.Plot.Renderers.Plotsjl
-  ( plotsjlSupportedSaveFormats,
-    plotsjlCommand,
-    plotsjlCapture,
-    plotsjlAvailable,
+  ( plotsjl,
+    plotsjlSupportedSaveFormats,
   )
 where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+plotsjl :: PlotM (Maybe Renderer)
+plotsjl = do
+  avail <- plotsjlAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig plotsjlCmdArgs
+      mexe <- executable Plotsjl
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = Plotsjl,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = plotsjlCapture,
+                rendererCommand = plotsjlCommand,
+                rendererSupportedSaveFormats = plotsjlSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "julia",
+                rendererComment = mappend "# ",
+                rendererScriptExtension = ".jl"
+              }
 
 -- Save formats support by most backends
 -- https://docs.plotsjl.org/latest/output/#Supported-output-file-formats-1

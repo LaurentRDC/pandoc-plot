@@ -13,15 +13,37 @@
 --
 -- Rendering Matlab code blocks
 module Text.Pandoc.Filter.Plot.Renderers.Matlab
-  ( matlabSupportedSaveFormats,
-    matlabCommand,
-    matlabCapture,
-    matlabAvailable,
+  ( matlab,
+    matlabSupportedSaveFormats,
   )
 where
 
 import System.Directory (exeExtension)
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+matlab :: PlotM (Maybe Renderer)
+matlab = do
+  avail <- matlabAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig matlabCmdArgs
+      mexe <- executable Matlab
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = Matlab,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = matlabCapture,
+                rendererCommand = matlabCommand,
+                rendererSupportedSaveFormats = matlabSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "matlab",
+                rendererComment = mappend "% ",
+                rendererScriptExtension = ".m"
+              }
 
 matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]

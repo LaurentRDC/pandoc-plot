@@ -13,14 +13,36 @@
 --
 -- Rendering Octave plots code blocks
 module Text.Pandoc.Filter.Plot.Renderers.Octave
-  ( octaveSupportedSaveFormats,
-    octaveCommand,
-    octaveCapture,
-    octaveAvailable,
+  ( octave,
+    octaveSupportedSaveFormats,
   )
 where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+octave :: PlotM (Maybe Renderer)
+octave = do
+  avail <- octaveAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig octaveCmdArgs
+      mexe <- executable Octave
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = Octave,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = octaveCapture,
+                rendererCommand = octaveCommand,
+                rendererSupportedSaveFormats = octaveSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "matlab",
+                rendererComment = mappend "% ",
+                rendererScriptExtension = ".m"
+              }
 
 octaveSupportedSaveFormats :: [SaveFormat]
 octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]

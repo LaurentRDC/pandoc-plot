@@ -13,17 +13,38 @@
 --
 -- Rendering Bokeh code blocks
 module Text.Pandoc.Filter.Plot.Renderers.Bokeh
-  ( bokehSupportedSaveFormats,
-    bokehCommand,
-    bokehCapture,
-    bokehAvailable,
-    bokehCheckIfShow,
+  ( bokeh,
+    bokehSupportedSaveFormats,
   )
 where
 
 import Data.Monoid (Any (..))
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+bokeh :: PlotM (Maybe Renderer)
+bokeh = do
+  avail <- bokehAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig bokehCmdArgs
+      mexe <- executable Bokeh
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = Bokeh,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = appendCapture bokehCaptureFragment,
+                rendererCommand = bokehCommand,
+                rendererSupportedSaveFormats = bokehSupportedSaveFormats,
+                rendererChecks = [bokehCheckIfShow],
+                rendererLanguage = "python",
+                rendererComment = mappend "# ",
+                rendererScriptExtension = ".py"
+              }
 
 bokehSupportedSaveFormats :: [SaveFormat]
 bokehSupportedSaveFormats = [PNG, SVG, HTML]
@@ -51,9 +72,6 @@ bokehCheckIfShow s =
         <$> [ "bokeh.io.show(",
               "show("
             ]
-
-bokehCapture :: FigureSpec -> FilePath -> Script
-bokehCapture = appendCapture bokehCaptureFragment
 
 bokehCaptureFragment :: FigureSpec -> FilePath -> Script
 bokehCaptureFragment FigureSpec {..} fname =

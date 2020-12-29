@@ -13,15 +13,37 @@
 --
 -- Rendering GGPlot2 plots code blocks
 module Text.Pandoc.Filter.Plot.Renderers.GGPlot2
-  ( ggplot2SupportedSaveFormats,
-    ggplot2Command,
-    ggplot2Capture,
-    ggplot2Available,
+  ( ggplot2,
+    ggplot2SupportedSaveFormats,
   )
 where
 
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+ggplot2 :: PlotM (Maybe Renderer)
+ggplot2 = do
+  avail <- ggplot2Available
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig ggplot2CmdArgs
+      mexe <- executable GGPlot2
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = GGPlot2,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = ggplot2Capture,
+                rendererCommand = ggplot2Command,
+                rendererSupportedSaveFormats = ggplot2SupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "r",
+                rendererComment = mappend "# ",
+                rendererScriptExtension = ".r"
+              }
 
 ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]

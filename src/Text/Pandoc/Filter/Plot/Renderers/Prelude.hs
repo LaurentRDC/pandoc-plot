@@ -17,7 +17,6 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude
     unpack,
     commandSuccess,
     existsOnPath,
-    OutputSpec (..),
     appendCapture,
     toRPath,
   )
@@ -52,17 +51,6 @@ appendCapture ::
   FilePath ->
   Script
 appendCapture f s fp = mconcat [script s, "\n", f s fp]
-
--- | Internal description of all information
--- needed to output a figure.
-data OutputSpec = OutputSpec
-  { -- | Figure spec
-    oFigureSpec :: FigureSpec,
-    -- | Path to the script to render
-    oScriptPath :: FilePath,
-    -- | Figure output path
-    oFigurePath :: FilePath
-  }
 
 -- | R paths use the '/' path separator
 toRPath :: FilePath -> FilePath

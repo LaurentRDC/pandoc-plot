@@ -13,15 +13,37 @@
 --
 -- Rendering Plotly/R plots code blocks
 module Text.Pandoc.Filter.Plot.Renderers.PlotlyR
-  ( plotlyRSupportedSaveFormats,
-    plotlyRCommand,
-    plotlyRCapture,
-    plotlyRAvailable,
+  ( plotlyR,
+    plotlyRSupportedSaveFormats,
   )
 where
 
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+plotlyR :: PlotM (Maybe Renderer)
+plotlyR = do
+  avail <- plotlyRAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig plotlyRCmdArgs
+      mexe <- executable PlotlyR
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = PlotlyR,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = plotlyRCapture,
+                rendererCommand = plotlyRCommand,
+                rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "r",
+                rendererComment = mappend "# ",
+                rendererScriptExtension = ".r"
+              }
 
 plotlyRSupportedSaveFormats :: [SaveFormat]
 plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, HTML]

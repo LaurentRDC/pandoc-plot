@@ -17,12 +17,8 @@
 --     * @tight_bbox=True|False@ : Make plot bounding box tight. Default is False
 --     * @transparent=True|False@ : Make plot background transparent (perfect for web pages). Default is False.
 module Text.Pandoc.Filter.Plot.Renderers.Matplotlib
-  ( matplotlibSupportedSaveFormats,
-    matplotlibCommand,
-    matplotlibCapture,
-    matplotlibExtraAttrs,
-    matplotlibAvailable,
-    matplotlibCheckIfShow,
+  ( matplotlib,
+    matplotlibSupportedSaveFormats,
   )
 where
 
@@ -30,6 +26,30 @@ import qualified Data.Map.Strict as M
 import Data.Monoid (Any (..))
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+matplotlib :: PlotM (Maybe Renderer)
+matplotlib = do
+  avail <- matplotlibAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig matplotlibCmdArgs
+      mexe <- executable Matplotlib
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = Matplotlib,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = matplotlibCapture,
+                rendererCommand = matplotlibCommand,
+                rendererSupportedSaveFormats = matplotlibSupportedSaveFormats,
+                rendererChecks = [matplotlibCheckIfShow],
+                rendererLanguage = "python",
+                rendererComment = mappend "# ",
+                rendererScriptExtension = ".py"
+              }
 
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
@@ -52,9 +72,6 @@ plt.savefig(r"#{fname}", dpi=#{dpi}, transparent=#{transparent}, bbox_inches=#{t
     transparent_ = readBool $ M.findWithDefault "False" "transparent" attrs
     tightBox = if tight_ then ("'tight'" :: Text) else ("None" :: Text)
     transparent = if transparent_ then ("True" :: Text) else ("False" :: Text)
-
-matplotlibExtraAttrs :: M.Map Text Text -> (M.Map Text Text)
-matplotlibExtraAttrs kv = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "transparent"]) kv
 
 matplotlibAvailable :: PlotM Bool
 matplotlibAvailable = do

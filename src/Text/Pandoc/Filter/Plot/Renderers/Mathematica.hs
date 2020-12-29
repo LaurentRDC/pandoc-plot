@@ -13,14 +13,36 @@
 --
 -- Rendering Mathematica plots code blocks
 module Text.Pandoc.Filter.Plot.Renderers.Mathematica
-  ( mathematicaSupportedSaveFormats,
-    mathematicaCommand,
-    mathematicaCapture,
-    mathematicaAvailable,
+  ( mathematica,
+    mathematicaSupportedSaveFormats,
   )
 where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+mathematica :: PlotM (Maybe Renderer)
+mathematica = do
+  avail <- mathematicaAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig mathematicaCmdArgs
+      mexe <- executable Mathematica
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = Mathematica,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = mathematicaCapture,
+                rendererCommand = mathematicaCommand,
+                rendererSupportedSaveFormats = mathematicaSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "mathematica",
+                rendererComment = \t -> mconcat ["(*", t, "*)"],
+                rendererScriptExtension = ".m"
+              }
 
 mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]

@@ -13,14 +13,36 @@
 --
 -- Rendering Plotly-python code blocks
 module Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
-  ( plotlyPythonSupportedSaveFormats,
-    plotlyPythonCommand,
-    plotlyPythonCapture,
-    plotlyPythonAvailable,
+  ( plotlyPython,
+    plotlyPythonSupportedSaveFormats,
   )
 where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+plotlyPython :: PlotM (Maybe Renderer)
+plotlyPython = do
+  avail <- plotlyPythonAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig plotlyPythonCmdArgs
+      mexe <- executable PlotlyPython
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = PlotlyPython,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = plotlyPythonCapture,
+                rendererCommand = plotlyPythonCommand,
+                rendererSupportedSaveFormats = plotlyPythonSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "python",
+                rendererComment = mappend "# ",
+                rendererScriptExtension = ".py"
+              }
 
 plotlyPythonSupportedSaveFormats :: [SaveFormat]
 plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS, HTML]
@@ -30,7 +52,7 @@ plotlyPythonCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScri
 
 plotlyPythonAvailable :: PlotM Bool
 plotlyPythonAvailable = do
-  mexe <- executable Matplotlib
+  mexe <- executable PlotlyPython
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->

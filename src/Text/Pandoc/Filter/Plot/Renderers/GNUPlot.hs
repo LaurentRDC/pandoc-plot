@@ -13,14 +13,36 @@
 --
 -- Rendering gnuplot plots code blocks
 module Text.Pandoc.Filter.Plot.Renderers.GNUPlot
-  ( gnuplotSupportedSaveFormats,
-    gnuplotCommand,
-    gnuplotCapture,
-    gnuplotAvailable,
+  ( gnuplot,
+    gnuplotSupportedSaveFormats,
   )
 where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+gnuplot :: PlotM (Maybe Renderer)
+gnuplot = do
+  avail <- gnuplotAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig gnuplotCmdArgs
+      mexe <- executable GNUPlot
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = GNUPlot,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = gnuplotCapture,
+                rendererCommand = gnuplotCommand,
+                rendererSupportedSaveFormats = gnuplotSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "gnuplot",
+                rendererComment = mappend "# ",
+                rendererScriptExtension = ".gp"
+              }
 
 gnuplotSupportedSaveFormats :: [SaveFormat]
 gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]

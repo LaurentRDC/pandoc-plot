@@ -13,15 +13,37 @@
 --
 -- Rendering Graphviz plots code blocks
 module Text.Pandoc.Filter.Plot.Renderers.Graphviz
-  ( graphvizSupportedSaveFormats,
-    graphvizCommand,
-    graphvizCapture,
-    graphvizAvailable,
+  ( graphviz,
+    graphvizSupportedSaveFormats,
   )
 where
 
 import Data.Char
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+
+graphviz :: PlotM (Maybe Renderer)
+graphviz = do
+  avail <- graphvizAvailable
+  if not avail
+    then return Nothing
+    else do
+      cmdargs <- asksConfig graphvizCmdArgs
+      mexe <- executable Graphviz
+      return $
+        mexe >>= \exe ->
+          return
+            Renderer
+              { rendererToolkit = Graphviz,
+                rendererExe = exe,
+                rendererCmdArgs = cmdargs,
+                rendererCapture = graphvizCapture,
+                rendererCommand = graphvizCommand,
+                rendererSupportedSaveFormats = graphvizSupportedSaveFormats,
+                rendererChecks = mempty,
+                rendererLanguage = "dot",
+                rendererComment = mappend "// ",
+                rendererScriptExtension = ".dot"
+              }
 
 graphvizSupportedSaveFormats :: [SaveFormat]
 graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]
