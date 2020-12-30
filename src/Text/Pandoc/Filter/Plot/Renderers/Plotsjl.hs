@@ -29,14 +29,13 @@ plotsjl = do
       cmdargs <- asksConfig plotsjlCmdArgs
       mexe <- executable Plotsjl
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Plotsjl,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = plotsjlCapture,
-                rendererCommand = plotsjlCommand,
+                rendererCommand = plotsjlCommand cmdargs exename,
                 rendererSupportedSaveFormats = plotsjlSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "julia",
@@ -49,8 +48,8 @@ plotsjl = do
 plotsjlSupportedSaveFormats :: [SaveFormat]
 plotsjlSupportedSaveFormats = [PNG, SVG, PDF]
 
-plotsjlCommand :: Text -> OutputSpec -> Text -> Text
-plotsjlCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+plotsjlCommand :: Text -> Text -> OutputSpec -> Text
+plotsjlCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 plotsjlAvailable :: PlotM Bool
 plotsjlAvailable = do

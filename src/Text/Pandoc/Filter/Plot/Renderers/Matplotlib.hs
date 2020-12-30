@@ -36,14 +36,13 @@ matplotlib = do
       cmdargs <- asksConfig matplotlibCmdArgs
       mexe <- executable Matplotlib
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Matplotlib,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = matplotlibCapture,
-                rendererCommand = matplotlibCommand,
+                rendererCommand = matplotlibCommand cmdargs exename,
                 rendererSupportedSaveFormats = matplotlibSupportedSaveFormats,
                 rendererChecks = [matplotlibCheckIfShow],
                 rendererLanguage = "python",
@@ -54,8 +53,8 @@ matplotlib = do
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-matplotlibCommand :: Text -> OutputSpec -> Text -> Text
-matplotlibCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+matplotlibCommand :: Text -> Text -> OutputSpec -> Text
+matplotlibCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 matplotlibCapture :: FigureSpec -> FilePath -> Script
 matplotlibCapture = appendCapture matplotlibCaptureFragment

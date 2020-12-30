@@ -30,14 +30,13 @@ plotlyR = do
       cmdargs <- asksConfig plotlyRCmdArgs
       mexe <- executable PlotlyR
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = PlotlyR,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = plotlyRCapture,
-                rendererCommand = plotlyRCommand,
+                rendererCommand = plotlyRCommand cmdargs exename,
                 rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "r",
@@ -48,8 +47,8 @@ plotlyR = do
 plotlyRSupportedSaveFormats :: [SaveFormat]
 plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, HTML]
 
-plotlyRCommand :: Text -> OutputSpec -> Text -> Text
-plotlyRCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+plotlyRCommand :: Text -> Text -> OutputSpec -> Text
+plotlyRCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 plotlyRAvailable :: PlotM Bool
 plotlyRAvailable = do

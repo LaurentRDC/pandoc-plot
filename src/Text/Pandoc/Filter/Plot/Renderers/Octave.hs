@@ -29,14 +29,13 @@ octave = do
       cmdargs <- asksConfig octaveCmdArgs
       mexe <- executable Octave
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Octave,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = octaveCapture,
-                rendererCommand = octaveCommand,
+                rendererCommand = octaveCommand cmdargs exename,
                 rendererSupportedSaveFormats = octaveSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "matlab",
@@ -47,8 +46,8 @@ octave = do
 octaveSupportedSaveFormats :: [SaveFormat]
 octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-octaveCommand :: Text -> OutputSpec -> Text -> Text
-octaveCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} --no-gui --no-window-system "#{oScriptPath}"|]
+octaveCommand :: Text -> Text -> OutputSpec -> Text
+octaveCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} --no-gui --no-window-system "#{oScriptPath}"|]
 
 octaveAvailable :: PlotM Bool
 octaveAvailable = do

@@ -30,14 +30,13 @@ ggplot2 = do
       cmdargs <- asksConfig ggplot2CmdArgs
       mexe <- executable GGPlot2
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = GGPlot2,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = ggplot2Capture,
-                rendererCommand = ggplot2Command,
+                rendererCommand = ggplot2Command cmdargs exename,
                 rendererSupportedSaveFormats = ggplot2SupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "r",
@@ -48,8 +47,8 @@ ggplot2 = do
 ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
-ggplot2Command :: Text -> OutputSpec -> Text -> Text
-ggplot2Command cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+ggplot2Command :: Text -> Text -> OutputSpec -> Text
+ggplot2Command cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 ggplot2Available :: PlotM Bool
 ggplot2Available = do

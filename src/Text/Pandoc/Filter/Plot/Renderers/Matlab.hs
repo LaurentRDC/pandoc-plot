@@ -30,14 +30,13 @@ matlab = do
       cmdargs <- asksConfig matlabCmdArgs
       mexe <- executable Matlab
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Matlab,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = matlabCapture,
-                rendererCommand = matlabCommand,
+                rendererCommand = matlabCommand cmdargs exename,
                 rendererSupportedSaveFormats = matlabSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "matlab",
@@ -48,8 +47,8 @@ matlab = do
 matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-matlabCommand :: Text -> OutputSpec -> Text -> Text
-matlabCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} -batch "run('#{oScriptPath}')"|]
+matlabCommand :: Text -> Text -> OutputSpec -> Text
+matlabCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} -batch "run('#{oScriptPath}')"|]
 
 -- On Windows at least, "matlab -help"  actually returns -1, even though the
 -- help text is shown successfully!

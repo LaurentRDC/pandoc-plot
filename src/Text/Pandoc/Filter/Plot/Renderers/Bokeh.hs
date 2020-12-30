@@ -31,14 +31,13 @@ bokeh = do
       cmdargs <- asksConfig bokehCmdArgs
       mexe <- executable Bokeh
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Bokeh,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = appendCapture bokehCaptureFragment,
-                rendererCommand = bokehCommand,
+                rendererCommand = bokehCommand cmdargs exename,
                 rendererSupportedSaveFormats = bokehSupportedSaveFormats,
                 rendererChecks = [bokehCheckIfShow],
                 rendererLanguage = "python",
@@ -49,8 +48,8 @@ bokeh = do
 bokehSupportedSaveFormats :: [SaveFormat]
 bokehSupportedSaveFormats = [PNG, SVG, HTML]
 
-bokehCommand :: Text -> OutputSpec -> Text -> Text
-bokehCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+bokehCommand :: Text -> Text -> OutputSpec -> Text
+bokehCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
 
 bokehAvailable :: PlotM Bool
 bokehAvailable = do

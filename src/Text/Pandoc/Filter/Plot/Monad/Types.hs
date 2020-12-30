@@ -252,9 +252,8 @@ data OutputSpec = OutputSpec
 data Renderer = Renderer
   { rendererToolkit :: Toolkit,
     rendererExe :: Executable,
-    rendererCmdArgs :: Text,
     rendererCapture :: FigureSpec -> FilePath -> Script,
-    rendererCommand :: Text -> OutputSpec -> Text -> Text,
+    rendererCommand :: OutputSpec -> Text,
     rendererSupportedSaveFormats :: [SaveFormat],
     rendererChecks :: [Script -> CheckResult],
     rendererLanguage :: Text,

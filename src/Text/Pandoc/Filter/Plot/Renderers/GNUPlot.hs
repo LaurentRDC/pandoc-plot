@@ -29,14 +29,13 @@ gnuplot = do
       cmdargs <- asksConfig gnuplotCmdArgs
       mexe <- executable GNUPlot
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = GNUPlot,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = gnuplotCapture,
-                rendererCommand = gnuplotCommand,
+                rendererCommand = gnuplotCommand cmdargs exename,
                 rendererSupportedSaveFormats = gnuplotSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "gnuplot",
@@ -47,8 +46,8 @@ gnuplot = do
 gnuplotSupportedSaveFormats :: [SaveFormat]
 gnuplotSupportedSaveFormats = [PNG, SVG, EPS, GIF, JPG, PDF]
 
-gnuplotCommand :: Text -> OutputSpec -> Text -> Text
-gnuplotCommand cmdargs OutputSpec {..} exe = [st|#{exe} #{cmdargs} -c "#{oScriptPath}"|]
+gnuplotCommand :: Text -> Text -> OutputSpec -> Text
+gnuplotCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} -c "#{oScriptPath}"|]
 
 gnuplotAvailable :: PlotM Bool
 gnuplotAvailable = do

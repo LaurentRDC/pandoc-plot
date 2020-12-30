@@ -30,14 +30,13 @@ graphviz = do
       cmdargs <- asksConfig graphvizCmdArgs
       mexe <- executable Graphviz
       return $
-        mexe >>= \exe ->
+        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Graphviz,
                 rendererExe = exe,
-                rendererCmdArgs = cmdargs,
                 rendererCapture = graphvizCapture,
-                rendererCommand = graphvizCommand,
+                rendererCommand = graphvizCommand cmdargs exename,
                 rendererSupportedSaveFormats = graphvizSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "dot",
@@ -48,8 +47,8 @@ graphviz = do
 graphvizSupportedSaveFormats :: [SaveFormat]
 graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]
 
-graphvizCommand :: Text -> OutputSpec -> Text -> Text
-graphvizCommand cmdargs OutputSpec {..} exe =
+graphvizCommand :: Text -> Text -> OutputSpec -> Text
+graphvizCommand cmdargs exe OutputSpec {..} =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
       dpi' = dpi oFigureSpec
    in [st|#{exe} #{cmdargs} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]

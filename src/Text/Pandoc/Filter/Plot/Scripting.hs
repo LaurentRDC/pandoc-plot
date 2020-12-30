@@ -96,39 +96,31 @@ runTempScript spec@FigureSpec {..} = do
   case checkResult of
     CheckFailed msg -> return $ ScriptChecksFailed msg
     CheckPassed -> do
-      let toolkit = rendererToolkit renderer_
       scriptPath <- tempScriptPath spec
       target <- figurePath spec
 
-      -- Check if executable is present
-      -- Note that checking if the toolkit if fully configured is much more involved,
-      -- and so we only check if the toolkit is appropriately installed if there is
-      -- an error.
-      exe <- executable toolkit
-      case exe of
-        Nothing -> error $ "Toolkit " <> show toolkit <> " is not installed."
-        Just (Executable exedir exename) ->
-          -- Change the PATH environment variable so the appropriate executable is
-          -- found first
-          withPrependedPath exedir $ do
-            let scriptWithCapture = rendererCapture renderer_ spec target
+      let scriptWithCapture = rendererCapture renderer_ spec target
 
-            liftIO $ T.writeFile scriptPath scriptWithCapture
-            let outputSpec =
-                  OutputSpec
-                    { oFigureSpec = spec,
-                      oScriptPath = scriptPath,
-                      oFigurePath = target
-                    }
-            let cmdargs = rendererCmdArgs renderer_
-                command_ = rendererCommand renderer_ cmdargs outputSpec exename
-            -- It is important that the CWD be inherited from the
-            -- parent process. See #2.
-            cwd <- asks envCWD
-            (ec, _) <- runCommand cwd command_
-            case ec of
-              ExitSuccess -> return ScriptSuccess
-              ExitFailure code -> return $ ScriptFailure command_ code
+      liftIO $ T.writeFile scriptPath scriptWithCapture
+      let outputSpec =
+            OutputSpec
+              { oFigureSpec = spec,
+                oScriptPath = scriptPath,
+                oFigurePath = target
+              }
+      let command_ = rendererCommand renderer_ outputSpec
+
+      -- Change the PATH environment variable so the appropriate executable is
+      -- found first
+      let (Executable exedir _) = rendererExe renderer_
+      withPrependedPath exedir $ do
+        -- It is important that the CWD be inherited from the
+        -- parent process. See #2.
+        cwd <- asks envCWD
+        (ec, _) <- runCommand cwd command_
+        case ec of
+          ExitSuccess -> return ScriptSuccess
+          ExitFailure code -> return $ ScriptFailure command_ code
 
 -- | Determine the temp script path from Figure specifications
 -- Note that for certain renderers, the appropriate file extension
