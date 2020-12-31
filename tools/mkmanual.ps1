@@ -11,6 +11,7 @@ stack exec -- pandoc-plot write-example-config --help | Out-File -FilePath  help
 stack exec -- pandoc `
                 --standalone `
                 --toc `
+                --toc-depth=4 `
                 --metadata version=$version `
                 --metadata title="pandoc-plot $version manual" `
                 --wrap=preserve `
