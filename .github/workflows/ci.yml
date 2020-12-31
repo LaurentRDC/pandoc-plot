@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -29,6 +29,8 @@ jobs:
       with:
         python-version: '3.9'
 
+    - uses: r-lib/actions/setup-r@v1
+
     - uses: actions/cache@v2
       name: Cache Haskell build artifacts
       with:
@@ -39,7 +41,7 @@ jobs:
       name: Cache Python build artifacts
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-${{ hashFiles('.github/workflows/requirements.txt') }}
 
     - name: Build pandoc-plot
       run: stack install
@@ -51,7 +53,33 @@ jobs:
         pip install -r .github/workflows/requirements.txt
     
     - name: Install Plots.jl toolkit
-      run: julia -e 'using Pkg; Pkg.add("Plots");'
+      shell: julia {0}
+      run: |
+        using Pkg
+        Pkg.add("Plots")
+
+    - name: Install GGPlot2
+      run: |
+        Rscript -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
+
+    - name: Install Octave, Gnuplot, Graphviz [Linux]
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get --quiet --yes install octave
+        sudo apt-get --quiet --yes install gnuplot
+        sudo apt-get --quiet --yes install graphviz
+
+    - name: Install Octave, Gnuplot, Graphviz [Windows]
+      if: runner.os == 'Windows'
+      run: |
+        choco install -y octave
+        choco install -y gnuplot
+        choco install -y graphviz
+
+    - name: Check installed plotting toolkits
+      run: |
+        stack install
+        stack exec -- pandoc-plot toolkits
 
     - name: Unit tests
       run: stack test
