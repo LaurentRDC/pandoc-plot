@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build-and-test:
+    if: contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Haskell toolchain
+      uses: haskell/actions/setup@v1
+      with:
+        enable-stack: true
+        stack-version: 'latest'
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - uses: actions/cache@v2
+      name: Cache Haskell build artifacts
+      with:
+        path: ~/.stack
+        key: ${{ runner.os }}-${{ hashFiles('stack.yaml.lock') }}
+
+    - uses: actions/cache@v2
+      name: Cache Python build artifacts
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+    - name: Build pandoc-plot
+      run: stack install
+
+    - name: Install Python toolkits
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy wheel
+        pip install -r .github/workflows/requirements.txt
+    
+    - name: Install Plots.jl toolkit
+      run: julia -e 'using Pkg; Pkg.add("Plots");'
+
+    - name: Unit tests
+      run: stack test
+    
+    - name: Integration tests
+      run: |
+        stack install pandoc
+        stack install
+        stack exec -- pandoc --filter pandoc-plot -i tests/integration.md -t html
+        stack exec -- pandoc --filter pandoc-plot -i tests/issue16.md -t native
+        echo "Logging output:"
+        echo "$(cat log.txt)"
+
+        stack exec -- pandoc-plot clean tests/integration.md
+        stack exec -- pandoc-plot clean tests/issue16.md
+    
+    - name: Build documentation
+      shell: pwsh
+      run: .\tools\mkmanual.ps1
