@@ -32,7 +32,7 @@ import Control.Monad.State.Strict
 import Data.List ((\\))
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
-import Data.Maybe (catMaybes, isJust)
+import Data.Maybe (catMaybes, isJust, isNothing)
 import Data.Text (Text, pack)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
@@ -56,8 +56,16 @@ renderer tk = do
   renderers <- liftIO $ takeMVar varRenderers
   (r', rs') <- case M.lookup tk renderers of
     Nothing -> do
-      debug $ mconcat ["Getting renderer for ", pack $ show tk]
+      debug $ mconcat ["Looking for renderer for ", pack $ show tk]
       r' <- sel tk
+      -- Toolkit was requested but is not installed/configured.
+      when (isNothing r') $
+        warning $
+          mconcat
+            [ "Renderer for ",
+              pack $ show tk,
+              " requested but is not installed"
+            ]
       let rs' = M.insert tk r' renderers
       return (r', rs')
     Just e -> do
