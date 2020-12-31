@@ -5,6 +5,12 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 Release 1.0.2.0
 ---------------
 
+* Added the ability to run `pandoc-plot` in **strict mode**. By default, `pandoc-plot` leaves code blocks unchanged if a figure fails to be rendered.  In strict mode, `pandoc-plot` will immediately halt if it encounters a problem, such as a missing toolkit. You can activate strict mode via configuration:
+
+```yaml
+strict: true
+```
+
 * Added the ability to set command-line arguments for interpreters via configuration. For example, if you want to run the Matplotlib toolkit with all warnings shown:
 
 ```yaml

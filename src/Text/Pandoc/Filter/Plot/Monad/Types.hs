@@ -124,6 +124,7 @@ data InclusionKey
   | PreambleK
   | DpiK
   | SourceCodeLabelK
+  | StrictModeK
   | ExecutableK
   | CommandLineArgsK
   | DependenciesK
@@ -143,6 +144,7 @@ instance Show InclusionKey where
   show PreambleK = "preamble"
   show DpiK = "dpi"
   show SourceCodeLabelK = "source_label"
+  show StrictModeK = "strict"
   show ExecutableK = "executable"
   show CommandLineArgsK = "command_line_arguments"
   show DependenciesK = "dependencies"

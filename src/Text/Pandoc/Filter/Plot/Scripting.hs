@@ -77,13 +77,11 @@ data ScriptResult
   = ScriptSuccess
   | ScriptChecksFailed Text -- Message
   | ScriptFailure Text Int -- Command and exit code
-  | ToolkitNotInstalled Toolkit -- Script failed because toolkit is not installed
 
 instance Show ScriptResult where
   show ScriptSuccess = "Script success."
   show (ScriptChecksFailed msg) = unpack $ "Script checks failed: " <> msg
   show (ScriptFailure msg ec) = mconcat ["Script failed with exit code ", show ec, " and the following message: ", unpack msg]
-  show (ToolkitNotInstalled tk) = show tk <> " toolkit not installed."
 
 -- Run script as described by the spec
 -- Checks are performed, according to the renderer

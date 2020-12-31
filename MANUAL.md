@@ -193,7 +193,7 @@ The most common use for `pandoc-plot` is as a pandoc filter, in which case it sh
 pandoc --filter pandoc-plot -i input.md -o output.html
 ```
 
-If `pandoc-plot` fails to render a code block into a figure, the filtering will not stop. Your code blocks will stay unchanged.
+If `pandoc-plot` fails to render a code block into a figure, the filtering will not stop. Your code blocks will stay unchanged, unless you activate [strict mode](#strict-mode).
 
 You can chain other filters with it (e.g., [`pandoc-crossref`](https://github.com/lierdakil/pandoc-crossref)) like so:
 
@@ -340,6 +340,11 @@ directory: plots/
 # Particularly useful for HTML output.
 source: false
 
+# When `strict: false`, pandoc-plot will leave code blocks untouched if a plot
+# could not be generated. This could happen if, for example, a toolkit is not
+# installed. If you want pandoc-plot to fail instead, use `strict: true`.
+strict: false
+
 # Text label for links to source code.
 # You can change this label if you are writing a document in a non-English language. 
 # This only matters if `source` is set to `true`.
@@ -440,7 +445,7 @@ bokeh:
 plotsjl:
   # preamble: plotsjl.jl
   executable: julia
-  command_line_arguments: --threads auto
+  command_line_arguments:
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.
@@ -485,6 +490,8 @@ matlabplot:
 
 #### Command-line arguments
 
+*New in version 1.0.2.0*
+
 The `command_line_arguments` parameter available for all toolkits provides a way to customize the way interpreters are run. For example, if you want to run the `matplotlib` toolkit with all warnings shown:
 
 ``` yaml
@@ -527,6 +534,18 @@ logging:
 ```
 
 By default, `pandoc-plot` logs warnings and errors to the standard error stream only.
+
+#### Strict mode
+
+*New in version 1.0.2.0*
+
+By default, `pandoc-plot` leaves code blocks unchanged if a figure fails to be rendered. This might be the case if a plotting toolkit is not installed, or if running the code to render a figure returns an error. In **strict mode**, `pandoc-plot` will immediately halt if it encounters a problem. You can activate strict mode via configuration:
+
+``` yaml
+strict: true
+```
+
+Strict mode is ideal if you want to ensure that the figures are correctly rendered in the document.
 
 ### Other commands
 

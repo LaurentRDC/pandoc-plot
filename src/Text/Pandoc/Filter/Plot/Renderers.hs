@@ -59,13 +59,10 @@ renderer tk = do
       debug $ mconcat ["Looking for renderer for ", pack $ show tk]
       r' <- sel tk
       -- Toolkit was requested but is not installed/configured.
-      when (isNothing r') $
-        warning $
-          mconcat
-            [ "Renderer for ",
-              pack $ show tk,
-              " requested but is not installed"
-            ]
+      when (isNothing r') $ do
+        let msg = mconcat ["Renderer for ", pack $ show tk, " requested but is not installed"]
+        whenStrict $ throwError $ "[strict mode] " <> msg
+        warning msg
       let rs' = M.insert tk r' renderers
       return (r', rs')
     Just e -> do

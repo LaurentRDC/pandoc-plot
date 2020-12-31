@@ -19,6 +19,10 @@ module Text.Pandoc.Filter.Plot.Monad
     -- * Running external commands
     runCommand,
 
+    -- * Halting pandoc-plot
+    whenStrict,
+    throwError,
+
     -- * Getting file hashes
     fileHash,
 
@@ -50,6 +54,7 @@ import Control.Concurrent.MVar
 import Control.Monad.Reader
 import Control.Monad.State.Strict
 import Data.ByteString.Lazy (toStrict)
+import Data.Functor ((<&>))
 import Data.Hashable (hash)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
@@ -168,6 +173,15 @@ runCommand wordir command = do
   logFunc $ message <> errorMessage
   return (ec, processOutput)
 
+-- | Throw an error that halts the execution of pandoc-plot
+throwError :: Text -> PlotM ()
+throwError = liftIO . errorWithoutStackTrace . unpack
+
+-- | Conditional execution of a PlotM action if pandoc-plot is
+-- run in strict mode.
+whenStrict :: PlotM () -> PlotM ()
+whenStrict f = asksConfig strictMode >>= \s -> when s f
+
 -- Plot state is used for caching.
 -- One part consists of a map of filepaths to hashes
 -- This allows multiple plots to depend on the same file/directory, and the file hashes
@@ -218,8 +232,7 @@ executable tk =
   exeSelector tk
     >>= \name ->
       liftIO $
-        findExecutable name
-          >>= return . fmap exeFromPath
+        findExecutable name <&> fmap exeFromPath
   where
     exeSelector Matplotlib = asksConfig matplotlibExe
     exeSelector PlotlyPython = asksConfig plotlyPythonExe
@@ -268,6 +281,8 @@ data Configuration = Configuration
     captionFormat :: !Format,
     -- | The text label to which the source code is linked. Change this if you are writing non-english documents.
     sourceCodeLabel :: !Text,
+    -- | Whether to halt pandoc-plot when an error is encountered or not.
+    strictMode :: !Bool,
     -- | Level of logging verbosity.
     logVerbosity :: !Verbosity,
     -- | Method of logging, i.e. printing to stderr or file.

@@ -17,7 +17,6 @@ module Text.Pandoc.Filter.Plot.Configuration
   )
 where
 
-import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack, unpack)
 import qualified Data.Text.IO as TIO
 import Data.Yaml (FromJSON (parseJSON), Value (Null, Object), (.!=), (.:?))
@@ -32,7 +31,7 @@ import Text.Pandoc.Filter.Plot.Monad
 -- If a key is not present, its value will be set
 -- to the default value. Parsing errors result in thrown exceptions.
 configuration :: FilePath -> IO Configuration
-configuration fp = (loadYamlSettings [normalise fp] [] ignoreEnv) >>= renderConfig
+configuration fp = loadYamlSettings [normalise fp] [] ignoreEnv >>= renderConfig
 
 -- | Default configuration values.
 --
@@ -47,6 +46,7 @@ defaultConfiguration =
       defaultDependencies = mempty,
       captionFormat = Format "markdown+tex_math_dollars",
       sourceCodeLabel = "Source code",
+      strictMode = False,
       logVerbosity = Warning,
       logSink = StdErr,
       -- Preambles
@@ -130,6 +130,7 @@ data ConfigPrecursor = ConfigPrecursor
     _defaultDependencies :: ![FilePath],
     _captionFormat :: !Format,
     _sourceCodeLabel :: !Text,
+    _strictMode :: !Bool,
     _logPrec :: !LoggingPrecursor,
     _matplotlibPrec :: !MatplotlibPrecursor,
     _matlabPrec :: !MatlabPrecursor,
@@ -154,6 +155,7 @@ defaultConfigPrecursor =
       _defaultDependencies = defaultDependencies defaultConfiguration,
       _captionFormat = captionFormat defaultConfiguration,
       _sourceCodeLabel = sourceCodeLabel defaultConfiguration,
+      _strictMode = strictMode defaultConfiguration,
       _logPrec = LoggingPrecursor (logVerbosity defaultConfiguration) Nothing, -- _logFilePath=Nothing implies log to stderr
       _matplotlibPrec = MatplotlibPrecursor Nothing (matplotlibTightBBox defaultConfiguration) (matplotlibTransparent defaultConfiguration) (matplotlibExe defaultConfiguration) (matplotlibCmdArgs defaultConfiguration),
       _matlabPrec = MatlabPrecursor Nothing (matlabExe defaultConfiguration) (matlabCmdArgs defaultConfiguration),
@@ -268,7 +270,7 @@ instance FromJSON ConfigPrecursor where
     _defaultDependencies <- v .:? (tshow DependenciesK) .!= (_defaultDependencies defaultConfigPrecursor)
     _captionFormat <- v .:? (tshow CaptionFormatK) .!= (_captionFormat defaultConfigPrecursor)
     _sourceCodeLabel <- v .:? (tshow SourceCodeLabelK) .!= (_sourceCodeLabel defaultConfigPrecursor)
-
+    _strictMode <- v .:? tshow StrictModeK .!= (_strictMode defaultConfigPrecursor)
     _logPrec <- v .:? "logging" .!= _logPrec defaultConfigPrecursor
 
     _matplotlibPrec <- v .:? (cls Matplotlib) .!= _matplotlibPrec defaultConfigPrecursor
@@ -295,6 +297,7 @@ renderConfig ConfigPrecursor {..} = do
       defaultDependencies = _defaultDependencies
       captionFormat = _captionFormat
       sourceCodeLabel = _sourceCodeLabel
+      strictMode = _strictMode
 
       logVerbosity = _logVerbosity _logPrec
       logSink = maybe StdErr LogFile (_logFilePath _logPrec)
@@ -340,7 +343,7 @@ renderConfig ConfigPrecursor {..} = do
 
   return Configuration {..}
   where
-    readPreamble fp = fromMaybe mempty $ TIO.readFile <$> fp
+    readPreamble fp = maybe mempty TIO.readFile fp
 
 tshow :: Show a => a -> Text
 tshow = pack . show

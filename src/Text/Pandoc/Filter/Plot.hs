@@ -110,7 +110,8 @@ module Text.Pandoc.Filter.Plot
 where
 
 import Control.Concurrent.Async.Lifted (mapConcurrently)
-import Data.Text (Text, unpack)
+import Data.Text (Text, unpack, pack)
+import Data.Functor ((<&>))
 import Data.Version (Version)
 import Paths_pandoc_plot (version)
 import Text.Pandoc.Definition (Block, Pandoc (..))
@@ -132,6 +133,8 @@ import Text.Pandoc.Filter.Plot.Internal
     defaultConfiguration,
     parseFigureSpec,
     runPlotM,
+    throwError,
+    whenStrict,
     runScriptIfNecessary,
     supportedSaveFormats,
     toFigure,
@@ -152,7 +155,7 @@ plotTransform ::
   Pandoc ->
   IO Pandoc
 plotTransform conf (Pandoc meta blocks) =
-  runPlotM conf $ mapConcurrently make blocks >>= return . Pandoc meta
+  runPlotM conf $ mapConcurrently make blocks <&> Pandoc meta
 
 -- | The version of the pandoc-plot package.
 --
@@ -161,9 +164,14 @@ pandocPlotVersion :: Version
 pandocPlotVersion = version
 
 -- | Try to process the block with `pandoc-plot`. If a failure happens (or the block)
--- was not meant to become a figure, return the block as-is.
+-- was not meant to become a figure, return the block as-is unless running in strict mode.
 make :: Block -> PlotM Block
-make blk = either (const (return blk)) return =<< makeEither blk
+make blk = either (onError blk) return =<< makeEither blk
+  where
+    onError :: Block -> PandocPlotError -> PlotM Block
+    onError b e = do
+      whenStrict $ throwError $ "[strict mode] " <> (pack . show $ e)
+      return b
 
 -- | Try to process the block with `pandoc-plot`, documenting the error.
 makeEither :: Block -> PlotM (Either PandocPlotError Block)
@@ -177,7 +185,6 @@ makeEither block =
     handleResult :: FigureSpec -> ScriptResult -> PlotM (Either PandocPlotError Block)
     handleResult _ (ScriptFailure msg code) = return $ Left (ScriptRuntimeError msg code)
     handleResult _ (ScriptChecksFailed msg) = return $ Left (ScriptChecksFailedError msg)
-    handleResult _ (ToolkitNotInstalled tk') = return $ Left (ToolkitNotInstalledError tk')
     handleResult spec ScriptSuccess = asks envConfig >>= \c -> Right <$> toFigure (captionFormat c) spec
 
 data PandocPlotError

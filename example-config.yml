@@ -18,6 +18,11 @@ directory: plots/
 # Particularly useful for HTML output.
 source: false
 
+# When `strict: false`, pandoc-plot will leave code blocks untouched if a plot
+# could not be generated. This could happen if, for example, a toolkit is not
+# installed. If you want pandoc-plot to fail instead, use `strict: true`.
+strict: false
+
 # Text label for links to source code.
 # You can change this label if you are writing a document in a non-English language. 
 # This only matters if `source` is set to `true`.
