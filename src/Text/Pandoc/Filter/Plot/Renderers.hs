@@ -27,11 +27,13 @@ module Text.Pandoc.Filter.Plot.Renderers
 where
 
 import Control.Concurrent.Async.Lifted (forConcurrently)
+import Control.Concurrent.MVar
+import Control.Monad.State.Strict
 import Data.List ((\\))
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import Data.Maybe (catMaybes, isJust)
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
 import Text.Pandoc.Filter.Plot.Renderers.GGPlot2
@@ -45,18 +47,38 @@ import Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
 import Text.Pandoc.Filter.Plot.Renderers.PlotlyR
 import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
 
+-- | Get the renderer associated with a toolkit.
+-- If the renderer has not been used before,
+-- initialize it and store where it is. It will be re-used.
 renderer :: Toolkit -> PlotM (Maybe Renderer)
-renderer Matplotlib = matplotlib
-renderer PlotlyPython = plotlyPython
-renderer PlotlyR = plotlyR
-renderer Matlab = matlab
-renderer Mathematica = mathematica
-renderer Octave = octave
-renderer GGPlot2 = ggplot2
-renderer GNUPlot = gnuplot
-renderer Graphviz = graphviz
-renderer Bokeh = bokeh
-renderer Plotsjl = plotsjl
+renderer tk = do
+  PlotState varHashes varRenderers <- get
+  renderers <- liftIO $ takeMVar varRenderers
+  (r', rs') <- case M.lookup tk renderers of
+    Nothing -> do
+      debug $ mconcat ["Getting renderer for ", pack $ show tk]
+      r' <- sel tk
+      let rs' = M.insert tk r' renderers
+      return (r', rs')
+    Just e -> do
+      debug $ mconcat ["Renderer for \"", pack $ show tk, "\" already initialized."]
+      return (e, renderers)
+  liftIO $ putMVar varRenderers rs'
+  put $ PlotState varHashes varRenderers
+  return r'
+  where
+    sel :: Toolkit -> PlotM (Maybe Renderer)
+    sel Matplotlib = matplotlib
+    sel PlotlyPython = plotlyPython
+    sel PlotlyR = plotlyR
+    sel Matlab = matlab
+    sel Mathematica = mathematica
+    sel Octave = octave
+    sel GGPlot2 = ggplot2
+    sel GNUPlot = gnuplot
+    sel Graphviz = graphviz
+    sel Bokeh = bokeh
+    sel Plotsjl = plotsjl
 
 -- | Save formats supported by this renderer.
 supportedSaveFormats :: Toolkit -> [SaveFormat]

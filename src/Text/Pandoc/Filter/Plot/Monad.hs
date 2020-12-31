@@ -13,6 +13,7 @@ module Text.Pandoc.Filter.Plot.Monad
   ( Configuration (..),
     PlotM,
     RuntimeEnv (..),
+    PlotState (..),
     runPlotM,
 
     -- * Running external commands
@@ -174,14 +175,14 @@ runCommand wordir command = do
 -- We note that because figures are rendered possibly in parallel, access to
 -- the state must be synchronized; otherwise, each thread might compute its own
 -- hashes.
--- The other part is comprised of a map of toolkits to executables (possibly missing)
--- This means that executable will be search for only once.
+-- The other part is comprised of a map of toolkits to renderers (possibly missing)
+-- This means that checking if renderers are available will only be done once.
 type FileHash = Word
 
 data PlotState
   = PlotState
       (MVar (Map FilePath FileHash))
-      (MVar (Map Toolkit (Maybe Executable)))
+      (MVar (Map Toolkit (Maybe Renderer)))
 
 -- | Get a filehash. If the file hash has been computed before,
 -- it is reused. Otherwise, the filehash is calculated and stored.
@@ -211,25 +212,14 @@ fileHash path = do
         then liftIO . fmap (fromIntegral . hash . show) . getModificationTime $ fp
         else err (mconcat ["Dependency ", pack fp, " does not exist."]) >> return 0
 
--- | Get an executable. If the executable has not been used before,
--- find it and store where it is. It will be re-used.
+-- | Find an executable.
 executable :: Toolkit -> PlotM (Maybe Executable)
-executable tk = do
-  name <- exeSelector tk
-  PlotState varHashes varExes <- get
-  exes <- liftIO $ takeMVar varExes
-  (exe', exes') <- case M.lookup tk exes of
-    Nothing -> do
-      debug $ mconcat ["Looking for executable \"", pack name, "\" for ", pack $ show tk]
-      exe' <- liftIO $ findExecutable name >>= return . fmap exeFromPath
-      let exes' = M.insert tk exe' exes
-      return (exe', exes')
-    Just e -> do
-      debug $ mconcat ["Executable \"", pack name, "\" already found."]
-      return (e, exes)
-  liftIO $ putMVar varExes exes'
-  put $ PlotState varHashes varExes
-  return exe'
+executable tk =
+  exeSelector tk
+    >>= \name ->
+      liftIO $
+        findExecutable name
+          >>= return . fmap exeFromPath
   where
     exeSelector Matplotlib = asksConfig matplotlibExe
     exeSelector PlotlyPython = asksConfig plotlyPythonExe
