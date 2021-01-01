@@ -23,7 +23,7 @@ DisableProgramGroupPage=yes
 ChangesEnvironment=true
 LicenseFile=..\LICENSE
 OutputDir=.
-OutputBaseFilename={#AppName}-wininst-x86_64-{#AppVersion}
+OutputBaseFilename={#AppName}-wininst-x86_64
 Compression=lzma2/ultra64
 SolidCompression=yes
 

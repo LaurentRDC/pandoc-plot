@@ -100,3 +100,38 @@ jobs:
     - name: Build documentation
       shell: pwsh
       run: .\tools\mkmanual.ps1
+
+    - name: Build artifact
+      run: |
+        mkdir artifact
+        stack install --local-bin-path artifact
+    
+    - name: Build artifact [Linux - static]
+      if: runner.os == 'Linux'
+      run: |
+        mkdir artifact-static
+        stack install --flag pandoc-plot:static --local-bin-path artifact-static
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: pandoc-plot-{{ runner.os }}-x86_64
+        path: artifact/pandoc-plot
+
+    - name: Upload artifact [Linux - static]
+      uses: actions/upload-artifact@v2
+      with:
+        name: pandoc-plot-{{ runner.os }}-x86_64-static
+        path: artifact-static/pandoc-plot
+
+    - name: Build Installer [Windows]
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: .\tools\build-setup.ps1
+
+    - name: Upload artifact [Windows - installer]
+      uses: actions/upload-artifact@v2
+      if: runner.os == 'Windows'
+      with:
+        name: pandoc-plot-{{ runner.os }}-x86_64
+        path: installer/pandoc-plot-wininst-x86_64.exe
