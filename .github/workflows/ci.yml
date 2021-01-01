@@ -71,9 +71,11 @@ jobs:
 
     - name: Install Octave, Gnuplot, Graphviz [Windows]
       if: runner.os == 'Windows'
+      shell: pwsh
       run: |
-        choco install --yes --no-progress octave
         choco install --yes --no-progress gnuplot
+        $env:Path += ";C:\Program Files\gnuplot\bin\"
+        
         choco install --yes --no-progress graphviz
         dot -c
 
