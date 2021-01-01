@@ -72,9 +72,10 @@ jobs:
     - name: Install Octave, Gnuplot, Graphviz [Windows]
       if: runner.os == 'Windows'
       run: |
-        choco install -y octave
-        choco install -y gnuplot
-        choco install -y graphviz
+        choco install --yes --no-progress octave
+        choco install --yes --no-progress gnuplot
+        choco install --yes --no-progress graphviz
+        dot -c
 
     - name: Check installed plotting toolkits
       run: |
