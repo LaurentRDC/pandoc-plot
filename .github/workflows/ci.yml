@@ -60,8 +60,8 @@ jobs:
 
     - name: Install GGPlot2
       run: |
-        Rscript -e 'install.packages("ggplot2")'
-        Rscript -e 'if(!require("ggplot2")) {quit(status=1)}'
+        Rscript -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
+        Rscript -e "if(!require('ggplot2')) {quit(status=1)}"
 
     - name: Install Octave, Gnuplot, Graphviz [Linux]
       if: runner.os == 'Linux'
