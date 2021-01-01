@@ -6,7 +6,7 @@ description:    A Pandoc filter to include figures generated from code blocks.
                 Keep the document and code in the same location. Output is 
                 captured and included as a figure.
 category:       Text
-copyright:      (c) 2019-2020 Laurent P. René de Cotret
+copyright:      (c) 2019-2021 Laurent P. René de Cotret
 homepage:       https://github.com/LaurentRDC/pandoc-plot#readme
 bug-reports:    https://github.com/LaurentRDC/pandoc-plot/issues
 author:         Laurent P. René de Cotret

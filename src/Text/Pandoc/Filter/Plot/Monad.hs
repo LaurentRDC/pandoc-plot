@@ -2,7 +2,7 @@
 
 -- |
 -- Module      : $header$
--- Copyright   : (c) Laurent P René de Cotret, 2020
+-- Copyright   : (c) Laurent P René de Cotret, 2019 - 2021
 -- License     : GNU GPL, version 2 or above
 -- Maintainer  : laurent.decotret@outlook.com
 -- Stability   : internal
