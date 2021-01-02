@@ -5,7 +5,7 @@ packages:
 
 # GHC 8.10.2 is broken on Windows:
 #   https://gitlab.haskell.org/ghc/ghc/-/issues/18550
-compiler: ghc-8.10.1
+compiler: ghc-8.10.3
 
 extra-deps:
 - pandoc-2.11.3.1

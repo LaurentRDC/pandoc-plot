@@ -35,7 +35,7 @@ jobs:
       name: Cache Haskell build artifacts
       with:
         path: ~/.stack
-        key: ${{ runner.os }}-${{ hashFiles('stack.yaml.lock') }}
+        key: ${{ runner.os }}-${{ hashFiles('stack.*') }}
 
     - uses: actions/cache@v2
       name: Cache Python build artifacts
