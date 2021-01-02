@@ -55,7 +55,7 @@ octaveAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|#{exe} -h|]
+      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -h|]
 
 octaveCapture :: FigureSpec -> FilePath -> Script
 octaveCapture = appendCapture octaveCaptureFragment

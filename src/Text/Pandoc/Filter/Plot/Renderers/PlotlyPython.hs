@@ -55,7 +55,8 @@ plotlyPythonAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|#{exe} -c "import plotly.graph_objects"|]
+      withPrependedPath dir $
+        asks envCWD >>= flip commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
 plotlyPythonCapture = appendCapture plotlyPythonCaptureFragment

@@ -14,7 +14,7 @@ strict: true
 * Added the ability to set command-line arguments for interpreters via configuration. For example, if you want to run the Matplotlib toolkit with all warnings shown:
 
 ```yaml
-# The possible parameters for the Matplotlib toolkit
+# Possible parameters for the Matplotlib toolkit
 matplotlib:
   executable: python
   command_line_arguments: -Wa
@@ -23,11 +23,13 @@ matplotlib:
 Or if you want `julia` to use more than one thread:
 
 ```yaml
-# The possible parameters for the Matplotlib toolkit
+# Possible parameters for the Plotsjl toolkit
 plotsjl:
   executable: julia
-  command_line_arguments: --threads auto
+  command_line_arguments: --threads auto --optimize=0
 ```
+
+* Fixed an issue where invoking the `plotsjl` toolkit on Windows would sometimes fail with the error: 
 
 
 Release 1.0.1.0

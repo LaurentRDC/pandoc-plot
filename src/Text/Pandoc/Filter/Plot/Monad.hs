@@ -18,6 +18,7 @@ module Text.Pandoc.Filter.Plot.Monad
 
     -- * Running external commands
     runCommand,
+    withPrependedPath,
 
     -- * Halting pandoc-plot
     whenStrict,
@@ -51,6 +52,7 @@ where
 
 import Control.Concurrent.Chan (writeChan)
 import Control.Concurrent.MVar
+import Control.Exception.Lifted (bracket)
 import Control.Monad.Reader
 import Control.Monad.State.Strict
 import Data.ByteString.Lazy (toStrict)
@@ -68,12 +70,15 @@ import System.Directory
     getCurrentDirectory,
     getModificationTime,
   )
+import System.Environment (getEnv, setEnv)
 import System.Exit (ExitCode (..))
 import System.Process.Typed
-  ( byteStringOutput,
+  ( byteStringInput,
+    byteStringOutput,
     nullStream,
     readProcessStderr,
     setStderr,
+    setStdin,
     setStdout,
     setWorkingDir,
     shell,
@@ -145,10 +150,15 @@ runCommand wordir command = do
   (ec, processOutput') <-
     liftIO $
       readProcessStderr $
-        setStdout nullStream $
-          setStderr byteStringOutput $
-            setWorkingDir wordir $
-              shell (unpack command)
+        -- For Julia specifically, if the line below is not there,
+        -- The following error is thrown on Windows:
+        --    ERROR: error initializing stdin in uv_dup:
+        --           Unknown system error 50 (Unknown system error 50 50)
+        setStdin (byteStringInput "") $
+          setStdout nullStream $
+            setStderr byteStringOutput $
+              setWorkingDir wordir $
+                shell (unpack command)
   let processOutput = decodeUtf8With lenientDecode $ toStrict processOutput'
       logFunc =
         if ec == ExitSuccess
@@ -172,6 +182,21 @@ runCommand wordir command = do
 
   logFunc $ message <> errorMessage
   return (ec, processOutput)
+
+-- | Prepend a directory to the PATH environment variable for the duration
+-- of a computation.
+--
+-- This function is exception-safe; even if an exception happens during the
+-- computation, the PATH environment variable will be reverted back to
+-- its initial value.
+withPrependedPath :: FilePath -> PlotM a -> PlotM a
+withPrependedPath dir f = do
+  pathVar <- liftIO $ getEnv "PATH"
+  let pathVarPrepended = mconcat [dir, ";", pathVar]
+  bracket
+    (liftIO $ setEnv "PATH" pathVarPrepended)
+    (\_ -> liftIO $ setEnv "PATH" pathVar)
+    (const f)
 
 -- | Throw an error that halts the execution of pandoc-plot
 throwError :: Text -> PlotM ()

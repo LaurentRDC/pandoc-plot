@@ -55,7 +55,7 @@ mathematicaAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|#{exe} -h|] -- TODO: test this
+      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -h|] -- TODO: test this
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script
 mathematicaCapture = appendCapture mathematicaCaptureFragment

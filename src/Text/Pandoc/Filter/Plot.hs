@@ -110,8 +110,8 @@ module Text.Pandoc.Filter.Plot
 where
 
 import Control.Concurrent.Async.Lifted (mapConcurrently)
-import Data.Text (Text, unpack, pack)
 import Data.Functor ((<&>))
+import Data.Text (Text, pack, unpack)
 import Data.Version (Version)
 import Paths_pandoc_plot (version)
 import Text.Pandoc.Definition (Block, Pandoc (..))
@@ -133,13 +133,13 @@ import Text.Pandoc.Filter.Plot.Internal
     defaultConfiguration,
     parseFigureSpec,
     runPlotM,
-    throwError,
-    whenStrict,
     runScriptIfNecessary,
     supportedSaveFormats,
+    throwError,
     toFigure,
     toolkits,
     unavailableToolkits,
+    whenStrict,
   )
 
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks

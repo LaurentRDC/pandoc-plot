@@ -59,7 +59,7 @@ graphvizAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|#{exe} -?|]
+      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -?|]
 
 -- Graphviz export is entirely based on command-line arguments
 -- so there is no need to modify the script itself.

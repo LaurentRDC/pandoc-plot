@@ -57,7 +57,8 @@ plotsjlAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|#{exe} -e "using Plots"|]
+      withPrependedPath dir $
+        asks envCWD >>= flip commandSuccess [st|#{exe} -e "using Plots"|]
 
 plotsjlCapture :: FigureSpec -> FilePath -> Script
 plotsjlCapture = appendCapture plotsjlCaptureFragment

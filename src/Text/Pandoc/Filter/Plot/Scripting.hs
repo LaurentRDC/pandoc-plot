@@ -20,7 +20,6 @@ module Text.Pandoc.Filter.Plot.Scripting
   )
 where
 
-import Control.Exception.Lifted (bracket)
 import Control.Monad.Reader
 import Data.Default (def)
 import Data.Functor.Identity (Identity (..))
@@ -33,7 +32,6 @@ import System.Directory
     doesFileExist,
     getTemporaryDirectory,
   )
-import System.Environment (getEnv, setEnv)
 import System.Exit (ExitCode (..))
 import System.FilePath
   ( addExtension,
@@ -173,21 +171,6 @@ figurePath spec = do
   let ext = extension . saveFormat $ spec
       stem = flip addExtension ext . show $ fh
   return $ normalise $ directory spec </> stem
-
--- | Prepend a directory to the PATH environment variable for the duration
--- of a computation.
---
--- This function is exception-safe; even if an exception happens during the
--- computation, the PATH environment variable will be reverted back to
--- its initial value.
-withPrependedPath :: FilePath -> PlotM a -> PlotM a
-withPrependedPath dir f = do
-  pathVar <- liftIO $ getEnv "PATH"
-  let pathVarPrepended = mconcat [dir, ";", pathVar]
-  bracket
-    (liftIO $ setEnv "PATH" pathVarPrepended)
-    (\_ -> liftIO $ setEnv "PATH" pathVar)
-    (const f)
 
 -- | Write the source code of a figure to an HTML file with appropriate syntax highlighting.
 writeSource :: FigureSpec -> PlotM ()

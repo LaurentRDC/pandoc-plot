@@ -78,7 +78,7 @@ matplotlibAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|#{exe} -c "import matplotlib"|]
+      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -c "import matplotlib"|]
 
 -- | Check if `matplotlib.pyplot.show()` calls are present in the script,
 -- which would halt pandoc-plot

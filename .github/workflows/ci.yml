@@ -86,13 +86,21 @@ jobs:
       run: stack test
     
     - name: Integration tests
+      shell: bash
       run: |
         stack install pandoc
         stack install
+        
         stack exec -- pandoc --filter pandoc-plot -i tests/integration.md -t html
-        stack exec -- pandoc --filter pandoc-plot -i tests/issue16.md -t native
-
+        if [ $(ls "plots" | wc -l) == 0 ]; then
+          exit 1
+        fi
         stack exec -- pandoc-plot clean tests/integration.md
+
+        stack exec -- pandoc --filter pandoc-plot -i tests/issue16.md -t native
+        if [ $(ls "plots" | wc -l) == 0 ]; then
+          exit 1
+        fi
         stack exec -- pandoc-plot clean tests/issue16.md
     
     - name: Build documentation

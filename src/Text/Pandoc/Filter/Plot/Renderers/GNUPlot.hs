@@ -55,7 +55,7 @@ gnuplotAvailable = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      commandSuccess dir [st|"#{exe}" -h|]
+      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|"#{exe}" -h|]
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script
 gnuplotCapture = prependCapture gnuplotCaptureFragment
