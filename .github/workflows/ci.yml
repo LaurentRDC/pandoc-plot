@@ -116,10 +116,11 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: pandoc-plot-${{ runner.os }}-x86_64
-        path: artifact/pandoc-plot
+        path: artifact/pandoc-plot*
 
     - name: Upload artifact [Linux - static]
       uses: actions/upload-artifact@v2
+      if: runner.os == 'Linux'
       with:
         name: pandoc-plot-${{ runner.os }}-x86_64-static
         path: artifact-static/pandoc-plot
@@ -133,5 +134,5 @@ jobs:
       uses: actions/upload-artifact@v2
       if: runner.os == 'Windows'
       with:
-        name: pandoc-plot-${{ runner.os }}-x86_64
+        name: pandoc-plot-wininst-x86_64
         path: installer/pandoc-plot-wininst-x86_64.exe
