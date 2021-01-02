@@ -1,5 +1,4 @@
-strict: true
+strict: false
 
 logging:
   verbosity: debug
-  filepath: log.txt
