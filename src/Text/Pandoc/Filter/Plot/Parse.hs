@@ -59,7 +59,11 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
     Just tk -> do
       r <- renderer tk
       case r of
-        Nothing -> return Nothing
+        Nothing -> do
+          let msg = mconcat ["Renderer for ", tshow tk, " needed but is not installed"]
+          whenStrict $ throwError $ "[strict mode] " <> msg
+          warning msg
+          return Nothing
         Just r' -> do
           Just <$> figureSpec r'
   where

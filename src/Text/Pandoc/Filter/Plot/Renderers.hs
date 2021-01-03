@@ -28,6 +28,7 @@ where
 
 import Control.Concurrent.Async.Lifted (forConcurrently)
 import Control.Concurrent.MVar
+import Control.Monad.Reader (local)
 import Control.Monad.State.Strict
 import Data.List ((\\))
 import Data.Map.Strict (Map)
@@ -58,11 +59,6 @@ renderer tk = do
     Nothing -> do
       debug $ mconcat ["Looking for renderer for ", pack $ show tk]
       r' <- sel tk
-      -- Toolkit was requested but is not installed/configured.
-      when (isNothing r') $ do
-        let msg = mconcat ["Renderer for ", pack $ show tk, " requested but is not installed"]
-        whenStrict $ throwError $ "[strict mode] " <> msg
-        warning msg
       let rs' = M.insert tk r' renderers
       return (r', rs')
     Just e -> do
@@ -133,13 +129,16 @@ unavailableToolkits conf = runPlotM conf unavailableToolkitsM
 --
 -- Note that logging is disabled
 availableToolkitsM :: PlotM [Toolkit]
-availableToolkitsM = silence $ do
-  mtks <- forConcurrently toolkits $ \tk -> do
-    available <- isJust <$> renderer tk
-    if available
-      then return $ Just tk
-      else return Nothing
-  return $ catMaybes mtks
+availableToolkitsM = silence $
+  asNonStrict $ do
+    mtks <- forConcurrently toolkits $ \tk -> do
+      available <- isJust <$> renderer tk
+      if available
+        then return $ Just tk
+        else return Nothing
+    return $ catMaybes mtks
+  where
+    asNonStrict = local (\(RuntimeEnv c l d) -> RuntimeEnv c {strictMode = False} l d)
 
 -- | Monadic version of @unavailableToolkits@
 unavailableToolkitsM :: PlotM [Toolkit]
