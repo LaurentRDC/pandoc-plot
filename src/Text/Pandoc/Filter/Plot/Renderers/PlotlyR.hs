@@ -57,7 +57,7 @@ plotlyRAvailable = do
     Nothing -> return False
     Just (Executable dir exe) ->
       withPrependedPath dir $
-        asks envCWD >>= flip commandSuccess [st|#{exe} -e 'if(!require("plotly")) {quit(status=1)}'|]
+        asks envCWD >>= flip commandSuccess [st|#{exe} -e "if(!require('plotly')) {quit(status=1)}"|]
 
 plotlyRCapture :: FigureSpec -> FilePath -> Script
 plotlyRCapture fs fp =

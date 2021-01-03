@@ -29,7 +29,8 @@ plotsjl:
   command_line_arguments: --threads auto --optimize=0
 ```
 
-* Fixed an issue where invoking the `plotsjl` toolkit on Windows would sometimes fail with the error: 
+* Fixed an issue where invoking the `plotsjl` toolkit on Windows would sometimes fail with the error: Unknown system error 50.
+* Fixed an issue with R-based toolkits on Windows not being detected properly.
 
 
 Release 1.0.1.0

@@ -56,7 +56,7 @@ ggplot2Available = do
   case mexe of
     Nothing -> return False
     Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -e 'if(!require("ggplot2")) {quit(status=1)}'|]
+      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -e "if(!require('ggplot2')) {quit(status=1)}"|]
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script
 ggplot2Capture fs fp =

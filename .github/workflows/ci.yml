@@ -58,10 +58,10 @@ jobs:
         using Pkg
         Pkg.add("Plots")
 
-    - name: Install GGPlot2
+    - name: Install GGPlot2 and R/Plotly
       run: |
         Rscript -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
-        Rscript -e "if(!require('ggplot2')) {quit(status=1)}"
+        Rscript -e "install.packages('plotly', repos='http://cran.rstudio.com/')"
 
     - name: Install Octave, Gnuplot, Graphviz [Linux]
       if: runner.os == 'Linux'
