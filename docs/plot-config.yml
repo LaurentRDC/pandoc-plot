@@ -3,6 +3,7 @@ directory: plots
 source: true
 caption_format: markdown+tex_math_dollars
 format: PNG
+strict: true
 
 matplotlib:
   transparent: true
