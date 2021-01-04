@@ -35,7 +35,7 @@ Source: ".\pandoc-plot.exe"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Tasks]
-Name: "modifypath"; Description: "Add pandoc-pyplot executable to path"; Flags: checkedonce
+Name: "modifypath"; Description: "Add pandoc-plot executable to path"; Flags: checkedonce
 
 [Run]
 Filename: "{app}\{#AppEXEName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
