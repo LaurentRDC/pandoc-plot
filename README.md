@@ -135,9 +135,6 @@ stack install pandoc-plot
 
 ### From source
 
-[![Build
-Status](https://dev.azure.com/laurentdecotret/pandoc-plot/_apis/build/status/LaurentRDC.pandoc-plot?branchName=master)](https://dev.azure.com/laurentdecotret/pandoc-plot/_build/latest?definitionId=5&branchName=master)
-
 Building from source can be done using
 [`stack`](https://docs.haskellstack.org/en/stable/README/) or
 [`cabal`](https://www.haskell.org/cabal/):
