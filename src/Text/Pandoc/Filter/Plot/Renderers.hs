@@ -33,7 +33,7 @@ import Control.Monad.State.Strict
 import Data.List ((\\))
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
-import Data.Maybe (catMaybes, isJust, isNothing)
+import Data.Maybe (catMaybes, isJust)
 import Data.Text (Text, pack)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
