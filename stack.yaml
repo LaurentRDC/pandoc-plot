@@ -1,22 +1,14 @@
-resolver: nightly-2020-12-14 # GHC 8.10.2
+resolver: nightly-2021-01-05 # GHC 8.10.3
 
 packages:
 - .
 
-# GHC 8.10.2 is broken on Windows:
-#   https://gitlab.haskell.org/ghc/ghc/-/issues/18550
-compiler: ghc-8.10.3
-
 extra-deps:
 - pandoc-2.11.3.2
 - citeproc-0.3.0.3@sha256:273b4935b18079fb666e53419dbf31e1edb7c7bdf7ea4295ff7ba6da22dc61b3,5590
-- texmath-0.12.1@sha256:57d2ff00f89da2a56f10eda28c6c502e1314a35090c7f63600f6d7b0adedbc29,6563
 - commonmark-0.1.1.2@sha256:c06ab05f0f224ab7982502a96e17952823a9b6dae8505fb35194b0baa9e2a975,3278
 - commonmark-extensions-0.2.0.4@sha256:6a437bcfa3c757af4262b71336513619990eafb5cfdc33e57a499c93ad225608,3184
 - commonmark-pandoc-0.2.0.1@sha256:529c6e2c6cabf61558b66a28123eafc1d90d3324be29819f59f024e430312c1f,1105
-- doctemplates-0.9@sha256:eb0bf957ba8571746f36f07ceca43d311a0e390a9fdcfde6909f9f9be85b3b28,3125
-- skylighting-0.10.2@sha256:9c395703ca61752f4491044443e87d5b87ed94bca78c0a00b5ebf4e4b8e59904,10031
-- skylighting-core-0.10.2@sha256:5070d9f08135cdb7c935c5936a4a76a9e1922ec846cd40d6e2837f42e7a9f29f,8159
 
 # For development
 - git: https://github.com/owickstrom/pandoc-include-code.git
