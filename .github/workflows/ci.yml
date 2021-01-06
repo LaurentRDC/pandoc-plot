@@ -33,6 +33,7 @@ jobs:
 
     - uses: actions/cache@v2
       name: Cache Haskell build artifacts
+      if: matrix.os != 'macos-latest'
       with:
         path: ~/.stack
         key: ${{ runner.os }}-${{ hashFiles('stack.*') }}
