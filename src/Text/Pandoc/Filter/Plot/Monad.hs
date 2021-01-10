@@ -22,7 +22,7 @@ module Text.Pandoc.Filter.Plot.Monad
 
     -- * Halting pandoc-plot
     whenStrict,
-    throwError,
+    throwStrictError,
 
     -- * Getting file hashes
     fileHash,
@@ -71,7 +71,7 @@ import System.Directory
     getModificationTime,
   )
 import System.Environment (getEnv, setEnv)
-import System.Exit (ExitCode (..))
+import System.Exit (ExitCode (..), exitFailure)
 import System.Process.Typed
   ( byteStringInput,
     byteStringOutput,
@@ -118,10 +118,10 @@ runPlotM conf v = do
     \logger -> runReaderT (evalStateT v st) (RuntimeEnv conf logger cwd)
 
 debug, err, warning, info :: Text -> PlotM ()
-debug = log "DEBUG | " Debug
-err = log "ERROR | " Error
-warning = log "WARN  | " Warning
-info = log "INFO  | " Info
+debug = log "[pandoc-plot] DEBUG | " Debug
+err = log "[pandoc-plot] ERROR | " Error
+warning = log "[pandoc-plot] WARN  | " Warning
+info = log "[pandoc-plot] INFO  | " Info
 
 -- | General purpose logging.
 log ::
@@ -198,9 +198,14 @@ withPrependedPath dir f = do
     (\_ -> liftIO $ setEnv "PATH" pathVar)
     (const f)
 
--- | Throw an error that halts the execution of pandoc-plot
-throwError :: Text -> PlotM ()
-throwError = liftIO . errorWithoutStackTrace . unpack
+-- | Throw an error that halts the execution of pandoc-plot due to a strict-mode.
+throwStrictError :: Text -> PlotM ()
+throwStrictError msg = do
+  logger <- asks envLogger
+  log "[pandoc-plot] STRICT MODE | " Error msg
+  liftIO $ do
+    terminateLogging logger
+    exitFailure
 
 -- | Conditional execution of a PlotM action if pandoc-plot is
 -- run in strict mode.

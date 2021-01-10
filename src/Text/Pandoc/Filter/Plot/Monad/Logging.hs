@@ -15,20 +15,21 @@ module Text.Pandoc.Filter.Plot.Monad.Logging
     LogSink (..),
     Logger (..),
     withLogger,
+    terminateLogging,
   )
 where
 
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (Chan, newChan, readChan, writeChan)
 import Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar, takeMVar)
-import Control.Monad (forever)
+import Control.Monad (forever, void)
 import Data.Char (toLower)
 import Data.List (intercalate)
 import Data.String (IsString (..))
 import Data.Text (Text, unpack)
-import Data.Text.IO (hPutStr)
+import Data.Text.IO as TIO
 import Data.Yaml (FromJSON (parseJSON), Value (String))
-import System.IO (IOMode (AppendMode), stderr, withFile)
+import System.IO (stderr)
 
 -- | Verbosity of the logger.
 data Verbosity
@@ -60,6 +61,16 @@ data Logger = Logger
     lSync :: MVar ()
   }
 
+-- | Ensure that all log messages are flushed, and stop logging
+terminateLogging :: Logger -> IO ()
+terminateLogging logger = do
+  -- Flushing the logger
+  -- To signal to the logger that logging duties are over,
+  -- we append Nothing to the channel, and wait for it to finish
+  -- dealing with all items in the channel.
+  writeChan (lChannel logger) Nothing
+  void $ takeMVar (lSync logger)
+
 -- | Perform an IO action with a logger. Using this function
 -- ensures that logging will be gracefully shut down.
 withLogger :: Verbosity -> LogSink -> (Logger -> IO a) -> IO a
@@ -80,17 +91,13 @@ withLogger v s f = do
 
   result <- f logger
 
-  -- Flushing the logger
-  -- To signal to the logger that logging duties are over,
-  -- we append Nothing to the channel, and wait for it to finish
-  -- dealing with all items in the channel.
-  writeChan (lChannel logger) Nothing
-  () <- takeMVar (lSync logger)
+  terminateLogging logger
 
   return result
   where
-    sink StdErr = hPutStr stderr
-    sink (LogFile fp) = \t -> withFile fp AppendMode $ \h -> hPutStr h t
+    sink :: LogSink -> Text -> IO ()
+    sink StdErr = TIO.hPutStr stderr
+    sink (LogFile fp) = TIO.appendFile fp
 
 instance IsString Verbosity where
   fromString s
@@ -109,4 +116,4 @@ instance IsString Verbosity where
 
 instance FromJSON Verbosity where
   parseJSON (String t) = pure $ fromString . unpack $ t
-  parseJSON _ = fail $ "Could not parse the logging verbosity."
+  parseJSON _ = fail "Could not parse the logging verbosity."

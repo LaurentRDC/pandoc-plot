@@ -135,7 +135,7 @@ import Text.Pandoc.Filter.Plot.Internal
     runPlotM,
     runScriptIfNecessary,
     supportedSaveFormats,
-    throwError,
+    throwStrictError,
     toFigure,
     toolkits,
     unavailableToolkits,
@@ -170,7 +170,7 @@ make blk = either (onError blk) return =<< makeEither blk
   where
     onError :: Block -> PandocPlotError -> PlotM Block
     onError b e = do
-      whenStrict $ throwError $ "[strict mode] " <> (pack . show $ e)
+      whenStrict $ throwStrictError (pack . show $ e)
       return b
 
 -- | Try to process the block with `pandoc-plot`, documenting the error.
