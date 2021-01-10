@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 1.0.3.0
+---------------
+
+* Fixed an issue where error message would get mangled in strict-mode.
+
 Release 1.0.2.0
 ---------------
 
