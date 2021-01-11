@@ -1,12 +1,10 @@
 # Release checklist
 
-[ ] Render the manual with `mkmanual.ps1`
 [ ] Update CHANGELOG.md if necessary.
-[ ] Run Azure pipelines to make sure tests pass.
+[ ] Run Github Actions to make sure tests pass.
 [ ] Tag release in git.
     `git tag -a "version" && git push origin "version"`
-[ ] Download artifacts from Azure pipelines and upload to new GitHub release.
-[ ] Run `build-setup.ps1` to create Windows installer
+[ ] Download artifacts from Github Actions and upload to new GitHub release.
 [ ] Upload to Hackage: `stack upload .`
 
 ## Conda-forge package
