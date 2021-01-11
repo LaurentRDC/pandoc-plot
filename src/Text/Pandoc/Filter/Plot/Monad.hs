@@ -16,6 +16,9 @@ module Text.Pandoc.Filter.Plot.Monad
     PlotState (..),
     runPlotM,
 
+    -- * Concurrent execution
+    mapConcurrentlyN,
+
     -- * Running external commands
     runCommand,
     withPrependedPath,
@@ -50,9 +53,11 @@ module Text.Pandoc.Filter.Plot.Monad
   )
 where
 
+import Control.Concurrent.Async.Lifted (mapConcurrently)
 import Control.Concurrent.Chan (writeChan)
 import Control.Concurrent.MVar
-import Control.Exception.Lifted (bracket)
+import Control.Concurrent.QSemN
+import Control.Exception.Lifted (bracket, bracket_)
 import Control.Monad.Reader
 import Control.Monad.State.Strict
 import Data.ByteString.Lazy (toStrict)
@@ -116,6 +121,16 @@ runPlotM conf v = do
       sink = logSink conf
   withLogger verbosity sink $
     \logger -> runReaderT (evalStateT v st) (RuntimeEnv conf logger cwd)
+
+-- | maps a function, performing at most @N@ actions concurrently.
+mapConcurrentlyN :: Traversable t => Int -> (a -> PlotM b) -> t a -> PlotM (t b)
+mapConcurrentlyN n f xs = do
+  -- Emulating a pool of processes with locked access
+  sem <- liftIO $ newQSemN n
+  mapConcurrently (with sem . f) xs
+  where
+    with :: QSemN -> PlotM a -> PlotM a
+    with s = bracket_ (liftIO $ waitQSemN s 1) (liftIO $ signalQSemN s 1)
 
 debug, err, warning, info :: Text -> PlotM ()
 debug = log "[pandoc-plot] DEBUG | " Debug

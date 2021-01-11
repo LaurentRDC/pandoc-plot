@@ -109,10 +109,10 @@ module Text.Pandoc.Filter.Plot
   )
 where
 
-import Control.Concurrent.Async.Lifted (mapConcurrently)
 import Data.Functor ((<&>))
 import Data.Text (Text, pack, unpack)
 import Data.Version (Version)
+import Control.Concurrent (getNumCapabilities)
 import Paths_pandoc_plot (version)
 import Text.Pandoc.Definition (Block, Pandoc (..))
 import Text.Pandoc.Filter.Plot.Internal
@@ -130,7 +130,9 @@ import Text.Pandoc.Filter.Plot.Internal
     availableToolkits,
     cleanOutputDirs,
     configuration,
+    debug,
     defaultConfiguration,
+    mapConcurrentlyN,
     parseFigureSpec,
     runPlotM,
     runScriptIfNecessary,
@@ -154,8 +156,11 @@ plotTransform ::
   -- | Input document
   Pandoc ->
   IO Pandoc
-plotTransform conf (Pandoc meta blocks) =
-  runPlotM conf $ mapConcurrently make blocks <&> Pandoc meta
+plotTransform conf (Pandoc meta blocks) = do
+  maxproc <- getNumCapabilities
+  runPlotM conf $ do
+    debug $ mconcat ["Starting a new run, utilizing at most ", pack . show $ maxproc, " processes."]
+    mapConcurrentlyN maxproc make blocks <&> Pandoc meta
 
 -- | The version of the pandoc-plot package.
 --
