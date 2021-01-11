@@ -109,10 +109,10 @@ module Text.Pandoc.Filter.Plot
   )
 where
 
+import Control.Concurrent (getNumCapabilities)
 import Data.Functor ((<&>))
 import Data.Text (Text, pack, unpack)
 import Data.Version (Version)
-import Control.Concurrent (getNumCapabilities)
 import Paths_pandoc_plot (version)
 import Text.Pandoc.Definition (Block, Pandoc (..))
 import Text.Pandoc.Filter.Plot.Internal
