@@ -2,7 +2,7 @@
 
 ## A Pandoc filter to generate figures from code blocks in documents
 
-[![Hackage version](https://img.shields.io/hackage/v/pandoc-plot.svg)](http://hackage.haskell.org/package/pandoc-plot) [![Stackage version (latest long-term service)](http://stackage.org/package/pandoc-plot/badge/lts)](http://stackage.org/lts/package/pandoc-plot) [![Conda Version](https://img.shields.io/conda/vn/conda-forge/pandoc-plot.svg)](https://anaconda.org/conda-forge/pandoc-plot) [![license](https://img.shields.io/badge/license-GPLv2+-lightgray.svg)](https://www.gnu.org/licenses/gpl.html) 
+[![Hackage version](https://img.shields.io/hackage/v/pandoc-plot.svg)](http://hackage.haskell.org/package/pandoc-plot) [![Conda Version](https://anaconda.org/conda-forge/pandoc-plot/badges/version.svg)](https://anaconda.org/conda-forge/pandoc-plot) [![license](https://img.shields.io/badge/license-GPLv2+-lightgray.svg)](https://www.gnu.org/licenses/gpl.html) 
 
 `pandoc-plot` turns code blocks present in your documents (Markdown, LaTeX, etc.) into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
 
