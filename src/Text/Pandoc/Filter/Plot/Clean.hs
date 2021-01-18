@@ -22,8 +22,10 @@ import Control.Monad.Reader (forM)
 import qualified Data.ByteString.Lazy as B
 import Data.Char (toLower)
 import Data.Default (def)
+import Data.Either (rights)
+import Data.Functor ((<&>))
 import Data.List (nub)
-import Data.Maybe (catMaybes, fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
 import qualified Data.Text.IO as Text
 import System.Directory (removePathForcibly)
@@ -62,9 +64,9 @@ outputDirs ::
   b ->
   PlotM [FilePath]
 outputDirs =
-  fmap (nub . catMaybes)
+  fmap (nub . rights)
     . sequence
-    . query (\b -> [parseFigureSpec b >>= return . fmap directory])
+    . query (\b -> [parseFigureSpec b <&> fmap directory])
 
 -- PlotM version of @cleanOutputDirs@
 cleanOutputDirsM ::
@@ -87,18 +89,19 @@ cleanOutputDirsM doc = do
 readDoc :: FilePath -> IO Pandoc
 readDoc fp =
   handleError
-    =<< ( runIO $ do
-            let fmt = fromMaybe mempty (formatFromFilePath fp)
-            (reader, exts) <- P.getReader fmt
-            let readerOpts = def {P.readerExtensions = exts}
-            case reader of
-              P.TextReader fct -> do
-                t <- liftIO $ Text.readFile fp
-                fct readerOpts t
-              P.ByteStringReader bst -> do
-                b <- liftIO $ B.readFile fp
-                bst readerOpts b
-        )
+    =<< runIO
+      ( do
+          let fmt = fromMaybe mempty (formatFromFilePath fp)
+          (reader, exts) <- P.getReader fmt
+          let readerOpts = def {P.readerExtensions = exts}
+          case reader of
+            P.TextReader fct -> do
+              t <- liftIO $ Text.readFile fp
+              fct readerOpts t
+            P.ByteStringReader bst -> do
+              b <- liftIO $ B.readFile fp
+              bst readerOpts b
+      )
 
 -- Determine format based on file extension
 -- Note : this is exactly the heuristic used by pandoc here:

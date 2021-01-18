@@ -119,6 +119,7 @@ import Text.Pandoc.Filter.Plot.Internal
   ( Configuration (..),
     FigureSpec,
     LogSink (..),
+    ParseFigureError (..),
     PlotM,
     RuntimeEnv (envConfig),
     SaveFormat (..),
@@ -182,10 +183,14 @@ make blk = either (onError blk) return =<< makeEither blk
 makeEither :: Block -> PlotM (Either PandocPlotError Block)
 makeEither block =
   parseFigureSpec block
-    >>= maybe
-      (return $ Right block)
+    >>= either
+      (handleError block)
       (\s -> runScriptIfNecessary s >>= handleResult s)
   where
+    handleError :: Block -> ParseFigureError -> PlotM (Either PandocPlotError Block)
+    handleError blk NotAFigure = return $ Right blk
+    handleError _ (MissingToolkit tk) = return $ Left $ ToolkitNotInstalledError tk
+
     -- Logging of errors has been taken care of in @runScriptIfNecessary@
     handleResult :: FigureSpec -> ScriptResult -> PlotM (Either PandocPlotError Block)
     handleResult _ (ScriptFailure msg code) = return $ Left (ScriptRuntimeError msg code)
