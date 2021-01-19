@@ -22,10 +22,8 @@ import Control.Monad.Reader (forM)
 import qualified Data.ByteString.Lazy as B
 import Data.Char (toLower)
 import Data.Default (def)
-import Data.Either (rights)
-import Data.Functor ((<&>))
 import Data.List (nub)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (catMaybes, fromMaybe)
 import Data.Text (Text, pack)
 import qualified Data.Text.IO as Text
 import System.Directory (removePathForcibly)
@@ -63,10 +61,11 @@ outputDirs ::
   Walkable Block b =>
   b ->
   PlotM [FilePath]
-outputDirs =
-  fmap (nub . rights)
-    . sequence
-    . query (\b -> [parseFigureSpec b <&> fmap directory])
+outputDirs = fmap (catMaybes . nub) . sequence . query (\b -> [hasDirectory <$> parseFigureSpec b])
+  where
+    hasDirectory :: ParseFigureResult -> Maybe FilePath
+    hasDirectory (Figure fs) = Just $ directory fs
+    hasDirectory _ = Nothing
 
 -- PlotM version of @cleanOutputDirs@
 cleanOutputDirsM ::

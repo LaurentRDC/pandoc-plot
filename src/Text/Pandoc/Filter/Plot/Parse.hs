@@ -14,7 +14,7 @@
 module Text.Pandoc.Filter.Plot.Parse
   ( plotToolkit,
     parseFigureSpec,
-    ParseFigureError (..),
+    ParseFigureResult (..),
     captionReader,
   )
 where
@@ -47,29 +47,30 @@ import Text.Pandoc.Readers (Reader (..), getReader)
 tshow :: Show a => a -> Text
 tshow = pack . show
 
-data ParseFigureError
+data ParseFigureResult
   = NotAFigure
+  | Figure FigureSpec
   | MissingToolkit Toolkit
 
 -- | Determine inclusion specifications from @Block@ attributes.
 -- If an environment is detected, but the save format is incompatible,
 -- an error will be thrown.
-parseFigureSpec :: Block -> PlotM (Either ParseFigureError FigureSpec)
+parseFigureSpec :: Block -> PlotM ParseFigureResult
 parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
   -- The following would be a good case for the use of MaybeT
   -- but I don't want to bring in another dependency
   let mtk = plotToolkit block
   case mtk of
-    Nothing -> return $ Left NotAFigure
+    Nothing -> return NotAFigure
     Just tk -> do
       r <- renderer tk
       case r of
         Nothing -> do
           let msg = mconcat ["Renderer for ", tshow tk, " needed but is not installed"]
           warning msg
-          return $ Left $ MissingToolkit tk
+          return $ MissingToolkit tk
         Just r' -> do
-          Right <$> figureSpec r'
+          Figure <$> figureSpec r'
   where
     attrs' = Map.fromList attrs
     preamblePath = unpack <$> Map.lookup (tshow PreambleK) attrs'
@@ -115,7 +116,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
           let msg = pack $ mconcat ["Save format ", show saveFormat, " not supported by ", show toolkit]
            in err msg
       return FigureSpec {..}
-parseFigureSpec _ = return $ Left NotAFigure
+parseFigureSpec _ = return NotAFigure
 
 -- | Parse script content from a block, if possible.
 -- The script content can either come from a file
