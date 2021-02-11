@@ -1,5 +1,7 @@
 resolver: nightly-2021-01-05 # GHC 8.10.3
 
+compiler: ghc-8.10.4
+
 packages:
 - .
 
