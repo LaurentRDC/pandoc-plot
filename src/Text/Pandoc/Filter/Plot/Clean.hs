@@ -128,6 +128,11 @@ formatFromFilePath x =
     ".lhs" -> Just "markdown+lhs"
     ".ltx" -> Just "latex"
     ".markdown" -> Just "markdown"
+    ".mkdn" -> Just "markdown"
+    ".mkd" -> Just "markdown"
+    ".mdwn" -> Just "markdown"
+    ".mdown" -> Just "markdown"
+    ".Rmd" -> Just "markdown"
     ".md" -> Just "markdown"
     ".ms" -> Just "ms"
     ".muse" -> Just "muse"
@@ -154,5 +159,6 @@ formatFromFilePath x =
     ".xhtml" -> Just "html"
     ".ipynb" -> Just "ipynb"
     ".csv" -> Just "csv"
+    ".bib" -> Just "biblatex"
     ['.', y] | y `elem` ['1' .. '9'] -> Just "man"
     _ -> Nothing
