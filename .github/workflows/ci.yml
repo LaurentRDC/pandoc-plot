@@ -68,7 +68,10 @@ jobs:
         sudo apt-get --quiet --yes install octave
         sudo apt-get --quiet --yes install gnuplot
         sudo apt-get --quiet --yes install graphviz
+
         sudo apt-get --quiet --yes install plantuml
+        mv /usr/share/plantuml/plantuml.jar .
+        java -jar plantuml.jar -h
 
     - name: Install Graphviz [Windows]
       if: runner.os == 'Windows'

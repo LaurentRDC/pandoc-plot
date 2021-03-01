@@ -65,11 +65,10 @@ plantumlAvailable = do
   mexe <- executable PlantUML
   case mexe of
     Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -h|]
+    Just (Executable dir exe) -> do
+      cmdargs <- asksConfig plantumlCmdArgs
+      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} #{cmdargs} -h|]
 
--- PlantUML export is entirely based on command-line arguments
--- so there is no need to modify the script itself.
 plantumlCapture :: FigureSpec -> FilePath -> Script
 plantumlCapture FigureSpec {..} fp = 
     -- Only the filename is included in the script; we need to also pass the ABSOLUTE output directory 
