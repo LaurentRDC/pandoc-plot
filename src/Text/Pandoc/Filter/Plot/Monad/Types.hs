@@ -58,6 +58,7 @@ data Toolkit
   | Graphviz
   | Bokeh
   | Plotsjl
+  | PlantUML
   deriving (Bounded, Eq, Enum, Generic, Ord)
 
 -- | This instance should only be used to display toolkit names
@@ -73,6 +74,7 @@ instance Show Toolkit where
   show Graphviz = "graphviz"
   show Bokeh = "Python/Bokeh"
   show Plotsjl = "Julia/Plots.jl"
+  show PlantUML = "PlantUML"
 
 -- | Class name which will trigger the filter
 cls :: Toolkit -> Text
@@ -87,6 +89,7 @@ cls GNUPlot = "gnuplot"
 cls Graphviz = "graphviz"
 cls Bokeh = "bokeh"
 cls Plotsjl = "plotsjl"
+cls PlantUML = "plantuml"
 
 -- | Executable program and directory where it can be found.
 data Executable = Executable FilePath Text

@@ -290,6 +290,7 @@ executable tk =
     exeSelector Graphviz = asksConfig graphvizExe
     exeSelector Bokeh = asksConfig bokehExe
     exeSelector Plotsjl = asksConfig plotsjlExe
+    exeSelector PlantUML = asksConfig plantumlExe
 
 -- | The @Configuration@ type holds the default values to use
 -- when running pandoc-plot. These values can be overridden in code blocks.
@@ -354,6 +355,8 @@ data Configuration = Configuration
     bokehPreamble :: !Script,
     -- | The default preamble script for the Julia/Plots.jl toolkit.
     plotsjlPreamble :: !Script,
+    -- | The default preamble script for the PlantUML toolkit.
+    plantumlPreamble :: !Script,
     -- | The executable to use to generate figures using the matplotlib toolkit.
     matplotlibExe :: !FilePath,
     -- | The executable to use to generate figures using the MATLAB toolkit.
@@ -376,6 +379,8 @@ data Configuration = Configuration
     bokehExe :: !FilePath,
     -- | The executable to use to generate figures using the Julia/Plots.jl toolkit.
     plotsjlExe :: !FilePath,
+    -- | The executable to use to generate figures using the PlantUML toolkit.
+    plantumlExe :: !FilePath,
     -- | Command-line arguments to pass to the Python interpreter for the Matplotlib toolkit
     matplotlibCmdArgs :: !Text,
     -- | Command-line arguments to pass to the interpreter for the MATLAB toolkit.
@@ -398,6 +403,8 @@ data Configuration = Configuration
     bokehCmdArgs :: !Text,
     -- | Command-line arguments to pass to the interpreter for the Julia/Plots.jl toolkit.
     plotsjlCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the plantUML toolkit.
+    plantumlCmdArgs :: !Text,
     -- | Whether or not to make Matplotlib figures tight by default.
     matplotlibTightBBox :: !Bool,
     -- | Whether or not to make Matplotlib figures transparent by default.

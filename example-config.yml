@@ -124,3 +124,8 @@ plotsjl:
   # preamble: plotsjl.jl
   executable: julia
   command_line_arguments:
+
+plantuml:
+  # preamble: plantuml.txt
+  executable: java -jar plantuml.jar
+  command_line_arguments:

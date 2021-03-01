@@ -61,6 +61,7 @@ defaultConfiguration =
       graphvizPreamble = mempty,
       bokehPreamble = mempty,
       plotsjlPreamble = mempty,
+      plantumlPreamble = mempty,
       -- Executables
       matplotlibExe = python,
       matlabExe = "matlab",
@@ -73,6 +74,7 @@ defaultConfiguration =
       graphvizExe = "dot",
       bokehExe = python,
       plotsjlExe = "julia",
+      plantumlExe = "java -jar plantuml.jar",
       -- Command line arguments
       matplotlibCmdArgs = mempty,
       matlabCmdArgs = mempty,
@@ -85,6 +87,7 @@ defaultConfiguration =
       graphvizCmdArgs = mempty,
       bokehCmdArgs = mempty,
       plotsjlCmdArgs = mempty,
+      plantumlCmdArgs = mempty,
       -- Extras
       matplotlibTightBBox = False,
       matplotlibTransparent = False
@@ -142,7 +145,8 @@ data ConfigPrecursor = ConfigPrecursor
     _gnuplotPrec :: !GNUPlotPrecursor,
     _graphvizPrec :: !GraphvizPrecursor,
     _bokehPrec :: !BokehPrecursor,
-    _plotsjlPrec :: !PlotsjlPrecursor
+    _plotsjlPrec :: !PlotsjlPrecursor,
+    _plantumlPrec :: !PlantUMLPrecursor
   }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -167,7 +171,8 @@ defaultConfigPrecursor =
       _gnuplotPrec = GNUPlotPrecursor Nothing (gnuplotExe defaultConfiguration) (gnuplotCmdArgs defaultConfiguration),
       _graphvizPrec = GraphvizPrecursor Nothing (graphvizExe defaultConfiguration) (graphvizCmdArgs defaultConfiguration),
       _bokehPrec = BokehPrecursor Nothing (bokehExe defaultConfiguration) (bokehCmdArgs defaultConfiguration),
-      _plotsjlPrec = PlotsjlPrecursor Nothing (plotsjlExe defaultConfiguration) (plotsjlCmdArgs defaultConfiguration)
+      _plotsjlPrec = PlotsjlPrecursor Nothing (plotsjlExe defaultConfiguration) (plotsjlCmdArgs defaultConfiguration),
+      _plantumlPrec = PlantUMLPrecursor Nothing (plantumlExe defaultConfiguration) (plantumlCmdArgs defaultConfiguration)
     }
 
 data LoggingPrecursor = LoggingPrecursor
@@ -203,6 +208,8 @@ data GraphvizPrecursor = GraphvizPrecursor {_graphvizPreamble :: !(Maybe FilePat
 data BokehPrecursor = BokehPrecursor {_bokehPreamble :: !(Maybe FilePath), _bokehExe :: !FilePath, _bokehCmdArgs :: !Text}
 
 data PlotsjlPrecursor = PlotsjlPrecursor {_plotsjlPreamble :: !(Maybe FilePath), _plotsjlExe :: !FilePath, _plotsjlCmdArgs :: !Text}
+
+data PlantUMLPrecursor = PlantUMLPrecursor {_plantumlPreamble :: !(Maybe FilePath), _plantumlExe :: !FilePath, _plantumlCmdArgs :: !Text}
 
 instance FromJSON LoggingPrecursor where
   parseJSON (Object v) =
@@ -260,6 +267,10 @@ instance FromJSON PlotsjlPrecursor where
   parseJSON (Object v) = PlotsjlPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plotsjlExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (plotsjlCmdArgs defaultConfiguration)
   parseJSON _ = fail $ mconcat ["Could not parse ", show Plotsjl, " configuration."]
 
+instance FromJSON PlantUMLPrecursor where
+  parseJSON (Object v) = PlantUMLPrecursor <$> v .:? (tshow PreambleK) <*> v .:? (tshow ExecutableK) .!= (plantumlExe defaultConfiguration) <*> v .:? (tshow CommandLineArgsK) .!= (plantumlCmdArgs defaultConfiguration)
+  parseJSON _ = fail $ mconcat ["Could not parse ", show PlantUML, " configuration."]
+
 instance FromJSON ConfigPrecursor where
   parseJSON (Null) = return defaultConfigPrecursor -- In case of empty file
   parseJSON (Object v) = do
@@ -284,6 +295,7 @@ instance FromJSON ConfigPrecursor where
     _graphvizPrec <- v .:? (cls Graphviz) .!= _graphvizPrec defaultConfigPrecursor
     _bokehPrec <- v .:? (cls Bokeh) .!= _bokehPrec defaultConfigPrecursor
     _plotsjlPrec <- v .:? (cls Plotsjl) .!= _plotsjlPrec defaultConfigPrecursor
+    _plantumlPrec <- v .:? (cls PlantUML ) .!= _plantumlPrec defaultConfigPrecursor
 
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."
@@ -316,6 +328,7 @@ renderConfig ConfigPrecursor {..} = do
       graphvizExe = _graphvizExe _graphvizPrec
       bokehExe = _bokehExe _bokehPrec
       plotsjlExe = _plotsjlExe _plotsjlPrec
+      plantumlExe = _plantumlExe _plantumlPrec
 
       matplotlibCmdArgs = _matplotlibCmdArgs _matplotlibPrec
       matlabCmdArgs = _matlabCmdArgs _matlabPrec
@@ -328,6 +341,7 @@ renderConfig ConfigPrecursor {..} = do
       graphvizCmdArgs = _graphvizCmdArgs _graphvizPrec
       bokehCmdArgs = _bokehCmdArgs _bokehPrec
       plotsjlCmdArgs = _plotsjlCmdArgs _plotsjlPrec
+      plantumlCmdArgs = _plantumlCmdArgs _plantumlPrec
 
   matplotlibPreamble <- readPreamble (_matplotlibPreamble _matplotlibPrec)
   matlabPreamble <- readPreamble (_matlabPreamble _matlabPrec)
@@ -340,6 +354,7 @@ renderConfig ConfigPrecursor {..} = do
   graphvizPreamble <- readPreamble (_graphvizPreamble _graphvizPrec)
   bokehPreamble <- readPreamble (_bokehPreamble _bokehPrec)
   plotsjlPreamble <- readPreamble (_plotsjlPreamble _plotsjlPrec)
+  plantumlPreamble <- readPreamble (_plantumlPreamble _plantumlPrec)
 
   return Configuration {..}
   where
