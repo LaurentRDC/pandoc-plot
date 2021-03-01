@@ -94,6 +94,7 @@ testFileInclusion tk =
     include Graphviz = "tests/includes/graphviz.dot"
     include Bokeh = "tests/includes/bokeh.py"
     include Plotsjl = "tests/includes/plotsjl.jl"
+    include PlantUML = "tests/includes/plantuml.txt"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -333,6 +334,7 @@ trivialContent Bokeh =
       "p.line([1,2,3,4], [5,6,7,8])"
     ]
 trivialContent Plotsjl = "using Plots; x = 1:10; y = rand(10); plot(x, y);"
+trivialContent PlantUML = "@startuml\nAlice -> Bob: test\n@enduml"
 
 addCaption :: String -> Block -> Block
 addCaption caption (CodeBlock (id', cls, attrs) script) =

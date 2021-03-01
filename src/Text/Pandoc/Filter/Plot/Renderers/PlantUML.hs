@@ -19,6 +19,8 @@ module Text.Pandoc.Filter.Plot.Renderers.PlantUML
 where
 
 import Data.Char
+import System.FilePath (takeDirectory, takeFileName, (</>))
+import Data.Text (replace, pack)
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 plantuml :: PlotM (Maybe Renderer)
@@ -50,7 +52,13 @@ plantumlSupportedSaveFormats = [PNG, PDF, SVG]
 plantumlCommand :: Text -> Text -> OutputSpec -> Text
 plantumlCommand cmdargs exe OutputSpec {..} =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
-   in [st|#{exe} #{cmdargs} -t#{fmt} -o "#{oFigurePath}" "#{oScriptPath}"|]
+      dir = takeDirectory oFigurePath
+   in [st|#{exe} #{cmdargs} -t#{fmt} -output "#{oCWD </> dir}" "#{normalizePath oScriptPath}"|]
+
+normalizePath :: String -> String
+normalizePath = map f
+    where f '\\' = '/'
+          f x = x
 
 plantumlAvailable :: PlotM Bool
 plantumlAvailable = do
@@ -63,4 +71,7 @@ plantumlAvailable = do
 -- PlantUML export is entirely based on command-line arguments
 -- so there is no need to modify the script itself.
 plantumlCapture :: FigureSpec -> FilePath -> Script
-plantumlCapture FigureSpec {..} _ = script
+plantumlCapture FigureSpec {..} fp = 
+    -- Only the filename is included in the script; we need to also pass the ABSOLUTE output directory 
+    -- to the executable.
+    replace "@startuml" ("@startuml " <> pack (takeFileName fp)) script

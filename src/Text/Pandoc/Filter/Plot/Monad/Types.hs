@@ -251,7 +251,9 @@ data OutputSpec = OutputSpec
     -- | Path to the script to render
     oScriptPath :: FilePath,
     -- | Figure output path
-    oFigurePath :: FilePath
+    oFigurePath :: FilePath,
+    -- | Current working directory (used for PlantUML)
+    oCWD :: FilePath
   }
 
 data Renderer = Renderer

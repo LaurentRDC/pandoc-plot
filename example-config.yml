@@ -127,5 +127,5 @@ plotsjl:
 
 plantuml:
   # preamble: plantuml.txt
-  executable: java -jar plantuml.jar
-  command_line_arguments:
+  executable: java
+  command_line_arguments: -jar plantuml.jar

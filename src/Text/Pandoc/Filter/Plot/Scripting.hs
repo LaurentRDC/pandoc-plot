@@ -94,6 +94,7 @@ runTempScript spec@FigureSpec {..} = do
     CheckPassed -> do
       scriptPath <- tempScriptPath spec
       target <- figurePath spec
+      cwd <- asks envCWD
 
       let scriptWithCapture = rendererCapture renderer_ spec target
 
@@ -102,7 +103,8 @@ runTempScript spec@FigureSpec {..} = do
             OutputSpec
               { oFigureSpec = spec,
                 oScriptPath = scriptPath,
-                oFigurePath = target
+                oFigurePath = target,
+                oCWD = cwd
               }
       let command_ = rendererCommand renderer_ outputSpec
 
@@ -112,7 +114,6 @@ runTempScript spec@FigureSpec {..} = do
       withPrependedPath exedir $ do
         -- It is important that the CWD be inherited from the
         -- parent process. See #2.
-        cwd <- asks envCWD
         (ec, _) <- runCommand cwd command_
         case ec of
           ExitSuccess -> return ScriptSuccess
@@ -157,8 +158,8 @@ figureContentHash FigureSpec {..} = do
           ( dpi,
             dependenciesHash,
             extraAttrs,
-            show version -- Included version because capture
-          ) -- scripts may change between releases
+            show version -- Included version because capture scripts may change between releases
+          ) 
         )
 
 -- | Determine the path a figure should have.
