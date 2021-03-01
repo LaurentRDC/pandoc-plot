@@ -202,7 +202,7 @@ There are parameters that affect the figure that will be included in your docume
 
 ````
 
-* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, `graphviz`, `bokeh`, `plotsjl`.
+* `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, `graphviz`, `bokeh`, `plotsjl`, `plantuml` (*new in version 1.1.0*).
 
 All following parameters are optional, with their default values controlled by the [configuration](#configuration).
 
