@@ -70,7 +70,7 @@ jobs:
         sudo apt-get --quiet --yes install graphviz
 
         sudo apt-get --quiet --yes install plantuml
-        mv /usr/share/plantuml/plantuml.jar .
+        sudo mv /usr/share/plantuml/plantuml.jar .
         java -jar plantuml.jar -h
 
     - name: Install Graphviz [Windows]
