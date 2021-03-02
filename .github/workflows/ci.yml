@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [master]
   pull_request:
 
 jobs:
@@ -63,12 +62,16 @@ jobs:
       run: |
         Rscript -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
 
-    - name: Install Octave, Gnuplot, Graphviz [Linux]
+    - name: Install Octave, Gnuplot, Graphviz, and PlantUML [Linux]
       if: runner.os == 'Linux'
       run: |
         sudo apt-get --quiet --yes install octave
         sudo apt-get --quiet --yes install gnuplot
         sudo apt-get --quiet --yes install graphviz
+
+        sudo apt-get --quiet --yes install plantuml
+        sudo mv /usr/share/plantuml/plantuml.jar .
+        java -jar plantuml.jar -h
 
     - name: Install Graphviz [Windows]
       if: runner.os == 'Windows'

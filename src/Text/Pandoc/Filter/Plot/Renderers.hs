@@ -44,6 +44,7 @@ import Text.Pandoc.Filter.Plot.Renderers.Mathematica
 import Text.Pandoc.Filter.Plot.Renderers.Matlab
 import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
 import Text.Pandoc.Filter.Plot.Renderers.Octave
+import Text.Pandoc.Filter.Plot.Renderers.PlantUML
 import Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
 import Text.Pandoc.Filter.Plot.Renderers.PlotlyR
 import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
@@ -80,6 +81,7 @@ renderer tk = do
     sel Graphviz = graphviz
     sel Bokeh = bokeh
     sel Plotsjl = plotsjl
+    sel PlantUML = plantuml
 
 -- | Save formats supported by this renderer.
 supportedSaveFormats :: Toolkit -> [SaveFormat]
@@ -94,6 +96,7 @@ supportedSaveFormats GNUPlot = gnuplotSupportedSaveFormats
 supportedSaveFormats Graphviz = graphvizSupportedSaveFormats
 supportedSaveFormats Bokeh = bokehSupportedSaveFormats
 supportedSaveFormats Plotsjl = plotsjlSupportedSaveFormats
+supportedSaveFormats PlantUML = plantumlSupportedSaveFormats
 
 -- | The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
@@ -108,6 +111,7 @@ preambleSelector GNUPlot = gnuplotPreamble
 preambleSelector Graphviz = graphvizPreamble
 preambleSelector Bokeh = bokehPreamble
 preambleSelector Plotsjl = plotsjlPreamble
+preambleSelector PlantUML = plantumlPreamble
 
 -- | Parse code block headers for extra attributes that are specific
 -- to this renderer. By default, no extra attributes are parsed.

@@ -2,6 +2,22 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 1.1.0
+-------------
+
+* Added the [PlantUML](https://plantuml.com) toolkit (#18). Diagrams can be generated like so:
+
+  ````markdown
+
+  ```{.plantuml}
+  @startuml
+  Bob->Alice : hello
+  @enduml
+  ```
+
+  ````
+* Changed versioning scheme to match more common Major.Minor.Bugfix.
+
 Release 1.0.2.1
 ---------------
 
