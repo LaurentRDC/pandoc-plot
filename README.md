@@ -60,7 +60,7 @@ breaking changes in pandoc’s API.*
   - `graphviz`: graphs using [Graphviz](http://graphviz.org/);
   - `bokeh`: plots using the [Bokeh](https://bokeh.org/) visualization library;
   - `plotsjl`: plots using the [Julia `Plots.jl`](https://docs.juliaplots.org/latest/) package;
-  - `plantuml`: diagrams using the [`PlantUML`](https://plantuml.com/) software suite.
+  - `plantuml`: diagrams using the [PlantUML](https://plantuml.com/) software suite.
 
 To know which toolkits are useable on *your machine* (and which ones are
 not available), you can check with the `toolkits` command:
