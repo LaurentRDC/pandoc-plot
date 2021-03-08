@@ -295,7 +295,7 @@ instance FromJSON ConfigPrecursor where
     _graphvizPrec <- v .:? (cls Graphviz) .!= _graphvizPrec defaultConfigPrecursor
     _bokehPrec <- v .:? (cls Bokeh) .!= _bokehPrec defaultConfigPrecursor
     _plotsjlPrec <- v .:? (cls Plotsjl) .!= _plotsjlPrec defaultConfigPrecursor
-    _plantumlPrec <- v .:? (cls PlantUML ) .!= _plantumlPrec defaultConfigPrecursor
+    _plantumlPrec <- v .:? (cls PlantUML) .!= _plantumlPrec defaultConfigPrecursor
 
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."

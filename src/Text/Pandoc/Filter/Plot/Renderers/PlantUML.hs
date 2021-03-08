@@ -19,8 +19,8 @@ module Text.Pandoc.Filter.Plot.Renderers.PlantUML
 where
 
 import Data.Char
+import Data.Text (pack, replace)
 import System.FilePath (takeDirectory, takeFileName, (</>))
-import Data.Text (replace, pack)
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 plantuml :: PlotM (Maybe Renderer)
@@ -57,8 +57,9 @@ plantumlCommand cmdargs exe OutputSpec {..} =
 
 normalizePath :: String -> String
 normalizePath = map f
-    where f '\\' = '/'
-          f x = x
+  where
+    f '\\' = '/'
+    f x = x
 
 plantumlAvailable :: PlotM Bool
 plantumlAvailable = do
@@ -70,7 +71,7 @@ plantumlAvailable = do
       withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} #{cmdargs} -h|]
 
 plantumlCapture :: FigureSpec -> FilePath -> Script
-plantumlCapture FigureSpec {..} fp = 
-    -- Only the filename is included in the script; we need to also pass the ABSOLUTE output directory 
-    -- to the executable.
-    replace "@startuml" ("@startuml " <> pack (takeFileName fp)) script
+plantumlCapture FigureSpec {..} fp =
+  -- Only the filename is included in the script; we need to also pass the ABSOLUTE output directory
+  -- to the executable.
+  replace "@startuml" ("@startuml " <> pack (takeFileName fp)) script
