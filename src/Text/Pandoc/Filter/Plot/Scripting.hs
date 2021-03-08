@@ -25,6 +25,7 @@ import Data.Default (def)
 import Data.Functor.Identity (Identity (..))
 import Data.Hashable (hash)
 import Data.Text (Text, pack, unpack)
+import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Paths_pandoc_plot (version)
 import System.Directory
@@ -48,6 +49,7 @@ import Text.Pandoc.Options (WriterOptions (..))
 import Text.Pandoc.SelfContained (makeSelfContained)
 import Text.Pandoc.Templates
 import Text.Pandoc.Writers (writeHtml5String)
+import Text.Printf (printf)
 
 -- Run script as described by the spec, only if necessary
 runScriptIfNecessary :: FigureSpec -> PlotM ScriptResult
@@ -74,12 +76,25 @@ runScriptIfNecessary spec = do
 data ScriptResult
   = ScriptSuccess
   | ScriptChecksFailed Text -- Message
-  | ScriptFailure Text Int -- Command and exit code
+  | ScriptFailure Text Int Script -- Command, exit code, and source script
 
 instance Show ScriptResult where
   show ScriptSuccess = "Script success."
   show (ScriptChecksFailed msg) = unpack $ "Script checks failed: " <> msg
-  show (ScriptFailure msg ec) = mconcat ["Script failed with exit code ", show ec, " and the following message: ", unpack msg]
+  show (ScriptFailure cmd ec s) = mconcat ["Command \"", unpack cmd, "\" failed with exit code ", show ec, ". The script source was: \n\n", unpack . formatScript $ s, "\n"]
+
+-- | Format a script to show in error messages
+formatScript :: Script -> Text
+formatScript s = T.unlines . fmap (\(n, l) -> formatLine n l) $ zip linenos (T.lines s)
+  where
+    nlines = length (T.lines s)
+    linenos = [1 .. nlines]
+
+    -- No version of ceil in Prelude, so 1 + floor will have to do
+    maxdigits = 1 + floor (logBase 10 (fromIntegral nlines))
+
+    formatLine :: Int -> Text -> Text
+    formatLine n l = pack (printf ("%" <> show maxdigits <> "d") n) <> " > " <> l
 
 -- Run script as described by the spec
 -- Checks are performed, according to the renderer
@@ -117,7 +132,7 @@ runTempScript spec@FigureSpec {..} = do
         (ec, _) <- runCommand cwd command_
         case ec of
           ExitSuccess -> return ScriptSuccess
-          ExitFailure code -> return $ ScriptFailure command_ code
+          ExitFailure code -> return $ ScriptFailure command_ code script
 
 -- | Determine the temp script path from Figure specifications
 -- Note that for certain renderers, the appropriate file extension
@@ -159,7 +174,7 @@ figureContentHash FigureSpec {..} = do
             dependenciesHash,
             extraAttrs,
             show version -- Included version because capture scripts may change between releases
-          ) 
+          )
         )
 
 -- | Determine the path a figure should have.

@@ -191,7 +191,7 @@ makeEither block =
   where
     -- Logging of errors has been taken care of in @runScriptIfNecessary@
     handleResult :: FigureSpec -> ScriptResult -> PlotM (Either PandocPlotError Block)
-    handleResult _ (ScriptFailure msg code) = return $ Left (ScriptRuntimeError msg code)
+    handleResult _ (ScriptFailure cmd code _) = return $ Left (ScriptRuntimeError cmd code)
     handleResult _ (ScriptChecksFailed msg) = return $ Left (ScriptChecksFailedError msg)
     handleResult spec ScriptSuccess = asks envConfig >>= \c -> Right <$> toFigure (captionFormat c) spec
 

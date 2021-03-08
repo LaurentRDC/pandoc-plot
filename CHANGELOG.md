@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 1.1.1
+-------------
+
+* Error messages now include the source script and line numbers.
+
 Release 1.1.0
 -------------
 
