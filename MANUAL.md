@@ -170,7 +170,7 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 `pandoc-plot` is a command line executable with a few functions. You can take a look at the help using the `-h`/`--help` flag:
 
 ``` bash
-pandoc-plot 1.0.2.0 - generate figures directly in documents
+pandoc-plot 1.1.1 - generate figures directly in documents
 
 Usage: pandoc-plot.EXE [(-v|--version) | --full-version | (-m|--manual)] 
                        [COMMAND] [AST]
@@ -259,7 +259,7 @@ There are parameters that affect the figure that will be included in your docume
   ```
 ````
 
--   `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, `graphviz`, `bokeh`, `plotsjl`.
+-   `cls` must be one of the following: `matplotlib`, `matlabplot`, `plotly_python`, `plotly_r`, `mathplot`, `octaveplot`, `ggplot2`, `gnuplot`, `graphviz`, `bokeh`, `plotsjl`, `plantuml` (*new in version 1.1.0*).
 
 All following parameters are optional, with their default values controlled by the [configuration](#configuration).
 
@@ -457,6 +457,16 @@ plotsjl:
   # preamble: plotsjl.jl
   executable: julia
   command_line_arguments:
+
+plantuml:
+  # preamble: plantuml.txt
+  executable: java
+  command_line_arguments: -jar plantuml.jar
+  # On Linux, it you have `plantuml.jar` as an executable, you can also
+  # use the following configuration instead:
+  # plantuml:
+  #   executable: plantuml
+  #   command_line_arguments:
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.
