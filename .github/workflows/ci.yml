@@ -11,14 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - os: "windows-latest"
-          stack_opts: 
-
-        - os: "ubuntu-latest"
-          stack_opts: "--ghc-options=-split-sections"
-          
-        - os: "macos-latest"
-          stack_opts: "--ghc-options=-split-sections"
+        include:
+          - os: "windows-latest"
+            stack_opts: ""
+          - os: "ubuntu-latest"
+            stack_opts: "--ghc-options=-split-sections"
+          - os: "macos-latest"
+            stack_opts: "--ghc-options=-split-sections"
 
     runs-on: ${{ matrix.os }}
 
@@ -86,11 +85,12 @@ jobs:
       run: |        
         choco install --yes --no-progress graphviz
         dot -c
+    
+    - name: Build dependencies
+      run: stack build ${{ matrix.stack_opts }} --test --no-run-tests
 
     - name: Check installed plotting toolkits
-      run: |
-        stack install ${{ matrix.stack_opts }}
-        stack exec -- pandoc-plot toolkits
+      run: stack exec -- pandoc-plot toolkits
 
     - name: Unit tests
       run: stack test ${{ matrix.stack_opts }}

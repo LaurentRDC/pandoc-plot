@@ -91,7 +91,8 @@ formatScript s = T.unlines . fmap (\(n, l) -> formatLine n l) $ zip linenos (T.l
     linenos = [1 .. nlines]
 
     -- No version of ceil in Prelude, so 1 + floor will have to do
-    maxdigits = 1 + floor (logBase 10 (fromIntegral nlines))
+    maxdigits :: Int
+    maxdigits = 1 + floor (logBase 10 (fromIntegral nlines :: Double))
 
     formatLine :: Int -> Text -> Text
     formatLine n l = pack (printf ("%" <> show maxdigits <> "d") n) <> " > " <> l
