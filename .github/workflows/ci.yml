@@ -11,7 +11,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        - os: "windows-latest"
+          stack_opts: 
+
+        - os: "ubuntu-latest"
+          stack_opts: "--ghc-options=-split-sections"
+          
+        - os: "macos-latest"
+          stack_opts: "--ghc-options=-split-sections"
 
     runs-on: ${{ matrix.os }}
 
@@ -82,17 +89,17 @@ jobs:
 
     - name: Check installed plotting toolkits
       run: |
-        stack install
+        stack install ${{ matrix.stack_opts }}
         stack exec -- pandoc-plot toolkits
 
     - name: Unit tests
-      run: stack test
+      run: stack test ${{ matrix.stack_opts }}
     
     - name: Integration tests
       shell: bash
       run: |
-        stack install pandoc
-        stack install
+        stack install pandoc ${{ matrix.stack_opts }}
+        stack install ${{ matrix.stack_opts }}
         
         stack exec -- pandoc --filter pandoc-plot -i tests/integration.md -t html
         if [ $(ls "plots" | wc -l) == 0 ]; then
@@ -114,7 +121,7 @@ jobs:
       shell: bash
       run: |
         mkdir artifact
-        stack install --local-bin-path artifact
+        stack install ${{ matrix.stack_opts }} --local-bin-path artifact
 
         if [[ "${{ runner.os }}" != "Windows" ]]
         then
@@ -125,7 +132,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         mkdir artifact-static
-        stack install --flag pandoc-plot:static --local-bin-path artifact-static
+        stack install ${{ matrix.stack_opts }} --flag pandoc-plot:static --local-bin-path artifact-static
         chmod +x artifact-static/pandoc-plot
 
     - name: Upload artifact
