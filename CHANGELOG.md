@@ -6,6 +6,7 @@ Release 1.1.1
 -------------
 
 * Error messages now include the source script and line numbers.
+* The executables are now built with Pandoc 2.12. Pandoc 2.11 is still supported.
 
 Release 1.1.0
 -------------
