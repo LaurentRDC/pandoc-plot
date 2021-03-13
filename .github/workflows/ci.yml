@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            stack_opts: ""
+            stack_opts: "--ghc-options=-split-sections"
           - os: "ubuntu-latest"
             stack_opts: "--ghc-options=-split-sections"
           - os: "macos-latest"
