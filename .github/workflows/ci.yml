@@ -140,6 +140,7 @@ jobs:
       with:
         name: pandoc-plot-${{ runner.os }}-x86_64
         path: artifact/pandoc-plot*
+        retention-days: 7
 
     - name: Upload artifact [Linux - static]
       uses: actions/upload-artifact@v2
@@ -147,6 +148,7 @@ jobs:
       with:
         name: pandoc-plot-${{ runner.os }}-x86_64-static
         path: artifact-static/pandoc-plot
+        retention-days: 7
 
     - name: Build Installer [Windows]
       if: runner.os == 'Windows'
@@ -159,3 +161,4 @@ jobs:
       with:
         name: pandoc-plot-wininst-x86_64
         path: installer/pandoc-plot-wininst-x86_64.exe
+        retention-days: 7
