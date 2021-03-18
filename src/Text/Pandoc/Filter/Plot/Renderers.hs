@@ -27,9 +27,11 @@ module Text.Pandoc.Filter.Plot.Renderers
 where
 
 import Control.Concurrent.Async.Lifted (forConcurrently)
-import Control.Concurrent.MVar
+import Control.Concurrent.MVar (putMVar, takeMVar)
 import Control.Monad.Reader (local)
 import Control.Monad.State.Strict
+  ( MonadState (get, put),
+  )
 import Data.List ((\\))
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M

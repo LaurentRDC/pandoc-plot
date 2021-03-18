@@ -22,6 +22,16 @@ import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
 import qualified Data.Text.IO as T
 import Text.HTML.TagSoup
+  ( Attribute,
+    Tag (TagClose, TagOpen),
+    canonicalizeTags,
+    parseOptionsFast,
+    parseTagsOptions,
+    partitions,
+    renderTags,
+    (~/=),
+    (~==),
+  )
 import Text.Pandoc.Builder
   ( Inlines,
     fromList,

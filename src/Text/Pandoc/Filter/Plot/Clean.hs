@@ -29,7 +29,7 @@ import qualified Data.Text.IO as Text
 import System.Directory (removePathForcibly)
 import System.FilePath (takeExtension)
 import Text.Pandoc.Class (runIO)
-import Text.Pandoc.Definition
+import Text.Pandoc.Definition (Block, Pandoc)
 import Text.Pandoc.Error (handleError)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Parse

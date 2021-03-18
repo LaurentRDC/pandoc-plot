@@ -27,7 +27,7 @@ import Data.Char (toLower)
 import Data.List (intercalate)
 import Data.String (IsString (..))
 import Data.Text (Text, unpack)
-import Data.Text.IO as TIO
+import Data.Text.IO as TIO (appendFile, hPutStr)
 import Data.Yaml (FromJSON (parseJSON), Value (String))
 import System.IO (stderr)
 

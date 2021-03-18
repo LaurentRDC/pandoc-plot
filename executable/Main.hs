@@ -16,10 +16,32 @@ import Data.Version (parseVersion, showVersion)
 import qualified Data.Version as V
 import ExampleConfig (embedExampleConfig)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
-import GitHash as Git
+import GitHash as Git (giHash, tGitInfoCwdTry)
 import ManPage (embedManualHtml)
 import OpenFile (openFile)
 import Options.Applicative
+  ( Alternative ((<|>)),
+    Parser,
+    command,
+    execParser,
+    flag,
+    footerDoc,
+    fullDesc,
+    header,
+    help,
+    helper,
+    info,
+    long,
+    metavar,
+    optional,
+    progDesc,
+    short,
+    strArgument,
+    strOption,
+    subparser,
+    value,
+    (<**>),
+  )
 import qualified Options.Applicative.Help.Pretty as P
 import System.Directory (doesFileExist, getTemporaryDirectory)
 import System.Environment (lookupEnv)

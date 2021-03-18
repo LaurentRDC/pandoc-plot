@@ -20,7 +20,6 @@ module Text.Pandoc.Filter.Plot.Scripting
   )
 where
 
-import Control.Monad.Reader
 import Data.Default (def)
 import Data.Functor.Identity (Identity (..))
 import Data.Hashable (hash)
@@ -42,7 +41,7 @@ import System.FilePath
     (</>),
   )
 import Text.Pandoc.Class (runPure)
-import Text.Pandoc.Definition
+import Text.Pandoc.Definition (Block (CodeBlock), Pandoc (Pandoc))
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Scripting.Template
 import Text.Pandoc.Options (WriterOptions (..))
