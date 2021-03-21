@@ -2,6 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 1.1.2
+-------------
+
+* The executables are now built with Pandoc 2.13. Pandoc 2.11 and Pandoc 2.12 are still supported.
+
 Release 1.1.1
 -------------
 

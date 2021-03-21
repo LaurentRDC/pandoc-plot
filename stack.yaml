@@ -4,8 +4,14 @@ packages:
 - .
 
 extra-deps:
-- pandoc-2.12
-- hslua-module-path-0.1.0.1
+- pandoc-2.13
+- citeproc-0.3.0.9@sha256:e3652bf23caf01c976c87d549885b1e9e4a3a86363494cd82669230e0d4da8ba,5590       
+- doclayout-0.3.0.2@sha256:ec561f08d16eef20b4d218d04a098630f4101d9aad729587648ba4d83feaaf8a,2063      
+- hslua-module-path-0.1.0.1@sha256:1fe319f18315618491260c912e85b6f73e406499c8fe2fa505e59036a4ff78fd,2502
+- jira-wiki-markup-1.3.4@sha256:000cda6f2bc944ff7d1aacce75d4f39abb1bfbb78e6b7d6c5a3e783afb1745b0,3819 
+- skylighting-0.10.5@sha256:a5deffb20d2912ae9febb0d0692a220bae7969757d2931b187b5c4bb36a54014,10103    
+- skylighting-core-0.10.5@sha256:28e1e271a3f670a7e2dda362e2b4aa96998c27b9e79fc66ecfd5aec4ebd22eeb,7948
+- texmath-0.12.2@sha256:032f2117e5fe88c76193e69a9e54209a600f1222bb0fd9cedf2753392e80b288,6563
 
 # For development
 - git: https://github.com/owickstrom/pandoc-include-code.git
