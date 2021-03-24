@@ -97,6 +97,16 @@ To install in the current environment:
 conda install -c conda-forge pandoc-plot
 ```
 
+### Homebrew
+
+`pandoc-plot` is available as a package via [`Homebrew`](https://brew.sh/). [Click here to see the package page](https://formulae.brew.sh/formula/pandoc-plot#default). 
+
+To install:
+
+```sh
+brew install pandoc-plot
+```
+
 ### winget
 
 You can install `pandoc-plot` from the [Windows Package
