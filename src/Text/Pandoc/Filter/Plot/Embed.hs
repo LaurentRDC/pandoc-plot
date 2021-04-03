@@ -87,6 +87,28 @@ figure as fp caption' =
   return . head . toList . para $
     imageWith as (pack fp) "fig:" caption'
 
+-- TODO: also add the case where SVG plots can be
+--       embedded in HTML output
+-- embeddedSVGBlock ::
+--   Attr ->
+--   FilePath ->
+--   Inlines ->
+--   PlotM Block
+-- embeddedSVGBlock _ fp caption' = do
+--   svgsource <- liftIO $ T.readFile fp
+--   renderedCaption <- writeHtml caption'
+--   return $
+--     RawBlock
+--       "html5"
+--       [st|
+-- <figure>
+--     <svg>
+--     #{svgsource}
+--     </svg>
+--     <figcaption>#{renderedCaption}</figcaption>
+-- </figure>
+--     |]
+
 interactiveBlock ::
   Attr ->
   FilePath ->
