@@ -22,6 +22,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude
   )
 where
 
+import Data.Functor ((<&>))
 import Data.Maybe (isJust)
 import Data.Text (Text, unpack)
 import System.Directory (findExecutable)
@@ -42,7 +43,7 @@ commandSuccess fp s = do
 
 -- | Checks that an executable is available on path, at all.
 existsOnPath :: FilePath -> IO Bool
-existsOnPath fp = findExecutable fp >>= fmap isJust . return
+existsOnPath fp = findExecutable fp <&> isJust
 
 -- | A shortcut to append capture script fragments to scripts
 appendCapture ::

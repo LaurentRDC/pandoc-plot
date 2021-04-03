@@ -122,7 +122,7 @@ writeHtml is = liftIO $ handleError $ runPure $ writeHtml5String def document
 extractPlot :: Text -> Text
 extractPlot t =
   let tags = canonicalizeTags $ parseTagsOptions parseOptionsFast t
-      extracted = headScripts tags <> [inside "body" $ tags]
+      extracted = headScripts tags <> [inside "body" tags]
    in mconcat $ renderTags <$> (deferScripts <$> extracted)
   where
     headScripts = partitions (~== ("<script>" :: String)) . inside "head"
@@ -141,7 +141,7 @@ data ScriptTag
 fromTag :: Tag Text -> Maybe ScriptTag
 fromTag (TagOpen "script" attrs) =
   Just $
-    if "src" `elem` (fst . unzip $ attrs)
+    if "src" `elem` map fst attrs
       then ExternalScript attrs
       else InlineScript attrs
 fromTag _ = Nothing

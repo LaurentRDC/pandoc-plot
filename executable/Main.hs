@@ -7,7 +7,7 @@
 
 module Main where
 
-import Control.Monad (join, msum, when)
+import Control.Monad (join, msum, when, void)
 import Data.List (intersperse, (\\))
 import Data.Maybe (fromJust)
 import Data.Text (unpack)
@@ -263,7 +263,7 @@ showFullVersion = do
   putStrLn $
     mconcat
       [ "Compiled with pandoc ",
-        (unpack pandocVersion),
+        unpack pandocVersion,
         " and pandoc-types ",
         V.showVersion pandocTypesVersion,
         " using GHC ",
@@ -276,18 +276,16 @@ showFullVersion = do
 
 showAvailableToolkits :: Maybe FilePath -> IO ()
 showAvailableToolkits mfp = do
-  c <- case mfp of
-    Nothing -> localConfig
-    Just fp -> configuration fp
+  c <- maybe localConfig configuration mfp
 
   putStrLn "\nAVAILABLE TOOLKITS\n"
   available <- availableToolkits c
-  return available >>= mapM_ (availToolkitInfo c)
+  mapM_ (availToolkitInfo c) available
   putStrLn "\nUNAVAILABLE TOOLKITS\n"
   -- We don't use unavailableToolkits because this would force
   -- more IO actions
   let unavailable = toolkits \\ available
-  return unavailable >>= mapM_ (unavailToolkitInfo c)
+  mapM_ (unavailToolkitInfo c) unavailable
   where
     toolkitInfo avail conf tk = do
       putStrLn $ "Toolkit: " <> show tk
@@ -315,7 +313,7 @@ clean mfp fp = do
   --   (3) local .pandoc-plot.yml
   --   (4) default config
   conf <- maybe localConfig configuration $ firstJusts [configurationPathMeta doc, mfp]
-  cleanOutputDirs conf doc >> return ()
+  void (cleanOutputDirs conf doc)
   where
     firstJusts :: [Maybe a] -> Maybe a
     firstJusts = msum

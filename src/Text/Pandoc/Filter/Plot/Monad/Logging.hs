@@ -76,8 +76,8 @@ terminateLogging logger = do
 withLogger :: Verbosity -> LogSink -> (Logger -> IO a) -> IO a
 withLogger v s f = do
   logger <-
-    Logger <$> pure v
-      <*> newChan
+    Logger v
+      <$> newChan
       <*> pure (sink s)
       <*> newEmptyMVar
 
@@ -110,9 +110,9 @@ instance IsString Verbosity where
     where
       ls = toLower <$> s
       choices =
-        intercalate ", " $
-          fmap (fmap toLower . show) $
-            enumFromTo minBound (maxBound :: Verbosity)
+        intercalate ", "
+          (fmap toLower . show <$>
+            enumFromTo minBound (maxBound :: Verbosity))
 
 instance FromJSON Verbosity where
   parseJSON (String t) = pure $ fromString . unpack $ t
