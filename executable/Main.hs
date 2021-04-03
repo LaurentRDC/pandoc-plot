@@ -74,6 +74,10 @@ import Text.ParserCombinators.ReadP (readP_to_S)
 -- The difference between commands and flags is that commands require knowledge of
 -- the configuration, while flags only display static information.
 
+-- Please note that for some reason, makeVersion [2, 11, 0, 0] > makeVersion [2, 11]
+minimumPandocVersion :: V.Version
+minimumPandocVersion = V.makeVersion [2, 11]
+
 data Command
   = Clean (Maybe FilePath) FilePath
   | WriteConfig FilePath
@@ -220,17 +224,15 @@ toJSONFilterWithConfig = do
 -- indicates whether the Pandoc version is new enough or not.
 checkRuntimePandocVersion :: IO Bool
 checkRuntimePandocVersion = do
-  -- Please note that for some reason, makeVersion [2, 11, 0, 0] > makeVersion [2, 11]
-  let minimumPandocVersion = V.makeVersion [2, 11]
-
   -- Pandoc runs filters in an environment with two variables:
   -- PANDOV_VERSION and PANDOC_READER_OPTS
-  -- We can use the former to ensure that people are not using pandoc < 2.11
+  -- We can use the former to ensure that people are not 
+  -- using an old version of pandoc
   pandocV <- lookupEnv "PANDOC_VERSION"
   case pandocV >>= readVersion of
     Nothing -> return True
     Just v ->
-      if (v < minimumPandocVersion)
+      if v < minimumPandocVersion
         then do
           hPutStrLn stderr $
             mconcat
@@ -256,7 +258,7 @@ localConfig = do
 
 showFullVersion :: IO ()
 showFullVersion = do
-  putStrLn $ "pandoc-plot " <> (V.showVersion pandocPlotVersion)
+  putStrLn $ "pandoc-plot " <> V.showVersion pandocPlotVersion
   putStrLn $ "Git revision " <> gitrev
   putStrLn $
     mconcat
@@ -290,7 +292,7 @@ showAvailableToolkits mfp = do
     toolkitInfo avail conf tk = do
       putStrLn $ "Toolkit: " <> show tk
       when avail $ do
-        Executable dir exe <- fmap fromJust $ runPlotM conf $ executable tk
+        Executable dir exe <- fmap fromJust $ runPlotM Nothing conf $ executable tk
         putStrLn $ "    Executable: " <> (dir </> unpack exe)
       putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)
       putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)

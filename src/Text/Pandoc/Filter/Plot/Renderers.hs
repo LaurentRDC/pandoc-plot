@@ -124,12 +124,12 @@ parseExtraAttrs _ = return mempty
 -- | List of toolkits available on this machine.
 -- The executables to look for are taken from the configuration.
 availableToolkits :: Configuration -> IO [Toolkit]
-availableToolkits conf = runPlotM conf availableToolkitsM
+availableToolkits conf = runPlotM Nothing conf availableToolkitsM
 
 -- | List of toolkits not available on this machine.
 -- The executables to look for are taken from the configur
 unavailableToolkits :: Configuration -> IO [Toolkit]
-unavailableToolkits conf = runPlotM conf unavailableToolkitsM
+unavailableToolkits conf = runPlotM Nothing conf unavailableToolkitsM
 
 -- | Monadic version of @availableToolkits@.
 --
@@ -144,7 +144,7 @@ availableToolkitsM = silence $
         else return Nothing
     return $ catMaybes mtks
   where
-    asNonStrict = local (\(RuntimeEnv c l d) -> RuntimeEnv c {strictMode = False} l d)
+    asNonStrict = local (\(RuntimeEnv f c l d) -> RuntimeEnv f c {strictMode = False} l d)
 
 -- | Monadic version of @unavailableToolkits@
 unavailableToolkitsM :: PlotM [Toolkit]

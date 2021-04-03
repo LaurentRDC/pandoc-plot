@@ -113,22 +113,23 @@ import Prelude hiding (fst, log, snd)
 type PlotM a = StateT PlotState (ReaderT RuntimeEnv IO) a
 
 data RuntimeEnv = RuntimeEnv
-  { envConfig :: Configuration,
+  { envFormat :: Maybe Format, -- pandoc output format
+    envConfig :: Configuration,
     envLogger :: Logger,
     envCWD :: FilePath
   }
 
 -- | Modify the runtime environment to be silent.
 silence :: PlotM a -> PlotM a
-silence = local (\(RuntimeEnv c l d) -> RuntimeEnv c l {lVerbosity = Silent} d)
+silence = local (\(RuntimeEnv f c l d) -> RuntimeEnv f c l {lVerbosity = Silent} d)
 
 -- | Get access to configuration within the @PlotM@ monad.
 asksConfig :: (Configuration -> a) -> PlotM a
 asksConfig f = asks (f . envConfig)
 
 -- | Evaluate a @PlotM@ action.
-runPlotM :: Configuration -> PlotM a -> IO a
-runPlotM conf v = do
+runPlotM :: Maybe Format -> Configuration -> PlotM a -> IO a
+runPlotM fmt conf v = do
   cwd <- getCurrentDirectory
   st <-
     PlotState <$> newMVar mempty
@@ -136,7 +137,7 @@ runPlotM conf v = do
   let verbosity = logVerbosity conf
       sink = logSink conf
   withLogger verbosity sink $
-    \logger -> runReaderT (evalStateT v st) (RuntimeEnv conf logger cwd)
+    \logger -> runReaderT (evalStateT v st) (RuntimeEnv fmt conf logger cwd)
 
 -- | maps a function, performing at most @N@ actions concurrently.
 mapConcurrentlyN :: Traversable t => Int -> (a -> PlotM b) -> t a -> PlotM (t b)

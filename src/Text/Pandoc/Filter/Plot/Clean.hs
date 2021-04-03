@@ -48,7 +48,7 @@ cleanOutputDirs ::
   b ->
   IO [FilePath]
 cleanOutputDirs conf doc = do
-  dirs <- runPlotM conf . cleanOutputDirsM $ doc
+  dirs <- runPlotM Nothing conf . cleanOutputDirsM $ doc
   -- Deletion of the log file must be done outside of PlotM
   -- to ensure the log file has been closed.
   case logSink conf of

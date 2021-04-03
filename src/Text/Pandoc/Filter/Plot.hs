@@ -160,7 +160,8 @@ plotTransform ::
   IO Pandoc
 plotTransform conf (Pandoc meta blocks) = do
   maxproc <- getNumCapabilities
-  runPlotM conf $ do
+  -- TODO: make filter aware of target format
+  runPlotM Nothing conf $ do
     debug $ mconcat ["Starting a new run, utilizing at most ", pack . show $ maxproc, " processes."]
     mapConcurrentlyN maxproc make blocks <&> Pandoc meta
 
