@@ -84,7 +84,7 @@ instance Show ScriptResult where
 
 -- | Format a script to show in error messages
 formatScript :: Script -> Text
-formatScript s = T.unlines . fmap (\(n, l) -> formatLine n l) $ zip linenos (T.lines s)
+formatScript s = T.unlines . fmap (uncurry formatLine) $ zip linenos (T.lines s)
   where
     nlines = length (T.lines s)
     linenos = [1 .. nlines]

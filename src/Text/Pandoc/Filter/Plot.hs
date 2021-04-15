@@ -16,21 +16,9 @@
 -- code blocks, using a multitude of plotting toolkits.
 --
 -- The syntax for code blocks is simple. Code blocks with the appropriate class
--- attribute will trigger the filter:
+-- attribute will trigger the filter, e.g. @matplotlib@ for matplotlib-based Python plots.
 --
--- *   @matplotlib@ for matplotlib-based Python plots;
--- *   @plotly_python@ for Plotly-based Python plots;
--- *   @plotly_r@ for Plotly-based R plots;
--- *   @matlabplot@ for MATLAB plots;
--- *   @mathplot@ for Mathematica plots;
--- *   @octaveplot@ for GNU Octave plots;
--- *   @ggplot2@ for ggplot2-based R plots;
--- *   @gnuplot@ for gnuplot plots;
--- *   @graphviz@ for Graphviz graphs;
--- *   @bokeh@ for Bokeh-based Python plots;
--- *   @plotsjl@ for Plots.jl-based Julia plots;
---
--- For example, in Markdown:
+-- Here is an example, in Markdown, for a plot in MATLAB:
 --
 -- @
 --     This is a paragraph.

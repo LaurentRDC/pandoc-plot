@@ -235,9 +235,7 @@ throwStrictError :: Text -> PlotM ()
 throwStrictError msg = do
   logger <- asks envLogger
   log "[pandoc-plot] STRICT MODE | " Error msg
-  liftIO $ do
-    terminateLogging logger
-    exitFailure
+  liftIO $ terminateLogging logger >> exitFailure
 
 -- | Conditional execution of a PlotM action if pandoc-plot is
 -- run in strict mode.
