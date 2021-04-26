@@ -142,7 +142,6 @@ executable pandoc-plot
 test-suite tests
     type: exitcode-stdio-1.0
     hs-source-dirs:  tests
-    ghc-options: -Wall -Wcompat -threaded -rtsopts -with-rtsopts=-N
     main-is:         Main.hs
     other-modules:
         Common
