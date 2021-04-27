@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
-
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances  #-}
 -- |
 -- Module      : $header$
 -- Copyright   : (c) Laurent P René de Cotret, 2019 - 2021
@@ -54,7 +55,6 @@ module Text.Pandoc.Filter.Plot.Monad
 where
 
 import Control.Concurrent.Async.Lifted (mapConcurrently)
-import Control.Concurrent.Chan (writeChan)
 import Control.Concurrent.MVar (MVar, newMVar, putMVar, takeMVar)
 import Control.Concurrent.QSemN
   ( QSemN,
@@ -68,7 +68,6 @@ import Control.Monad.Reader
     MonadReader (ask, local),
     ReaderT (runReaderT),
     asks,
-    forM_,
     when,
   )
 import Control.Monad.State.Strict
@@ -105,12 +104,26 @@ import System.Process.Typed
     shell,
   )
 import Text.Pandoc.Definition (Format (..))
-import Text.Pandoc.Filter.Plot.Monad.Logging as Log
+import Text.Pandoc.Filter.Plot.Monad.Logging
+    ( MonadLogger(..),
+      Logger(lVerbosity),
+      LogSink(..),
+      Verbosity(..),
+      terminateLogging,
+      withLogger,
+      debug,
+      err,
+      strict,
+      warning,
+      info )
 import Text.Pandoc.Filter.Plot.Monad.Types
 import Prelude hiding (fst, log, snd)
 
 -- | pandoc-plot monad
-type PlotM a = StateT PlotState (ReaderT RuntimeEnv IO) a
+type PlotM = StateT PlotState (ReaderT RuntimeEnv IO)
+
+instance MonadLogger PlotM where
+  askLogger = asks envLogger
 
 data RuntimeEnv = RuntimeEnv
   { envFormat :: Maybe Format, -- pandoc output format
@@ -148,27 +161,6 @@ mapConcurrentlyN n f xs = do
   where
     with :: QSemN -> PlotM a -> PlotM a
     with s = bracket_ (liftIO $ waitQSemN s 1) (liftIO $ signalQSemN s 1)
-
-debug, err, warning, info :: Text -> PlotM ()
-debug = log "[pandoc-plot] DEBUG | " Debug
-err = log "[pandoc-plot] ERROR | " Error
-warning = log "[pandoc-plot] WARN  | " Warning
-info = log "[pandoc-plot] INFO  | " Info
-
--- | General purpose logging.
-log ::
-  -- | Header.
-  Text ->
-  -- | Verbosity of the message.
-  Verbosity ->
-  -- | Message (can be multiple lines).
-  Text ->
-  PlotM ()
-log h v t = do
-  logger <- asks envLogger
-  when (v >= lVerbosity logger) $
-    liftIO $ do
-      forM_ (T.lines t) $ \l -> writeChan (lChannel logger) (Just (h <> l <> "\n"))
 
 -- | Run a command within the @PlotM@ monad. Stderr stream
 -- is read and decoded, while Stdout is ignored.
@@ -233,8 +225,8 @@ withPrependedPath dir f = do
 -- | Throw an error that halts the execution of pandoc-plot due to a strict-mode.
 throwStrictError :: Text -> PlotM ()
 throwStrictError msg = do
-  logger <- asks envLogger
-  log "[pandoc-plot] STRICT MODE | " Error msg
+  strict msg
+  logger <- askLogger
   liftIO $ terminateLogging logger >> exitFailure
 
 -- | Conditional execution of a PlotM action if pandoc-plot is
