@@ -7,7 +7,7 @@
 
 module Main where
 
-import Control.Monad (join, msum, when, void)
+import Control.Monad (join, msum, void, when)
 import Data.List (intersperse, (\\))
 import Data.Maybe (fromJust)
 import Data.Text (unpack)
@@ -226,7 +226,7 @@ checkRuntimePandocVersion :: IO Bool
 checkRuntimePandocVersion = do
   -- Pandoc runs filters in an environment with two variables:
   -- PANDOV_VERSION and PANDOC_READER_OPTS
-  -- We can use the former to ensure that people are not 
+  -- We can use the former to ensure that people are not
   -- using an old version of pandoc
   pandocV <- lookupEnv "PANDOC_VERSION"
   case pandocV >>= readVersion of

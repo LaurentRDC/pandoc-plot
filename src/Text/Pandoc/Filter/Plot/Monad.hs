@@ -1,6 +1,7 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE FlexibleInstances  #-}
+
 -- |
 -- Module      : $header$
 -- Copyright   : (c) Laurent P René de Cotret, 2019 - 2021
@@ -105,17 +106,18 @@ import System.Process.Typed
   )
 import Text.Pandoc.Definition (Format (..))
 import Text.Pandoc.Filter.Plot.Monad.Logging
-    ( MonadLogger(..),
-      Logger(lVerbosity),
-      LogSink(..),
-      Verbosity(..),
-      terminateLogging,
-      withLogger,
-      debug,
-      err,
-      strict,
-      warning,
-      info )
+  ( LogSink (..),
+    Logger (lVerbosity),
+    MonadLogger (..),
+    Verbosity (..),
+    debug,
+    err,
+    info,
+    strict,
+    terminateLogging,
+    warning,
+    withLogger,
+  )
 import Text.Pandoc.Filter.Plot.Monad.Types
 import Prelude hiding (fst, log, snd)
 
