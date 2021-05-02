@@ -225,13 +225,13 @@ instance IsString SaveFormat where
       errorWithoutStackTrace $
         mconcat
           [ s,
-            " is not one of valid save format : ",
+            " is not one of the valid save formats : ",
             mconcat $ intersperse ", " $ show <$> saveFormats
           ]
     where
       saveFormats = enumFromTo minBound maxBound :: [SaveFormat]
 
-instance FromJSON SaveFormat -- TODO: test this parsing
+instance FromJSON SaveFormat
 
 instance ToJSON SaveFormat where
   toJSON = toJSON . extension
