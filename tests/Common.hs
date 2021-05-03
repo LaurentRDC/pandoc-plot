@@ -65,6 +65,28 @@ testFileCreationPathWithSpaces tk =
     assertEqual "" 2 filesCreated
 
 -------------------------------------------------------------------------------
+-- Test that pandoc-plot appropriately transforms code blocks that are
+-- nested in other blocks (e.g. Divs)
+testNestedCodeBlocks :: Toolkit -> TestTree
+testNestedCodeBlocks tk =
+  testCase "transforms code blocks nested in other blocks" $ do
+    let postfix = unpack . cls $ tk
+    tempDir <- (</> "test-nester-blocks-" <> postfix) <$> getTemporaryDirectory
+    ensureDirectoryExistsAndEmpty tempDir
+
+    let block =
+          Div mempty $
+            singleton $
+              addDirectory tempDir $
+                codeBlock tk (trivialContent tk)
+    _ <- runPlotM Nothing defaultTestConfig $ make block
+    filesCreated <- length <$> listDirectory tempDir
+    assertEqual "" 2 filesCreated
+  where
+    singleton :: a -> [a]
+    singleton = return
+
+-------------------------------------------------------------------------------
 -- Test that included files are found within the source
 testFileInclusion :: Toolkit -> TestTree
 testFileInclusion tk =

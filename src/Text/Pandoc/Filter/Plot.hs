@@ -133,6 +133,7 @@ import Text.Pandoc.Filter.Plot.Internal
     unavailableToolkits,
     whenStrict,
   )
+import Text.Pandoc.Walk (walkM)
 
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
 -- into figures. This function will operate on blocks in parallel if possible.
@@ -161,8 +162,10 @@ pandocPlotVersion = version
 
 -- | Try to process the block with `pandoc-plot`. If a failure happens (or the block)
 -- was not meant to become a figure, return the block as-is unless running in strict mode.
+--
+-- New in version 1.2.0: this function will detect nested code blocks, for example in @Div@ blocks.
 make :: Block -> PlotM Block
-make blk = either (onError blk) return =<< makeEither blk
+make = walkM $ \blk -> either (onError blk) return =<< makeEither blk
   where
     onError :: Block -> PandocPlotError -> PlotM Block
     onError b e = do
@@ -170,6 +173,8 @@ make blk = either (onError blk) return =<< makeEither blk
       return b
 
 -- | Try to process the block with `pandoc-plot`, documenting the error.
+-- This function does not transform code blocks nested in
+-- other blocks (e.g. @Divs@)
 makeEither :: Block -> PlotM (Either PandocPlotError Block)
 makeEither block =
   parseFigureSpec block

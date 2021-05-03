@@ -2,8 +2,18 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-Release 1.1.2
+Release 1.2.0
 -------------
+
+* Fixed an issue where code blocks nested in other structures were detected properly. For example, in the following LaTeX snippet, plots would not be detected properly:
+```latex
+\begin{column}
+  \begin{minted}[]{matplotlib}
+  ...
+  \end{minted}
+\end{column}
+```
+Nested figures are not correctly identified.
 
 * The executables are now built with Pandoc 2.13. Pandoc 2.11 and Pandoc 2.12 are still supported.
 

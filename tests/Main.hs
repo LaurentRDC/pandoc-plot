@@ -49,6 +49,7 @@ toolkitSuite tk =
   testGroup (show tk) $
     [ testFileCreation,
       testFileCreationPathWithSpaces,
+      testNestedCodeBlocks,
       testFileInclusion,
       testSaveFormat,
       testWithSource,
