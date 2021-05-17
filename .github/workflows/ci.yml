@@ -79,12 +79,14 @@ jobs:
         sudo mv /usr/share/plantuml/plantuml.jar .
         java -jar plantuml.jar -h
 
-    - name: Install Graphviz [Windows]
+    - name: Install Graphviz and GNUplot [Windows]
       if: runner.os == 'Windows'
       shell: pwsh
       run: |        
         choco install --yes --no-progress graphviz
         dot -c
+
+        choco install --yes --no-progress gnuplot
     
     - name: Build dependencies
       run: stack build ${{ matrix.stack_opts }} --test --no-run-tests
