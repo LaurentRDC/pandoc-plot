@@ -100,10 +100,11 @@ where
 
 import Control.Concurrent (getNumCapabilities)
 import Data.Functor ((<&>))
+import Data.Map (singleton)
 import Data.Text (Text, pack, unpack)
 import Data.Version (Version)
 import Paths_pandoc_plot (version)
-import Text.Pandoc.Definition (Block, Pandoc (..))
+import Text.Pandoc.Definition (Block, Meta (..), MetaValue (..), Pandoc (..))
 import Text.Pandoc.Filter.Plot.Internal
   ( Configuration (..),
     FigureSpec,
@@ -152,7 +153,9 @@ plotTransform conf (Pandoc meta blocks) = do
   -- TODO: make filter aware of target format
   runPlotM Nothing conf $ do
     debug $ mconcat ["Starting a new run, utilizing at most ", pack . show $ maxproc, " processes."]
-    mapConcurrentlyN maxproc make blocks <&> Pandoc meta
+    mapConcurrentlyN maxproc make blocks <&> Pandoc newMeta
+  where
+    newMeta = meta <> Meta (singleton "graphics" $ MetaBool True)
 
 -- | The version of the pandoc-plot package.
 --

@@ -9,7 +9,7 @@
 -- Stability   : internal
 -- Portability : portable
 --
--- Embedding HTML content
+-- Embedding HTML and LaTeX content
 module Text.Pandoc.Filter.Plot.Embed
   ( extractPlot,
     toFigure,
@@ -48,6 +48,7 @@ import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Parse (captionReader)
 import Text.Pandoc.Filter.Plot.Scripting (figurePath, sourceCodePath)
 import Text.Pandoc.Writers.HTML (writeHtml5String)
+import Text.Pandoc.Writers.LaTeX (writeLaTeX)
 import Text.Shakespeare.Text (st)
 
 -- | Convert a @FigureSpec@ to a Pandoc figure component.
@@ -70,10 +71,10 @@ toFigure fmt spec = do
       caption' = if withSource' then captionText <> captionLinks else captionText
   builder attrs' target caption'
   where
-    builder =
-      if saveFormat spec == HTML
-        then interactiveBlock
-        else figure
+    builder = case saveFormat spec of
+      HTML -> interactiveBlock
+      LaTeX -> latexInput
+      _ -> figure
 
 figure ::
   Attr ->
@@ -109,6 +110,29 @@ figure as fp caption' =
 -- </figure>
 --     |]
 
+latexInput :: Attr -> FilePath -> Inlines -> PlotM Block
+latexInput _ fp caption' = do
+  renderedCaption' <- writeLatex caption'
+  let renderedCaption =
+        if renderedCaption' /= ""
+          then [st|\caption{#{renderedCaption'}}|]
+          else ""
+  return $
+    RawBlock
+      "latex"
+      [st|
+    \begin{figure}
+        \centering
+        \input{#{pack $ normalizePath $ fp}}
+        #{renderedCaption}
+    \end{figure}
+        |]
+  where
+    normalizePath = map f
+      where
+        f '\\' = '/'
+        f x = x
+
 interactiveBlock ::
   Attr ->
   FilePath ->
@@ -135,6 +159,11 @@ interactiveBlock _ fp caption' = do
 -- | Convert Pandoc inlines to html
 writeHtml :: Inlines -> PlotM Text
 writeHtml is = liftIO $ handleError $ runPure $ writeHtml5String def document
+  where
+    document = Pandoc mempty [Para . toList $ is]
+
+writeLatex :: Inlines -> PlotM Text
+writeLatex is = liftIO $ handleError $ runPure $ writeLaTeX def document
   where
     document = Pandoc mempty [Para . toList $ is]
 

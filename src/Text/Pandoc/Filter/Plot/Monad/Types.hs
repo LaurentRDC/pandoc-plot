@@ -208,6 +208,8 @@ data SaveFormat
     WEBP
   | -- | HTML for interactive plots.
     HTML
+  | -- | LaTeX text and pdf graphics
+    LaTeX
   deriving (Bounded, Enum, Eq, Show, Generic)
 
 instance IsString SaveFormat where
@@ -221,6 +223,7 @@ instance IsString SaveFormat where
     | s `elem` ["tif", "tiff", "TIF", "TIFF", ".tif", ".tiff"] = TIF
     | s `elem` ["webp", "WEBP", ".webp"] = WEBP
     | s `elem` ["html", "HTML", ".html"] = HTML
+    | s `elem` ["latex", "LaTeX", ".tex"] = LaTeX
     | otherwise =
       errorWithoutStackTrace $
         mconcat
@@ -238,6 +241,7 @@ instance ToJSON SaveFormat where
 
 -- | Save format file extension
 extension :: SaveFormat -> String
+extension LaTeX = ".tex"
 extension fmt = mconcat [".", fmap toLower . show $ fmt]
 
 isWindows :: Bool

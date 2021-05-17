@@ -2,6 +2,18 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+Release 1.2.1
+-------------
+
+* Added the ability to save plots as LaTeX directly from the GNUplot toolkit. To do this, simply set the output format to `latex`. The figure content will be embedded in the output document, which only makes sense for final conversion to LaTeX. For example:
+
+  ````markdown
+    ```{.gnuplot format=latex caption="This is a test."}
+    ...
+    ```
+  ````
+  This patch was contributed by Saku Laesvuori.
+
 Release 1.2.0
 -------------
 
