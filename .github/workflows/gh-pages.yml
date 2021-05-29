@@ -11,11 +11,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup Haskell toolchain
-      uses: haskell/actions/setup@v1
-      with:
-        enable-stack: true
-        stack-version: 'latest'
+    # Stack 2.7.1 is already installed on GithHub-hosted runners
+    # https://github.com/actions/virtual-environments
 
     - uses: actions/setup-python@v2
       with:

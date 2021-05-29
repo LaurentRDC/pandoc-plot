@@ -13,22 +13,22 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            stack_opts: "--ghc-options=-split-sections"
+            stack_build_opts: "--ghc-options=-split-sections"
           - os: "ubuntu-latest"
-            stack_opts: "--ghc-options=-split-sections"
+            stack_build_opts: "--ghc-options=-split-sections"
           - os: "macos-latest"
-            stack_opts: "--ghc-options=-split-sections"
+            stack_build_opts: "--ghc-options=-split-sections"
 
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Setup Haskell toolchain
-      uses: haskell/actions/setup@v1
-      with:
-        enable-stack: true
-        stack-version: 'latest'
+    
+    # Stack 2.7.1 is not able to install ghc 9.0.1 alongside chocolatey's GHC
+    - name: Remove hosted GHC9
+      if: runner.os == 'Windows'
+      run:
+        choco uninstall ghc --yes
 
     - uses: actions/setup-python@v2
       with:
@@ -50,7 +50,7 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('.github/workflows/requirements.txt') }}
 
     - name: Build pandoc-plot
-      run: stack install
+      run: stack install ${{ matrix.stack_build_opts }}
 
     - name: Install Python toolkits
       run: |
@@ -89,19 +89,19 @@ jobs:
         choco install --yes --no-progress gnuplot
     
     - name: Build dependencies
-      run: stack build ${{ matrix.stack_opts }} --test --no-run-tests
+      run: stack build ${{ matrix.stack_build_opts }} --test --no-run-tests
 
     - name: Check installed plotting toolkits
       run: stack exec -- pandoc-plot toolkits
 
     - name: Unit tests
-      run: stack test ${{ matrix.stack_opts }}
+      run: stack test ${{ matrix.stack_build_opts }}
     
     - name: Integration tests
       shell: bash
       run: |
-        stack install pandoc ${{ matrix.stack_opts }}
-        stack install ${{ matrix.stack_opts }}
+        stack install pandoc ${{ matrix.stack_build_opts }}
+        stack install ${{ matrix.stack_build_opts }}
         
         stack exec -- pandoc --filter pandoc-plot -i tests/integration.md -t html
         if [ $(ls "plots" | wc -l) == 0 ]; then
@@ -123,7 +123,7 @@ jobs:
       shell: bash
       run: |
         mkdir artifact
-        stack install ${{ matrix.stack_opts }} --local-bin-path artifact
+        stack install ${{ matrix.stack_build_opts }} --local-bin-path artifact
 
         if [[ "${{ runner.os }}" != "Windows" ]]
         then
@@ -134,7 +134,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         mkdir artifact-static
-        stack install ${{ matrix.stack_opts }} --flag pandoc-plot:static --local-bin-path artifact-static
+        stack install ${{ matrix.stack_build_opts }} --flag pandoc-plot:static --local-bin-path artifact-static
         chmod +x artifact-static/pandoc-plot
 
     - name: Upload artifact

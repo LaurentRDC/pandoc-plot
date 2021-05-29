@@ -14,9 +14,9 @@ import Data.Text (unpack)
 import qualified Data.Text.IO as TIO
 import Data.Version (parseVersion, showVersion)
 import qualified Data.Version as V
+import Development.GitRev (gitHash)
 import ExampleConfig (embedExampleConfig)
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
-import GitHash as Git (giHash, tGitInfoCwdTry)
 import ManPage (embedManualHtml)
 import OpenFile (openFile)
 import Options.Applicative
@@ -259,7 +259,7 @@ localConfig = do
 showFullVersion :: IO ()
 showFullVersion = do
   putStrLn $ "pandoc-plot " <> V.showVersion pandocPlotVersion
-  putStrLn $ "Git revision " <> gitrev
+  putStrLn $ "Git revision " <> $gitHash
   putStrLn $
     mconcat
       [ "Compiled with pandoc ",
@@ -269,10 +269,6 @@ showFullVersion = do
         " using GHC ",
         TOOL_VERSION_ghc -- Constant defined by CPP
       ]
-  where
-    -- In certain environments (e.g. Hackage when building documentation),
-    -- there is no git information.
-    gitrev = either (const "unknown") Git.giHash ($$tGitInfoCwdTry)
 
 showAvailableToolkits :: Maybe FilePath -> IO ()
 showAvailableToolkits mfp = do
