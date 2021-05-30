@@ -164,3 +164,29 @@ jobs:
         name: pandoc-plot-wininst-x86_64
         path: installer/pandoc-plot-wininst-x86_64.exe
         retention-days: 7
+
+  release:
+    needs: [build-and-test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/download-artifact@v2
+      with:
+        path: artifacts
+    
+    - name: create release description
+      run: |
+        python tools/release-description.py CHANGELOG.md > description.md
+        cat description.md
+
+    - name: Create release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        body_path: description.md
+        files: |
+          artifacts/*
+        fail_on_unmatched_files: true
