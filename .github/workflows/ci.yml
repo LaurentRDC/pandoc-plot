@@ -140,7 +140,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: pandoc-plot-${{ runner.os }}-x86_64
+        name: ${{ runner.os }}-artifact
         path: artifact/pandoc-plot*
         retention-days: 7
 
@@ -148,7 +148,7 @@ jobs:
       uses: actions/upload-artifact@v2
       if: runner.os == 'Linux'
       with:
-        name: pandoc-plot-${{ runner.os }}-x86_64-static
+        name: ${{ runner.os }}-artifact-static
         path: artifact-static/pandoc-plot
         retention-days: 7
 
@@ -161,7 +161,7 @@ jobs:
       uses: actions/upload-artifact@v2
       if: runner.os == 'Windows'
       with:
-        name: pandoc-plot-wininst-x86_64
+        name: ${{ runner.os }}-artifact-installer
         path: installer/pandoc-plot-wininst-x86_64.exe
         retention-days: 7
 
@@ -172,10 +172,21 @@ jobs:
     - uses: actions/checkout@v2
 
     - uses: actions/download-artifact@v2
-      with:
-        path: artifacts
     
-    - name: create release description
+    - name: Compress artifacts and move to assets
+      run: |
+        mkdir assets
+        zip assets/pandoc-plot-Windows-x86_64.zip Windows-artifact/pandoc-plot.exe
+        mv Windows-artifact-installer/*.exe assets
+
+        zip assets/pandoc-plot-Linux-x86_64.zip Linux-artifact/pandoc-plot
+        zip assets/pandoc-plot-Linux-x86_64-static.zip Linux-artifact-static/pandoc-plot
+
+        zip assets/pandoc-plot-macOS-x86_64.zip macOS-artifact/pandoc-plot
+
+        ls -a assets
+
+    - name: Create release description
       run: |
         python tools/release-description.py CHANGELOG.md > description.md
         cat description.md
@@ -188,5 +199,4 @@ jobs:
       with:
         body_path: description.md
         files: |
-          artifacts/*
-        fail_on_unmatched_files: true
+          assets/*
