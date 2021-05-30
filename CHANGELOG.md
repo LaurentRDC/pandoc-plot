@@ -6,6 +6,7 @@ Release 1.2.2
 -------------
 
 * Executables are now built using GHC 9.0.1
+* The executables are now built with Pandoc 2.14. Pandoc 2.11, 2.12, and 2.13 are still supported.
 
 Release 1.2.1
 -------------
