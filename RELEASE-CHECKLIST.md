@@ -1,10 +1,10 @@
 # Release checklist
 
 [ ] Update CHANGELOG.md if necessary.
-[ ] Run Github Actions to make sure tests pass.
 [ ] Tag release in git.
     `git tag -a "version" && git push origin "version"`
-[ ] Download artifacts from Github Actions and upload to new GitHub release.
+    The executables/installers will be created and a new GitHub release will
+    automatically be generated.
 [ ] Upload to Hackage: `stack upload .`
 
 ## Conda-forge package
