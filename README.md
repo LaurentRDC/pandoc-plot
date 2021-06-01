@@ -36,8 +36,17 @@ it in an HTML page:
 pandoc --filter pandoc-plot input.md --output output.html
 ```
 
-*Note that pandoc-plot only works with pandoc \>= 2.11 because of some
-breaking changes in pandoc’s API.*
+The resulting `output.html` looks like this:
+
+```html
+<h1 id="my-document">My document</h1>
+
+<p>This is a paragraph.</p>
+
+<figure>
+<img src="plots\9671478262050082276.png" />
+</figure>
+```
 
 ## Supported toolkits
 
