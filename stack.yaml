@@ -5,11 +5,11 @@ packages:
 - .
 
 extra-deps:
-- pandoc-2.14
+- pandoc-2.14.0.1
 - hslua-module-path-0.1.0.1@sha256:1fe319f18315618491260c912e85b6f73e406499c8fe2fa505e59036a4ff78fd,2502
 - citeproc-0.4@sha256:e198157aec60dbce1e6c1e29592ec6ded69ee5a79ea6645164356bd89458953e,5602
 - commonmark-0.2@sha256:ee873331ff496060dd9becdfaf7f1f4e0fd0688463f5d1f61481a60ed661af45,3426
-- commonmark-extensions-0.2.1.1@sha256:447bda074904ea765c51c73eeb086bbcff936d984366330f9f8506afeefc5ee5,3486
+- commonmark-extensions-0.2.1.2
 - commonmark-pandoc-0.2.1@sha256:7c5db787c15c7a80aa66f5874023386e9b07c134ce24ef9f3aaebe9f52b6f817,1151
 - haddock-library-1.10.0@sha256:2a6c239da9225951a5d837e1ce373faeeae60d1345c78dd0a0b0f29df30c4fe9,4098 
 - jira-wiki-markup-1.4.0@sha256:2fdb7b50bd270d7d388b31df1c746c2864326b68bdd44045323c4f81fd6d5283,3851 
