@@ -3,9 +3,8 @@
 [ ] Update CHANGELOG.md if necessary.
 [ ] Tag release in git.
     `git tag -a "version" && git push origin "version"`
-    The executables/installers will be created and a new GitHub release will
-    automatically be generated.
-[ ] Upload to Hackage: `stack upload .`
+    The executables/installers will be created, new GitHub release will
+    automatically be generated, and the new version will be uploaded to Hackage.
 
 ## Conda-forge package
 [ ] Create branch on `pandoc-plot-feedstock`.

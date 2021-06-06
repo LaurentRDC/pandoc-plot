@@ -200,3 +200,11 @@ jobs:
         body_path: description.md
         files: |
           assets/*
+    
+    - name: Upload to Hackage
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
+        HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
+      run: |
+        stack upload .

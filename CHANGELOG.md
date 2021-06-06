@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.2.3
+
+* Releases are now completely taken care of via Github actions
+
 ## Release 1.2.2
 
 * Executables are now built using GHC 9.0.1
