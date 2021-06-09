@@ -211,4 +211,4 @@ jobs:
         HACKAGE_USERNAME: ${{ secrets.HACKAGE_USERNAME }}
         HACKAGE_PASSWORD: ${{ secrets.HACKAGE_PASSWORD }}
       run: |
-        stack upload .
+        stack upload --ignore-check --no-install-ghc .
