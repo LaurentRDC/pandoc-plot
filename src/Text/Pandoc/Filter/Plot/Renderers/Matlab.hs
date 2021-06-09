@@ -48,14 +48,20 @@ matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 matlabCommand :: Text -> Text -> OutputSpec -> Text
-matlabCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} -batch "run('#{oScriptPath}')"|]
+matlabCommand cmdargs exe OutputSpec {..} = 
+  -- The MATLAB 'run' function will switch to the directory where the script
+  -- is located before executing the script. Therefore, we first save the current
+  -- working directory in the variable 'pandoc_plot_cwd' so that we can use it 
+  -- when exporting the figure
+  [st|#{exe} #{cmdargs} -sd '#{oCWD}' -noFigureWindows -batch "pandoc_plot_cwd=pwd; run('#{oScriptPath}')"|]
 
 -- On Windows at least, "matlab -help"  actually returns -1, even though the
 -- help text is shown successfully!
 -- Therefore, we cannot rely on this behavior to know if matlab is present,
 -- like other toolkits.
 matlabAvailable :: PlotM Bool
-matlabAvailable = asksConfig matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <> exeExtension))
+matlabAvailable = 
+  asksConfig matlabExe >>= (\exe -> liftIO $ existsOnPath (exe <> exeExtension))
 
 matlabCapture :: FigureSpec -> FilePath -> Script
 matlabCapture = appendCapture matlabCaptureFragment
@@ -63,9 +69,15 @@ matlabCapture = appendCapture matlabCaptureFragment
 matlabCaptureFragment :: FigureSpec -> FilePath -> Script
 matlabCaptureFragment FigureSpec {..} fname =
   [st|
-if exist("exportgraphics")>0
-    exportgraphics(gcf, '#{fname}', 'Resolution', #{dpi});
+if java.io.File('#{fname}').isAbsolute() > 0
+  exportpath = '#{fname}';
 else
-    saveas(gcf, '#{fname}');
+  exportpath = fullfile(pandoc_plot_cwd, '#{fname}');
+end
+
+if exist("exportgraphics")>0
+    exportgraphics(gcf, exportpath, 'Resolution', #{dpi});
+else
+    saveas(gcf, exportpath);
 end
 |]

@@ -160,7 +160,7 @@ instance Show InclusionKey where
 inclusionKeys :: [InclusionKey]
 inclusionKeys = enumFromTo (minBound :: InclusionKey) maxBound
 
--- | Datatype containing all parameters required to run pandoc-plot.
+-- | Datatype containing all parameters required to specify a figure.
 --
 -- It is assumed that once a @FigureSpec@ has been created, no configuration
 -- can overload it; hence, a @FigureSpec@ completely encodes a particular figure.
@@ -256,7 +256,7 @@ data OutputSpec = OutputSpec
     oScriptPath :: FilePath,
     -- | Figure output path
     oFigurePath :: FilePath,
-    -- | Current working directory (used for PlantUML)
+    -- | Current working directory
     oCWD :: FilePath
   }
 

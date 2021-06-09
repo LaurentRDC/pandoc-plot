@@ -4,7 +4,8 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## Release 1.2.3
 
-* Releases are now completely taken care of via Github actions
+* Fixed an issue where MATLAB figures were not being saved in the right location (#27).
+* Releases are now completely taken care of via Github actions.
 
 ## Release 1.2.2
 
