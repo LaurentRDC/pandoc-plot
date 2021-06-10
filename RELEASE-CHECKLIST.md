@@ -5,6 +5,7 @@
     `git tag -a "version" && git push origin "version"`
     The executables/installers will be created, new GitHub release will
     automatically be generated, and the new version will be uploaded to Hackage.
+[ ] Release to Hackage: `stack upload .`
 
 ## Conda-forge package
 [ ] Create branch on `pandoc-plot-feedstock`.
