@@ -155,6 +155,8 @@ plotTransform conf (Pandoc meta blocks) = do
     debug $ mconcat ["Starting a new run, utilizing at most ", pack . show $ maxproc, " processes."]
     mapConcurrentlyN maxproc make blocks <&> Pandoc newMeta
   where
+    -- This variable is needed for pandoc's default LaTeX template,
+    -- so that graphicx gets used.
     newMeta = meta <> Meta (singleton "graphics" $ MetaBool True)
 
 -- | The version of the pandoc-plot package.
