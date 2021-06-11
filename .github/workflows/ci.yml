@@ -180,13 +180,13 @@ jobs:
     - name: Compress artifacts and move to assets
       run: |
         mkdir assets
-        zip assets/pandoc-plot-Windows-x86_64.zip Windows-artifact/pandoc-plot.exe
+        zip -j assets/pandoc-plot-Windows-x86_64.zip Windows-artifact/pandoc-plot.exe
         mv Windows-artifact-installer/*.exe assets
 
-        zip assets/pandoc-plot-Linux-x86_64.zip Linux-artifact/pandoc-plot
-        zip assets/pandoc-plot-Linux-x86_64-static.zip Linux-artifact-static/pandoc-plot
+        zip -j assets/pandoc-plot-Linux-x86_64.zip Linux-artifact/pandoc-plot
+        zip -j assets/pandoc-plot-Linux-x86_64-static.zip Linux-artifact-static/pandoc-plot
 
-        zip assets/pandoc-plot-macOS-x86_64.zip macOS-artifact/pandoc-plot
+        zip -j assets/pandoc-plot-macOS-x86_64.zip macOS-artifact/pandoc-plot
 
         ls -a assets
 
