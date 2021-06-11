@@ -21,18 +21,29 @@
 -- Here is an example, in Markdown, for a plot in MATLAB:
 --
 -- @
---     This is a paragraph.
+-- This is a paragraph.
+-- 
+-- ```{.matlabplot}
+-- figure()
+-- plot([1,2,3,4,5], [1,2,3,4,5], '-k')
+-- ```
+-- @
 --
---     ```{.matlabplot}
---     figure()
---     plot([1,2,3,4,5], [1,2,3,4,5], '-k')
---     ```
+-- or a using GNUPlot:
+--
+-- @
+-- ```{.gnuplot format=png caption="Sinusoidal function" source=true}
+-- sin(x)
+-- 
+-- set xlabel "x"
+-- set ylabel "y"
+-- ```
 -- @
 --
 -- The code block will be reworked into a script and the output figure will be captured. Optionally, the source code
 --  used to generate the figure will be linked in the caption.
 --
--- Here are the possible attributes what pandoc-plot understands for ALL toolkits:
+-- Here are some of the possible attributes what pandoc-plot understands for ALL toolkits:
 --
 --     * @directory=...@ : Directory where to save the figure. This path should be specified with
 --       respect to the current working directory, and not with respect to the document.
@@ -52,19 +63,10 @@
 --       code block will be ignored. This path should be specified with respect to the current working
 --       directory, and not with respect to the document.
 --
+-- All attributes are described in the online documentation, linked on the home page. 
 -- Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a
 -- YAML file.
---
--- Here is an example code block which will render a figure using gnuplot, in Markdown:
---
--- @
---     ```{.gnuplot format=png caption="Sinusoidal function" source=true}
---     sin(x)
---
---     set xlabel "x"
---     set ylabel "y"
---     ```
--- @
+
 module Text.Pandoc.Filter.Plot
   ( -- * Operating on whole Pandoc documents
     plotTransform,

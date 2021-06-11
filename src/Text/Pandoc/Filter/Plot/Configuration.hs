@@ -102,11 +102,11 @@ defaultConfiguration =
 -- For example, at the top of a markdown file:
 --
 -- @
---     ---
---     title: My document
---     author: John Doe
---     plot-configuration: /path/to/file.yml
---     ---
+-- ---
+-- title: My document
+-- author: John Doe
+-- plot-configuration: /path/to/file.yml
+-- ---
 -- @
 --
 -- The same can be specified via the command line using Pandoc's @-M@ flag:
