@@ -159,7 +159,11 @@ jobs:
     - name: Build Installer [Windows]
       if: runner.os == 'Windows'
       shell: pwsh
-      run: .\tools\build-setup.ps1
+      run: |
+        stack clean --full
+        stack install ${{ matrix.stack_build_opts }} pandoc-plot --local-bin-path ".\installer"
+        $version = .\installer\pandoc-plot.exe --version
+        iscc /dAppVersion=$version ".\installer\pandoc-plot-setup.iss"
 
     - name: Upload artifact [Windows - installer]
       uses: actions/upload-artifact@v2
