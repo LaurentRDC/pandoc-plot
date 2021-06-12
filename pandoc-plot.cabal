@@ -43,6 +43,7 @@ extra-source-files:
     tests/includes/plotly-python.py
     tests/includes/plotly-r.r
     tests/includes/plotsjl.jl
+    tests/includes/plantuml.txt
 
 source-repository head
     type: git
