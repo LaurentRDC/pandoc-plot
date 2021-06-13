@@ -208,3 +208,30 @@ jobs:
         body_path: description.md
         files: |
           assets/*
+
+  winget-release:
+    needs: [release]
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/download-artifact@v2
+
+    - name: Get pandoc-plot version
+      run: |
+        $VERSION = .\Windows-artifact\pandoc-plot.exe --version
+
+    - name: Update Winget package
+      if: startsWith(github.ref, 'refs/tags/')
+      shell: pwsh
+      env:
+        INSTALLER_URL: https://github.com/LaurentRDC/pandoc-plot/releases/download/$(VERSION)/pandoc-plot-wininst-x86_64.exe
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        iwr https://aka.ms/wingetcreate/latest/self-contained -OutFile wingetcreate.exe
+        wingetcreate.exe update `
+          -i LaurentPRenedeCotret.pandoc-plot `
+          --url $(INSTALLER_URL)
+          --version $(VERSION) `
+          --token $(GITHUB_TOKEN) `
+          --submit
