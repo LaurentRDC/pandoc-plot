@@ -67,7 +67,7 @@ outputDirs = fmap (catMaybes . nub) . sequence . query (\b -> [hasDirectory <$> 
     hasDirectory (Figure fs) = Just $ directory fs
     hasDirectory _ = Nothing
 
--- PlotM version of @cleanOutputDirs@
+-- | PlotM version of @cleanOutputDirs@
 cleanOutputDirsM ::
   Walkable Block b =>
   b ->
@@ -102,11 +102,11 @@ readDoc fp =
               bst readerOpts b
       )
 
--- Determine format based on file extension
+-- | Determine format based on file extension
 -- Note : this is exactly the heuristic used by pandoc here:
 -- https://github.com/jgm/pandoc/blob/master/src/Text/Pandoc/App/FormatHeuristics.hs
 --
--- However, this is not exported, so I must re-define it here.
+-- However, this is not exported, so it must be re-defined here.
 formatFromFilePath :: FilePath -> Maybe Text
 formatFromFilePath x =
   case takeExtension (map toLower x) of
