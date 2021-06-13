@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.2.4
+
+* New version will automatically be submitted for review to the Windows Package Manager [winget](https://github.com/microsoft/winget-pkgs)
+
 ## Release 1.2.3
 
 * Fixed an issue where MATLAB figures were not being saved in the right location (#27).
