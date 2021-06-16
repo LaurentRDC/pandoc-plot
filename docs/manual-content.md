@@ -415,19 +415,26 @@ You will need to re-name the file to `.pandoc-ploy.yml` to be able to use it, so
 Here is the full help text for the `write-example-config` command:
 
 ```{.bash include=help-config.txt}
+```
 
 ### As a Haskell library
 
-To include the functionality of `pandoc-plot` in a Haskell package, you can use the `makePlot` function (for single blocks) or `plotTransform` function (for entire documents). [Take a look at the documentation on Hackage](https://hackage.haskell.org/package/pandoc-plot).
+To include the functionality of `pandoc-plot` in a Haskell package, you can use the `make` function (for single blocks) or `plotFilter` function (for entire documents). [Take a look at the documentation on Hackage](https://hackage.haskell.org/package/pandoc-plot).
 
 #### Usage with Hakyll
 
 In case you want to use the filter with your own Hakyll setup, you can use a transform function that works on entire documents:
 
 ```haskell
-import Text.Pandoc.Filter.Plot (plotTransform, defaultConfiguration)
-
+import Text.Pandoc.Filter.Plot (plotFilter, defaultConfiguration)
+import Text.Pandoc.Definition (Pandoc, Format(..)) -- from pandoc-types
 import Hakyll
+
+plotFilter' :: Pandoc -> IO Pandoc
+plotFilter' = 
+  -- Notify pandoc-plot that the final conversion will be to HTML
+  -- This helps give better error messages and adjust default values
+  plotFilter defaultConfiguration (Just $ Format "html5") 
 
 -- Unsafe compiler is required because of the interaction
 -- in IO (i.e. running an external script).
@@ -436,10 +443,9 @@ makePlotPandocCompiler =
   pandocCompilerWithTransformM
     defaultHakyllReaderOptions
     defaultHakyllWriterOptions
-    (unsafeCompiler . plotTransform defaultConfiguration)
+    (unsafeCompiler . plotFilter')
 ```
 
 ## Warning
 
-Do not run this filter on unknown documents. There is nothing in
-`pandoc-plot` that can stop a script from performing **evil actions**.
+Do not run this filter on unknown documents. There is nothing in `pandoc-plot` that can stop a script from performing **evil actions**.

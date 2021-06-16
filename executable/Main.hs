@@ -55,7 +55,7 @@ import Text.Pandoc.Filter.Plot
     configuration,
     defaultConfiguration,
     pandocPlotVersion,
-    plotTransform,
+    plotFilter,
   )
 import Text.Pandoc.Filter.Plot.Internal
   ( Executable (..),
@@ -216,9 +216,9 @@ toJSONFilterWithConfig :: IO ()
 toJSONFilterWithConfig = do
   upToDatePandoc <- checkRuntimePandocVersion
   when upToDatePandoc $
-    toJSONFilter $ \doc -> do
+    toJSONFilter $ \mfmt doc -> do
       c <- maybe localConfig configuration (configurationPathMeta doc)
-      plotTransform c doc
+      plotFilter c mfmt doc
 
 -- | Check that the runtime version of Pandoc is at least 2.11. The return value
 -- indicates whether the Pandoc version is new enough or not.

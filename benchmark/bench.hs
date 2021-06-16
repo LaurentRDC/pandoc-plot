@@ -22,7 +22,7 @@ import Text.Pandoc.Filter.Plot
     Verbosity (Silent),
     cleanOutputDirs,
     defaultConfiguration,
-    plotTransform,
+    plotFilter,
   )
 import Text.Pandoc.Filter.Plot.Internal (cls)
 
@@ -32,7 +32,7 @@ main =
     [ envWithCleanup (return ()) (\_ -> cleanupEnv) $ \_ ->
         bgroup
           "main"
-          [ bench "filter" $ nfIO (plotTransform plotConfig benchDoc)
+          [ bench "filter" $ nfIO (plotFilter plotConfig Nothing benchDoc)
           ]
     ]
 

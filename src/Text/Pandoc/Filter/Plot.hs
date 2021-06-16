@@ -11,7 +11,7 @@
 -- Stability   : unstable
 -- Portability : portable
 --
--- This module defines a Pandoc filter @plotTransform@ and related functions
+-- This module defines a Pandoc filter @plotFilter@ and related functions
 -- that can be used to walk over a Pandoc document and generate figures from
 -- code blocks, using a multitude of plotting toolkits.
 --
@@ -43,7 +43,7 @@
 -- The code block will be reworked into a script and the output figure will be captured. Optionally, the source code
 --  used to generate the figure will be linked in the caption.
 --
--- Here are some of the possible attributes what pandoc-plot understands for ALL toolkits:
+-- Here are /some/ of the possible attributes what pandoc-plot understands for ALL toolkits:
 --
 --     * @directory=...@ : Directory where to save the figure. This path should be specified with
 --       respect to the current working directory, and not with respect to the document.
@@ -64,11 +64,10 @@
 --       directory, and not with respect to the document.
 --
 -- All attributes are described in the online documentation, linked on the home page. 
--- Default values for the above attributes are stored in the @Configuration@ datatype. These can be specified in a
--- YAML file.
 
 module Text.Pandoc.Filter.Plot
   ( -- * Operating on whole Pandoc documents
+    plotFilter,
     plotTransform,
 
     -- * Cleaning output directories
@@ -107,7 +106,7 @@ import Data.Map (singleton)
 import Data.Text (Text, pack, unpack)
 import Data.Version (Version)
 import Paths_pandoc_plot (version)
-import Text.Pandoc.Definition (Block, Meta (..), MetaValue (..), Pandoc (..))
+import Text.Pandoc.Definition (Block, Meta (..), Format, MetaValue (..), Pandoc (..))
 import Text.Pandoc.Filter.Plot.Internal
   ( Configuration (..),
     FigureSpec,
@@ -142,25 +141,54 @@ import Text.Pandoc.Walk (walkM)
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
 -- into figures. This function will operate on blocks in parallel if possible.
 --
+-- If the target conversion format is known, then this function can provide better
+-- defaults and error messages. For example, hyperlinks to source code will only be created
+-- if the final target format supports it (e.g. HTML).
+--
 -- Failing to render a figure does not stop the filter, so that you may run the filter
 -- on documents without having all necessary toolkits installed. In this case, error
 -- messages are printed to stderr, and blocks are left unchanged.
-plotTransform ::
+--
+-- @since 1.3.0
+plotFilter ::
   -- | Configuration for default values
   Configuration ->
+  -- | Final converted format, if known
+  Maybe Format ->
   -- | Input document
   Pandoc ->
   IO Pandoc
-plotTransform conf (Pandoc meta blocks) = do
+plotFilter conf mfmt (Pandoc meta blocks) = do
   maxproc <- getNumCapabilities
-  -- TODO: make filter aware of target format
-  runPlotM Nothing conf $ do
+  runPlotM mfmt conf $ do
     debug $ mconcat ["Starting a new run, utilizing at most ", pack . show $ maxproc, " processes."]
     mapConcurrentlyN maxproc make blocks <&> Pandoc newMeta
   where
     -- This variable is needed for pandoc's default LaTeX template,
     -- so that graphicx gets used.
     newMeta = meta <> Meta (singleton "graphics" $ MetaBool True)
+
+-- | Walk over an entire Pandoc document, transforming appropriate code blocks
+-- into figures. This function will operate on blocks in parallel if possible.
+--
+-- Failing to render a figure does not stop the filter, so that you may run the filter
+-- on documents without having all necessary toolkits installed. In this case, error
+-- messages are printed to stderr, and blocks are left unchanged.
+--
+-- __Note that this function is DEPRECATED in favour of @plotFilter@. It will be 
+-- removed in the next major update (v2+).__
+plotTransform ::
+  -- | Configuration for default values
+  Configuration ->
+  -- | Input document
+  Pandoc ->
+  IO Pandoc
+{-# DEPRECATED plotTransform
+  [ "plotTransform has been deprecated in favour of plotFilter, which is aware of conversion format."
+  , "plotTransform will be removed in an upcoming major update."
+  ] 
+#-}
+plotTransform conf = plotFilter conf Nothing
 
 -- | The version of the pandoc-plot package.
 --

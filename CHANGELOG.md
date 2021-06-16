@@ -2,9 +2,11 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
-## Release 1.2.4
+## Release 1.3.0
 
-* New version will automatically be submitted for review to the Windows Package Manager [winget](https://github.com/microsoft/winget-pkgs)
+* The executable `pandoc-plot` is now aware of final conversion format. For example, hyperlinks to source code will only be created if the final target format supports it (e.g. HTML).
+* Added a new function, `plotFilter`, which is aware of the pandoc's final conversion format. This allows for better defaults and error messages.
+* Deprecated `plotTransform` in favour of `plotFilter`. `plotTransform` will be removed in the next major update (v2+).
 
 ## Release 1.2.3
 
