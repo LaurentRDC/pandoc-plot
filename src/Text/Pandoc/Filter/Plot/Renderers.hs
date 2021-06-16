@@ -38,6 +38,9 @@ import qualified Data.Map.Strict as M
 import Data.Maybe (catMaybes, isJust)
 import Data.Text (Text, pack)
 import Text.Pandoc.Filter.Plot.Monad
+import Text.Pandoc.Filter.Plot.Monad.Logging
+  ( Logger (lVerbosity),
+  )
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
 import Text.Pandoc.Filter.Plot.Renderers.GGPlot2
 import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
@@ -135,8 +138,7 @@ unavailableToolkits conf = runPlotM Nothing conf unavailableToolkitsM
 --
 -- Note that logging is disabled
 availableToolkitsM :: PlotM [Toolkit]
-availableToolkitsM = silence $
-  asNonStrict $ do
+availableToolkitsM = asNonStrictAndSilent $ do
     mtks <- forConcurrently toolkits $ \tk -> do
       available <- isJust <$> renderer tk
       if available
@@ -144,7 +146,7 @@ availableToolkitsM = silence $
         else return Nothing
     return $ catMaybes mtks
   where
-    asNonStrict = local (\(RuntimeEnv f c l d) -> RuntimeEnv f c {strictMode = False} l d)
+    asNonStrictAndSilent = local (\(RuntimeEnv f c l d) -> RuntimeEnv f (c{strictMode = False}) (l{lVerbosity = Silent}) d)
 
 -- | Monadic version of @unavailableToolkits@
 unavailableToolkitsM :: PlotM [Toolkit]

@@ -101,6 +101,7 @@ module Text.Pandoc.Filter.Plot
 where
 
 import Control.Concurrent (getNumCapabilities)
+import Control.Monad.Reader (when)
 import Data.Functor ((<&>))
 import Data.Map (singleton)
 import Data.Text (Text, pack, unpack)
@@ -120,6 +121,7 @@ import Text.Pandoc.Filter.Plot.Internal
     Toolkit (..),
     Verbosity (..),
     asks,
+    asksConfig,
     availableToolkits,
     cleanOutputDirs,
     configuration,
@@ -134,7 +136,6 @@ import Text.Pandoc.Filter.Plot.Internal
     toFigure,
     toolkits,
     unavailableToolkits,
-    whenStrict,
   )
 import Text.Pandoc.Walk (walkM)
 
@@ -168,7 +169,8 @@ pandocPlotVersion :: Version
 pandocPlotVersion = version
 
 -- | Try to process the block with `pandoc-plot`. If a failure happens (or the block)
--- was not meant to become a figure, return the block as-is unless running in strict mode.
+-- was not meant to become a figure, return the block as-is unless running in strict mode. 
+-- In strict mode, any failure (for example, due to a missing plotting toolkit) will halt execution.
 --
 -- New in version 1.2.0: this function will detect nested code blocks, for example in @Div@ blocks.
 make :: Block -> PlotM Block
@@ -178,6 +180,8 @@ make = walkM $ \blk -> either (onError blk) return =<< makeEither blk
     onError b e = do
       whenStrict $ throwStrictError (pack . show $ e)
       return b
+    
+    whenStrict f = asksConfig strictMode >>= \s -> when s f
 
 -- | Try to process the block with `pandoc-plot`, documenting the error.
 -- This function does not transform code blocks nested in

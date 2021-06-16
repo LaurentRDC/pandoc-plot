@@ -26,7 +26,6 @@ module Text.Pandoc.Filter.Plot.Monad
     withPrependedPath,
 
     -- * Halting pandoc-plot
-    whenStrict,
     throwStrictError,
 
     -- * Getting file hashes
@@ -48,7 +47,6 @@ module Text.Pandoc.Filter.Plot.Monad
     ask,
     asks,
     asksConfig,
-    silence,
 
     -- * Base types
     module Text.Pandoc.Filter.Plot.Monad.Types,
@@ -66,10 +64,9 @@ import Control.Concurrent.QSemN
 import Control.Exception.Lifted (bracket, bracket_)
 import Control.Monad.Reader
   ( MonadIO (liftIO),
-    MonadReader (ask, local),
+    MonadReader (ask),
     ReaderT (runReaderT),
     asks,
-    when,
   )
 import Control.Monad.State.Strict
   ( MonadState (get, put),
@@ -107,7 +104,7 @@ import System.Process.Typed
 import Text.Pandoc.Definition (Format (..))
 import Text.Pandoc.Filter.Plot.Monad.Logging
   ( LogSink (..),
-    Logger (lVerbosity),
+    Logger,
     MonadLogger (..),
     Verbosity (..),
     debug,
@@ -133,10 +130,6 @@ data RuntimeEnv = RuntimeEnv
     envLogger :: Logger,
     envCWD :: FilePath
   }
-
--- | Modify the runtime environment to be silent.
-silence :: PlotM a -> PlotM a
-silence = local (\(RuntimeEnv f c l d) -> RuntimeEnv f c l {lVerbosity = Silent} d)
 
 -- | Get access to configuration within the @PlotM@ monad.
 asksConfig :: (Configuration -> a) -> PlotM a
@@ -176,8 +169,8 @@ runCommand wordir command = do
   (ec, processOutput') <-
     liftIO $
       readProcessStderr $
-        -- For Julia specifically, if the line below is not there,
-        -- The following error is thrown on Windows:
+        -- For Julia specifically, if the line below is not there (`setStdin (byteStringInput "")`),
+        -- the following error is thrown on Windows:
         --    ERROR: error initializing stdin in uv_dup:
         --           Unknown system error 50 (Unknown system error 50 50)
         setStdin (byteStringInput "") $
@@ -230,11 +223,6 @@ throwStrictError msg = do
   strict msg
   logger <- askLogger
   liftIO $ terminateLogging logger >> exitFailure
-
--- | Conditional execution of a PlotM action if pandoc-plot is
--- run in strict mode.
-whenStrict :: PlotM () -> PlotM ()
-whenStrict f = asksConfig strictMode >>= \s -> when s f
 
 -- Plot state is used for caching.
 -- One part consists of a map of filepaths to hashes

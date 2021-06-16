@@ -129,7 +129,7 @@ plantuml:
   # preamble: plantuml.txt
   executable: java
   command_line_arguments: -jar plantuml.jar
-  # On Linux, it you have `plantuml.jar` as an executable, you can also
+  # On Linux, if you have `plantuml.jar` as an executable, you can also
   # use the following configuration instead:
   # plantuml:
   #   executable: plantuml
