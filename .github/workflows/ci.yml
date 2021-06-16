@@ -131,7 +131,7 @@ jobs:
 
         if [[ "${{ runner.os }}" != "Windows" ]]
         then
-          chmod +x artifact/pandoc-plot
+          chmod u+x artifact/pandoc-plot
         fi
     
     - name: Build artifact [Linux - static]
@@ -139,7 +139,7 @@ jobs:
       run: |
         mkdir artifact-static
         stack install ${{ matrix.stack_build_opts }} --flag pandoc-plot:static --local-bin-path artifact-static
-        chmod +x artifact-static/pandoc-plot
+        chmod u+x artifact-static/pandoc-plot
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
