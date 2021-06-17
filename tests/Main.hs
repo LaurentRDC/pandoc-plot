@@ -52,6 +52,7 @@ toolkitSuite tk =
       testNestedCodeBlocks,
       testFileInclusion,
       testSaveFormat,
+      testSaveFormatIncompatibility,
       testWithSource,
       testSourceLabel,
       testOverrideConfiguration,
@@ -72,7 +73,7 @@ testEmptyConfiguration =
 
 -- The example configuration is build by hand (to add comments)
 -- and it is embedded into the executable. Therefore, we must make sure it
--- is correctly parsed (and is therefore valid.)
+-- is correctly parsed (and is hence valid.)
 testExampleConfiguration :: TestTree
 testExampleConfiguration =
   testCase "example configuration is correctly parsed" $ do

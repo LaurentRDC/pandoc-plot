@@ -6,6 +6,7 @@ module Common where
 import Control.Monad (unless, when)
 import Data.List (isInfixOf, isSuffixOf, (!!))
 import Data.Monoid ((<>))
+import qualified Data.Set as S
 import Data.String (fromString)
 import Data.Text (Text, pack, unpack)
 import qualified Data.Text as T
@@ -136,6 +137,26 @@ testSaveFormat tk =
       length <$> filter (isExtensionOf (extension fmt))
         <$> listDirectory tempDir
     assertEqual "" numberjpgFiles 1
+
+-------------------------------------------------------------------------------
+-- Test that the appropriate error is raised when trying to save figures
+-- in an incompatible format
+testSaveFormatIncompatibility :: Toolkit -> TestTree
+testSaveFormatIncompatibility tk = 
+  testCase "raises the appropriate error on save format incompatibility" $ do
+    let allSaveFormats = enumFromTo minBound maxBound :: [SaveFormat]
+        incompatibleFormats = S.toList $ S.difference (S.fromList allSaveFormats) (S.fromList $ supportedSaveFormats tk)
+    if null incompatibleFormats
+      then return ()
+      else do
+        let fmt = head incompatibleFormats
+            cb = addSaveFormat fmt $ codeBlock tk (trivialContent tk)
+
+        result <- runPlotM Nothing defaultTestConfig $ makeEither cb
+        let expectedCheck :: Either PandocPlotError a -> Bool
+            expectedCheck (Left (IncompatibleSaveFormatError fmt' tk')) = (fmt' == fmt) && (tk' == tk)
+            expectedCheck _ = False
+        assertBool "" (expectedCheck result)
 
 -------------------------------------------------------------------------------
 -- Test that it is possible to not render source links in captions

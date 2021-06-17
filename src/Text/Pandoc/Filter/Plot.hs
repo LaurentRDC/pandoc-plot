@@ -221,6 +221,7 @@ makeEither block =
       NotAFigure -> return $ Right block
       Figure fs -> runScriptIfNecessary fs >>= handleResult fs
       MissingToolkit tk -> return $ Left $ ToolkitNotInstalledError tk
+      UnsupportedSaveFormat tk sv -> return $ Left $ IncompatibleSaveFormatError sv tk
   where
     -- Logging of errors has been taken care of in @runScriptIfNecessary@
     handleResult :: FigureSpec -> ScriptResult -> PlotM (Either PandocPlotError Block)
@@ -232,8 +233,10 @@ data PandocPlotError
   = ScriptRuntimeError Text Int
   | ScriptChecksFailedError Text
   | ToolkitNotInstalledError Toolkit
+  | IncompatibleSaveFormatError SaveFormat Toolkit
 
 instance Show PandocPlotError where
   show (ScriptRuntimeError _ exitcode) = "ERROR (pandoc-plot) The script failed with exit code " <> show exitcode <> "."
   show (ScriptChecksFailedError msg) = "ERROR (pandoc-plot) A script check failed with message: " <> unpack msg <> "."
   show (ToolkitNotInstalledError tk) = "ERROR (pandoc-plot) The " <> show tk <> " toolkit is required but not installed."
+  show (IncompatibleSaveFormatError tk sv) = "ERROR (pandoc-plot) Save format " <> show sv <> " not supported by the " <> show tk <> " toolkit." 

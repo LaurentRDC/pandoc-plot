@@ -210,7 +210,7 @@ data SaveFormat
     HTML
   | -- | LaTeX text and pdf graphics
     LaTeX
-  deriving (Bounded, Enum, Eq, Show, Generic)
+  deriving (Bounded, Enum, Ord, Eq, Show, Generic)
 
 instance IsString SaveFormat where
   fromString s
