@@ -49,7 +49,6 @@ source-repository head
     type: git
     location: https://github.com/LaurentRDC/pandoc-plot
 
-
 flag static
     description: Statically-linked binary
     manual: True
