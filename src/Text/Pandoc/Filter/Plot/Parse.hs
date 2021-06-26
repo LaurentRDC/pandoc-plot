@@ -72,8 +72,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
       r <- renderer tk
       case r of
         Nothing -> do
-          let msg = mconcat ["Renderer for ", tshow tk, " needed but is not installed"]
-          warning msg
+          err $ mconcat ["Renderer for ", tshow tk, " needed but is not installed"]
           return $ MissingToolkit tk
         Just r' -> figureSpec r'
   where
@@ -141,7 +140,7 @@ parseContent (CodeBlock (_, _, attrs) content) = do
   let attrs' = Map.fromList attrs
       mfile = normalise . unpack <$> Map.lookup (tshow FileK) attrs'
   when (content /= mempty && isJust mfile) $ do
-    err $
+    warning $
       mconcat
         [ "Figure refers to a file (",
           pack $ fromJust mfile,

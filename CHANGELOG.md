@@ -4,7 +4,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## Release 1.3.0
 
-* The executable `pandoc-plot` is now aware of final conversion format. For example, hyperlinks to source code will only be created if the final target format supports it (e.g. HTML).
+* The executable `pandoc-plot` is now aware of final conversion format.
 * Added a new function, `plotFilter`, which is aware of the pandoc's final conversion format. This allows for better defaults and error messages.
 * Deprecated `plotTransform` in favour of `plotFilter`. `plotTransform` will be removed in the next major update (v2+).
 * Save formats incompatible with toolkits will now show an appropriate error.
