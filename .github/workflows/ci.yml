@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            stack_build_opts: "--system-ghc"
+            stack_build_opts: ""
           - os: "ubuntu-latest"
             stack_build_opts: "--ghc-options=-split-sections"
           - os: "macos-latest"
@@ -23,6 +23,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    # Stack 2.7.1 is not able to install ghc 9.0.1 alongside chocolatey's GHC
+    - name: Remove hosted GHC9
+      if: runner.os == 'Windows'
+      run:
+        choco uninstall ghc --yes
 
     - uses: actions/setup-python@v2
       with:
