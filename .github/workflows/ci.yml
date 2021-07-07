@@ -26,7 +26,7 @@ jobs:
     
     # Stack 2.7.1 is not able to install ghc 9.0.1 alongside chocolatey's GHC
     - name: Remove hosted GHC9
-      if: runner.os == 'Windows'
+      if: matrix.os == 'windows-latest'
       run:
         choco uninstall ghc --yes
 
@@ -37,11 +37,19 @@ jobs:
     - uses: r-lib/actions/setup-r@v1
 
     - uses: actions/cache@v2
-      name: Cache Haskell build artifacts
-      if: matrix.os != 'macos-latest'
+      name: Cache Haskell build artifacts [Linux]
+      if: matrix.os == 'ubuntu-latest'
       with:
         path: ~/.stack
         key: ${{ runner.os }}-${{ hashFiles('stack.*') }}
+    
+    - uses: actions/cache@v2
+      name: Cache Haskell build artifacts [Windows]
+      if: matrix.os == 'windows-latest'
+      with:
+        path: |
+          C:\Users\runneradmin\AppData\Roaming\stack\
+        key: ${{ runner.os }}-appdata-roaming-stack-${{ hashFiles('stack.yaml') }}
 
     - uses: actions/cache@v2
       name: Cache Python build artifacts
@@ -50,7 +58,10 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('.github/workflows/requirements.txt') }}
 
     - name: Build pandoc-plot
-      run: stack install ${{ matrix.stack_build_opts }}
+      run: |
+        stack upgrade
+        stack update
+        stack install ${{ matrix.stack_build_opts }}
 
     - name: Install Python toolkits
       run: |
