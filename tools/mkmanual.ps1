@@ -1,14 +1,20 @@
-stack install
-$version = stack exec -- pandoc-plot --version
+param ($stackopts)
+Write-Host "Making the pandoc-plot manual"
+if (!$stackopts) {
+    $stackopts = ""
+}
+
+stack $stackopts install
+$version = stack $stackopts exec -- pandoc-plot --version
 
 # Using ASCII encoding so that the Byte Order Mark is not included at the beginning of the file
-stack exec -- pandoc-plot --help | Out-File -FilePath help.txt -Encoding ASCII
-stack exec -- pandoc-plot clean --help | Out-File -FilePath  help-clean.txt -Encoding ASCII
-stack exec -- pandoc-plot toolkits --help | Out-File -FilePath  help-toolkits.txt -Encoding ASCII
-stack exec -- pandoc-plot write-example-config --help | Out-File -FilePath  help-config.txt -Encoding ASCII
+stack $stackopts exec -- pandoc-plot --help | Out-File -FilePath help.txt -Encoding ASCII
+stack $stackopts exec -- pandoc-plot clean --help | Out-File -FilePath  help-clean.txt -Encoding ASCII
+stack $stackopts exec -- pandoc-plot toolkits --help | Out-File -FilePath  help-toolkits.txt -Encoding ASCII
+stack $stackopts exec -- pandoc-plot write-example-config --help | Out-File -FilePath  help-config.txt -Encoding ASCII
 
 # For GitHub
-stack exec -- pandoc `
+stack $stackopts exec -- pandoc `
                 --standalone `
                 --toc `
                 --toc-depth=4 `
@@ -21,7 +27,7 @@ stack exec -- pandoc `
                 -t gfm -o MANUAL.md
                 
 # To be embedded
-stack exec -- pandoc `
+stack $stackopts exec -- pandoc `
                 --standalone `
                 --self-contained `
                 --wrap=preserve `
@@ -35,4 +41,4 @@ rm .\help-toolkits.txt
 rm .\help-config.txt
 
 # Manual may have changed - update binary
-stack install
+stack $stackopts install
