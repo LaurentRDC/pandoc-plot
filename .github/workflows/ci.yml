@@ -24,6 +24,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
+    - name: DEBUG
+      run: |
+        stack ${{ matrix.stack_global_opts }} install network
+    
     - uses: actions/setup-python@v2
       with:
         python-version: '3.9'
