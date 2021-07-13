@@ -57,9 +57,15 @@ jobs:
 
     - name: Build pandoc-plot
       run: |
+<<<<<<< HEAD
         stack ${{ matrix.stack_global_opts }} upgrade
         stack ${{ matrix.stack_global_opts }} update
         stack ${{ matrix.stack_global_opts }} install
+=======
+        stack ${{ matrix.stack_build_opts }} upgrade
+        stack ${{ matrix.stack_build_opts }} update
+        stack ${{ matrix.stack_build_opts }} install
+>>>>>>> 8ff9fa2224db1699f6bbab584f35c8aec5707ad9
 
     - name: Install Python toolkits
       run: |
@@ -102,19 +108,32 @@ jobs:
         choco install --yes --no-progress gnuplot
     
     - name: Build dependencies
+<<<<<<< HEAD
       run: stack ${{ matrix.stack_global_opts }} build --test --no-run-tests
+=======
+      run: stack ${{ matrix.stack_build_opts }} build --test --no-run-tests
+>>>>>>> 8ff9fa2224db1699f6bbab584f35c8aec5707ad9
 
     - name: Check installed plotting toolkits
       run: stack exec -- pandoc-plot toolkits
 
     - name: Unit tests
+<<<<<<< HEAD
       run: stack  ${{ matrix.stack_global_opts }} test
+=======
+      run: stack  ${{ matrix.stack_build_opts }} test
+>>>>>>> 8ff9fa2224db1699f6bbab584f35c8aec5707ad9
     
     - name: Integration tests
       shell: bash
       run: |
+<<<<<<< HEAD
         stack ${{ matrix.stack_global_opts }} install pandoc
         stack  ${{ matrix.stack_global_opts }} install
+=======
+        stack ${{ matrix.stack_build_opts }} install pandoc
+        stack  ${{ matrix.stack_build_opts }} install
+>>>>>>> 8ff9fa2224db1699f6bbab584f35c8aec5707ad9
         
         stack exec -- pandoc --filter pandoc-plot -i tests/integration.md -t html
         if [ $(ls "plots" | wc -l) == 0 ]; then
@@ -136,7 +155,11 @@ jobs:
       shell: bash
       run: |
         mkdir artifact
+<<<<<<< HEAD
         stack ${{ matrix.stack_global_opts }} install --local-bin-path artifact
+=======
+        stack ${{ matrix.stack_build_opts }} install --local-bin-path artifact
+>>>>>>> 8ff9fa2224db1699f6bbab584f35c8aec5707ad9
 
         if [[ "${{ runner.os }}" != "Windows" ]]
         then
@@ -147,7 +170,11 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         mkdir artifact-static
+<<<<<<< HEAD
         stack ${{ matrix.stack_global_opts }} install --flag pandoc-plot:static --local-bin-path artifact-static
+=======
+        stack ${{ matrix.stack_build_opts }} install --flag pandoc-plot:static --local-bin-path artifact-static
+>>>>>>> 8ff9fa2224db1699f6bbab584f35c8aec5707ad9
         chmod u+x artifact-static/pandoc-plot
 
     - name: Upload artifact
@@ -170,7 +197,11 @@ jobs:
       shell: pwsh
       run: |
         stack clean --full
+<<<<<<< HEAD
         stack ${{ matrix.stack_global_opts }} install pandoc-plot --local-bin-path ".\installer"
+=======
+        stack ${{ matrix.stack_build_opts }} install pandoc-plot --local-bin-path ".\installer"
+>>>>>>> 8ff9fa2224db1699f6bbab584f35c8aec5707ad9
         $version = .\installer\pandoc-plot.exe --version
         iscc /dAppVersion=$version ".\installer\pandoc-plot-setup.iss"
 
