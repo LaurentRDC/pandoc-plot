@@ -53,8 +53,9 @@ jobs:
 
     - name: Build pandoc-plot
       run: |
-        stack ${{ matrix.stack_global_opts }} upgrade
+        stack ${{ matrix.stack_global_opts }} setup
         stack ${{ matrix.stack_global_opts }} update
+        stack ${{ matrix.stack_global_opts }} install network
         stack ${{ matrix.stack_global_opts }} install
 
     - name: Install Python toolkits
