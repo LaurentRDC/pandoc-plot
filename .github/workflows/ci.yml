@@ -13,22 +13,22 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            stack_global_opts: ""
+            stack_global_opts: "--system-ghc"
           - os: "ubuntu-latest"
-            stack_global_opts: ""
+            stack_global_opts: "--system-ghc"
           - os: "macos-latest"
-            stack_global_opts: ""
+            stack_global_opts: "--system-ghc"
 
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
 
-    # stack cannot correctly install GHC alongside the choco version
-    - name: Remove preinstalled GHC and Cabal [Windows]
-      if: matrix.os == 'windows-latest'
-      run: |
-        choco uninstall ghc --forcedependencies --yes
+    - uses: haskell/actions/setup@v1
+      name: Setup Haskell Stack
+      with:
+        ghc-version: 8.10.5
+        stack-version: 2.7.1
 
     - uses: actions/setup-python@v2
       with:
