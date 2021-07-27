@@ -8,6 +8,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 * Added a new function, `plotFilter`, which is aware of the pandoc's final conversion format. This allows for better defaults and error messages.
 * Deprecated `plotTransform` in favour of `plotFilter`. `plotTransform` will be removed in the next major update (v2+).
 * Save formats incompatible with toolkits will now show an appropriate error.
+* The build system is now based on `cabal-install` rather than `stack`.
 
 ## Release 1.2.3
 

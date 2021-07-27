@@ -4,6 +4,7 @@ logging:
   verbosity: debug
 
 matplotlib:
+  executable: "python"
   command_line_arguments: -Wa
 
 plotsjl:

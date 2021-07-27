@@ -1,10 +1,7 @@
 # Build windows installer
 
-Write-Host "Cleaning .stack-work directory"
-stack clean --full
-
 Write-Host "Building executable"
-stack install pandoc-plot --local-bin-path ".\installer"
+cabal install ".\installer"
 
 $version = .\installer\pandoc-plot.exe --version
 Write-Host "Version: " $version

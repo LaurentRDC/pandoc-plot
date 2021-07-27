@@ -153,24 +153,15 @@ the [`cabal-install`](https://www.haskell.org/cabal/) tool:
 
 ``` bash
 cabal update
-cabal install pandoc-plot
-```
-
-or
-
-``` bash
-stack update
-stack install pandoc-plot
+cabal install
 ```
 
 ### From source
 
-Building from source can be done using
-[`stack`](https://docs.haskellstack.org/en/stable/README/) or
-[`cabal`](https://www.haskell.org/cabal/):
+Building from source can be done using [`cabal`](https://www.haskell.org/cabal/):
 
 ``` bash
 git clone https://github.com/LaurentRDC/pandoc-plot
 cd pandoc-plot
-stack install # Alternatively, `cabal install`
+cabal install # Alternatively, `stack install`
 ```

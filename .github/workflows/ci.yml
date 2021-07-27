@@ -1,7 +1,13 @@
 name: CI
 
+defaults:
+  run:
+    shell: bash
+
 on:
   push:
+    paths-ignore:
+    - '.github/workflows/gh-pages.yml'
   pull_request:
 
 jobs:
@@ -13,16 +19,54 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            stack_global_opts: "--system-ghc"
           - os: "ubuntu-latest"
-            stack_global_opts: ""
           - os: "macos-latest"
-            stack_global_opts: ""
 
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Install cabal/ghc
+      uses: haskell/actions/setup@v1
+      id: setup-haskell
+      with:
+        ghc-version: '9.0.1'
+        cabal-version: '3.4.0.0'
+    
+    - name: Set PATH for cabal-installed executables
+      run: |
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "$HOME\AppData\Roaming\cabal\bin" >> $GITHUB_PATH
+        else
+          echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+        fi
+    
+    - name: Set Cabal options
+      # Overwriting prevent cabal from raising an error when installing
+      # an executable that is already present (because of caching)
+      run: |
+        cabal update
+        cabal user-config update -f -a "overwrite-policy: always"
+        cabal user-config update -f -a "install-method: copy"
+        cabal user-config update -f -a "split-sections: True"
+        cabal user-config update -f -a "executable-stripping: True"
+
+    - name: Cache cabal work
+      uses: actions/cache@v2
+      with:
+        path: |
+          dist-newstyle
+          ${{ steps.setup-haskell.outputs.cabal-store }}
+        key: ${{ runner.os }}-${{ hashFiles('cabal.project.freeze') }}-cabal-install-v2
+
+    - name: Build pandoc-plot
+      shell: bash
+      # Try building it twice in case of flakey builds on Windows
+      # See https://github.com/haskell/haskell-language-server
+      run: |
+        cabal build --enable-tests || \
+        cabal build --enable-tests -j1
 
     - uses: actions/setup-python@v2
       with:
@@ -31,32 +75,10 @@ jobs:
     - uses: r-lib/actions/setup-r@v1
 
     - uses: actions/cache@v2
-      name: Cache Haskell build artifacts [Linux]
-      if: matrix.os == 'ubuntu-latest'
-      with:
-        path: ~/.stack
-        key: ${{ runner.os }}-${{ hashFiles('stack.*') }}
-    
-    - uses: actions/cache@v2
-      name: Cache Haskell build artifacts [Windows]
-      if: matrix.os == 'windows-latest'
-      with:
-        path: |
-          C:\Users\runneradmin\AppData\Roaming\stack\
-        key: ${{ runner.os }}-appdata-roaming-stack-${{ hashFiles('stack.yaml') }}
-
-    - uses: actions/cache@v2
       name: Cache Python build artifacts
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-${{ hashFiles('.github/workflows/requirements.txt') }}
-
-    - name: Build pandoc-plot
-      run: |
-        stack ${{ matrix.stack_global_opts }} upgrade
-        stack ${{ matrix.stack_global_opts }} update
-        stack ${{ matrix.stack_global_opts }} install --ghc-options="-v3" network
-        stack ${{ matrix.stack_global_opts }} install --ghc-options="-v3"
 
     - name: Install Python toolkits
       run: |
@@ -67,12 +89,6 @@ jobs:
     - name: Set up MATLAB [Linux]
       if: matrix.os == 'ubuntu-latest'
       uses: matlab-actions/setup-matlab@v1
-    
-    - name: Install Plots.jl toolkit
-      shell: julia {0}
-      run: |
-        using Pkg
-        Pkg.add("Plots")
 
     - name: Install GGPlot2
       run: |
@@ -97,55 +113,67 @@ jobs:
         dot -c
 
         choco install --yes --no-progress gnuplot
-    
-    - name: Build dependencies
-      run: stack ${{ matrix.stack_global_opts }} build --test --no-run-tests
+
+    - name: Install Plots.jl toolkit
+      # Integration tests sometimes hang on MacOS 
+      if: matrix.os != 'macos-latest'
+      shell: julia {0}
+      run: |
+        using Pkg
+        Pkg.add("Plots")
+
+        # The default GR backend is a bit flaky on Linux, but 
+        # PyPlot doesn't work on MacOS
+        if ("${{ matrix.os }}" == "ubuntu-latest")
+          Pkg.add("PyPlot")
+        end
+      
+    - name: Set default Plots.jl backend [Linux]
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        mkdir ~/.julia/config
+        echo 'ENV["PLOTS_DEFAULT_BACKEND"]="PyPlot"' >> ~/.julia/config/startup.jl
 
     - name: Check installed plotting toolkits
-      run: stack ${{ matrix.stack_global_opts }} exec -- pandoc-plot toolkits
+      run: | 
+        cabal install exe:pandoc-plot
+        pandoc-plot toolkits
 
     - name: Unit tests
-      run: stack ${{ matrix.stack_global_opts }} test
-    
-    - name: Integration tests
-      shell: bash
       run: |
-        stack ${{ matrix.stack_global_opts }} install pandoc
-        stack ${{ matrix.stack_global_opts }} install
-        
-        stack ${{ matrix.stack_global_opts }} exec -- pandoc --filter pandoc-plot -i tests/integration.md -t html
-        if [ $(ls "plots" | wc -l) == 0 ]; then
-          exit 1
-        fi
-        stack ${{ matrix.stack_global_opts }} exec -- pandoc-plot clean tests/integration.md
+        cabal test --test-show-details=always
 
-        stack ${{ matrix.stack_global_opts }} exec -- pandoc --filter pandoc-plot -i tests/issue16.md -t native
+    - name: Integration tests
+      # Integration tests sometimes hang on MacOS 
+      if: matrix.os != 'macos-latest'
+      run: |
+        cabal install pandoc
+        cabal install exe:pandoc-plot
+        
+        pandoc --filter pandoc-plot -i tests/integration.md -t html
         if [ $(ls "plots" | wc -l) == 0 ]; then
           exit 1
         fi
-        stack ${{ matrix.stack_global_opts }} exec -- pandoc-plot clean tests/issue16.md
+        pandoc-plot clean tests/integration.md
+
+        pandoc --filter pandoc-plot -i tests/issue16.md -t native
+        if [ $(ls "plots" | wc -l) == 0 ]; then
+          exit 1
+        fi
+        pandoc-plot clean tests/issue16.md
     
     - name: Build documentation
-      shell: pwsh
-      run: .\tools\mkmanual.ps1 -stackopts "${{ matrix.stack_global_opts }}"
+      run: source tools/mkmanual.sh
 
     - name: Build artifact
-      shell: bash
       run: |
         mkdir artifact
-        stack ${{ matrix.stack_global_opts }} install --local-bin-path artifact
+        cabal install exe:pandoc-plot --installdir artifact
 
         if [[ "${{ runner.os }}" != "Windows" ]]
         then
           chmod u+x artifact/pandoc-plot
         fi
-    
-    - name: Build artifact [Linux - static]
-      if: runner.os == 'Linux'
-      run: |
-        mkdir artifact-static
-        stack ${{ matrix.stack_global_opts }} install --flag pandoc-plot:static --local-bin-path artifact-static
-        chmod u+x artifact-static/pandoc-plot
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
@@ -153,6 +181,13 @@ jobs:
         name: ${{ runner.os }}-artifact
         path: artifact/pandoc-plot*
         retention-days: 7
+    
+    - name: Build artifact [Linux - static]
+      if: runner.os == 'Linux'
+      run: |
+        mkdir artifact-static
+        cabal install exe:pandoc-plot --enable-executable-static --installdir artifact-static
+        chmod u+x artifact-static/pandoc-plot
 
     - name: Upload artifact [Linux - static]
       uses: actions/upload-artifact@v2
@@ -166,8 +201,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        stack ${{ matrix.stack_global_opts }} clean --full
-        stack ${{ matrix.stack_global_opts }} install pandoc-plot --local-bin-path ".\installer"
+        cabal install --installdir ".\installer"
         $version = .\installer\pandoc-plot.exe --version
         iscc /dAppVersion=$version ".\installer\pandoc-plot-setup.iss"
 

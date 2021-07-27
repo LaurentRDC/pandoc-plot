@@ -3,6 +3,8 @@ name: GH-Pages
 on:
   push:
     branches: [master]
+    paths-ignore:
+     - '.github/workflows/ci.yml'
 
 jobs:
   build-docs-and-deploy:
@@ -11,18 +13,41 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # Stack 2.7.1 is already installed on GithHub-hosted runners
-    # https://github.com/actions/virtual-environments
+    - name: Install cabal/ghc
+      uses: haskell/actions/setup@v1
+      id: setup-haskell
+      with:
+        ghc-version: '9.0.1'
+        cabal-version: '3.4.0.0'
+
+    - name: Set PATH for cabal-installed executables
+      run: |
+        echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+
+    - name: Set Cabal options
+      # Overwriting prevent cabal from raising an error when installing
+      # an executable that is already present (because of caching)
+      # Some of these options are superfluous for this workflow,
+      # but I'm keeping them in sync with ci.yml so that caching is
+      # shared
+      run: |
+        cabal update
+        cabal user-config update -f -a "overwrite-policy: always"
+        cabal user-config update -f -a "install-method: copy"
+        cabal user-config update -f -a "split-sections: True"
+        cabal user-config update -f -a "executable-stripping: True"
 
     - uses: actions/setup-python@v2
       with:
         python-version: '3.9'
 
-    - uses: actions/cache@v2
-      name: Cache Haskell build artifacts
+    - name: Cache cabal work
+      uses: actions/cache@v2
       with:
-        path: ~/.stack
-        key: ${{ runner.os }}-${{ hashFiles('stack.*') }}
+        path: |
+          dist-newstyle
+          ${{ steps.setup-haskell.outputs.cabal-store }}
+        key: ${{ runner.os }}-${{ hashFiles('cabal.project.freeze') }}-cabal-install-v2
 
     - uses: actions/cache@v2
       name: Cache Python build artifacts
@@ -32,34 +57,29 @@ jobs:
 
     - name: Install pandoc-plot and other dependencies
       run: |
-        stack upgrade
-        stack install
-        stack install pandoc
+        cabal install pandoc
+        cabal install exe:pandoc-plot
     
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r .github/workflows/requirements.txt
     
-    # We use powershell because I need the script to also be useable 
-    # on my local machine (Win10)
     - name: Build documentation
-      shell: pwsh
-      run: |
-        .\tools\mkmanual.ps1
+      run: source tools/mkmanual.sh
         
     - name: Build website
       run: |
         cd docs
-        stack exec -- pandoc-plot clean index.md
-        VERSION=$(stack exec -- pandoc-plot --version)
+        pandoc-plot clean index.md
+        VERSION=$(pandoc-plot --version)
         mkdir build
-        stack exec -- pandoc --standalone \
-                             --css=theme.css \
-                             --filter pandoc-plot \
-                             --metadata title="pandoc-plot $VERSION" \
-                             -i index.md \
-                             -o build/index.html
+        pandoc --standalone \
+          --css=theme.css \
+          --filter pandoc-plot \
+          --metadata title="pandoc-plot $VERSION" \
+          -i index.md \
+          -o build/index.html
         mv -v MANUAL.html theme.css plots build
 
     - name: Deploy

@@ -21,7 +21,6 @@ extra-source-files:
     README.md
     MANUAL.md
     docs/MANUAL.html
-    stack.yaml
     example-config.yml
 
     data/srctemplate.html
@@ -48,11 +47,6 @@ extra-source-files:
 source-repository head
     type: git
     location: https://github.com/LaurentRDC/pandoc-plot
-
-flag static
-    description: Statically-linked binary
-    manual: True
-    default: False
 
 library
     exposed-modules:
@@ -123,9 +117,6 @@ executable pandoc-plot
     hs-source-dirs:
         executable
     ghc-options: -Wall -Wcompat -threaded -rtsopts -with-rtsopts=-N
-    -- Build static executables on Linux only
-    if flag(static)
-        ld-options: -static -pthread
     build-depends:
           base                  >= 4.11 && <5
         , containers

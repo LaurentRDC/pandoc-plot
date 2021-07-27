@@ -6,7 +6,11 @@ format: PNG
 strict: true
 
 matplotlib:
+  executable: python
   transparent: true
+
+bokeh:
+  executable: python
 
 logging:
   verbosity: info
