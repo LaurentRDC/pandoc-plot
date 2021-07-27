@@ -2,3 +2,4 @@ matplotlib >= 3
 bokeh >= 2
 selenium >= 3
 pandas >= 1
+pandocfilters >= 1.4

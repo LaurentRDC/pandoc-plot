@@ -5,6 +5,3 @@ packages:
 
 extra-deps:
 
-# For development
-- git: https://github.com/owickstrom/pandoc-include-code.git
-  commit: 89c8465549960872257da993a399d978a269d6a6

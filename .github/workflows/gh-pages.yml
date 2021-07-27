@@ -30,11 +30,10 @@ jobs:
         path: ~/.cache/pip
         key: ${{ runner.os }}-${{ hashFiles('.github/workflows/requirements.txt') }}
 
-    - name: Build pandoc-plot and pandoc-include-code
+    - name: Install pandoc-plot and other dependencies
       run: |
         stack upgrade
         stack install
-        stack install pandoc-include-code
         stack install pandoc
     
     - name: Install Python dependencies

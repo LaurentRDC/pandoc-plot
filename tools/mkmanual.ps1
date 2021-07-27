@@ -21,7 +21,7 @@ stack $stackopts exec -- pandoc `
                 --metadata version=$version `
                 --metadata title="pandoc-plot $version manual" `
                 --wrap=preserve `
-                --filter=pandoc-include-code `
+                --filter=tools/include-code.py `
                 --template=docs/manual-template.md `
                 docs/manual-content.md `
                 -t gfm -o MANUAL.md
