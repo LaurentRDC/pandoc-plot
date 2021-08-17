@@ -38,7 +38,8 @@ import System.FilePath
     normalise,
     replaceExtension,
     takeDirectory,
-    (</>),
+    (</>), 
+    takeBaseName,
   )
 import Text.Pandoc.Class (runPure)
 import Text.Pandoc.Definition (Block (CodeBlock), Pandoc (Pandoc))
@@ -138,14 +139,13 @@ runTempScript spec@FigureSpec {..} = do
 -- Note that for certain renderers, the appropriate file extension
 -- is important.
 tempScriptPath :: FigureSpec -> PlotM FilePath
-tempScriptPath FigureSpec {..} = do
+tempScriptPath fs@FigureSpec {..} = do
   let ext = rendererScriptExtension renderer_
-  -- MATLAB will refuse to process files that don't start with
-  -- a letter
   -- Note that this hash is only so that we are running scripts from unique
   -- file names; it does NOT determine whether this figure should
   -- be rendered or not.
-  let hashedPath = "pandocplot" <> (show . abs . hash $ script) <> ext
+  fp <- figurePath fs
+  let hashedPath = takeBaseName fp <> ext
   liftIO $ (</> hashedPath) <$> getTemporaryDirectory
 
 -- | Determine the path to the source code that generated the figure.
@@ -185,7 +185,10 @@ figurePath :: FigureSpec -> PlotM FilePath
 figurePath spec = do
   fh <- figureContentHash spec
   let ext = extension . saveFormat $ spec
-      stem = flip addExtension ext . show $ fh
+      -- MATLAB will refuse to process files that don't start with
+      -- a letter so it is simplest to use filenames that start 
+      -- with "pandocplot" throughout
+      stem = flip addExtension ext . mappend "pandocplot" . show $ fh
   return $ normalise $ directory spec </> stem
 
 -- | Write the source code of a figure to an HTML file with appropriate syntax highlighting.

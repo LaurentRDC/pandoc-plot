@@ -1,0 +1,4 @@
+strict: true
+
+logging:
+  verbosity: debug
