@@ -97,15 +97,18 @@ jobs:
     - name: Install Octave, Gnuplot, Graphviz, and PlantUML [Linux]
       if: runner.os == 'Linux'
       run: |
+        sudo apt-get update
         sudo apt-get --quiet --yes install octave
         sudo apt-get --quiet --yes install gnuplot
         sudo apt-get --quiet --yes install graphviz
-
+        
         sudo apt-get --quiet --yes install plantuml
-        sudo mv /usr/share/plantuml/plantuml.jar .
-        java -jar plantuml.jar -h
+        echo $(plantuml -version)
+        # The ubuntu package version is too old
+        sudo curl -L "http://sourceforge.net/projects/plantuml/files/plantuml.jar/download" -o "/usr/share/plantuml/plantuml.jar"
+        echo $(plantuml -version)
 
-    - name: Install Graphviz and GNUplot [Windows]
+    - name: Install Graphviz, GNUplot, and PlantUML [Windows]
       if: runner.os == 'Windows'
       shell: pwsh
       run: |        
@@ -113,6 +116,8 @@ jobs:
         dot -c
 
         choco install --yes --no-progress gnuplot
+        choco install --yes --no-progress plantuml
+        plantuml -h
 
     - name: Install Plots.jl toolkit
       # Integration tests sometimes hang on MacOS 
@@ -161,6 +166,12 @@ jobs:
           exit 1
         fi
         pandoc-plot clean tests/issue16.md
+
+        pandoc --filter pandoc-plot -i tests/issue30.md -t native
+        if [ $(ls "plots" | wc -l) != 2 ]; then
+          exit 1
+        fi
+        pandoc-plot clean tests/issue30.md
     
     - name: Build documentation
       run: source tools/mkmanual.sh

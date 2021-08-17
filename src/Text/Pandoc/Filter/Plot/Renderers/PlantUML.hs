@@ -19,8 +19,7 @@ module Text.Pandoc.Filter.Plot.Renderers.PlantUML
 where
 
 import Data.Char
-import Data.Text (pack, replace)
-import System.FilePath (takeDirectory, takeFileName, (</>))
+import System.FilePath (takeDirectory, (</>))
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 plantuml :: PlotM (Maybe Renderer)
@@ -53,6 +52,9 @@ plantumlCommand :: Text -> Text -> OutputSpec -> Text
 plantumlCommand cmdargs exe OutputSpec {..} =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
       dir = takeDirectory oFigurePath
+    -- the command below works as long as the script name is the same basename
+    -- as the target figure path. E.g.: script basename of pandocplot123456789.txt
+    -- will result in pandocplot123456789.(extension)
    in [st|#{exe} #{cmdargs} -t#{fmt} -output "#{oCWD </> dir}" "#{normalizePath oScriptPath}"|]
 
 normalizePath :: String -> String
@@ -70,8 +72,7 @@ plantumlAvailable = do
       cmdargs <- asksConfig plantumlCmdArgs
       withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} #{cmdargs} -h|]
 
+-- PlantUML export is entirely based on command-line arguments
+-- so there is no need to modify the script itself.
 plantumlCapture :: FigureSpec -> FilePath -> Script
-plantumlCapture FigureSpec {..} fp =
-  -- Only the filename is included in the script; we need to also pass the ABSOLUTE output directory
-  -- to the executable.
-  replace "@startuml" ("@startuml " <> pack (takeFileName fp)) script
+plantumlCapture FigureSpec {..} _ = script
