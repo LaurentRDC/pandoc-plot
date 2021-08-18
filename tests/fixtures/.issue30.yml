@@ -2,3 +2,7 @@ strict: true
 
 logging:
   verbosity: debug
+
+plantuml:
+  executable: "plantuml"
+  command_line_arguments: ""
