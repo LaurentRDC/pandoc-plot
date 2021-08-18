@@ -9,6 +9,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 * Deprecated `plotTransform` in favour of `plotFilter`. `plotTransform` will be removed in the next major update (v2+).
 * Save formats incompatible with toolkits will now show an appropriate error.
 * The build system is now based on `cabal-install` rather than `stack`.
+* Fixed an issue where some types of PlantUML diagrams (e.g. Gantt charts) would not be exported correctly (#30).
 
 ## Release 1.2.3
 
