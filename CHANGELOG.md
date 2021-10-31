@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.3.1
+
+* The executable `pandoc-plot` now uses pandoc 2.15. Pandoc 2.11, 2.12, 2.13, and 2.14 are still supported.
+
 ## Release 1.3.0
 
 * The executable `pandoc-plot` is now aware of final conversion format.
