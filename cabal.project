@@ -1,4 +1,4 @@
-packages: *.cabal
+packages: pandoc-plot.cabal
 allow-newer: all
 
 repository head.hackage.ghc.haskell.org
