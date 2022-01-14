@@ -17,9 +17,10 @@ module Text.Pandoc.Filter.Plot.Configuration
   )
 where
 
-import Data.Text (Text, pack, unpack)
+import Data.Aeson ( (.:?), (.!=), Key, Value(Object, Null), FromJSON(parseJSON) )
+import Data.String (IsString(..))
+import Data.Text (Text, unpack)
 import qualified Data.Text.IO as TIO
-import Data.Yaml (FromJSON (parseJSON), Value (Null, Object), (.!=), (.:?))
 import Data.Yaml.Config (ignoreEnv, loadYamlSettings)
 import System.FilePath (normalise)
 import Text.Pandoc.Definition (Format (..), Inline (..), MetaValue (..), Pandoc (..), lookupMeta)
@@ -217,85 +218,91 @@ instance FromJSON LoggingPrecursor where
       <*> v .:? "filepath"
   parseJSON _ = fail $ mconcat ["Could not parse logging configuration. "]
 
+asKey :: InclusionKey -> Key 
+asKey = fromString . show
+
 instance FromJSON MatplotlibPrecursor where
   parseJSON (Object v) =
     MatplotlibPrecursor
-      <$> v .:? tshow PreambleK
-      <*> v .:? tshow MatplotlibTightBBoxK .!= matplotlibTightBBox defaultConfiguration
-      <*> v .:? tshow MatplotlibTransparentK .!= matplotlibTransparent defaultConfiguration
-      <*> v .:? tshow ExecutableK .!= matplotlibExe defaultConfiguration
-      <*> v .:? tshow CommandLineArgsK .!= matplotlibCmdArgs defaultConfiguration
+      <$> v .:? asKey PreambleK
+      <*> v .:? asKey MatplotlibTightBBoxK .!= matplotlibTightBBox defaultConfiguration
+      <*> v .:? asKey MatplotlibTransparentK .!= matplotlibTransparent defaultConfiguration
+      <*> v .:? asKey ExecutableK .!= matplotlibExe defaultConfiguration
+      <*> v .:? asKey CommandLineArgsK .!= matplotlibCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Matplotlib, " configuration."]
 
 instance FromJSON MatlabPrecursor where
-  parseJSON (Object v) = MatlabPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= matlabExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= matlabCmdArgs defaultConfiguration
+  parseJSON (Object v) = MatlabPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= matlabExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= matlabCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Matlab, " configuration."]
 
 instance FromJSON PlotlyPythonPrecursor where
-  parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= plotlyPythonExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= plotlyPythonCmdArgs defaultConfiguration
+  parseJSON (Object v) = PlotlyPythonPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= plotlyPythonExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= plotlyPythonCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyPython, " configuration."]
 
 instance FromJSON PlotlyRPrecursor where
-  parseJSON (Object v) = PlotlyRPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= plotlyRExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= plotlyRCmdArgs defaultConfiguration
+  parseJSON (Object v) = PlotlyRPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= plotlyRExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= plotlyRCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show PlotlyR, " configuration."]
 
 instance FromJSON MathematicaPrecursor where
-  parseJSON (Object v) = MathematicaPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= mathematicaExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= mathematicaCmdArgs defaultConfiguration
+  parseJSON (Object v) = MathematicaPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= mathematicaExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= mathematicaCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Mathematica, " configuration."]
 
 instance FromJSON OctavePrecursor where
-  parseJSON (Object v) = OctavePrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= octaveExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= octaveCmdArgs defaultConfiguration
+  parseJSON (Object v) = OctavePrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= octaveExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= octaveCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Octave, " configuration."]
 
 instance FromJSON GGPlot2Precursor where
-  parseJSON (Object v) = GGPlot2Precursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= ggplot2Exe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= ggplot2CmdArgs defaultConfiguration
+  parseJSON (Object v) = GGPlot2Precursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= ggplot2Exe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= ggplot2CmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show GGPlot2, " configuration."]
 
 instance FromJSON GNUPlotPrecursor where
-  parseJSON (Object v) = GNUPlotPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= gnuplotExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= gnuplotCmdArgs defaultConfiguration
+  parseJSON (Object v) = GNUPlotPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= gnuplotExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= gnuplotCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show GNUPlot, " configuration."]
 
 instance FromJSON GraphvizPrecursor where
-  parseJSON (Object v) = GraphvizPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= graphvizExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= graphvizCmdArgs defaultConfiguration
+  parseJSON (Object v) = GraphvizPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= graphvizExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= graphvizCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Graphviz, " configuration."]
 
 instance FromJSON BokehPrecursor where
-  parseJSON (Object v) = BokehPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= bokehExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= bokehCmdArgs defaultConfiguration
+  parseJSON (Object v) = BokehPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= bokehExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= bokehCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Bokeh, " configuration."]
 
 instance FromJSON PlotsjlPrecursor where
-  parseJSON (Object v) = PlotsjlPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= plotsjlExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= plotsjlCmdArgs defaultConfiguration
+  parseJSON (Object v) = PlotsjlPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= plotsjlExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= plotsjlCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Plotsjl, " configuration."]
 
 instance FromJSON PlantUMLPrecursor where
-  parseJSON (Object v) = PlantUMLPrecursor <$> v .:? tshow PreambleK <*> v .:? tshow ExecutableK .!= plantumlExe defaultConfiguration <*> v .:? tshow CommandLineArgsK .!= plantumlCmdArgs defaultConfiguration
+  parseJSON (Object v) = PlantUMLPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= plantumlExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= plantumlCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show PlantUML, " configuration."]
+
+toolkitAsKey :: Toolkit -> Key 
+toolkitAsKey = fromString . unpack . cls
 
 instance FromJSON ConfigPrecursor where
   parseJSON Null = return defaultConfigPrecursor -- In case of empty file
   parseJSON (Object v) = do
-    _defaultDirectory <- v .:? tshow DirectoryK .!= _defaultDirectory defaultConfigPrecursor
-    _defaultWithSource <- v .:? tshow WithSourceK .!= _defaultWithSource defaultConfigPrecursor
-    _defaultDPI <- v .:? tshow DpiK .!= _defaultDPI defaultConfigPrecursor
-    _defaultSaveFormat <- v .:? tshow SaveFormatK .!= _defaultSaveFormat defaultConfigPrecursor
-    _defaultDependencies <- v .:? tshow DependenciesK .!= _defaultDependencies defaultConfigPrecursor
-    _captionFormat <- v .:? tshow CaptionFormatK .!= _captionFormat defaultConfigPrecursor
-    _sourceCodeLabel <- v .:? tshow SourceCodeLabelK .!= _sourceCodeLabel defaultConfigPrecursor
-    _strictMode <- v .:? tshow StrictModeK .!= _strictMode defaultConfigPrecursor
+    _defaultDirectory <- v .:? asKey DirectoryK .!= _defaultDirectory defaultConfigPrecursor
+    _defaultWithSource <- v .:? asKey WithSourceK .!= _defaultWithSource defaultConfigPrecursor
+    _defaultDPI <- v .:? asKey DpiK .!= _defaultDPI defaultConfigPrecursor
+    _defaultSaveFormat <- v .:? asKey SaveFormatK .!= _defaultSaveFormat defaultConfigPrecursor
+    _defaultDependencies <- v .:? asKey DependenciesK .!= _defaultDependencies defaultConfigPrecursor
+    _captionFormat <- v .:? asKey CaptionFormatK .!= _captionFormat defaultConfigPrecursor
+    _sourceCodeLabel <- v .:? asKey SourceCodeLabelK .!= _sourceCodeLabel defaultConfigPrecursor
+    _strictMode <- v .:? asKey StrictModeK .!= _strictMode defaultConfigPrecursor
     _logPrec <- v .:? "logging" .!= _logPrec defaultConfigPrecursor
 
-    _matplotlibPrec <- v .:? cls Matplotlib .!= _matplotlibPrec defaultConfigPrecursor
-    _matlabPrec <- v .:? cls Matlab .!= _matlabPrec defaultConfigPrecursor
-    _plotlyPythonPrec <- v .:? cls PlotlyPython .!= _plotlyPythonPrec defaultConfigPrecursor
-    _plotlyRPrec <- v .:? cls PlotlyR .!= _plotlyRPrec defaultConfigPrecursor
-    _mathematicaPrec <- v .:? cls Mathematica .!= _mathematicaPrec defaultConfigPrecursor
-    _octavePrec <- v .:? cls Octave .!= _octavePrec defaultConfigPrecursor
-    _ggplot2Prec <- v .:? cls GGPlot2 .!= _ggplot2Prec defaultConfigPrecursor
-    _gnuplotPrec <- v .:? cls GNUPlot .!= _gnuplotPrec defaultConfigPrecursor
-    _graphvizPrec <- v .:? cls Graphviz .!= _graphvizPrec defaultConfigPrecursor
-    _bokehPrec <- v .:? cls Bokeh .!= _bokehPrec defaultConfigPrecursor
-    _plotsjlPrec <- v .:? cls Plotsjl .!= _plotsjlPrec defaultConfigPrecursor
-    _plantumlPrec <- v .:? cls PlantUML .!= _plantumlPrec defaultConfigPrecursor
+    _matplotlibPrec <- v .:? toolkitAsKey Matplotlib .!= _matplotlibPrec defaultConfigPrecursor
+    _matlabPrec <- v .:? toolkitAsKey Matlab .!= _matlabPrec defaultConfigPrecursor
+    _plotlyPythonPrec <- v .:? toolkitAsKey PlotlyPython .!= _plotlyPythonPrec defaultConfigPrecursor
+    _plotlyRPrec <- v .:? toolkitAsKey PlotlyR .!= _plotlyRPrec defaultConfigPrecursor
+    _mathematicaPrec <- v .:? toolkitAsKey Mathematica .!= _mathematicaPrec defaultConfigPrecursor
+    _octavePrec <- v .:? toolkitAsKey Octave .!= _octavePrec defaultConfigPrecursor
+    _ggplot2Prec <- v .:? toolkitAsKey GGPlot2 .!= _ggplot2Prec defaultConfigPrecursor
+    _gnuplotPrec <- v .:? toolkitAsKey GNUPlot .!= _gnuplotPrec defaultConfigPrecursor
+    _graphvizPrec <- v .:? toolkitAsKey Graphviz .!= _graphvizPrec defaultConfigPrecursor
+    _bokehPrec <- v .:? toolkitAsKey Bokeh .!= _bokehPrec defaultConfigPrecursor
+    _plotsjlPrec <- v .:? toolkitAsKey Plotsjl .!= _plotsjlPrec defaultConfigPrecursor
+    _plantumlPrec <- v .:? toolkitAsKey PlantUML .!= _plantumlPrec defaultConfigPrecursor
 
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."
@@ -358,7 +365,5 @@ renderConfig ConfigPrecursor {..} = do
 
   return Configuration {..}
   where
-    readPreamble fp = maybe mempty TIO.readFile fp
+    readPreamble = maybe mempty TIO.readFile
 
-tshow :: Show a => a -> Text
-tshow = pack . show
