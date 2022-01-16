@@ -519,25 +519,28 @@ files. Here are <strong>all</strong> the possible parameters:</p>
 <span id="cb22-114"><a href="#cb22-114" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> dot</span></span>
 <span id="cb22-115"><a href="#cb22-115" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
 <span id="cb22-116"><a href="#cb22-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-117"><a href="#cb22-117" aria-hidden="true" tabindex="-1"></a><span class="fu">bokeh</span><span class="kw">:</span></span>
-<span id="cb22-118"><a href="#cb22-118" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: bokeh.py</span></span>
-<span id="cb22-119"><a href="#cb22-119" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
-<span id="cb22-120"><a href="#cb22-120" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb22-121"><a href="#cb22-121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-122"><a href="#cb22-122" aria-hidden="true" tabindex="-1"></a><span class="fu">plotsjl</span><span class="kw">:</span></span>
-<span id="cb22-123"><a href="#cb22-123" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotsjl.jl</span></span>
-<span id="cb22-124"><a href="#cb22-124" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> julia</span></span>
-<span id="cb22-125"><a href="#cb22-125" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb22-126"><a href="#cb22-126" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-127"><a href="#cb22-127" aria-hidden="true" tabindex="-1"></a><span class="fu">plantuml</span><span class="kw">:</span></span>
-<span id="cb22-128"><a href="#cb22-128" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plantuml.txt</span></span>
-<span id="cb22-129"><a href="#cb22-129" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> java</span></span>
-<span id="cb22-130"><a href="#cb22-130" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span><span class="at"> -jar plantuml.jar</span></span>
-<span id="cb22-131"><a href="#cb22-131" aria-hidden="true" tabindex="-1"></a><span class="co">  # On Linux, if you have `plantuml.jar` as an executable, you can also</span></span>
-<span id="cb22-132"><a href="#cb22-132" aria-hidden="true" tabindex="-1"></a><span class="co">  # use the following configuration instead:</span></span>
-<span id="cb22-133"><a href="#cb22-133" aria-hidden="true" tabindex="-1"></a><span class="co">  # plantuml:</span></span>
-<span id="cb22-134"><a href="#cb22-134" aria-hidden="true" tabindex="-1"></a><span class="co">  #   executable: plantuml</span></span>
-<span id="cb22-135"><a href="#cb22-135" aria-hidden="true" tabindex="-1"></a><span class="co">  #   command_line_arguments:</span></span></code></pre></div>
+<span id="cb22-117"><a href="#cb22-117" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Bokeh toolkit using Python</span></span>
+<span id="cb22-118"><a href="#cb22-118" aria-hidden="true" tabindex="-1"></a><span class="fu">bokeh</span><span class="kw">:</span></span>
+<span id="cb22-119"><a href="#cb22-119" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: bokeh.py</span></span>
+<span id="cb22-120"><a href="#cb22-120" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
+<span id="cb22-121"><a href="#cb22-121" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb22-122"><a href="#cb22-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-123"><a href="#cb22-123" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Plots.jl toolkit using Julia</span></span>
+<span id="cb22-124"><a href="#cb22-124" aria-hidden="true" tabindex="-1"></a><span class="fu">plotsjl</span><span class="kw">:</span></span>
+<span id="cb22-125"><a href="#cb22-125" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotsjl.jl</span></span>
+<span id="cb22-126"><a href="#cb22-126" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> julia</span></span>
+<span id="cb22-127"><a href="#cb22-127" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb22-128"><a href="#cb22-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-129"><a href="#cb22-129" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the PlantUML toolkit</span></span>
+<span id="cb22-130"><a href="#cb22-130" aria-hidden="true" tabindex="-1"></a><span class="fu">plantuml</span><span class="kw">:</span></span>
+<span id="cb22-131"><a href="#cb22-131" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plantuml.txt</span></span>
+<span id="cb22-132"><a href="#cb22-132" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> java</span></span>
+<span id="cb22-133"><a href="#cb22-133" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span><span class="at"> -jar plantuml.jar</span></span>
+<span id="cb22-134"><a href="#cb22-134" aria-hidden="true" tabindex="-1"></a><span class="co">  # On Linux, if you have `plantuml.jar` as an executable, you can also</span></span>
+<span id="cb22-135"><a href="#cb22-135" aria-hidden="true" tabindex="-1"></a><span class="co">  # use the following configuration instead:</span></span>
+<span id="cb22-136"><a href="#cb22-136" aria-hidden="true" tabindex="-1"></a><span class="co">  # plantuml:</span></span>
+<span id="cb22-137"><a href="#cb22-137" aria-hidden="true" tabindex="-1"></a><span class="co">  #   executable: plantuml</span></span>
+<span id="cb22-138"><a href="#cb22-138" aria-hidden="true" tabindex="-1"></a><span class="co">  #   command_line_arguments:</span></span></code></pre></div>
 <p>A file like the above sets the <strong>default</strong> values; you can still override them in documents directly.</p>
 <p>The easiest way to specify configuration for <code>pandoc-plot</code> is to place a <code>.pandoc-plot.yml</code> file in the current working directory. You can also specify a configuration file in document metadata, under the <code>plot-configuration</code> key. For example, in Markdown:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
