@@ -120,8 +120,8 @@ jobs:
         plantuml -h
 
     - name: Install Plots.jl toolkit
-      # Integration tests sometimes hang on MacOS  and Windows
-      if: matrix.os == 'ubuntu-latest'
+      # Integration tests sometimes hang on MacOS
+      if: matrix.os != 'ubuntu-latest'
       shell: julia {0}
       run: |
         using Pkg
@@ -146,7 +146,7 @@ jobs:
 
     - name: Unit tests
       run: |
-        cabal test --test-show-details=always
+        cabal test --test-show-details=streaming
 
     - name: Integration tests
       # Integration tests sometimes hang on MacOS 

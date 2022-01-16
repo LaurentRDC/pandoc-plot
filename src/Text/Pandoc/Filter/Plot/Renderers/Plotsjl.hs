@@ -49,7 +49,7 @@ plotsjlSupportedSaveFormats :: [SaveFormat]
 plotsjlSupportedSaveFormats = [PNG, SVG, PDF]
 
 plotsjlCommand :: Text -> Text -> OutputSpec -> Text
-plotsjlCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+plotsjlCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} -- "#{oScriptPath}"|]
 
 plotsjlAvailable :: PlotM Bool
 plotsjlAvailable = do

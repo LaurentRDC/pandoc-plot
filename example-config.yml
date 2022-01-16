@@ -115,16 +115,19 @@ graphviz:
   executable: dot
   command_line_arguments:
 
+# The possible parameters for the Bokeh toolkit using Python
 bokeh:
   # preamble: bokeh.py
   executable: python
   command_line_arguments:
 
+# The possible parameters for the Plots.jl toolkit using Julia
 plotsjl:
   # preamble: plotsjl.jl
   executable: julia
   command_line_arguments:
 
+# The possible parameters for the PlantUML toolkit
 plantuml:
   # preamble: plantuml.txt
   executable: java
