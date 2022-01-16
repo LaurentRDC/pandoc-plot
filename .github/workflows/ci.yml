@@ -119,9 +119,9 @@ jobs:
         choco install --yes --no-progress plantuml
         plantuml -h
 
-    - name: Install Plots.jl toolkit
-      # Integration tests sometimes hang on MacOS
-      if: matrix.os != 'ubuntu-latest'
+    - name: Install Plots.jl toolkit [Linux]
+      # Integration tests sometimes hang on MacOS and Windows
+      if: matrix.os == 'ubuntu-latest'
       shell: julia {0}
       run: |
         using Pkg
@@ -150,7 +150,7 @@ jobs:
 
     - name: Integration tests
       # Integration tests sometimes hang on MacOS 
-      if: matrix.os != 'macos-latest'
+      if: matrix.os == 'ubuntu-latest'
       run: |
         cabal install pandoc
         cabal install exe:pandoc-plot
