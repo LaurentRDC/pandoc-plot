@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.4.1
+
+* Don't automatically defer javascript scripts when creating interactive figures (#39).
+
 ## Release 1.4.0
 
 * The executable `pandoc-plot` now uses pandoc 2.17. Pandoc 2.11+ are still supported.

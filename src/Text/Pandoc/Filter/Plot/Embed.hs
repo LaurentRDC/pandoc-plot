@@ -17,13 +17,11 @@ module Text.Pandoc.Filter.Plot.Embed
 where
 
 import Data.Default (def)
-import Data.List (nub)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
 import qualified Data.Text.IO as T
 import Text.HTML.TagSoup
-  ( Attribute,
-    Tag (TagClose, TagOpen),
+  ( Tag (TagClose, TagOpen),
     canonicalizeTags,
     parseOptionsFast,
     parseTagsOptions,
@@ -174,7 +172,11 @@ extractPlot :: Text -> Text
 extractPlot t =
   let tags = canonicalizeTags $ parseTagsOptions parseOptionsFast t
       extracted = headScripts tags <> [inside "body" tags]
-   in mconcat $ renderTags <$> (deferScripts <$> extracted)
+      -- In the past (e.g. commit 8417b011ccb20263427822c7447840ab4a30a41e), we used to
+      -- make all JS scripts 'deferred'. This turned out to be problematic for plotly 
+      -- specifically (see issue #39). In the future, we may want to defer scripts for
+      -- certain toolkits, but that's a testing nightmare...
+   in mconcat $ renderTags <$> extracted
   where
     headScripts = partitions (~== ("<script>" :: String)) . inside "head"
 
@@ -184,29 +186,3 @@ inside :: Text -> [Tag Text] -> [Tag Text]
 inside t = init . tail . tgs
   where
     tgs = takeWhile (~/= TagClose t) . dropWhile (~/= TagOpen t [])
-
-data ScriptTag
-  = InlineScript [Attribute Text]
-  | ExternalScript [Attribute Text]
-
-fromTag :: Tag Text -> Maybe ScriptTag
-fromTag (TagOpen "script" attrs) =
-  Just $
-    if "src" `elem` map fst attrs
-      then ExternalScript attrs
-      else InlineScript attrs
-fromTag _ = Nothing
-
-toTag :: ScriptTag -> Tag Text
-toTag (InlineScript t) = TagOpen "script" t
-toTag (ExternalScript t) = TagOpen "script" t
-
-deferScript :: ScriptTag -> ScriptTag
-deferScript (InlineScript attrs) = InlineScript $ nub $ attrs <> [("type", "module")]
-deferScript (ExternalScript attrs) = ExternalScript $ nub $ attrs <> [("defer", mempty)]
-
--- | Replace /<script src=...>/ tags with /<script src=... defer>/,
--- and inline scripts as /<script type="module">/.
--- This makes scripts execute only after HTML parsing has finished.
-deferScripts :: [Tag Text] -> [Tag Text]
-deferScripts = fmap (\t -> maybe t (toTag . deferScript) (fromTag t))
