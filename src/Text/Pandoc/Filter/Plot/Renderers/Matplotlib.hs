@@ -85,7 +85,7 @@ matplotlibAvailable = do
 matplotlibCheckIfShow :: Script -> CheckResult
 matplotlibCheckIfShow s =
   if getAny $ mconcat showPresent
-    then CheckFailed "encountered a call to `matplotlib.pyplot.show`."
+    then CheckFailed "encountered a call to `matplotlib.pyplot.show` or `plt.show`, which would stall `pandoc-plot"
     else CheckPassed
   where
     showPresent =
