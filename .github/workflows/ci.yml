@@ -19,8 +19,11 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
+            ghc-version: "9.2.1"
           - os: "ubuntu-latest"
+            ghc-version: "9.2.2"
           - os: "macos-latest"
+            ghc-version: "9.2.2"
 
     runs-on: ${{ matrix.os }}
 
@@ -31,7 +34,7 @@ jobs:
       uses: haskell/actions/setup@v1
       id: setup-haskell
       with:
-        ghc-version: '9.2.1'
+        ghc-version: ${{ matrix.ghc-version }}
         cabal-version: '3.6.2.0'
     
     - name: Set PATH for cabal-installed executables
@@ -47,6 +50,7 @@ jobs:
       # an executable that is already present (because of caching)
       run: |
         cabal update
+        cabal freeze
         cabal user-config update -f -a "overwrite-policy: always"
         cabal user-config update -f -a "install-method: copy"
         cabal user-config update -f -a "split-sections: True"
