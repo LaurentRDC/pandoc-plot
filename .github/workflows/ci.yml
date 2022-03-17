@@ -23,7 +23,7 @@ jobs:
           - os: "ubuntu-latest"
             ghc-version: "9.2.2"
           - os: "macos-latest"
-            ghc-version: "9.2.2"
+            ghc-version: "9.0.1"
 
     runs-on: ${{ matrix.os }}
 
