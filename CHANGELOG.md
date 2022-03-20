@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.4.2
+
+* Fixed an issue where the parsing of default save format from configuration was overly restrictive (#42).
+
 ## Release 1.4.1
 
 * Don't automatically defer javascript scripts when creating interactive figures (#39).

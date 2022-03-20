@@ -34,8 +34,8 @@ where
 import Data.Char (toLower)
 import Data.List (intersperse)
 import Data.String (IsString (..))
-import Data.Text (Text, pack)
-import Data.Yaml (FromJSON, ToJSON (toJSON))
+import Data.Text (Text, pack, unpack)
+import Data.Yaml (FromJSON(..), ToJSON (toJSON), withText)
 import GHC.Generics (Generic)
 import System.FilePath (splitFileName)
 import System.Info (os)
@@ -229,12 +229,16 @@ instance IsString SaveFormat where
         mconcat
           [ s,
             " is not one of the valid save formats : ",
-            mconcat $ intersperse ", " $ show <$> saveFormats
+            mconcat $ intersperse ", " $ show <$> saveFormats,
+            " (and lowercase variations). "
           ]
     where
       saveFormats = enumFromTo minBound maxBound :: [SaveFormat]
 
-instance FromJSON SaveFormat
+-- | Use the IsString instance to parse JSON so that the parsing is flexible
+-- with respect to uppercase/lowercase (#42)
+instance FromJSON SaveFormat where
+  parseJSON = withText "SaveFormat" (pure . fromString . unpack)
 
 instance ToJSON SaveFormat where
   toJSON = toJSON . extension
