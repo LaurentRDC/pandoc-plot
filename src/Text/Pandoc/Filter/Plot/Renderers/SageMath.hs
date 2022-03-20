@@ -75,8 +75,14 @@ import sage.plot.plot3d.base as go3d
 import builtins
 # Try to concatenate 3D graphics objects first; if this doesn't work, then 
 # concatenate all 2D graphic objects.
-__all_graphics = builtins.sum( (obj for obj in globals().values() if isinstance(obj, go3d.Graphics3d)), None)
-if __all_graphics is None:
-    __all_graphics = builtins.sum(obj for obj in globals().values() if isinstance(obj, go.Graphics))
+__all_graphics = builtins.sum( (obj for obj in globals().values() if isinstance(obj, go3d.Graphics3d)))
+if not __all_graphics:
+    __all_graphics = builtins.sum( (obj for obj in globals().values() if isinstance(obj, go.Graphics)))
+if not __all_graphics:
+    raise RuntimeError(''.join([
+        "No plotting objects detected. ",
+        "Make sure that all of your plotting objects are named, e.g. `G = plot(...)` rather than just `plot(...)`. ",
+        "This is a limitation specific to the interaction between sage and pandoc-plot."
+    ]))
 __all_graphics.save_image(r"#{fname}", dpi=#{dpi})
 |]
