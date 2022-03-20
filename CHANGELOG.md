@@ -4,8 +4,9 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## Release 1.5.0
 
-* Added support for [Sage](https://www.sagemath.org/) (#44)
+* Added support for [Sage](https://www.sagemath.org/) (#44).
 * Fixed an issue where the parsing of default save format from configuration was overly restrictive (#42).
+* Linux and Windows executables now built with GHC 9.2.
 
 ## Release 1.4.1
 
