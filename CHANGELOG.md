@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.5.0
+
+* Added support for [Sage](https://www.sagemath.org/) (#44)
+
 ## Release 1.4.1
 
 * Don't automatically defer javascript scripts when creating interactive figures (#39).

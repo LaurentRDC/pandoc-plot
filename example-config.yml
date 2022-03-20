@@ -137,3 +137,8 @@ plantuml:
   # plantuml:
   #   executable: plantuml
   #   command_line_arguments:
+
+sageplot:
+  # preamble: sageplot.sage
+  executable: sage
+  command_line_arguments:
