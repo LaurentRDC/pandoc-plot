@@ -63,6 +63,7 @@ defaultConfiguration =
       bokehPreamble = mempty,
       plotsjlPreamble = mempty,
       plantumlPreamble = mempty,
+      sagemathPreamble = mempty,
       -- Executables
       matplotlibExe = python,
       matlabExe = "matlab",
@@ -76,6 +77,7 @@ defaultConfiguration =
       bokehExe = python,
       plotsjlExe = "julia",
       plantumlExe = "java",
+      sagemathExe = "sage",
       -- Command line arguments
       matplotlibCmdArgs = mempty,
       matlabCmdArgs = mempty,
@@ -89,6 +91,7 @@ defaultConfiguration =
       bokehCmdArgs = mempty,
       plotsjlCmdArgs = mempty,
       plantumlCmdArgs = "-jar plantuml.jar",
+      sagemathCmdArgs = mempty,
       -- Extras
       matplotlibTightBBox = False,
       matplotlibTransparent = False
@@ -147,7 +150,8 @@ data ConfigPrecursor = ConfigPrecursor
     _graphvizPrec :: !GraphvizPrecursor,
     _bokehPrec :: !BokehPrecursor,
     _plotsjlPrec :: !PlotsjlPrecursor,
-    _plantumlPrec :: !PlantUMLPrecursor
+    _plantumlPrec :: !PlantUMLPrecursor,
+    _sagemathPrec :: !SageMathPrecursor
   }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -173,7 +177,8 @@ defaultConfigPrecursor =
       _graphvizPrec = GraphvizPrecursor Nothing (graphvizExe defaultConfiguration) (graphvizCmdArgs defaultConfiguration),
       _bokehPrec = BokehPrecursor Nothing (bokehExe defaultConfiguration) (bokehCmdArgs defaultConfiguration),
       _plotsjlPrec = PlotsjlPrecursor Nothing (plotsjlExe defaultConfiguration) (plotsjlCmdArgs defaultConfiguration),
-      _plantumlPrec = PlantUMLPrecursor Nothing (plantumlExe defaultConfiguration) (plantumlCmdArgs defaultConfiguration)
+      _plantumlPrec = PlantUMLPrecursor Nothing (plantumlExe defaultConfiguration) (plantumlCmdArgs defaultConfiguration),
+      _sagemathPrec = SageMathPrecursor Nothing (sagemathExe defaultConfiguration) (sagemathCmdArgs defaultConfiguration)
     }
 
 data LoggingPrecursor = LoggingPrecursor
@@ -211,6 +216,8 @@ data BokehPrecursor = BokehPrecursor {_bokehPreamble :: !(Maybe FilePath), _boke
 data PlotsjlPrecursor = PlotsjlPrecursor {_plotsjlPreamble :: !(Maybe FilePath), _plotsjlExe :: !FilePath, _plotsjlCmdArgs :: !Text}
 
 data PlantUMLPrecursor = PlantUMLPrecursor {_plantumlPreamble :: !(Maybe FilePath), _plantumlExe :: !FilePath, _plantumlCmdArgs :: !Text}
+
+data SageMathPrecursor = SageMathPrecursor {_sagemathPreamble :: !(Maybe FilePath), _sagemathExe :: !FilePath, _sagemathCmdArgs :: !Text}
 
 instance FromJSON LoggingPrecursor where
   parseJSON (Object v) =
@@ -275,6 +282,10 @@ instance FromJSON PlantUMLPrecursor where
   parseJSON (Object v) = PlantUMLPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= plantumlExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= plantumlCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show PlantUML, " configuration."]
 
+instance FromJSON SageMathPrecursor where
+  parseJSON (Object v) = SageMathPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= sagemathExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= sagemathCmdArgs defaultConfiguration
+  parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
+
 toolkitAsKey :: Toolkit -> Key 
 toolkitAsKey = fromString . unpack . cls
 
@@ -303,6 +314,7 @@ instance FromJSON ConfigPrecursor where
     _bokehPrec <- v .:? toolkitAsKey Bokeh .!= _bokehPrec defaultConfigPrecursor
     _plotsjlPrec <- v .:? toolkitAsKey Plotsjl .!= _plotsjlPrec defaultConfigPrecursor
     _plantumlPrec <- v .:? toolkitAsKey PlantUML .!= _plantumlPrec defaultConfigPrecursor
+    _sagemathPrec <- v .:? toolkitAsKey SageMath .!= _sagemathPrec defaultConfigPrecursor
 
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."
@@ -336,6 +348,7 @@ renderConfig ConfigPrecursor {..} = do
       bokehExe = _bokehExe _bokehPrec
       plotsjlExe = _plotsjlExe _plotsjlPrec
       plantumlExe = _plantumlExe _plantumlPrec
+      sagemathExe = _sagemathExe _sagemathPrec
 
       matplotlibCmdArgs = _matplotlibCmdArgs _matplotlibPrec
       matlabCmdArgs = _matlabCmdArgs _matlabPrec
@@ -349,6 +362,7 @@ renderConfig ConfigPrecursor {..} = do
       bokehCmdArgs = _bokehCmdArgs _bokehPrec
       plotsjlCmdArgs = _plotsjlCmdArgs _plotsjlPrec
       plantumlCmdArgs = _plantumlCmdArgs _plantumlPrec
+      sagemathCmdArgs = _sagemathCmdArgs _sagemathPrec
 
   matplotlibPreamble <- readPreamble (_matplotlibPreamble _matplotlibPrec)
   matlabPreamble <- readPreamble (_matlabPreamble _matlabPrec)
@@ -362,6 +376,7 @@ renderConfig ConfigPrecursor {..} = do
   bokehPreamble <- readPreamble (_bokehPreamble _bokehPrec)
   plotsjlPreamble <- readPreamble (_plotsjlPreamble _plotsjlPrec)
   plantumlPreamble <- readPreamble (_plantumlPreamble _plantumlPrec)
+  sagemathPreamble <- readPreamble (_sagemathPreamble _sagemathPrec)
 
   return Configuration {..}
   where

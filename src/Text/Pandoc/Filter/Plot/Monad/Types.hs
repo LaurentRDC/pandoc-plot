@@ -59,6 +59,7 @@ data Toolkit
   | Bokeh
   | Plotsjl
   | PlantUML
+  | SageMath
   deriving (Bounded, Eq, Enum, Generic, Ord)
 
 -- | This instance should only be used to display toolkit names
@@ -75,6 +76,7 @@ instance Show Toolkit where
   show Bokeh = "Python/Bokeh"
   show Plotsjl = "Julia/Plots.jl"
   show PlantUML = "PlantUML"
+  show SageMath = "SageMath"
 
 -- | Class name which will trigger the filter
 cls :: Toolkit -> Text
@@ -90,6 +92,7 @@ cls Graphviz = "graphviz"
 cls Bokeh = "bokeh"
 cls Plotsjl = "plotsjl"
 cls PlantUML = "plantuml"
+cls SageMath = "sageplot"
 
 -- | Executable program and directory where it can be found.
 data Executable = Executable FilePath Text

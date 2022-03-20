@@ -42,17 +42,31 @@ import Text.Pandoc.Filter.Plot.Monad.Logging
   ( Logger (lVerbosity),
   )
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
+    ( bokeh, bokehSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.GGPlot2
+    ( ggplot2, ggplot2SupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
+    ( gnuplot, gnuplotSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.Graphviz
+    ( graphviz, graphvizSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.Mathematica
+    ( mathematica, mathematicaSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.Matlab
+    ( matlab, matlabSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
+    ( matplotlib, matplotlibSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.Octave
+    ( octave, octaveSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.PlantUML
+    ( plantuml, plantumlSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
+    ( plotlyPython, plotlyPythonSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.PlotlyR
+    ( plotlyR, plotlyRSupportedSaveFormats )
 import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
+    ( plotsjl, plotsjlSupportedSaveFormats )
+import Text.Pandoc.Filter.Plot.Renderers.SageMath
+    ( sagemath, sagemathSupportedSaveFormats )
 
 -- | Get the renderer associated with a toolkit.
 -- If the renderer has not been used before,
@@ -87,6 +101,7 @@ renderer tk = do
     sel Bokeh = bokeh
     sel Plotsjl = plotsjl
     sel PlantUML = plantuml
+    sel SageMath = sagemath
 
 -- | Save formats supported by this renderer.
 supportedSaveFormats :: Toolkit -> [SaveFormat]
@@ -102,6 +117,7 @@ supportedSaveFormats Graphviz = graphvizSupportedSaveFormats
 supportedSaveFormats Bokeh = bokehSupportedSaveFormats
 supportedSaveFormats Plotsjl = plotsjlSupportedSaveFormats
 supportedSaveFormats PlantUML = plantumlSupportedSaveFormats
+supportedSaveFormats SageMath = sagemathSupportedSaveFormats
 
 -- | The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
@@ -117,6 +133,7 @@ preambleSelector Graphviz = graphvizPreamble
 preambleSelector Bokeh = bokehPreamble
 preambleSelector Plotsjl = plotsjlPreamble
 preambleSelector PlantUML = plantumlPreamble
+preambleSelector SageMath = sagemathPreamble
 
 -- | Parse code block headers for extra attributes that are specific
 -- to this renderer. By default, no extra attributes are parsed.
