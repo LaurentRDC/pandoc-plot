@@ -58,6 +58,7 @@ toolkitSuite tk =
       testOverrideConfiguration,
       testMarkdownFormattingCaption1,
       testMarkdownFormattingCaption2,
+      testFigureWithoutCaption,
       testCleanOutputDirs,
       testChecksFail
     ]

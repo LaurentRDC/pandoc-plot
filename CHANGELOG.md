@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.5.1
+
+* Figures with no captions (and no link to the source script), will now be shown as an image, without figure numbering (#37).
+
 ## Release 1.5.0
 
 * Added support for [Sage](https://www.sagemath.org/) (#44).

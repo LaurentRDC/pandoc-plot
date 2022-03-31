@@ -79,12 +79,15 @@ figure ::
   FilePath ->
   Inlines ->
   PlotM Block
--- To render images as figures with captions, the target title
--- must be "fig:"
--- Janky? yes
 figure as fp caption' =
   return . head . toList . para $
-    imageWith as (pack fp) "fig:" caption'
+    imageWith as (pack fp) title caption'
+  where
+    -- To render images as figures with captions, the target title
+    -- must be "fig:"
+    -- Janky? yes
+    -- In case there is no caption, make this an image instead of a figure
+    title = if caption' /= mempty then "fig:" else mempty
 
 -- TODO: also add the case where SVG plots can be
 --       embedded in HTML output

@@ -318,6 +318,30 @@ testMarkdownFormattingCaption2 tk =
     extractImageCaption _ = mempty
 
 -------------------------------------------------------------------------------
+-- Test that Markdown bold formatting in captions is correctly rendered
+testFigureWithoutCaption :: Toolkit -> TestTree
+testFigureWithoutCaption tk =
+  testCase "appropriately build an image if no caption" $ do
+    let postfix = unpack . cls $ tk
+    tempDir <- (</> "test-image-if-no-caption-" <> postfix) <$> getTemporaryDirectory
+    ensureDirectoryExistsAndEmpty tempDir
+
+    -- Note that this test is fragile, in the sense that the expected result must be carefully
+    -- constructed
+    let cb =
+          addDirectory tempDir $ codeBlock tk (trivialContent tk)
+        fmt = B.Format "markdown"
+    result <- runPlotM Nothing (defaultTestConfig {captionFormat = fmt}) $ make cb
+    assertEqual "" (Just mempty) (extractTitle result)
+  where
+    extractTitle (B.Para blocks) = extractImageCaption . head $ blocks
+    extractTitle _ = Nothing
+
+    extractImageCaption (Image _ _ (_, title)) = Just title
+    extractImageCaption _ = Nothing
+
+
+-------------------------------------------------------------------------------
 -- Test that cleanOutpuDirs correctly cleans the output directory specified in a block.
 testCleanOutputDirs :: Toolkit -> TestTree
 testCleanOutputDirs tk =
