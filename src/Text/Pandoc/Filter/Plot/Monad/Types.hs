@@ -26,6 +26,7 @@ module Text.Pandoc.Filter.Plot.Monad.Types
     inclusionKeys,
     Executable (..),
     exeFromPath,
+    pathToExe,
     -- Utilities
     isWindows,
   )
@@ -37,7 +38,7 @@ import Data.String (IsString (..))
 import Data.Text (Text, pack, unpack)
 import Data.Yaml (FromJSON(..), ToJSON (toJSON), withText)
 import GHC.Generics (Generic)
-import System.FilePath (splitFileName)
+import System.FilePath (splitFileName, (</>))
 import System.Info (os)
 import Text.Pandoc.Definition (Attr)
 
@@ -101,6 +102,9 @@ exeFromPath :: FilePath -> Executable
 exeFromPath fp =
   let (dir, name) = splitFileName fp
    in Executable dir (pack name)
+
+pathToExe :: Executable -> FilePath
+pathToExe (Executable dir name) = dir </> unpack name 
 
 -- | Source context for plotting scripts
 type Script = Text
@@ -170,6 +174,8 @@ inclusionKeys = enumFromTo (minBound :: InclusionKey) maxBound
 data FigureSpec = FigureSpec
   { -- | Renderer to use for this figure.
     renderer_ :: !Renderer,
+    -- | Executable to use in rendering this figure.
+    fsExecutable :: Executable,
     -- | Figure caption.
     caption :: !Text,
     -- | Append link to source code in caption.
@@ -263,13 +269,14 @@ data OutputSpec = OutputSpec
     oScriptPath :: FilePath,
     -- | Figure output path
     oFigurePath :: FilePath,
+    -- | Executable to use during rendering
+    oExecutable :: Executable,
     -- | Current working directory
     oCWD :: FilePath
   }
 
 data Renderer = Renderer
   { rendererToolkit :: Toolkit,
-    rendererExe :: Executable,
     rendererCapture :: FigureSpec -> FilePath -> Script,
     rendererCommand :: OutputSpec -> Text,
     rendererSupportedSaveFormats :: [SaveFormat],

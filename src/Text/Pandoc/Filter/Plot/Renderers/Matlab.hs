@@ -28,15 +28,12 @@ matlab = do
     then return Nothing
     else do
       cmdargs <- asksConfig matlabCmdArgs
-      mexe <- executable Matlab
       return $
-        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Matlab,
-                rendererExe = exe,
                 rendererCapture = matlabCapture,
-                rendererCommand = matlabCommand cmdargs exename,
+                rendererCommand = matlabCommand cmdargs,
                 rendererSupportedSaveFormats = matlabSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "matlab",
@@ -47,13 +44,13 @@ matlab = do
 matlabSupportedSaveFormats :: [SaveFormat]
 matlabSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-matlabCommand :: Text -> Text -> OutputSpec -> Text
-matlabCommand cmdargs exe OutputSpec {..} = 
+matlabCommand :: Text  -> OutputSpec -> Text
+matlabCommand cmdargs OutputSpec {..} = 
   -- The MATLAB 'run' function will switch to the directory where the script
   -- is located before executing the script. Therefore, we first save the current
   -- working directory in the variable 'pandoc_plot_cwd' so that we can use it 
   -- when exporting the figure
-  [st|#{exe} #{cmdargs} -sd '#{oCWD}' -noFigureWindows -batch "pandoc_plot_cwd=pwd; run('#{oScriptPath}')"|]
+  [st|#{pathToExe oExecutable} #{cmdargs} -sd '#{oCWD}' -noFigureWindows -batch "pandoc_plot_cwd=pwd; run('#{oScriptPath}')"|]
 
 -- On Windows at least, "matlab -help"  actually returns -1, even though the
 -- help text is shown successfully!

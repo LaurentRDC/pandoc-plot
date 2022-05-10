@@ -108,8 +108,11 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
 
           -- Decide between reading from file or using document content
           content <- parseContent block
+          
+          defaultExe <- fromJust <$> (executable rendererToolkit)
 
           let caption = Map.findWithDefault mempty (tshow CaptionK) attrs'
+              fsExecutable = maybe defaultExe (exeFromPath . unpack) $ Map.lookup (tshow ExecutableK) attrs'
               withSource = maybe defWithSource readBool (Map.lookup (tshow WithSourceK) attrs')
               script = mconcat $ intersperse "\n" [header, includeScript, content]
               directory = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory conf) (tshow DirectoryK) attrs'

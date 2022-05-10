@@ -27,15 +27,12 @@ mathematica = do
     then return Nothing
     else do
       cmdargs <- asksConfig mathematicaCmdArgs
-      mexe <- executable Mathematica
       return $
-        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = Mathematica,
-                rendererExe = exe,
                 rendererCapture = mathematicaCapture,
-                rendererCommand = mathematicaCommand cmdargs exename,
+                rendererCommand = mathematicaCommand cmdargs,
                 rendererSupportedSaveFormats = mathematicaSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "mathematica",
@@ -46,8 +43,8 @@ mathematica = do
 mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
-mathematicaCommand :: Text -> Text -> OutputSpec -> Text
-mathematicaCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} -script "#{oScriptPath}"|]
+mathematicaCommand :: Text -> OutputSpec -> Text
+mathematicaCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} -script "#{oScriptPath}"|]
 
 mathematicaAvailable :: PlotM Bool
 mathematicaAvailable = do

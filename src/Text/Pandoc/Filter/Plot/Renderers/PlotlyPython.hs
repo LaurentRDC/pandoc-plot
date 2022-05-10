@@ -27,15 +27,12 @@ plotlyPython = do
     then return Nothing
     else do
       cmdargs <- asksConfig plotlyPythonCmdArgs
-      mexe <- executable PlotlyPython
       return $
-        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = PlotlyPython,
-                rendererExe = exe,
                 rendererCapture = plotlyPythonCapture,
-                rendererCommand = plotlyPythonCommand cmdargs exename,
+                rendererCommand = plotlyPythonCommand cmdargs,
                 rendererSupportedSaveFormats = plotlyPythonSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "python",
@@ -46,8 +43,8 @@ plotlyPython = do
 plotlyPythonSupportedSaveFormats :: [SaveFormat]
 plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS, HTML]
 
-plotlyPythonCommand :: Text -> Text -> OutputSpec -> Text
-plotlyPythonCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+plotlyPythonCommand :: Text -> OutputSpec -> Text
+plotlyPythonCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
 
 plotlyPythonAvailable :: PlotM Bool
 plotlyPythonAvailable = do

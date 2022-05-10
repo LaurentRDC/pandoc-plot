@@ -27,15 +27,12 @@ sagemath = do
     then return Nothing
     else do
       cmdargs <- asksConfig sagemathCmdArgs
-      mexe <- executable SageMath
       return $
-        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = SageMath,
-                rendererExe = exe,
                 rendererCapture = sagemathCapture,
-                rendererCommand = sagemathCommand cmdargs exename,
+                rendererCommand = sagemathCommand cmdargs,
                 rendererSupportedSaveFormats = sagemathSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "sagemath",
@@ -48,8 +45,8 @@ sagemath = do
 sagemathSupportedSaveFormats :: [SaveFormat]
 sagemathSupportedSaveFormats = [EPS, PDF, PNG, SVG]
 
-sagemathCommand :: Text -> Text -> OutputSpec -> Text
-sagemathCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
+sagemathCommand :: Text -> OutputSpec -> Text
+sagemathCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
 
 sagemathAvailable :: PlotM Bool
 sagemathAvailable = do

@@ -29,15 +29,12 @@ plantuml = do
     then return Nothing
     else do
       cmdargs <- asksConfig plantumlCmdArgs
-      mexe <- executable PlantUML
       return $
-        mexe >>= \exe@(Executable _ exename) ->
           return
             Renderer
               { rendererToolkit = PlantUML,
-                rendererExe = exe,
                 rendererCapture = plantumlCapture,
-                rendererCommand = plantumlCommand cmdargs exename,
+                rendererCommand = plantumlCommand cmdargs,
                 rendererSupportedSaveFormats = plantumlSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "plantuml",
@@ -48,14 +45,14 @@ plantuml = do
 plantumlSupportedSaveFormats :: [SaveFormat]
 plantumlSupportedSaveFormats = [PNG, PDF, SVG]
 
-plantumlCommand :: Text -> Text -> OutputSpec -> Text
-plantumlCommand cmdargs exe OutputSpec {..} =
+plantumlCommand :: Text -> OutputSpec -> Text
+plantumlCommand cmdargs OutputSpec {..} =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
       dir = takeDirectory oFigurePath
     -- the command below works as long as the script name is the same basename
     -- as the target figure path. E.g.: script basename of pandocplot123456789.txt
     -- will result in pandocplot123456789.(extension)
-   in [st|#{exe} #{cmdargs} -t#{fmt} -output "#{oCWD </> dir}" "#{normalizePath oScriptPath}"|]
+   in [st|#{pathToExe oExecutable} #{cmdargs} -t#{fmt} -output "#{oCWD </> dir}" "#{normalizePath oScriptPath}"|]
 
 normalizePath :: String -> String
 normalizePath = map f

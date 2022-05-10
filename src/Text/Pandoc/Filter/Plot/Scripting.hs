@@ -120,13 +120,14 @@ runTempScript spec@FigureSpec {..} = do
               { oFigureSpec = spec,
                 oScriptPath = scriptPath,
                 oFigurePath = target,
+                oExecutable = fsExecutable,
                 oCWD = cwd
               }
       let command_ = rendererCommand renderer_ outputSpec
 
       -- Change the PATH environment variable so the appropriate executable is
       -- found first
-      let (Executable exedir _) = rendererExe renderer_
+      let (Executable exedir _) = oExecutable outputSpec
       withPrependedPath exedir $ do
         -- It is important that the CWD be inherited from the
         -- parent process. See #2.
