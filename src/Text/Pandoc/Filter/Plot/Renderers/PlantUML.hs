@@ -22,25 +22,21 @@ import Data.Char
 import System.FilePath (takeDirectory, (</>))
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-plantuml :: PlotM (Maybe Renderer)
+plantuml :: PlotM Renderer
 plantuml = do
-  avail <- plantumlAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig plantumlCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = PlantUML,
-                rendererCapture = plantumlCapture,
-                rendererCommand = plantumlCommand cmdargs,
-                rendererSupportedSaveFormats = plantumlSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "plantuml",
-                rendererComment = mappend "' ",
-                rendererScriptExtension = ".txt"
-              }
+        Renderer
+          { rendererToolkit = PlantUML,
+            rendererCapture = plantumlCapture,
+            rendererCommand = plantumlCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} #{cmdargs} -h|],
+            rendererSupportedSaveFormats = plantumlSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "plantuml",
+            rendererComment = mappend "' ",
+            rendererScriptExtension = ".txt"
+          }
 
 plantumlSupportedSaveFormats :: [SaveFormat]
 plantumlSupportedSaveFormats = [PNG, PDF, SVG]
@@ -59,15 +55,6 @@ normalizePath = map f
   where
     f '\\' = '/'
     f x = x
-
-plantumlAvailable :: PlotM Bool
-plantumlAvailable = do
-  mexe <- executable PlantUML
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) -> do
-      cmdargs <- asksConfig plantumlCmdArgs
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} #{cmdargs} -h|]
 
 -- PlantUML export is entirely based on command-line arguments
 -- so there is no need to modify the script itself.

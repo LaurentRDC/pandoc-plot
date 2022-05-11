@@ -74,7 +74,6 @@ import Control.Monad.State.Strict
     evalStateT,
   )
 import Data.ByteString.Lazy (toStrict)
-import Data.Functor ((<&>))
 import Data.Hashable (hash)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
@@ -84,7 +83,6 @@ import Data.Text.Encoding (decodeUtf8With)
 import Data.Text.Encoding.Error (lenientDecode)
 import System.Directory
   ( doesFileExist,
-    findExecutable,
     getCurrentDirectory,
     getModificationTime,
   )
@@ -269,12 +267,8 @@ fileHash path = do
         else err (mconcat ["Dependency ", pack fp, " does not exist."]) >> return 0
 
 -- | Find an executable.
-executable :: Toolkit -> PlotM (Maybe Executable)
-executable tk =
-  exeSelector tk
-    >>= \name ->
-      liftIO $
-        findExecutable name <&> fmap exeFromPath
+executable :: Toolkit -> PlotM Executable
+executable tk = exeSelector tk >>= return . exeFromPath
   where
     exeSelector Matplotlib = asksConfig matplotlibExe
     exeSelector PlotlyPython = asksConfig plotlyPythonExe

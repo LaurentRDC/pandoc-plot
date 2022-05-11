@@ -20,39 +20,27 @@ where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-gnuplot :: PlotM (Maybe Renderer)
+gnuplot :: PlotM Renderer
 gnuplot = do
-  avail <- gnuplotAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig gnuplotCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = GNUPlot,
-                rendererCapture = gnuplotCapture,
-                rendererCommand = gnuplotCommand cmdargs,
-                rendererSupportedSaveFormats = gnuplotSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "gnuplot",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".gp"
-              }
+        Renderer
+          { rendererToolkit = GNUPlot,
+            rendererCapture = gnuplotCapture,
+            rendererCommand = gnuplotCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|],
+            rendererSupportedSaveFormats = gnuplotSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "gnuplot",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".gp"
+          }
 
 gnuplotSupportedSaveFormats :: [SaveFormat]
 gnuplotSupportedSaveFormats = [LaTeX, PNG, SVG, EPS, GIF, JPG, PDF]
 
 gnuplotCommand :: Text -> OutputSpec -> Text
 gnuplotCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} -c "#{oScriptPath}"|]
-
-gnuplotAvailable :: PlotM Bool
-gnuplotAvailable = do
-  mexe <- executable GNUPlot
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|"#{exe}" -h|]
 
 gnuplotCapture :: FigureSpec -> FilePath -> Script
 gnuplotCapture = prependCapture gnuplotCaptureFragment

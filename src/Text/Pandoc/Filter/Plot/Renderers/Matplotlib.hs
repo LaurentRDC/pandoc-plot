@@ -27,25 +27,21 @@ import Data.Monoid (Any (..))
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-matplotlib :: PlotM (Maybe Renderer)
+matplotlib :: PlotM Renderer
 matplotlib = do
-  avail <- matplotlibAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig matplotlibCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = Matplotlib,
-                rendererCapture = matplotlibCapture,
-                rendererCommand = matplotlibCommand cmdargs,
-                rendererSupportedSaveFormats = matplotlibSupportedSaveFormats,
-                rendererChecks = [matplotlibCheckIfShow],
-                rendererLanguage = "python",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".py"
-              }
+        Renderer
+          { rendererToolkit = Matplotlib,
+            rendererCapture = matplotlibCapture,
+            rendererCommand = matplotlibCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -c "import matplotlib"|],
+            rendererSupportedSaveFormats = matplotlibSupportedSaveFormats,
+            rendererChecks = [matplotlibCheckIfShow],
+            rendererLanguage = "python",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".py"
+          }
 
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
@@ -68,14 +64,6 @@ plt.savefig(r"#{fname}", dpi=#{dpi}, transparent=#{transparent}, bbox_inches=#{t
     transparent_ = readBool $ M.findWithDefault "False" "transparent" attrs
     tightBox = if tight_ then ("'tight'" :: Text) else ("None" :: Text)
     transparent = if transparent_ then ("True" :: Text) else ("False" :: Text)
-
-matplotlibAvailable :: PlotM Bool
-matplotlibAvailable = do
-  mexe <- executable Matplotlib
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -c "import matplotlib"|]
 
 -- | Check if `matplotlib.pyplot.show()` calls are present in the script,
 -- which would halt pandoc-plot

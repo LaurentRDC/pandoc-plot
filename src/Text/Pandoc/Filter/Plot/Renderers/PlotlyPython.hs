@@ -20,19 +20,15 @@ where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-plotlyPython :: PlotM (Maybe Renderer)
+plotlyPython :: PlotM Renderer
 plotlyPython = do
-  avail <- plotlyPythonAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig plotlyPythonCmdArgs
       return $
-          return
             Renderer
               { rendererToolkit = PlotlyPython,
                 rendererCapture = plotlyPythonCapture,
                 rendererCommand = plotlyPythonCommand cmdargs,
+                rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -c "import plotly.graph_objects"|],
                 rendererSupportedSaveFormats = plotlyPythonSupportedSaveFormats,
                 rendererChecks = mempty,
                 rendererLanguage = "python",
@@ -45,15 +41,6 @@ plotlyPythonSupportedSaveFormats = [PNG, JPG, WEBP, PDF, SVG, EPS, HTML]
 
 plotlyPythonCommand :: Text -> OutputSpec -> Text
 plotlyPythonCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
-
-plotlyPythonAvailable :: PlotM Bool
-plotlyPythonAvailable = do
-  mexe <- executable PlotlyPython
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $
-        asks envCWD >>= flip commandSuccess [st|#{exe} -c "import plotly.graph_objects"|]
 
 plotlyPythonCapture :: FigureSpec -> FilePath -> Script
 plotlyPythonCapture = appendCapture plotlyPythonCaptureFragment

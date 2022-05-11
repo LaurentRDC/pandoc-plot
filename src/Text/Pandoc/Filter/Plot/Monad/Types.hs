@@ -14,6 +14,7 @@
 module Text.Pandoc.Filter.Plot.Monad.Types
   ( Toolkit (..),
     Renderer (..),
+    AvailabilityCheck(..),
     Script,
     CheckResult (..),
     InclusionKey (..),
@@ -38,7 +39,7 @@ import Data.String (IsString (..))
 import Data.Text (Text, pack, unpack)
 import Data.Yaml (FromJSON(..), ToJSON (toJSON), withText)
 import GHC.Generics (Generic)
-import System.FilePath (splitFileName, (</>))
+import System.FilePath (splitFileName, (</>), isAbsolute)
 import System.Info (os)
 import Text.Pandoc.Definition (Attr)
 
@@ -95,16 +96,20 @@ cls Plotsjl = "plotsjl"
 cls PlantUML = "plantuml"
 cls SageMath = "sageplot"
 
--- | Executable program and directory where it can be found.
-data Executable = Executable FilePath Text
+-- | Executable program, and sometimes the directory where it can be found.
+data Executable 
+  = AbsExe FilePath Text
+  | RelExe Text
 
 exeFromPath :: FilePath -> Executable
-exeFromPath fp =
-  let (dir, name) = splitFileName fp
-   in Executable dir (pack name)
+exeFromPath fp
+  | isAbsolute fp = let (dir, name) = splitFileName fp
+                     in AbsExe dir (pack name)
+  | otherwise     = RelExe (pack fp) 
 
 pathToExe :: Executable -> FilePath
-pathToExe (Executable dir name) = dir </> unpack name 
+pathToExe (AbsExe dir name) = dir </> unpack name 
+pathToExe (RelExe name)            = unpack name
 
 -- | Source context for plotting scripts
 type Script = Text
@@ -275,10 +280,15 @@ data OutputSpec = OutputSpec
     oCWD :: FilePath
   }
 
+data AvailabilityCheck
+  = CommandSuccess (Executable -> Text)
+  | ExecutableExists
+
 data Renderer = Renderer
   { rendererToolkit :: Toolkit,
     rendererCapture :: FigureSpec -> FilePath -> Script,
     rendererCommand :: OutputSpec -> Text,
+    rendererAvailability :: AvailabilityCheck,
     rendererSupportedSaveFormats :: [SaveFormat],
     rendererChecks :: [Script -> CheckResult],
     rendererLanguage :: Text,

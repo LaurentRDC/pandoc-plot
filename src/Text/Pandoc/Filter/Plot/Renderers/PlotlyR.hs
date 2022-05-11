@@ -21,40 +21,27 @@ where
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-plotlyR :: PlotM (Maybe Renderer)
+plotlyR :: PlotM Renderer
 plotlyR = do
-  avail <- plotlyRAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig plotlyRCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = PlotlyR,
-                rendererCapture = plotlyRCapture,
-                rendererCommand = plotlyRCommand cmdargs,
-                rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "r",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".r"
-              }
+        Renderer
+          { rendererToolkit = PlotlyR,
+            rendererCapture = plotlyRCapture,
+            rendererCommand = plotlyRCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "if(!require('plotly')) {quit(status=1)}"|],
+            rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "r",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".r"
+          }
 
 plotlyRSupportedSaveFormats :: [SaveFormat]
 plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, HTML]
 
 plotlyRCommand :: Text -> OutputSpec -> Text
 plotlyRCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
-
-plotlyRAvailable :: PlotM Bool
-plotlyRAvailable = do
-  mexe <- executable PlotlyR
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $
-        asks envCWD >>= flip commandSuccess [st|#{exe} -e "if(!require('plotly')) {quit(status=1)}"|]
 
 plotlyRCapture :: FigureSpec -> FilePath -> Script
 plotlyRCapture fs fp =

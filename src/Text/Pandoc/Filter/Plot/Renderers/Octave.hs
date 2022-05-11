@@ -20,39 +20,27 @@ where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-octave :: PlotM (Maybe Renderer)
+octave :: PlotM Renderer
 octave = do
-  avail <- octaveAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig octaveCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = Octave,
-                rendererCapture = octaveCapture,
-                rendererCommand = octaveCommand cmdargs,
-                rendererSupportedSaveFormats = octaveSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "matlab",
-                rendererComment = mappend "% ",
-                rendererScriptExtension = ".m"
-              }
+        Renderer
+          { rendererToolkit = Octave,
+            rendererCapture = octaveCapture,
+            rendererCommand = octaveCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|],
+            rendererSupportedSaveFormats = octaveSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "matlab",
+            rendererComment = mappend "% ",
+            rendererScriptExtension = ".m"
+          }
 
 octaveSupportedSaveFormats :: [SaveFormat]
 octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 octaveCommand :: Text -> OutputSpec -> Text
 octaveCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} --no-gui --no-window-system "#{oScriptPath}"|]
-
-octaveAvailable :: PlotM Bool
-octaveAvailable = do
-  mexe <- executable Octave
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -h|]
 
 octaveCapture :: FigureSpec -> FilePath -> Script
 octaveCapture = appendCapture octaveCaptureFragment

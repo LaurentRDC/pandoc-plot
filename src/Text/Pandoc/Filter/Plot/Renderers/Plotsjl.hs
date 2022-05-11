@@ -20,25 +20,21 @@ where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-plotsjl :: PlotM (Maybe Renderer)
+plotsjl :: PlotM Renderer
 plotsjl = do
-  avail <- plotsjlAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig plotsjlCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = Plotsjl,
-                rendererCapture = plotsjlCapture,
-                rendererCommand = plotsjlCommand cmdargs,
-                rendererSupportedSaveFormats = plotsjlSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "julia",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".jl"
-              }
+        Renderer
+          { rendererToolkit = Plotsjl,
+            rendererCapture = plotsjlCapture,
+            rendererCommand = plotsjlCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "using Plots"|],
+            rendererSupportedSaveFormats = plotsjlSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "julia",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".jl"
+          }
 
 -- Save formats support by most backends
 -- https://docs.plotsjl.org/latest/output/#Supported-output-file-formats-1
@@ -47,15 +43,6 @@ plotsjlSupportedSaveFormats = [PNG, SVG, PDF]
 
 plotsjlCommand :: Text ->  OutputSpec -> Text
 plotsjlCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} -- "#{oScriptPath}"|]
-
-plotsjlAvailable :: PlotM Bool
-plotsjlAvailable = do
-  mexe <- executable Plotsjl
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $
-        asks envCWD >>= flip commandSuccess [st|#{exe} -e "using Plots"|]
 
 plotsjlCapture :: FigureSpec -> FilePath -> Script
 plotsjlCapture = appendCapture plotsjlCaptureFragment

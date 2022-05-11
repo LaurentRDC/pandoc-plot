@@ -20,39 +20,27 @@ where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-mathematica :: PlotM (Maybe Renderer)
+mathematica :: PlotM Renderer
 mathematica = do
-  avail <- mathematicaAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig mathematicaCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = Mathematica,
-                rendererCapture = mathematicaCapture,
-                rendererCommand = mathematicaCommand cmdargs,
-                rendererSupportedSaveFormats = mathematicaSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "mathematica",
-                rendererComment = \t -> mconcat ["(*", t, "*)"],
-                rendererScriptExtension = ".m"
-              }
+        Renderer
+          { rendererToolkit = Mathematica,
+            rendererCapture = mathematicaCapture,
+            rendererCommand = mathematicaCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|], -- TODO: test this
+            rendererSupportedSaveFormats = mathematicaSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "mathematica",
+            rendererComment = \t -> mconcat ["(*", t, "*)"],
+            rendererScriptExtension = ".m"
+          }
 
 mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
 
 mathematicaCommand :: Text -> OutputSpec -> Text
 mathematicaCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} -script "#{oScriptPath}"|]
-
-mathematicaAvailable :: PlotM Bool
-mathematicaAvailable = do
-  mexe <- executable Mathematica
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -h|] -- TODO: test this
 
 mathematicaCapture :: FigureSpec -> FilePath -> Script
 mathematicaCapture = appendCapture mathematicaCaptureFragment

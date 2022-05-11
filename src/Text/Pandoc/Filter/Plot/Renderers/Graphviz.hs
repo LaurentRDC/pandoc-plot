@@ -21,25 +21,21 @@ where
 import Data.Char
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-graphviz :: PlotM (Maybe Renderer)
+graphviz :: PlotM Renderer
 graphviz = do
-  avail <- graphvizAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig graphvizCmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = Graphviz,
-                rendererCapture = graphvizCapture,
-                rendererCommand = graphvizCommand cmdargs,
-                rendererSupportedSaveFormats = graphvizSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "dot",
-                rendererComment = mappend "// ",
-                rendererScriptExtension = ".dot"
-              }
+        Renderer
+          { rendererToolkit = Graphviz,
+            rendererCapture = graphvizCapture,
+            rendererCommand = graphvizCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -?|],
+            rendererSupportedSaveFormats = graphvizSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "dot",
+            rendererComment = mappend "// ",
+            rendererScriptExtension = ".dot"
+          }
 
 graphvizSupportedSaveFormats :: [SaveFormat]
 graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]
@@ -49,14 +45,6 @@ graphvizCommand cmdargs OutputSpec {..} =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
       dpi' = dpi oFigureSpec
    in [st|#{pathToExe oExecutable} #{cmdargs} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]
-
-graphvizAvailable :: PlotM Bool
-graphvizAvailable = do
-  mexe <- executable Graphviz
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -?|]
 
 -- Graphviz export is entirely based on command-line arguments
 -- so there is no need to modify the script itself.

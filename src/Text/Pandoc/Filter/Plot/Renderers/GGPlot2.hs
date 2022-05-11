@@ -21,39 +21,27 @@ where
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-ggplot2 :: PlotM (Maybe Renderer)
+ggplot2 :: PlotM Renderer
 ggplot2 = do
-  avail <- ggplot2Available
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig ggplot2CmdArgs
       return $
-          return
-            Renderer
-              { rendererToolkit = GGPlot2,
-                rendererCapture = ggplot2Capture,
-                rendererCommand = ggplot2Command cmdargs,
-                rendererSupportedSaveFormats = ggplot2SupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "r",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".r"
-              }
+        Renderer
+          { rendererToolkit = GGPlot2,
+            rendererCapture = ggplot2Capture,
+            rendererCommand = ggplot2Command cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "if(!require('ggplot2')) {quit(status=1)}"|],
+            rendererSupportedSaveFormats = ggplot2SupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "r",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".r"
+          }
 
 ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
 ggplot2Command :: Text -> OutputSpec -> Text
 ggplot2Command cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
-
-ggplot2Available :: PlotM Bool
-ggplot2Available = do
-  mexe <- executable GGPlot2
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -e "if(!require('ggplot2')) {quit(status=1)}"|]
 
 ggplot2Capture :: FigureSpec -> FilePath -> Script
 ggplot2Capture fs fp =
