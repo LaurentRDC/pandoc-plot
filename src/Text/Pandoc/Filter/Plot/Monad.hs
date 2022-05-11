@@ -139,7 +139,6 @@ runPlotM fmt conf v = do
   cwd <- getCurrentDirectory
   st <-
     PlotState <$> newMVar mempty
-      <*> newMVar mempty
   let verbosity = logVerbosity conf
       sink = logSink conf
   withLogger verbosity sink $
@@ -222,27 +221,23 @@ throwStrictError msg = do
   logger <- askLogger
   liftIO $ terminateLogging logger >> exitFailure
 
--- Plot state is used for caching.
--- One part consists of a map of filepaths to hashes
+-- Plot state is used for caching a map of filepaths to hashes
 -- This allows multiple plots to depend on the same file/directory, and the file hashes
 -- will only be calculated once. This is OK because pandoc-plot will not run for long.
 -- We note that because figures are rendered possibly in parallel, access to
 -- the state must be synchronized; otherwise, each thread might compute its own
 -- hashes.
--- The other part is comprised of a map of toolkits to renderers (possibly missing)
--- This means that checking if renderers are available will only be done once.
 type FileHash = Word
 
 data PlotState
   = PlotState
       (MVar (Map FilePath FileHash))
-      (MVar (Map Toolkit (Maybe Renderer)))
 
 -- | Get a filehash. If the file hash has been computed before,
 -- it is reused. Otherwise, the filehash is calculated and stored.
 fileHash :: FilePath -> PlotM FileHash
 fileHash path = do
-  PlotState varHashes varExes <- get
+  PlotState varHashes <- get
   hashes <- liftIO $ takeMVar varHashes
   (fh, hashes') <- case M.lookup path hashes of
     Nothing -> do
@@ -254,7 +249,7 @@ fileHash path = do
       debug $ mconcat ["Hash of dependency ", pack path, " already calculated."]
       return (h, hashes)
   liftIO $ putMVar varHashes hashes'
-  put $ PlotState varHashes varExes
+  put $ PlotState varHashes
   return fh
   where
     -- As a proxy for the state of a file dependency, we use the modification time
