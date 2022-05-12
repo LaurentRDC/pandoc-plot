@@ -20,49 +20,32 @@ where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-sagemath :: PlotM (Maybe Renderer)
+sagemath :: PlotM Renderer
 sagemath = do
-  avail <- sagemathAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig sagemathCmdArgs
-      mexe <- executable SageMath
       return $
-        mexe >>= \exe@(Executable _ exename) ->
-          return
-            Renderer
-              { rendererToolkit = SageMath,
-                rendererExe = exe,
-                rendererCapture = sagemathCapture,
-                rendererCommand = sagemathCommand cmdargs exename,
-                rendererSupportedSaveFormats = sagemathSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "sagemath",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".sage"
-              }
+        Renderer
+          { rendererToolkit = SageMath,
+            rendererCapture = sagemathCapture,
+            rendererCommand = sagemathCommand cmdargs,
+            rendererAvailability = CommandSuccess  $ \exe -> [st|#{pathToExe exe} -v|],
+            rendererSupportedSaveFormats = sagemathSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "sagemath",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".sage"
+          }
 
 -- See here:
 -- https://doc.sagemath.org/html/en/reference/plotting/sage/plot/graphics.html#sage.plot.graphics.Graphics.save
 sagemathSupportedSaveFormats :: [SaveFormat]
 sagemathSupportedSaveFormats = [EPS, PDF, PNG, SVG]
 
-sagemathCommand :: Text -> Text -> OutputSpec -> Text
-sagemathCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
-
-sagemathAvailable :: PlotM Bool
-sagemathAvailable = do
-  mexe <- executable SageMath
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) -> do
-      withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -v|]
-
+sagemathCommand :: Text -> OutputSpec -> Text
+sagemathCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
 
 sagemathCapture :: FigureSpec -> FilePath -> Script
 sagemathCapture = appendCapture sagemathCaptureFragment
-
 
 -- This capture fragment is a bit ugly because sage does not have the
 -- equivalent of matplotlib's `plt.gca()` to get a pointer to the most

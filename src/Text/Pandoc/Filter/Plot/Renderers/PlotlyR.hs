@@ -21,43 +21,27 @@ where
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-plotlyR :: PlotM (Maybe Renderer)
+plotlyR :: PlotM Renderer
 plotlyR = do
-  avail <- plotlyRAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig plotlyRCmdArgs
-      mexe <- executable PlotlyR
       return $
-        mexe >>= \exe@(Executable _ exename) ->
-          return
-            Renderer
-              { rendererToolkit = PlotlyR,
-                rendererExe = exe,
-                rendererCapture = plotlyRCapture,
-                rendererCommand = plotlyRCommand cmdargs exename,
-                rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
-                rendererChecks = mempty,
-                rendererLanguage = "r",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".r"
-              }
+        Renderer
+          { rendererToolkit = PlotlyR,
+            rendererCapture = plotlyRCapture,
+            rendererCommand = plotlyRCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "if(!require('plotly')) {quit(status=1)}"|],
+            rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
+            rendererChecks = mempty,
+            rendererLanguage = "r",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".r"
+          }
 
 plotlyRSupportedSaveFormats :: [SaveFormat]
 plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, HTML]
 
-plotlyRCommand :: Text -> Text -> OutputSpec -> Text
-plotlyRCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
-
-plotlyRAvailable :: PlotM Bool
-plotlyRAvailable = do
-  mexe <- executable PlotlyR
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) ->
-      withPrependedPath dir $
-        asks envCWD >>= flip commandSuccess [st|#{exe} -e "if(!require('plotly')) {quit(status=1)}"|]
+plotlyRCommand :: Text -> OutputSpec -> Text
+plotlyRCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
 
 plotlyRCapture :: FigureSpec -> FilePath -> Script
 plotlyRCapture fs fp =

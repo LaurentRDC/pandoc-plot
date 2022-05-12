@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.5.2
+
+* Overhauled the way executables are handled. This fixes an issue where executables specified in documents (rather than configuration) were ignored (#46).
+
 ## Release 1.5.1
 
 * Figures with no captions (and no link to the source script), will now be shown as an image, without figure numbering (#37).

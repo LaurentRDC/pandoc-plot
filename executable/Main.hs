@@ -9,7 +9,6 @@ module Main where
 
 import Control.Monad (join, msum, void, when)
 import Data.List (intersperse, (\\))
-import Data.Maybe (fromJust)
 import Data.Text (unpack)
 import qualified Data.Text.IO as TIO
 import Data.Version (parseVersion, showVersion)
@@ -58,15 +57,15 @@ import Text.Pandoc.Filter.Plot
     plotFilter,
   )
 import Text.Pandoc.Filter.Plot.Internal
-  ( Executable (..),
-    cleanOutputDirs,
+  ( cleanOutputDirs,
     cls,
     configurationPathMeta,
     executable,
     readDoc,
     runPlotM,
     supportedSaveFormats,
-    toolkits,
+    toolkits, 
+    pathToExe
   )
 import Text.Pandoc.JSON (toJSONFilter)
 import Text.ParserCombinators.ReadP (readP_to_S)
@@ -286,8 +285,8 @@ showAvailableToolkits mfp = do
     toolkitInfo avail conf tk = do
       putStrLn $ "Toolkit: " <> show tk
       when avail $ do
-        Executable dir exe <- fmap fromJust $ runPlotM Nothing conf $ executable tk
-        putStrLn $ "    Executable: " <> (dir </> unpack exe)
+        exe <- runPlotM Nothing conf $ executable tk
+        putStrLn $ "    Executable: " <> (pathToExe exe)
       putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)
       putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
       putStrLn mempty

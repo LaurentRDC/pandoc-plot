@@ -70,11 +70,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
     Nothing -> return NotAFigure
     Just tk -> do
       r <- renderer tk
-      case r of
-        Nothing -> do
-          err $ mconcat ["Renderer for ", tshow tk, " needed but is not installed"]
-          return $ MissingToolkit tk
-        Just r' -> figureSpec r'
+      figureSpec r
   where
     attrs' = Map.fromList attrs
     preamblePath = unpack <$> Map.lookup (tshow PreambleK) attrs'
@@ -108,8 +104,11 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
 
           -- Decide between reading from file or using document content
           content <- parseContent block
+          
+          defaultExe <- executable rendererToolkit
 
           let caption = Map.findWithDefault mempty (tshow CaptionK) attrs'
+              fsExecutable = maybe defaultExe (exeFromPath . unpack) $ Map.lookup (tshow ExecutableK) attrs'
               withSource = maybe defWithSource readBool (Map.lookup (tshow WithSourceK) attrs')
               script = mconcat $ intersperse "\n" [header, includeScript, content]
               directory = makeValid $ unpack $ Map.findWithDefault (pack $ defaultDirectory conf) (tshow DirectoryK) attrs'

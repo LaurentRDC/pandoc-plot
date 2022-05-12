@@ -22,41 +22,27 @@ import Data.Monoid (Any (..))
 import qualified Data.Text as T
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
-bokeh :: PlotM (Maybe Renderer)
+bokeh :: PlotM Renderer
 bokeh = do
-  avail <- bokehAvailable
-  if not avail
-    then return Nothing
-    else do
       cmdargs <- asksConfig bokehCmdArgs
-      mexe <- executable Bokeh
       return $
-        mexe >>= \exe@(Executable _ exename) ->
-          return
-            Renderer
-              { rendererToolkit = Bokeh,
-                rendererExe = exe,
-                rendererCapture = appendCapture bokehCaptureFragment,
-                rendererCommand = bokehCommand cmdargs exename,
-                rendererSupportedSaveFormats = bokehSupportedSaveFormats,
-                rendererChecks = [bokehCheckIfShow],
-                rendererLanguage = "python",
-                rendererComment = mappend "# ",
-                rendererScriptExtension = ".py"
-              }
+        Renderer
+          { rendererToolkit = Bokeh,
+            rendererCapture = appendCapture bokehCaptureFragment,
+            rendererCommand = bokehCommand cmdargs,
+            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -c "import bokeh; import selenium"|],
+            rendererSupportedSaveFormats = bokehSupportedSaveFormats,
+            rendererChecks = [bokehCheckIfShow],
+            rendererLanguage = "python",
+            rendererComment = mappend "# ",
+            rendererScriptExtension = ".py"
+          }
 
 bokehSupportedSaveFormats :: [SaveFormat]
 bokehSupportedSaveFormats = [PNG, SVG, HTML]
 
-bokehCommand :: Text -> Text -> OutputSpec -> Text
-bokehCommand cmdargs exe OutputSpec {..} = [st|#{exe} #{cmdargs} "#{oScriptPath}"|]
-
-bokehAvailable :: PlotM Bool
-bokehAvailable = do
-  mexe <- executable Bokeh
-  case mexe of
-    Nothing -> return False
-    Just (Executable dir exe) -> withPrependedPath dir $ asks envCWD >>= flip commandSuccess [st|#{exe} -c "import bokeh; import selenium"|]
+bokehCommand :: Text -> OutputSpec -> Text
+bokehCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
 
 -- | Check if `bokeh.io.show()` calls are present in the script,
 -- which would halt pandoc-plot

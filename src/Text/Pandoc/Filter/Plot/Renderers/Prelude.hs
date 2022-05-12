@@ -15,35 +15,17 @@ module Text.Pandoc.Filter.Plot.Renderers.Prelude
     Text,
     st,
     unpack,
-    commandSuccess,
-    existsOnPath,
+    findExecutable,
     appendCapture,
     toRPath,
   )
 where
 
-import Data.Functor ((<&>))
-import Data.Maybe (isJust)
 import Data.Text (Text, unpack)
 import System.Directory (findExecutable)
-import System.Exit (ExitCode (..))
 import System.FilePath (isPathSeparator)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Shakespeare.Text (st)
-
--- | Check that the supplied command results in
--- an exit code of 0 (i.e. no errors)
-commandSuccess ::
-  FilePath -> -- Directory from which to run the command
-  Text -> -- Command to run, including the executable
-  PlotM Bool
-commandSuccess fp s = do
-  (ec, _) <- runCommand fp s
-  return $ ec == ExitSuccess
-
--- | Checks that an executable is available on path, at all.
-existsOnPath :: FilePath -> IO Bool
-existsOnPath fp = findExecutable fp <&> isJust
 
 -- | A shortcut to append capture script fragments to scripts
 appendCapture ::
