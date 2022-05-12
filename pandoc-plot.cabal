@@ -148,7 +148,6 @@ test-suite tests
                    , containers
                    , directory
                    , filepath
-                   , hspec
                    , hspec-expectations
                    , pandoc-types         >= 1.20 && <= 2
                    , pandoc-plot

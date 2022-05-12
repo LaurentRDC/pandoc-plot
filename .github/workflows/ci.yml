@@ -176,6 +176,17 @@ jobs:
           exit 1
         fi
         pandoc-plot clean tests/issue30.md
+
+        # The idea here is to install some random package (npstreams) to
+        # check whether the plots will be rendered in the appropriate
+        # environment
+        python -m venv ./issue46
+        ./issue46/bin/python -m pip install npstreams matplotlib
+        pandoc --filter pandoc-plot -i tests/issue46.md -t native
+        if [ $(ls "plots" | wc -l) != 2 ]; then
+          exit 1
+        fi
+        pandoc-plot clean tests/issue46.md
     
     - name: Build documentation
       run: source tools/mkmanual.sh
