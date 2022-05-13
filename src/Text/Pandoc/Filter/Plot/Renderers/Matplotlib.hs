@@ -60,8 +60,8 @@ plt.savefig(r"#{fname}", dpi=#{dpi}, transparent=#{transparent}, bbox_inches=#{t
 |]
   where
     attrs = M.fromList extraAttrs
-    tight_ = readBool $ M.findWithDefault "False" "tight" attrs
-    transparent_ = readBool $ M.findWithDefault "False" "transparent" attrs
+    tight_ = readBool $ M.findWithDefault "False" (T.pack $ show MatplotlibTightBBoxK) attrs
+    transparent_ = readBool $ M.findWithDefault "False" (T.pack $ show MatplotlibTransparentK) attrs
     tightBox = if tight_ then ("'tight'" :: Text) else ("None" :: Text)
     transparent = if transparent_ then ("True" :: Text) else ("False" :: Text)
 

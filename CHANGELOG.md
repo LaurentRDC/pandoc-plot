@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.5.3
+
+* Fixed an issue where the `tight_bbox` option for Matplotlib plots was ignored (#48)
+
 ## Release 1.5.2
 
 * Overhauled the way executables are handled. This fixes an issue where executables specified in documents (rather than configuration) were ignored (#46).

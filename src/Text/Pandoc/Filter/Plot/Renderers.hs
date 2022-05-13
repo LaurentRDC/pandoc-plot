@@ -120,7 +120,9 @@ preambleSelector SageMath = sagemathPreamble
 -- | Parse code block headers for extra attributes that are specific
 -- to this renderer. By default, no extra attributes are parsed.
 parseExtraAttrs :: Toolkit -> Map Text Text -> Map Text Text
-parseExtraAttrs Matplotlib = M.filterWithKey (\k _ -> k `elem` ["tight_bbox", "transparent"])
+parseExtraAttrs Matplotlib = M.filterWithKey (\k _ -> k `elem` [ pack $ show MatplotlibTightBBoxK
+                                                               , pack $ show MatplotlibTransparentK
+                                                               ])
 parseExtraAttrs _ = return mempty
 
 -- | List of toolkits available on this machine.
