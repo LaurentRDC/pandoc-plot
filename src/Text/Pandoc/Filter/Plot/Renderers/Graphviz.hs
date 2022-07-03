@@ -43,8 +43,11 @@ graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]
 graphvizCommand :: Text -> OutputSpec -> Text
 graphvizCommand cmdargs OutputSpec {..} =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
-      dpi' = dpi oFigureSpec
-   in [st|#{pathToExe oExecutable} #{cmdargs} -T#{fmt} -Gdpi=#{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]
+      -- Specifying a DPI when the output format is SVG crops the final figure
+      -- See issue #40
+      -- TODO: does this also affect other vector formats like EPS?
+      dpi' = if saveFormat oFigureSpec == SVG then mempty else [st|-Gdpi=#{dpi oFigureSpec}|]
+   in [st|#{pathToExe oExecutable} #{cmdargs} -T#{fmt} #{dpi'} -o "#{oFigurePath}" "#{oScriptPath}"|]
 
 -- Graphviz export is entirely based on command-line arguments
 -- so there is no need to modify the script itself.

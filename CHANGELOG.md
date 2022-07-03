@@ -2,9 +2,13 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.5.4
+
+* Fixed an issue where graphviz plots in vector format were cropped when a DPI was specified (#40).
+
 ## Release 1.5.3
 
-* Fixed an issue where the `tight_bbox` option for Matplotlib plots was ignored (#48)
+* Fixed an issue where the `tight_bbox` option for Matplotlib plots was ignored (#48).
 
 ## Release 1.5.2
 
