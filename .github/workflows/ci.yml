@@ -150,7 +150,7 @@ jobs:
 
     - name: Unit tests
       run: |
-        cabal test --test-show-details=streaming
+        cabal test
 
     - name: Integration tests
       # Integration tests sometimes hang on MacOS 

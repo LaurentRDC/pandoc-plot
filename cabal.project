@@ -1,1 +1,3 @@
 packages: pandoc-plot.cabal
+
+test-show-details: streaming
