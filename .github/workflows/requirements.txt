@@ -1,5 +1,5 @@
-matplotlib >= 3
-bokeh >= 2
-selenium >= 3
-pandas >= 1
-pandocfilters >= 1.4
+matplotlib >= 3, <4
+bokeh >= 3, <4
+selenium >= 4, <5
+pandas >= 1, <2
+pandocfilters >= 1.4, <2

@@ -100,7 +100,7 @@ y = np.random.standard_normal(n)
 
 bins = hexbin(x, y, 0.1)
 
-p = figure(title="Interactive plotting with Bokeh", tools="wheel_zoom,pan,reset", match_aspect=True, background_fill_color='#440154', plot_width=550, plot_height=550)
+p = figure(title="Interactive plotting with Bokeh", tools="wheel_zoom,pan,reset", match_aspect=True, background_fill_color='#440154', width=550, height=550)
 
 p.grid.visible = False
 
@@ -125,7 +125,7 @@ y = np.random.standard_normal(n)
 
 bins = hexbin(x, y, 0.1)
 
-p = figure(title="Interactive plotting with Bokeh", tools="wheel_zoom,pan,reset", match_aspect=True, background_fill_color='#440154', plot_width=550, plot_height=550)
+p = figure(title="Interactive plotting with Bokeh", tools="wheel_zoom,pan,reset", match_aspect=True, background_fill_color='#440154', width=550, height=550)
 
 p.grid.visible = False
 
