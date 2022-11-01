@@ -19,11 +19,11 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            ghc-version: "9.2.1"
+            ghc-version: "9.2.4"
           - os: "ubuntu-latest"
-            ghc-version: "9.2.2"
+            ghc-version: "9.2.4"
           - os: "macos-latest"
-            ghc-version: "9.0.1"
+            ghc-version: "9.2.4"
 
     runs-on: ${{ matrix.os }}
 
