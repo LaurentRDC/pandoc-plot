@@ -19,11 +19,11 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            ghc-version: "9.4.2"
+            ghc-version: "9.2.1"
           - os: "ubuntu-latest"
-            ghc-version: "9.4.2"
+            ghc-version: "9.2.2"
           - os: "macos-latest"
-            ghc-version: "9.4.2"
+            ghc-version: "9.0.1"
 
     runs-on: ${{ matrix.os }}
 
@@ -35,7 +35,7 @@ jobs:
       id: setup-haskell
       with:
         ghc-version: ${{ matrix.ghc-version }}
-        cabal-version: '3.8.1.0'
+        cabal-version: '3.6.2.0'
     
     - name: Set PATH for cabal-installed executables
       run: |
