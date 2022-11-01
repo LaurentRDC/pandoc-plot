@@ -57,7 +57,7 @@ jobs:
         cabal user-config update -f -a "executable-stripping: True"
 
     - name: Cache cabal work
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           dist-newstyle
