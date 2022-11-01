@@ -126,7 +126,10 @@ data RuntimeEnv = RuntimeEnv
   { envFormat :: Maybe Format, -- pandoc output format
     envConfig :: Configuration,
     envLogger :: Logger,
-    envCWD :: FilePath
+    envCWD :: FilePath,
+    -- The following lock prevents from writing to the same file multiple times.
+    -- This is a rather crude fix for issue #53.
+    envIOLock :: MVar ()
   }
 
 -- | Get access to configuration within the @PlotM@ monad.
@@ -137,12 +140,13 @@ asksConfig f = asks (f . envConfig)
 runPlotM :: Maybe Format -> Configuration -> PlotM a -> IO a
 runPlotM fmt conf v = do
   cwd <- getCurrentDirectory
+  sem <- newMVar ()
   st <-
     PlotState <$> newMVar mempty
   let verbosity = logVerbosity conf
       sink = logSink conf
   withLogger verbosity sink $
-    \logger -> runReaderT (evalStateT v st) (RuntimeEnv fmt conf logger cwd)
+    \logger -> runReaderT (evalStateT v st) (RuntimeEnv fmt conf logger cwd sem)
 
 -- | maps a function, performing at most @N@ actions concurrently.
 mapConcurrentlyN :: Traversable t => Int -> (a -> PlotM b) -> t a -> PlotM (t b)

@@ -149,7 +149,7 @@ availableToolkitsM = asNonStrictAndSilent $ do
         else return Nothing
     return $ catMaybes mtks
   where
-    asNonStrictAndSilent = local (\(RuntimeEnv f c l d) -> RuntimeEnv f (c{strictMode = False}) (l{lVerbosity = Silent}) d)
+    asNonStrictAndSilent = local (\(RuntimeEnv f c l d s) -> RuntimeEnv f (c{strictMode = False}) (l{lVerbosity = Silent}) d s)
 
     -- | Check that the supplied command results in
     -- an exit code of 0 (i.e. no errors)

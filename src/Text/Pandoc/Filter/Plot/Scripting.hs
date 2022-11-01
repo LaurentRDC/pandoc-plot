@@ -20,6 +20,7 @@ module Text.Pandoc.Filter.Plot.Scripting
   )
 where
 
+import Control.Concurrent.MVar (withMVar)
 import Data.Default (def)
 import Data.Functor.Identity (Identity (..))
 import Data.Hashable (hash)
@@ -114,7 +115,11 @@ runTempScript spec@FigureSpec {..} = do
 
       let scriptWithCapture = rendererCapture renderer_ spec target
 
-      liftIO $ T.writeFile scriptPath scriptWithCapture
+      -- Note the use of a lock. This is a crude solution for issue #53, where
+      -- multiple identical figures can cause a race condition to write to the 
+      -- same output file.
+      sem <- asks envIOLock
+      liftIO $ withMVar sem $ \_ -> T.writeFile scriptPath scriptWithCapture
       let outputSpec =
             OutputSpec
               { oFigureSpec = spec,
@@ -200,7 +205,12 @@ writeSource spec = do
             -- Note that making the document self-contained is absolutely required so that the CSS for
             -- syntax highlighting is included directly in the document.
             t = either (const mempty) id $ runPure (writeHtml5String opts doc >>= makeSelfContained)
-        liftIO $ T.writeFile scp t
+        
+        -- Note the use of a lock. This is a crude solution for issue #53, where
+        -- multiple identical figures can cause a race condition to write to the 
+        -- same output file.
+        sem <- asks envIOLock
+        liftIO $ withMVar sem $ \_ -> T.writeFile scp t
 
   either (err . pack) renderSource $ runIdentity $ compileTemplate mempty sourceTemplate
 

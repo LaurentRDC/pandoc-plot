@@ -187,6 +187,12 @@ jobs:
           exit 1
         fi
         pandoc-plot clean tests/issue46.md
+        
+        pandoc --filter pandoc-plot -i tests/issue53.md -t native
+        if [ $(ls "plots" | wc -l) != 2 ]; then
+          exit 1
+        fi
+        pandoc-plot clean tests/issue53.md
     
     - name: Build documentation
       run: source tools/mkmanual.sh
