@@ -179,20 +179,16 @@ testWithSource tk =
             addDirectory tempDir $
               addCaption expected $
                 codeBlock tk (trivialContent tk)
-    blockNoSource <- runPlotM Nothing defaultTestConfig $ make noSource
+    blockNoSource   <- runPlotM Nothing defaultTestConfig $ make noSource
     blockWithSource <- runPlotM Nothing defaultTestConfig $ make withSource
 
     -- In the case where source=false, the caption is used verbatim.
     -- Otherwise, links will be appended to the caption; hence, the caption
     -- is no longer equal to the initial value
-    assertEqual "" (B.toList $ fromString expected) (extractCaption blockNoSource)
-    assertNotEqual "" (B.toList $ fromString expected) (extractCaption blockWithSource)
+    assertEqual    "" [B.Plain $ B.toList (fromString expected)] (extractCaption blockNoSource)
+    assertNotEqual "" [B.Plain $ B.toList (fromString expected)] (extractCaption blockWithSource)
   where
-    extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
-    extractCaption _ = mempty
-
-    extractImageCaption (Image _ c _) = c
-    extractImageCaption _ = mempty
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
 
 -------------------------------------------------------------------------------
 -- Test that it is possible to change the source code label in captions
@@ -212,17 +208,12 @@ testSourceLabel tk =
                 codeBlock tk (trivialContent tk)
     blockWithSource <- runPlotM Nothing defaultTestConfig {sourceCodeLabel = "Test label"} $ make withSource
 
-    -- The caption will look like [Space, Str "(", Link ... ]. Hence, we skip the first elements with (!!)
-    let resultCaption = linkLabel $ (!! 2) . B.toList $ extractCaption blockWithSource
-    assertEqual "" (B.str "Test label") resultCaption
+    let [Plain [Space, _, B.Link _ ils _, _]] = extractCaption blockWithSource
+    assertEqual "" (B.toList $ B.str "Test label") ils
   where
-    extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
-    extractCaption _ = mempty
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
 
-    extractImageCaption (Image _ c _) = B.fromList c
-    extractImageCaption _ = mempty
-
-    linkLabel (B.Link _ ils _) = B.fromList ils
+    linkLabel (B.Plain [B.Link _ ils _]) = B.fromList ils
     linkLabel _ = mempty
 
 -------------------------------------------------------------------------------
@@ -276,7 +267,7 @@ testMarkdownFormattingCaption1 tk =
 
     -- Note that this test is fragile, in the sense that the expected result must be carefully
     -- constructed
-    let expected = [B.Strong [B.Str "caption"]]
+    let expected = [B.Plain [B.Strong [B.Str "caption"]]]
         cb =
           addDirectory tempDir $
             addCaption "**caption**" $
@@ -285,11 +276,7 @@ testMarkdownFormattingCaption1 tk =
     result <- runPlotM Nothing (defaultTestConfig {captionFormat = fmt}) $ make cb
     assertIsInfix expected (extractCaption result)
   where
-    extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
-    extractCaption _ = mempty
-
-    extractImageCaption (Image _ c _) = c
-    extractImageCaption _ = mempty
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
 
 -------------------------------------------------------------------------------
 -- Test that Markdown bold formatting in captions is correctly rendered
@@ -302,7 +289,7 @@ testMarkdownFormattingCaption2 tk =
 
     -- Note that this test is fragile, in the sense that the expected result must be carefully
     -- constructed
-    let expected = [Link ("", [], []) [Str "title"] ("https://google.com", "")]
+    let expected = [B.Plain [Link ("", [], []) [Str "title"] ("https://google.com", "")]]
         cb =
           addDirectory tempDir $
             addCaption "[title](https://google.com)" $
@@ -311,35 +298,7 @@ testMarkdownFormattingCaption2 tk =
     result <- runPlotM Nothing (defaultTestConfig {captionFormat = fmt}) $ make cb
     assertIsInfix expected (extractCaption result)
   where
-    extractCaption (B.Para blocks) = extractImageCaption . head $ blocks
-    extractCaption _ = mempty
-
-    extractImageCaption (Image _ c _) = c
-    extractImageCaption _ = mempty
-
--------------------------------------------------------------------------------
--- Test that Markdown bold formatting in captions is correctly rendered
-testFigureWithoutCaption :: Toolkit -> TestTree
-testFigureWithoutCaption tk =
-  testCase "appropriately build an image if no caption" $ do
-    let postfix = unpack . cls $ tk
-    tempDir <- (</> "test-image-if-no-caption-" <> postfix) <$> getTemporaryDirectory
-    ensureDirectoryExistsAndEmpty tempDir
-
-    -- Note that this test is fragile, in the sense that the expected result must be carefully
-    -- constructed
-    let cb =
-          addDirectory tempDir $ codeBlock tk (trivialContent tk)
-        fmt = B.Format "markdown"
-    result <- runPlotM Nothing (defaultTestConfig {captionFormat = fmt}) $ make cb
-    assertEqual "" (Just mempty) (extractTitle result)
-  where
-    extractTitle (B.Para blocks) = extractImageCaption . head $ blocks
-    extractTitle _ = Nothing
-
-    extractImageCaption (Image _ _ (_, title)) = Just title
-    extractImageCaption _ = Nothing
-
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
 
 -------------------------------------------------------------------------------
 -- Test that cleanOutpuDirs correctly cleans the output directory specified in a block.

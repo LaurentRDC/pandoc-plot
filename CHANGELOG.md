@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.6.0
+
+* Support for pandoc 3. Support for older pandoc version has also been dropped (pandoc 2.19 and earlier).
+
 ## Release 1.5.5
 
 * Fixed an issue where there was a race condition when rendering multiple identical figures (#53).

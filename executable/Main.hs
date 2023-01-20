@@ -262,7 +262,7 @@ showFullVersion = do
   putStrLn $
     mconcat
       [ "Compiled with pandoc ",
-        unpack pandocVersion,
+        V.showVersion pandocVersion,
         " and pandoc-types ",
         V.showVersion pandocTypesVersion,
         " using GHC ",

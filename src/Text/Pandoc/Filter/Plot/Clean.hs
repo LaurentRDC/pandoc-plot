@@ -31,6 +31,7 @@ import System.FilePath (takeExtension)
 import Text.Pandoc.Class (runIO)
 import Text.Pandoc.Definition (Block, Pandoc)
 import Text.Pandoc.Error (handleError)
+import Text.Pandoc.Format (FlavoredFormat(..))
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Parse
 import qualified Text.Pandoc.Options as P
@@ -61,10 +62,10 @@ outputDirs ::
   Walkable Block b =>
   b ->
   PlotM [FilePath]
-outputDirs = fmap (catMaybes . nub) . sequence . query (\b -> [hasDirectory <$> parseFigureSpec b])
+outputDirs = fmap (nub . catMaybes) . sequence . query (\b -> [hasDirectory <$> parseFigureSpec b])
   where
     hasDirectory :: ParseFigureResult -> Maybe FilePath
-    hasDirectory (Figure fs) = Just $ directory fs
+    hasDirectory (PFigure fs) = Just $ directory fs
     hasDirectory _ = Nothing
 
 -- | PlotM version of @cleanOutputDirs@
@@ -91,7 +92,7 @@ readDoc fp =
     =<< runIO
       ( do
           let fmt = fromMaybe mempty (formatFromFilePath fp)
-          (reader, exts) <- P.getReader fmt
+          (reader, exts) <- P.getReader $ FlavoredFormat fmt mempty
           let readerOpts = def {P.readerExtensions = exts}
           case reader of
             P.TextReader fct -> do

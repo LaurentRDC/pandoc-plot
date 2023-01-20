@@ -30,15 +30,14 @@ import Text.HTML.TagSoup
     (~/=),
     (~==),
   )
-import Text.Pandoc.Builder
+import Text.Pandoc.Builder as Builder
   ( Inlines,
     fromList,
-    imageWith,
+    simpleFigureWith,
     link,
-    para,
     str,
     toList,
-  )
+  ) 
 import Text.Pandoc.Class (runPure)
 import Text.Pandoc.Definition (Attr, Block (..), Format, Pandoc (..))
 import Text.Pandoc.Error (handleError)
@@ -63,10 +62,9 @@ toFigure fmt spec = do
   sourceLabel <- asksConfig sourceCodeLabel -- Allow the possibility for non-english labels
   let srcLink = link scp mempty (str sourceLabel)
       attrs' = blockAttrs spec
-      withSource' = withSource spec
       captionText = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
       captionLinks = mconcat [" (", srcLink, ")"]
-      caption' = if withSource' then captionText <> captionLinks else captionText
+      caption' = if withSource spec then captionText <> captionLinks else captionText
   builder attrs' target caption'
   where
     builder = case saveFormat spec of
@@ -80,14 +78,8 @@ figure ::
   Inlines ->
   PlotM Block
 figure as fp caption' =
-  return . head . toList . para $
-    imageWith as (pack fp) title caption'
-  where
-    -- To render images as figures with captions, the target title
-    -- must be "fig:"
-    -- Janky? yes
-    -- In case there is no caption, make this an image instead of a figure
-    title = if caption' /= mempty then "fig:" else mempty
+  return . head . toList $
+    simpleFigureWith as caption' (pack fp) mempty
 
 -- TODO: also add the case where SVG plots can be
 --       embedded in HTML output

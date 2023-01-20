@@ -39,6 +39,7 @@ import Text.Pandoc.Definition
     Inline,
     Pandoc (..),
   )
+import Text.Pandoc.Format (parseFlavoredFormat)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Renderers
 import Text.Pandoc.Options (ReaderOptions (..))
@@ -51,7 +52,7 @@ data ParseFigureResult
   -- | The block is not meant to become a figure
   = NotAFigure
   -- | The block is meant to become a figure
-  | Figure FigureSpec
+  | PFigure FigureSpec
   -- | The block is meant to become a figure, but the plotting toolkit is missing
   | MissingToolkit Toolkit
   -- | The block is meant to become a figure, but the figure format is incompatible 
@@ -126,7 +127,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
               in err msg
           
           -- Ensure that the save format makes sense given the final conversion format, if known
-          return $ Figure (FigureSpec {..})
+          return $ PFigure (FigureSpec {..})
 -- Base case: block is not a CodeBlock
 parseFigureSpec _ = return NotAFigure
 
@@ -162,7 +163,8 @@ plotToolkit _ = Nothing
 captionReader :: Format -> Text -> Maybe [Inline]
 captionReader (Format f) t = either (const Nothing) (Just . extractFromBlocks) $
   runPure $ do
-    (reader, exts) <- getReader f
+    fmt <- parseFlavoredFormat f
+    (reader, exts) <- getReader fmt
     let readerOpts = def {readerExtensions = exts}
     -- Assuming no ByteString readers...
     case reader of

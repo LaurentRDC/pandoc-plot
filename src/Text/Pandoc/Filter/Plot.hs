@@ -219,7 +219,7 @@ makeEither block =
   parseFigureSpec block
     >>= \case
       NotAFigure -> return $ Right block
-      Figure fs -> runScriptIfNecessary fs >>= handleResult fs
+      PFigure fs -> runScriptIfNecessary fs >>= handleResult fs
       MissingToolkit tk -> return $ Left $ ToolkitNotInstalledError tk
       UnsupportedSaveFormat tk sv -> return $ Left $ IncompatibleSaveFormatError sv tk
   where
