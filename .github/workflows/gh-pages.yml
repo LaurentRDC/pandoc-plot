@@ -57,7 +57,7 @@ jobs:
 
     - name: Install pandoc-plot and other dependencies
       run: |
-        cabal install pandoc
+        cabal install pandoc-cli
         cabal install exe:pandoc-plot
     
     - name: Install Python dependencies

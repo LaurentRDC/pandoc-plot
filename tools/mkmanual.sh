@@ -1,7 +1,7 @@
 echo "Making the pandoc-plot manual"
 
 cabal install exe:pandoc-plot --overwrite-policy=always
-cabal install pandoc --overwrite-policy=always
+cabal install pandoc-cli --overwrite-policy=always
 declare version="$(pandoc-plot --version)"
 
 pandoc-plot --help > help.txt

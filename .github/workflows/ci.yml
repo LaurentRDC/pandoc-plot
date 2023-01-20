@@ -156,7 +156,7 @@ jobs:
       # Integration tests sometimes hang on MacOS 
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cabal install pandoc
+        cabal install pandoc-cli
         cabal install exe:pandoc-plot
         
         pandoc --filter pandoc-plot -i tests/integration.md -t html
