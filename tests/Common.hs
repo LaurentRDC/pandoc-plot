@@ -341,6 +341,32 @@ testChecksFail tk =
       assertBool "" (expectedCheck result)
     assertChecksFail _ = assertEqual "Test skipped" True True
 
+-------------------------------------------------------------------------------
+-- Test that Markdown bold formatting in captions is correctly rendered
+testAttributesPreservedOnFigure :: Toolkit -> TestTree
+testAttributesPreservedOnFigure tk =
+  testCase "preserves code block attributes and sets them on the Figure element" $ do
+    let postfix = unpack . cls $ tk
+    tempDir <- (</> "test-preserved-attrs-" <> postfix) <$> getTemporaryDirectory
+    ensureDirectoryExistsAndEmpty tempDir
+
+    -- Note that this test is fragile, in the sense that the expected result must be carefully
+    -- constructed
+    let expectedAttrs = ("hello", [cls tk], [("key1", "val1"), ("key2", "val2")])
+        cb = setAttrs expectedAttrs $
+              addDirectory tempDir $
+                addCaption "[title](https://google.com)" $
+                  codeBlock tk (trivialContent tk)
+        fmt = B.Format "markdown"
+    Figure (id', _, keyvals) _ _ <- runPlotM Nothing (defaultTestConfig { captionFormat = fmt
+                                                                        , defaultDirectory = tempDir
+                                                                        }) $ make cb
+    let (expectedId, _, expectedKeyVals) = expectedAttrs
+    assertEqual "identifier" expectedId id'
+    assertEqual "key-value pairs" expectedKeyVals keyvals
+  where
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
+
 codeBlock :: Toolkit -> Script -> Block
 codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
 
@@ -387,6 +413,9 @@ addDPI dpi (CodeBlock (id', cls, attrs) script) =
 addWithSource :: Bool -> Block -> Block
 addWithSource yn (CodeBlock (id', cls, attrs) script) =
   CodeBlock (id', cls, attrs ++ [(tshow WithSourceK, pack . show $ yn)]) script
+
+setAttrs :: Attr -> Block -> Block
+setAttrs attrs (CodeBlock _ script) = CodeBlock attrs script
 
 -- | Assert that a file exists
 assertFileExists :: HasCallStack => FilePath -> Assertion

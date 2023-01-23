@@ -33,9 +33,12 @@ import Text.HTML.TagSoup
 import Text.Pandoc.Builder as Builder
   ( Inlines,
     fromList,
-    simpleFigureWith,
+    figureWith,
+    imageWith,
+    plain,
     link,
     str,
+    simpleCaption,
     toList,
   ) 
 import Text.Pandoc.Class (runPure)
@@ -79,7 +82,9 @@ figure ::
   PlotM Block
 figure as fp caption' =
   return . head . toList $
-    simpleFigureWith as caption' (pack fp) mempty
+    -- We want the attributes both on the Figure element and the contained Image element
+    -- so that pandoc-plot plays nice with pandoc-crossref and other filters
+    figureWith as (simpleCaption (plain caption')) $ plain $ imageWith mempty (pack fp) mempty caption'
 
 -- TODO: also add the case where SVG plots can be
 --       embedded in HTML output
