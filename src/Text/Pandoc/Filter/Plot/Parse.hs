@@ -83,7 +83,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
           saveFormat = maybe (defaultSaveFormat conf) (fromString . unpack) (Map.lookup (tshow SaveFormatK) attrs')
 
       -- Check if the saveformat is compatible with the toolkit
-      if not (saveFormat `elem` rendererSupportedSaveFormats) 
+      if saveFormat `notElem` rendererSupportedSaveFormats
         then do
           err $ pack $ mconcat ["Save format ", show saveFormat, " not supported by ", show toolkit]
           return $ UnsupportedSaveFormat toolkit saveFormat

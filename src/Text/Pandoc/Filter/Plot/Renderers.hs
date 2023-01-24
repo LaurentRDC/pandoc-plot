@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
 
 -- |
 -- Module      : $header$
@@ -162,7 +161,7 @@ availableToolkitsM = asNonStrictAndSilent $ do
 
     isAvailable :: Executable -> AvailabilityCheck -> PlotM Bool
     isAvailable exe (CommandSuccess f) = commandSuccess (f exe)
-    isAvailable exe (ExecutableExists) = liftIO $ findExecutable (pathToExe exe) <&> isJust
+    isAvailable exe ExecutableExists = liftIO $ findExecutable (pathToExe exe) <&> isJust
 
 -- | Monadic version of @unavailableToolkits@
 unavailableToolkitsM :: PlotM [Toolkit]

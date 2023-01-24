@@ -1,6 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 
 -- |
 -- Module      : $header$
@@ -74,6 +73,7 @@ import Control.Monad.State.Strict
     evalStateT,
   )
 import Data.ByteString.Lazy (toStrict)
+import Data.Functor ((<&>))
 import Data.Hashable (hash)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
@@ -233,7 +233,7 @@ throwStrictError msg = do
 -- hashes.
 type FileHash = Word
 
-data PlotState
+newtype PlotState
   = PlotState
       (MVar (Map FilePath FileHash))
 
@@ -267,7 +267,7 @@ fileHash path = do
 
 -- | Find an executable.
 executable :: Toolkit -> PlotM Executable
-executable tk = exeSelector tk >>= return . exeFromPath
+executable tk = exeSelector tk <&> exeFromPath
   where
     exeSelector Matplotlib = asksConfig matplotlibExe
     exeSelector PlotlyPython = asksConfig plotlyPythonExe

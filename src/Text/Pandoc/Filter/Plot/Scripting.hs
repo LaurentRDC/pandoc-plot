@@ -162,7 +162,7 @@ sourceCodePath = fmap (normalise . flip replaceExtension ".src.html") . figurePa
 -- For example, changing the caption should not require running the figure again.
 figureContentHash :: FigureSpec -> PlotM Word
 figureContentHash FigureSpec {..} = do
-  dependenciesHash <- sequence $ fileHash <$> dependencies
+  dependenciesHash <- mapM fileHash dependencies
   -- hash looks strange because instances only exist for 7-tuples or less
   return $
     fromIntegral $
