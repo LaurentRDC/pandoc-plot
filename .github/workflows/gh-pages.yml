@@ -18,7 +18,7 @@ jobs:
       id: setup-haskell
       with:
         ghc-version: '9.2.4'
-        cabal-version: '3.8.1.0'
+        cabal-version: '3.10.1.0'
 
     - name: Set PATH for cabal-installed executables
       run: |
