@@ -100,7 +100,7 @@ module Text.Pandoc.Filter.Plot
 where
 
 import Control.Concurrent (getNumCapabilities)
-import Control.Monad.Reader (when)
+import Control.Monad (when)
 import Data.Functor ((<&>))
 import Data.Map (singleton)
 import Data.Text (Text, pack, unpack)

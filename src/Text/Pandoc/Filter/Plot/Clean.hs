@@ -18,7 +18,7 @@ module Text.Pandoc.Filter.Plot.Clean
 where
 
 -- TODO: forConcurrently
-import Control.Monad.Reader (forM)
+import Control.Monad (forM)
 import qualified Data.ByteString.Lazy as B
 import Data.Char (toLower)
 import Data.Default (def)
