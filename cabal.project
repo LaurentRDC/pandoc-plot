@@ -1,3 +1,5 @@
 packages: pandoc-plot.cabal
 
 test-show-details: streaming
+
+jobs: $ncpus
