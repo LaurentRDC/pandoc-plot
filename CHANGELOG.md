@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.6.2
+
+* Fixed some imports which were removed in `mtl-2.3`.
+
 ## Release 1.6.1
 
 * Fixed an issue where figure attributes were lost, which prevent other filters (e.g. pandoc-crossref) from working in conjunction with pandoc-plot.
