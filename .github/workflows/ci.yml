@@ -19,7 +19,7 @@ jobs:
       matrix:
         include:
           - os: "windows-latest"
-            ghc-version: "9.4.4"
+            ghc-version: "9.2.7"
           - os: "ubuntu-latest"
             ghc-version: "9.4.4"
           - os: "macos-latest"
