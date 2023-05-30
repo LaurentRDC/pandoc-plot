@@ -71,6 +71,7 @@ The resulting `output.html` looks like this:
   - `plotsjl`: plots using the [Julia `Plots.jl`](https://docs.juliaplots.org/latest/) package;
   - `plantuml`: diagrams using the [PlantUML](https://plantuml.com/) software suite;
   - `sageplot`: plots using the [Sage](https://www.sagemath.org/) software system.
+  - `d2`: plots using [D2](https://d2lang.com/). 
 
 To know which toolkits are useable on *your machine* (and which ones are
 not available), you can check with the `toolkits` command:

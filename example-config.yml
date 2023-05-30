@@ -142,3 +142,7 @@ sageplot:
   # preamble: sageplot.sage
   executable: sage
   command_line_arguments:
+
+d2:
+  executable: d2
+  command_line_arguments:

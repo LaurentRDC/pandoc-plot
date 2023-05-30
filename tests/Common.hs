@@ -119,6 +119,7 @@ testFileInclusion tk =
     include Plotsjl = "tests/includes/plotsjl.jl"
     include PlantUML = "tests/includes/plantuml.txt"
     include SageMath = "tests/includes/sagemath.sage"
+    include D2 = "tests/includes/d2-dd.d2"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -389,6 +390,7 @@ trivialContent Bokeh =
 trivialContent Plotsjl = "using Plots; x = 1:10; y = rand(10); plot(x, y);"
 trivialContent PlantUML = "@startuml\nAlice -> Bob: test\n@enduml"
 trivialContent SageMath = "G = plot(sin, 1, 10)"
+trivialContent D2 = "x -> y -> z"
 
 addCaption :: String -> Block -> Block
 addCaption caption (CodeBlock (id', cls, attrs) script) =
