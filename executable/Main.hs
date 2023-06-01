@@ -105,7 +105,11 @@ main = do
                   ]
               )
             <> header (mconcat ["pandoc-plot ", V.showVersion pandocPlotVersion, " - generate figures directly in documents"])
-            <> footerDoc (Just footer')
+            <> footerDoc ( Just $ P.vsep 
+                                [ "More information can be found via the manual (pandoc-plot --manual) or the"
+                                , "repository README, located at https://github.com/LaurentRDC/pandoc-plot"
+                                ]
+              )
         )
 
     optparse = do
@@ -286,7 +290,7 @@ showAvailableToolkits mfp = do
       putStrLn $ "Toolkit: " <> show tk
       when avail $ do
         exe <- runPlotM Nothing conf $ executable tk
-        putStrLn $ "    Executable: " <> (pathToExe exe)
+        putStrLn $ "    Executable: " <> pathToExe exe
       putStrLn $ "    Code block trigger: " <> (unpack . cls $ tk)
       putStrLn $ "    Supported save formats: " <> (mconcat . intersperse ", " . fmap show $ supportedSaveFormats tk)
       putStrLn mempty
@@ -318,12 +322,3 @@ showManPage = do
   manualPath <- (</> "pandoc-plot-manual.html") <$> getTemporaryDirectory
   TIO.writeFile manualPath $(embedManualHtml)
   openFile ("file:///" <> manualPath)
-
--- | Use Doc type directly because of newline formatting
-footer' :: P.Doc
-footer' =
-  mconcat
-    [ P.text "More information can be found via the manual (pandoc-plot --manual) or the",
-      P.line,
-      P.text "repository README, located at https://github.com/LaurentRDC/pandoc-plot"
-    ]
