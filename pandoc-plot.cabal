@@ -1,6 +1,6 @@
 cabal-version:  2.2
 name:           pandoc-plot
-version:        1.6.2
+version:        1.7.0
 synopsis:       A Pandoc filter to include figures generated from code blocks using your plotting toolkit of choice.
 description:    A Pandoc filter to include figures generated from code blocks. 
                 Keep the document and code in the same location. Output is 
@@ -48,6 +48,8 @@ extra-source-files:
     tests/includes/plotly-r.r
     tests/includes/plotsjl.jl
     tests/includes/plantuml.txt
+    tests/includes/sagemath.sage
+    tests/includes/d2-dd.d2
 
 source-repository head
     type: git
@@ -99,8 +101,8 @@ library
         -Wmissing-export-lists
         -Wpartial-fields
     build-depends:
-          aeson              >= 2     && <3
-        , base               >= 4.11  && <5
+          aeson              >= 2     && < 3
+        , base               >= 4.11  && < 5
         , bytestring
         , containers
         , data-default  
@@ -141,8 +143,8 @@ executable pandoc-plot
         , optparse-applicative  >= 0.14 && < 0.19
         , pandoc
         , pandoc-plot
-        , pandoc-types          >= 1.21 && <2
-        , template-haskell      >  2.7 && <3
+        , pandoc-types          >= 1.21 && < 2
+        , template-haskell      >  2.7  && < 3
         , typed-process
         , text
     default-language: Haskell2010
@@ -152,12 +154,12 @@ test-suite tests
     hs-source-dirs:  tests
     main-is:         Main.hs
     other-modules:   Common
-    build-depends:   base                 >= 4.11 && < 5
+    build-depends:   base
                    , containers
                    , directory
                    , filepath
                    , hspec-expectations
-                   , pandoc-types         >= 1.20 && <= 2
+                   , pandoc-types
                    , pandoc-plot
                    , tasty
                    , tasty-hunit
