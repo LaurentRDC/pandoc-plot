@@ -79,6 +79,7 @@ library
         Text.Pandoc.Filter.Plot.Renderers.Plotsjl
         Text.Pandoc.Filter.Plot.Renderers.PlantUML
         Text.Pandoc.Filter.Plot.Renderers.SageMath
+        Text.Pandoc.Filter.Plot.Renderers.D2
         Text.Pandoc.Filter.Plot.Monad
         Text.Pandoc.Filter.Plot.Monad.Logging
         Text.Pandoc.Filter.Plot.Monad.Types

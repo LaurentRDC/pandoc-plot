@@ -64,6 +64,7 @@ defaultConfiguration =
       plotsjlPreamble = mempty,
       plantumlPreamble = mempty,
       sagemathPreamble = mempty,
+      d2Preamble = mempty,
       -- Executables
       matplotlibExe = python,
       matlabExe = "matlab",
@@ -78,6 +79,7 @@ defaultConfiguration =
       plotsjlExe = "julia",
       plantumlExe = "java",
       sagemathExe = "sage",
+      d2Exe = "d2",
       -- Command line arguments
       matplotlibCmdArgs = mempty,
       matlabCmdArgs = mempty,
@@ -92,6 +94,7 @@ defaultConfiguration =
       plotsjlCmdArgs = mempty,
       plantumlCmdArgs = "-jar plantuml.jar",
       sagemathCmdArgs = mempty,
+      d2CmdArgs = mempty,
       -- Extras
       matplotlibTightBBox = False,
       matplotlibTransparent = False
@@ -151,7 +154,8 @@ data ConfigPrecursor = ConfigPrecursor
     _bokehPrec :: !BokehPrecursor,
     _plotsjlPrec :: !PlotsjlPrecursor,
     _plantumlPrec :: !PlantUMLPrecursor,
-    _sagemathPrec :: !SageMathPrecursor
+    _sagemathPrec :: !SageMathPrecursor,
+    _d2Prec :: !D2Precursor
   }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -178,7 +182,8 @@ defaultConfigPrecursor =
       _bokehPrec = BokehPrecursor Nothing (bokehExe defaultConfiguration) (bokehCmdArgs defaultConfiguration),
       _plotsjlPrec = PlotsjlPrecursor Nothing (plotsjlExe defaultConfiguration) (plotsjlCmdArgs defaultConfiguration),
       _plantumlPrec = PlantUMLPrecursor Nothing (plantumlExe defaultConfiguration) (plantumlCmdArgs defaultConfiguration),
-      _sagemathPrec = SageMathPrecursor Nothing (sagemathExe defaultConfiguration) (sagemathCmdArgs defaultConfiguration)
+      _sagemathPrec = SageMathPrecursor Nothing (sagemathExe defaultConfiguration) (sagemathCmdArgs defaultConfiguration),
+      _d2Prec = D2Precursor Nothing (d2Exe defaultConfiguration) (d2CmdArgs defaultConfiguration)
     }
 
 data LoggingPrecursor = LoggingPrecursor
@@ -218,6 +223,8 @@ data PlotsjlPrecursor = PlotsjlPrecursor {_plotsjlPreamble :: !(Maybe FilePath),
 data PlantUMLPrecursor = PlantUMLPrecursor {_plantumlPreamble :: !(Maybe FilePath), _plantumlExe :: !FilePath, _plantumlCmdArgs :: !Text}
 
 data SageMathPrecursor = SageMathPrecursor {_sagemathPreamble :: !(Maybe FilePath), _sagemathExe :: !FilePath, _sagemathCmdArgs :: !Text}
+
+data D2Precursor = D2Precursor {_d2Preamble :: !(Maybe FilePath), _d2Exe :: !FilePath, _d2CmdArgs :: !Text}
 
 instance FromJSON LoggingPrecursor where
   parseJSON (Object v) =
@@ -286,6 +293,10 @@ instance FromJSON SageMathPrecursor where
   parseJSON (Object v) = SageMathPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= sagemathExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= sagemathCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
 
+instance FromJSON D2Precursor where
+  parseJSON (Object v) = D2Precursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= d2Exe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= d2CmdArgs defaultConfiguration
+  parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
+
 toolkitAsKey :: Toolkit -> Key 
 toolkitAsKey = fromString . unpack . cls
 
@@ -315,6 +326,7 @@ instance FromJSON ConfigPrecursor where
     _plotsjlPrec <- v .:? toolkitAsKey Plotsjl .!= _plotsjlPrec defaultConfigPrecursor
     _plantumlPrec <- v .:? toolkitAsKey PlantUML .!= _plantumlPrec defaultConfigPrecursor
     _sagemathPrec <- v .:? toolkitAsKey SageMath .!= _sagemathPrec defaultConfigPrecursor
+    _d2Prec <- v .:? toolkitAsKey D2 .!= _d2Prec defaultConfigPrecursor
 
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."
@@ -349,6 +361,7 @@ renderConfig ConfigPrecursor {..} = do
       plotsjlExe = _plotsjlExe _plotsjlPrec
       plantumlExe = _plantumlExe _plantumlPrec
       sagemathExe = _sagemathExe _sagemathPrec
+      d2Exe = _d2Exe _d2Prec
 
       matplotlibCmdArgs = _matplotlibCmdArgs _matplotlibPrec
       matlabCmdArgs = _matlabCmdArgs _matlabPrec
@@ -363,6 +376,7 @@ renderConfig ConfigPrecursor {..} = do
       plotsjlCmdArgs = _plotsjlCmdArgs _plotsjlPrec
       plantumlCmdArgs = _plantumlCmdArgs _plantumlPrec
       sagemathCmdArgs = _sagemathCmdArgs _sagemathPrec
+      d2CmdArgs = _d2CmdArgs _d2Prec
 
   matplotlibPreamble <- readPreamble (_matplotlibPreamble _matplotlibPrec)
   matlabPreamble <- readPreamble (_matlabPreamble _matlabPrec)
@@ -377,6 +391,7 @@ renderConfig ConfigPrecursor {..} = do
   plotsjlPreamble <- readPreamble (_plotsjlPreamble _plotsjlPrec)
   plantumlPreamble <- readPreamble (_plantumlPreamble _plantumlPrec)
   sagemathPreamble <- readPreamble (_sagemathPreamble _sagemathPrec)
+  d2Preamble <- readPreamble (_d2Preamble _d2Prec)
 
   return Configuration {..}
   where

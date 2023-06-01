@@ -61,6 +61,7 @@ data Toolkit
   | Plotsjl
   | PlantUML
   | SageMath
+  | D2
   deriving (Bounded, Eq, Enum, Generic, Ord)
 
 -- | This instance should only be used to display toolkit names
@@ -78,6 +79,7 @@ instance Show Toolkit where
   show Plotsjl = "Julia/Plots.jl"
   show PlantUML = "PlantUML"
   show SageMath = "SageMath"
+  show D2 = "D2"
 
 -- | Class name which will trigger the filter
 cls :: Toolkit -> Text
@@ -94,6 +96,7 @@ cls Bokeh = "bokeh"
 cls Plotsjl = "plotsjl"
 cls PlantUML = "plantuml"
 cls SageMath = "sageplot"
+cls D2 = "d2"
 
 -- | Executable program, and sometimes the directory where it can be found.
 data Executable 
