@@ -23,19 +23,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 plotlyR :: PlotM Renderer
 plotlyR = do
-      cmdargs <- asksConfig plotlyRCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = PlotlyR,
-            rendererCapture = plotlyRCapture,
-            rendererCommand = plotlyRCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "if(!require('plotly')) {quit(status=1)}"|],
-            rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "r",
-            rendererComment = mappend "# ",
-            rendererScriptExtension = ".r"
-          }
+  cmdargs <- asksConfig plotlyRCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = PlotlyR,
+        rendererCapture = plotlyRCapture,
+        rendererCommand = plotlyRCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "if(!require('plotly')) {quit(status=1)}"|],
+        rendererSupportedSaveFormats = plotlyRSupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "r",
+        rendererComment = mappend "# ",
+        rendererScriptExtension = ".r"
+      }
 
 plotlyRSupportedSaveFormats :: [SaveFormat]
 plotlyRSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, HTML]

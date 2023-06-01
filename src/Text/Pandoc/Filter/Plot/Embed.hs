@@ -32,15 +32,15 @@ import Text.HTML.TagSoup
   )
 import Text.Pandoc.Builder as Builder
   ( Inlines,
-    fromList,
     figureWith,
+    fromList,
     imageWith,
-    plain,
     link,
-    str,
+    plain,
     simpleCaption,
+    str,
     toList,
-  ) 
+  )
 import Text.Pandoc.Class (runPure)
 import Text.Pandoc.Definition (Attr, Block (..), Format, Pandoc (..))
 import Text.Pandoc.Error (handleError)
@@ -84,7 +84,9 @@ figure as fp caption' =
   return . head . toList $
     -- We want the attributes both on the Figure element and the contained Image element
     -- so that pandoc-plot plays nice with pandoc-crossref and other filters
-    figureWith as (simpleCaption (plain caption')) $ plain $ imageWith mempty (pack fp) mempty caption'
+    figureWith as (simpleCaption (plain caption')) $
+      plain $
+        imageWith mempty (pack fp) mempty caption'
 
 -- TODO: also add the case where SVG plots can be
 --       embedded in HTML output
@@ -172,11 +174,11 @@ extractPlot :: Text -> Text
 extractPlot t =
   let tags = canonicalizeTags $ parseTagsOptions parseOptionsFast t
       extracted = headScripts tags <> [inside "body" tags]
-      -- In the past (e.g. commit 8417b011ccb20263427822c7447840ab4a30a41e), we used to
-      -- make all JS scripts 'deferred'. This turned out to be problematic for plotly 
+   in -- In the past (e.g. commit 8417b011ccb20263427822c7447840ab4a30a41e), we used to
+      -- make all JS scripts 'deferred'. This turned out to be problematic for plotly
       -- specifically (see issue #39). In the future, we may want to defer scripts for
       -- certain toolkits, but that's a testing nightmare...
-   in mconcat $ renderTags <$> extracted
+      mconcat $ renderTags <$> extracted
   where
     headScripts = partitions (~== ("<script>" :: String)) . inside "head"
 

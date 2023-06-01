@@ -61,11 +61,11 @@ import Text.Pandoc.Filter.Plot.Internal
     cls,
     configurationPathMeta,
     executable,
+    pathToExe,
     readDoc,
     runPlotM,
     supportedSaveFormats,
-    toolkits, 
-    pathToExe
+    toolkits,
   )
 import Text.Pandoc.JSON (toJSONFilter)
 import Text.ParserCombinators.ReadP (readP_to_S)
@@ -105,10 +105,12 @@ main = do
                   ]
               )
             <> header (mconcat ["pandoc-plot ", V.showVersion pandocPlotVersion, " - generate figures directly in documents"])
-            <> footerDoc ( Just $ P.vsep 
-                                [ "More information can be found via the manual (pandoc-plot --manual) or the"
-                                , "repository README, located at https://github.com/LaurentRDC/pandoc-plot"
-                                ]
+            <> footerDoc
+              ( Just $
+                  P.vsep
+                    [ "More information can be found via the manual (pandoc-plot --manual) or the",
+                      "repository README, located at https://github.com/LaurentRDC/pandoc-plot"
+                    ]
               )
         )
 

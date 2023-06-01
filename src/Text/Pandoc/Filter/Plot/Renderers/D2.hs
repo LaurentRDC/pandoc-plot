@@ -22,19 +22,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 d2 :: PlotM Renderer
 d2 = do
-      cmdargs <- asksConfig d2CmdArgs
-      return $
-        Renderer
-          { rendererToolkit = D2,
-            rendererCapture = d2Capture,
-            rendererCommand = d2Command cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -v|],
-            rendererSupportedSaveFormats = d2SupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "d2",
-            rendererComment = mappend "# ",
-            rendererScriptExtension = ".d2"
-          }
+  cmdargs <- asksConfig d2CmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = D2,
+        rendererCapture = d2Capture,
+        rendererCommand = d2Command cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -v|],
+        rendererSupportedSaveFormats = d2SupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "d2",
+        rendererComment = mappend "# ",
+        rendererScriptExtension = ".d2"
+      }
 
 d2SupportedSaveFormats :: [SaveFormat]
 d2SupportedSaveFormats = [PNG, PDF, SVG]

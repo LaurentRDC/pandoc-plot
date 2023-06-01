@@ -23,19 +23,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 graphviz :: PlotM Renderer
 graphviz = do
-      cmdargs <- asksConfig graphvizCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = Graphviz,
-            rendererCapture = graphvizCapture,
-            rendererCommand = graphvizCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -?|],
-            rendererSupportedSaveFormats = graphvizSupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "dot",
-            rendererComment = mappend "// ",
-            rendererScriptExtension = ".dot"
-          }
+  cmdargs <- asksConfig graphvizCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = Graphviz,
+        rendererCapture = graphvizCapture,
+        rendererCommand = graphvizCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -?|],
+        rendererSupportedSaveFormats = graphvizSupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "dot",
+        rendererComment = mappend "// ",
+        rendererScriptExtension = ".dot"
+      }
 
 graphvizSupportedSaveFormats :: [SaveFormat]
 graphvizSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, WEBP, GIF]

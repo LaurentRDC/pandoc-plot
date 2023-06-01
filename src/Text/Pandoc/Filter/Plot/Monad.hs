@@ -149,7 +149,7 @@ runPlotM fmt conf v = do
     \logger -> runReaderT (evalStateT v st) (RuntimeEnv fmt conf logger cwd sem)
 
 -- | maps a function, performing at most @N@ actions concurrently.
-mapConcurrentlyN :: Traversable t => Int -> (a -> PlotM b) -> t a -> PlotM (t b)
+mapConcurrentlyN :: (Traversable t) => Int -> (a -> PlotM b) -> t a -> PlotM (t b)
 mapConcurrentlyN n f xs = do
   -- Emulating a pool of processes with locked access
   sem <- liftIO $ newQSemN n

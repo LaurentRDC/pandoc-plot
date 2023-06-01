@@ -13,7 +13,7 @@
 module Text.Pandoc.Filter.Plot.Monad.Types
   ( Toolkit (..),
     Renderer (..),
-    AvailabilityCheck(..),
+    AvailabilityCheck (..),
     Script,
     CheckResult (..),
     InclusionKey (..),
@@ -36,9 +36,9 @@ import Data.Char (toLower)
 import Data.List (intersperse)
 import Data.String (IsString (..))
 import Data.Text (Text, pack, unpack)
-import Data.Yaml (FromJSON(..), ToJSON (toJSON), withText)
+import Data.Yaml (FromJSON (..), ToJSON (toJSON), withText)
 import GHC.Generics (Generic)
-import System.FilePath (splitFileName, (</>), isAbsolute)
+import System.FilePath (isAbsolute, splitFileName, (</>))
 import System.Info (os)
 import Text.Pandoc.Definition (Attr)
 
@@ -99,19 +99,20 @@ cls SageMath = "sageplot"
 cls D2 = "d2"
 
 -- | Executable program, and sometimes the directory where it can be found.
-data Executable 
+data Executable
   = AbsExe FilePath Text
   | RelExe Text
 
 exeFromPath :: FilePath -> Executable
 exeFromPath fp
-  | isAbsolute fp = let (dir, name) = splitFileName fp
-                     in AbsExe dir (pack name)
-  | otherwise     = RelExe (pack fp) 
+  | isAbsolute fp =
+      let (dir, name) = splitFileName fp
+       in AbsExe dir (pack name)
+  | otherwise = RelExe (pack fp)
 
 pathToExe :: Executable -> FilePath
-pathToExe (AbsExe dir name) = dir </> unpack name 
-pathToExe (RelExe name)            = unpack name
+pathToExe (AbsExe dir name) = dir </> unpack name
+pathToExe (RelExe name) = unpack name
 
 -- | Source context for plotting scripts
 type Script = Text
@@ -241,13 +242,13 @@ instance IsString SaveFormat where
     | s `elem` ["html", "HTML", ".html"] = HTML
     | s `elem` ["latex", "LaTeX", ".tex"] = LaTeX
     | otherwise =
-      errorWithoutStackTrace $
-        mconcat
-          [ s,
-            " is not one of the valid save formats : ",
-            mconcat $ intersperse ", " $ show <$> saveFormats,
-            " (and lowercase variations). "
-          ]
+        errorWithoutStackTrace $
+          mconcat
+            [ s,
+              " is not one of the valid save formats : ",
+              mconcat $ intersperse ", " $ show <$> saveFormats,
+              " (and lowercase variations). "
+            ]
     where
       saveFormats = enumFromTo minBound maxBound :: [SaveFormat]
 

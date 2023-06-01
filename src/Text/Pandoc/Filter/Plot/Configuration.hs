@@ -17,8 +17,8 @@ module Text.Pandoc.Filter.Plot.Configuration
   )
 where
 
-import Data.Aeson ( (.:?), (.!=), Key, Value(Object, Null), FromJSON(parseJSON) )
-import Data.String (IsString(..))
+import Data.Aeson (FromJSON (parseJSON), Key, Value (Null, Object), (.!=), (.:?))
+import Data.String (IsString (..))
 import Data.Text (Text, unpack)
 import qualified Data.Text.IO as TIO
 import Data.Yaml.Config (ignoreEnv, loadYamlSettings)
@@ -228,11 +228,12 @@ data D2Precursor = D2Precursor {_d2Preamble :: !(Maybe FilePath), _d2Exe :: !Fil
 
 instance FromJSON LoggingPrecursor where
   parseJSON (Object v) =
-    LoggingPrecursor <$> v .:? "verbosity" .!= logVerbosity defaultConfiguration
+    LoggingPrecursor
+      <$> v .:? "verbosity" .!= logVerbosity defaultConfiguration
       <*> v .:? "filepath"
   parseJSON _ = fail $ mconcat ["Could not parse logging configuration. "]
 
-asKey :: InclusionKey -> Key 
+asKey :: InclusionKey -> Key
 asKey = fromString . show
 
 instance FromJSON MatplotlibPrecursor where
@@ -297,7 +298,7 @@ instance FromJSON D2Precursor where
   parseJSON (Object v) = D2Precursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= d2Exe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= d2CmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
 
-toolkitAsKey :: Toolkit -> Key 
+toolkitAsKey :: Toolkit -> Key
 toolkitAsKey = fromString . unpack . cls
 
 instance FromJSON ConfigPrecursor where
@@ -396,4 +397,3 @@ renderConfig ConfigPrecursor {..} = do
   return Configuration {..}
   where
     readPreamble = maybe mempty TIO.readFile
-

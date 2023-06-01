@@ -98,7 +98,8 @@ testFileInclusion tk =
 
     let cb =
           ( addPreamble (include tk) $
-              addDirectory tempDir $ codeBlock tk (trivialContent tk)
+              addDirectory tempDir $
+                codeBlock tk (trivialContent tk)
           )
     _ <- runPlotM Nothing defaultTestConfig $ make cb
     inclusion <- readFile (include tk)
@@ -132,11 +133,13 @@ testSaveFormat tk =
     let fmt = head (supportedSaveFormats tk)
         cb =
           ( addSaveFormat fmt $
-              addDirectory tempDir $ codeBlock tk (trivialContent tk)
+              addDirectory tempDir $
+                codeBlock tk (trivialContent tk)
           )
     _ <- runPlotM Nothing defaultTestConfig $ make cb
     numberjpgFiles <-
-      length <$> filter (isExtensionOf (extension fmt))
+      length
+        <$> filter (isExtensionOf (extension fmt))
         <$> listDirectory tempDir
     assertEqual "" numberjpgFiles 1
 
@@ -144,7 +147,7 @@ testSaveFormat tk =
 -- Test that the appropriate error is raised when trying to save figures
 -- in an incompatible format
 testSaveFormatIncompatibility :: Toolkit -> TestTree
-testSaveFormatIncompatibility tk = 
+testSaveFormatIncompatibility tk =
   testCase "raises the appropriate error on save format incompatibility" $ do
     let allSaveFormats = enumFromTo minBound maxBound :: [SaveFormat]
         incompatibleFormats = S.toList $ S.difference (S.fromList allSaveFormats) (S.fromList $ supportedSaveFormats tk)
@@ -180,16 +183,16 @@ testWithSource tk =
             addDirectory tempDir $
               addCaption expected $
                 codeBlock tk (trivialContent tk)
-    blockNoSource   <- runPlotM Nothing defaultTestConfig $ make noSource
+    blockNoSource <- runPlotM Nothing defaultTestConfig $ make noSource
     blockWithSource <- runPlotM Nothing defaultTestConfig $ make withSource
 
     -- In the case where source=false, the caption is used verbatim.
     -- Otherwise, links will be appended to the caption; hence, the caption
     -- is no longer equal to the initial value
-    assertEqual    "" [B.Plain $ B.toList (fromString expected)] (extractCaption blockNoSource)
+    assertEqual "" [B.Plain $ B.toList (fromString expected)] (extractCaption blockNoSource)
     assertNotEqual "" [B.Plain $ B.toList (fromString expected)] (extractCaption blockWithSource)
   where
-    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption
 
 -------------------------------------------------------------------------------
 -- Test that it is possible to change the source code label in captions
@@ -212,7 +215,7 @@ testSourceLabel tk =
     let [Plain [Space, _, B.Link _ ils _, _]] = extractCaption blockWithSource
     assertEqual "" (B.toList $ B.str "Test label") ils
   where
-    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption
 
     linkLabel (B.Plain [B.Link _ ils _]) = B.fromList ils
     linkLabel _ = mempty
@@ -249,10 +252,12 @@ testOverrideConfiguration tk =
         _ <- runPlotM Nothing config $ make cb
 
         numberPngFiles <-
-          length <$> filter (isExtensionOf (extension PNG))
+          length
+            <$> filter (isExtensionOf (extension PNG))
             <$> listDirectory (defaultDirectory config)
         numberJpgFiles <-
-          length <$> filter (isExtensionOf (extension JPG))
+          length
+            <$> filter (isExtensionOf (extension JPG))
             <$> listDirectory (defaultDirectory config)
         assertEqual "" numberPngFiles 1
         assertEqual "" numberJpgFiles 0
@@ -277,7 +282,7 @@ testMarkdownFormattingCaption1 tk =
     result <- runPlotM Nothing (defaultTestConfig {captionFormat = fmt}) $ make cb
     assertIsInfix expected (extractCaption result)
   where
-    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption
 
 -------------------------------------------------------------------------------
 -- Test that Markdown bold formatting in captions is correctly rendered
@@ -299,7 +304,7 @@ testMarkdownFormattingCaption2 tk =
     result <- runPlotM Nothing (defaultTestConfig {captionFormat = fmt}) $ make cb
     assertIsInfix expected (extractCaption result)
   where
-    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption
 
 -------------------------------------------------------------------------------
 -- Test that cleanOutpuDirs correctly cleans the output directory specified in a block.
@@ -354,19 +359,26 @@ testAttributesPreservedOnFigure tk =
     -- Note that this test is fragile, in the sense that the expected result must be carefully
     -- constructed
     let expectedAttrs = ("hello", [cls tk], [("key1", "val1"), ("key2", "val2")])
-        cb = setAttrs expectedAttrs $
-              addDirectory tempDir $
-                addCaption "[title](https://google.com)" $
-                  codeBlock tk (trivialContent tk)
+        cb =
+          setAttrs expectedAttrs $
+            addDirectory tempDir $
+              addCaption "[title](https://google.com)" $
+                codeBlock tk (trivialContent tk)
         fmt = B.Format "markdown"
-    Figure (id', _, keyvals) _ _ <- runPlotM Nothing (defaultTestConfig { captionFormat = fmt
-                                                                        , defaultDirectory = tempDir
-                                                                        }) $ make cb
+    Figure (id', _, keyvals) _ _ <-
+      runPlotM
+        Nothing
+        ( defaultTestConfig
+            { captionFormat = fmt,
+              defaultDirectory = tempDir
+            }
+        )
+        $ make cb
     let (expectedId, _, expectedKeyVals) = expectedAttrs
     assertEqual "identifier" expectedId id'
     assertEqual "key-value pairs" expectedKeyVals keyvals
   where
-    extractCaption (B.Figure _ (Caption _ caption) _) = caption 
+    extractCaption (B.Figure _ (Caption _ caption) _) = caption
 
 codeBlock :: Toolkit -> Script -> Block
 codeBlock tk script = CodeBlock (mempty, [cls tk], mempty) script
@@ -420,7 +432,7 @@ setAttrs :: Attr -> Block -> Block
 setAttrs attrs (CodeBlock _ script) = CodeBlock attrs script
 
 -- | Assert that a file exists
-assertFileExists :: HasCallStack => FilePath -> Assertion
+assertFileExists :: (HasCallStack) => FilePath -> Assertion
 assertFileExists filepath = do
   fileExists <- doesFileExist filepath
   unless fileExists (assertFailure msg)
@@ -457,5 +469,5 @@ ensureDirectoryExistsAndEmpty dir = do
     else return ()
   createDirectory dir
 
-tshow :: Show a => a -> Text
+tshow :: (Show a) => a -> Text
 tshow = pack . show

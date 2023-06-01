@@ -22,19 +22,20 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 mathematica :: PlotM Renderer
 mathematica = do
-      cmdargs <- asksConfig mathematicaCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = Mathematica,
-            rendererCapture = mathematicaCapture,
-            rendererCommand = mathematicaCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|], -- TODO: test this
-            rendererSupportedSaveFormats = mathematicaSupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "mathematica",
-            rendererComment = \t -> mconcat ["(*", t, "*)"],
-            rendererScriptExtension = ".m"
-          }
+  cmdargs <- asksConfig mathematicaCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = Mathematica,
+        rendererCapture = mathematicaCapture,
+        rendererCommand = mathematicaCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|],
+        -- TODO: test this
+        rendererSupportedSaveFormats = mathematicaSupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "mathematica",
+        rendererComment = \t -> mconcat ["(*", t, "*)"],
+        rendererScriptExtension = ".m"
+      }
 
 mathematicaSupportedSaveFormats :: [SaveFormat]
 mathematicaSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]

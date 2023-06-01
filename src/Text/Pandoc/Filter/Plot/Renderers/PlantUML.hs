@@ -24,19 +24,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 plantuml :: PlotM Renderer
 plantuml = do
-      cmdargs <- asksConfig plantumlCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = PlantUML,
-            rendererCapture = plantumlCapture,
-            rendererCommand = plantumlCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} #{cmdargs} -h|],
-            rendererSupportedSaveFormats = plantumlSupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "plantuml",
-            rendererComment = mappend "' ",
-            rendererScriptExtension = ".txt"
-          }
+  cmdargs <- asksConfig plantumlCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = PlantUML,
+        rendererCapture = plantumlCapture,
+        rendererCommand = plantumlCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} #{cmdargs} -h|],
+        rendererSupportedSaveFormats = plantumlSupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "plantuml",
+        rendererComment = mappend "' ",
+        rendererScriptExtension = ".txt"
+      }
 
 plantumlSupportedSaveFormats :: [SaveFormat]
 plantumlSupportedSaveFormats = [PNG, PDF, SVG]
@@ -45,10 +45,10 @@ plantumlCommand :: Text -> OutputSpec -> Text
 plantumlCommand cmdargs OutputSpec {..} =
   let fmt = fmap toLower . show . saveFormat $ oFigureSpec
       dir = takeDirectory oFigurePath
-    -- the command below works as long as the script name is the same basename
-    -- as the target figure path. E.g.: script basename of pandocplot123456789.txt
-    -- will result in pandocplot123456789.(extension)
-   in [st|#{pathToExe oExecutable} #{cmdargs} -t#{fmt} -output "#{oCWD </> dir}" "#{normalizePath oScriptPath}"|]
+   in -- the command below works as long as the script name is the same basename
+      -- as the target figure path. E.g.: script basename of pandocplot123456789.txt
+      -- will result in pandocplot123456789.(extension)
+      [st|#{pathToExe oExecutable} #{cmdargs} -t#{fmt} -output "#{oCWD </> dir}" "#{normalizePath oScriptPath}"|]
 
 normalizePath :: String -> String
 normalizePath = map f

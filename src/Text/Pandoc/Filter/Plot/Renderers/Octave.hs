@@ -22,19 +22,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 octave :: PlotM Renderer
 octave = do
-      cmdargs <- asksConfig octaveCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = Octave,
-            rendererCapture = octaveCapture,
-            rendererCommand = octaveCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|],
-            rendererSupportedSaveFormats = octaveSupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "matlab",
-            rendererComment = mappend "% ",
-            rendererScriptExtension = ".m"
-          }
+  cmdargs <- asksConfig octaveCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = Octave,
+        rendererCapture = octaveCapture,
+        rendererCommand = octaveCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|],
+        rendererSupportedSaveFormats = octaveSupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "matlab",
+        rendererComment = mappend "% ",
+        rendererScriptExtension = ".m"
+      }
 
 octaveSupportedSaveFormats :: [SaveFormat]
 octaveSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]

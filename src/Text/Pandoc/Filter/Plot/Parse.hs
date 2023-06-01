@@ -39,25 +39,25 @@ import Text.Pandoc.Definition
     Inline,
     Pandoc (..),
   )
-import Text.Pandoc.Format (parseFlavoredFormat)
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Renderers
+import Text.Pandoc.Format (parseFlavoredFormat)
 import Text.Pandoc.Options (ReaderOptions (..))
 import Text.Pandoc.Readers (Reader (..), getReader)
 
-tshow :: Show a => a -> Text
+tshow :: (Show a) => a -> Text
 tshow = pack . show
 
 data ParseFigureResult
-  -- | The block is not meant to become a figure
-  = NotAFigure
-  -- | The block is meant to become a figure
-  | PFigure FigureSpec
-  -- | The block is meant to become a figure, but the plotting toolkit is missing
-  | MissingToolkit Toolkit
-  -- | The block is meant to become a figure, but the figure format is incompatible 
-  --   with the plotting toolkit
-  | UnsupportedSaveFormat Toolkit SaveFormat
+  = -- | The block is not meant to become a figure
+    NotAFigure
+  | -- | The block is meant to become a figure
+    PFigure FigureSpec
+  | -- | The block is meant to become a figure, but the plotting toolkit is missing
+    MissingToolkit Toolkit
+  | -- | The block is meant to become a figure, but the figure format is incompatible
+    --   with the plotting toolkit
+    UnsupportedSaveFormat Toolkit SaveFormat
 
 -- | Determine inclusion specifications from @Block@ attributes.
 -- If an environment is detected, but the save format is incompatible,
@@ -105,7 +105,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
 
           -- Decide between reading from file or using document content
           content <- parseContent block
-          
+
           defaultExe <- executable rendererToolkit
 
           let caption = Map.findWithDefault mempty (tshow CaptionK) attrs'
@@ -124,8 +124,8 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
           _' <-
             unless (saveFormat `elem` rendererSupportedSaveFormats) $
               let msg = pack $ mconcat ["Save format ", show saveFormat, " not supported by ", show toolkit]
-              in err msg
-          
+               in err msg
+
           -- Ensure that the save format makes sense given the final conversion format, if known
           return $ PFigure (FigureSpec {..})
 -- Base case: block is not a CodeBlock
@@ -190,7 +190,7 @@ parseFileDependencies :: Text -> [FilePath]
 parseFileDependencies t
   | t == mempty = mempty
   | otherwise =
-    fmap (normalise . unpack . T.dropAround isSpace)
-      . T.splitOn ","
-      . T.dropAround (\c -> c `elem` ['[', ']'])
-      $ t
+      fmap (normalise . unpack . T.dropAround isSpace)
+        . T.splitOn ","
+        . T.dropAround (\c -> c `elem` ['[', ']'])
+        $ t

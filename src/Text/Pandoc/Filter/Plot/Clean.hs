@@ -31,9 +31,9 @@ import System.FilePath (takeExtension)
 import Text.Pandoc.Class (runIO)
 import Text.Pandoc.Definition (Block, Pandoc)
 import Text.Pandoc.Error (handleError)
-import Text.Pandoc.Format (FlavoredFormat(..))
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Parse
+import Text.Pandoc.Format (FlavoredFormat (..))
 import qualified Text.Pandoc.Options as P
 import qualified Text.Pandoc.Readers as P
 import Text.Pandoc.Walk (Walkable, query)
@@ -44,7 +44,7 @@ import Text.Pandoc.Walk (Walkable, query)
 --
 -- The cleaned directories are returned.
 cleanOutputDirs ::
-  Walkable Block b =>
+  (Walkable Block b) =>
   Configuration ->
   b ->
   IO [FilePath]
@@ -59,7 +59,7 @@ cleanOutputDirs conf doc = do
 
 -- | Analyze a document to determine where would the pandoc-plot output directories be.
 outputDirs ::
-  Walkable Block b =>
+  (Walkable Block b) =>
   b ->
   PlotM [FilePath]
 outputDirs = fmap (nub . catMaybes) . sequence . query (\b -> [hasDirectory <$> parseFigureSpec b])
@@ -70,7 +70,7 @@ outputDirs = fmap (nub . catMaybes) . sequence . query (\b -> [hasDirectory <$> 
 
 -- | PlotM version of @cleanOutputDirs@
 cleanOutputDirsM ::
-  Walkable Block b =>
+  (Walkable Block b) =>
   b ->
   PlotM [FilePath]
 cleanOutputDirsM doc = do

@@ -22,19 +22,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 gnuplot :: PlotM Renderer
 gnuplot = do
-      cmdargs <- asksConfig gnuplotCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = GNUPlot,
-            rendererCapture = gnuplotCapture,
-            rendererCommand = gnuplotCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|],
-            rendererSupportedSaveFormats = gnuplotSupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "gnuplot",
-            rendererComment = mappend "# ",
-            rendererScriptExtension = ".gp"
-          }
+  cmdargs <- asksConfig gnuplotCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = GNUPlot,
+        rendererCapture = gnuplotCapture,
+        rendererCommand = gnuplotCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -h|],
+        rendererSupportedSaveFormats = gnuplotSupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "gnuplot",
+        rendererComment = mappend "# ",
+        rendererScriptExtension = ".gp"
+      }
 
 gnuplotSupportedSaveFormats :: [SaveFormat]
 gnuplotSupportedSaveFormats = [LaTeX, PNG, SVG, EPS, GIF, JPG, PDF]

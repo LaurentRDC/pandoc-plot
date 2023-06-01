@@ -33,40 +33,68 @@ import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as M
 import Data.Maybe (catMaybes, isJust)
 import Data.Text (Text, pack)
+import System.Directory (findExecutable)
 import System.Exit (ExitCode (..))
 import Text.Pandoc.Filter.Plot.Monad
 import Text.Pandoc.Filter.Plot.Monad.Logging
   ( Logger (lVerbosity),
   )
 import Text.Pandoc.Filter.Plot.Renderers.Bokeh
-    ( bokeh, bokehSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.GGPlot2
-    ( ggplot2, ggplot2SupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
-    ( gnuplot, gnuplotSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.Graphviz
-    ( graphviz, graphvizSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.Mathematica
-    ( mathematica, mathematicaSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.Matlab
-    ( matlab, matlabSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
-    ( matplotlib, matplotlibSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.Octave
-    ( octave, octaveSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.PlantUML
-    ( plantuml, plantumlSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
-    ( plotlyPython, plotlyPythonSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.PlotlyR
-    ( plotlyR, plotlyRSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
-    ( plotsjl, plotsjlSupportedSaveFormats )
-import Text.Pandoc.Filter.Plot.Renderers.SageMath
-    ( sagemath, sagemathSupportedSaveFormats )
+  ( bokeh,
+    bokehSupportedSaveFormats,
+  )
 import Text.Pandoc.Filter.Plot.Renderers.D2
-    ( d2, d2SupportedSaveFormats )
-import System.Directory (findExecutable)
+  ( d2,
+    d2SupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.GGPlot2
+  ( ggplot2,
+    ggplot2SupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.GNUPlot
+  ( gnuplot,
+    gnuplotSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.Graphviz
+  ( graphviz,
+    graphvizSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.Mathematica
+  ( mathematica,
+    mathematicaSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.Matlab
+  ( matlab,
+    matlabSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.Matplotlib
+  ( matplotlib,
+    matplotlibSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.Octave
+  ( octave,
+    octaveSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.PlantUML
+  ( plantuml,
+    plantumlSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.PlotlyPython
+  ( plotlyPython,
+    plotlyPythonSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.PlotlyR
+  ( plotlyR,
+    plotlyRSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.Plotsjl
+  ( plotsjl,
+    plotsjlSupportedSaveFormats,
+  )
+import Text.Pandoc.Filter.Plot.Renderers.SageMath
+  ( sagemath,
+    sagemathSupportedSaveFormats,
+  )
 
 -- | Get the renderer associated with a toolkit.
 -- If the renderer has not been used before,
@@ -124,9 +152,14 @@ preambleSelector D2 = d2Preamble
 -- | Parse code block headers for extra attributes that are specific
 -- to this renderer. By default, no extra attributes are parsed.
 parseExtraAttrs :: Toolkit -> Map Text Text -> Map Text Text
-parseExtraAttrs Matplotlib = M.filterWithKey (\k _ -> k `elem` [ pack $ show MatplotlibTightBBoxK
-                                                               , pack $ show MatplotlibTransparentK
-                                                               ])
+parseExtraAttrs Matplotlib =
+  M.filterWithKey
+    ( \k _ ->
+        k
+          `elem` [ pack $ show MatplotlibTightBBoxK,
+                   pack $ show MatplotlibTransparentK
+                 ]
+    )
 parseExtraAttrs _ = return mempty
 
 -- | List of toolkits available on this machine.
@@ -144,22 +177,22 @@ unavailableToolkits conf = runPlotM Nothing conf unavailableToolkitsM
 -- Note that logging is disabled
 availableToolkitsM :: PlotM [Toolkit]
 availableToolkitsM = asNonStrictAndSilent $ do
-    mtks <- forConcurrently toolkits $ \tk -> do
-      r <- renderer tk
-      exe <- executable tk
-      a <- isAvailable exe (rendererAvailability r)
-      if a
-        then return $ Just tk
-        else return Nothing
-    return $ catMaybes mtks
+  mtks <- forConcurrently toolkits $ \tk -> do
+    r <- renderer tk
+    exe <- executable tk
+    a <- isAvailable exe (rendererAvailability r)
+    if a
+      then return $ Just tk
+      else return Nothing
+  return $ catMaybes mtks
   where
-    asNonStrictAndSilent = local (\(RuntimeEnv f c l d s) -> RuntimeEnv f (c{strictMode = False}) (l{lVerbosity = Silent}) d s)
+    asNonStrictAndSilent = local (\(RuntimeEnv f c l d s) -> RuntimeEnv f (c {strictMode = False}) (l {lVerbosity = Silent}) d s)
 
-    -- | Check that the supplied command results in
+    -- \| Check that the supplied command results in
     -- an exit code of 0 (i.e. no errors)
     commandSuccess :: Text -> PlotM Bool
     commandSuccess s = do
-      cwd <- asks envCWD 
+      cwd <- asks envCWD
       (ec, _) <- runCommand cwd s
       debug $ mconcat ["Command ", s, " resulted in ", pack $ show ec]
       return $ ec == ExitSuccess

@@ -29,19 +29,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 matplotlib :: PlotM Renderer
 matplotlib = do
-      cmdargs <- asksConfig matplotlibCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = Matplotlib,
-            rendererCapture = matplotlibCapture,
-            rendererCommand = matplotlibCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -c "import matplotlib"|],
-            rendererSupportedSaveFormats = matplotlibSupportedSaveFormats,
-            rendererChecks = [matplotlibCheckIfShow],
-            rendererLanguage = "python",
-            rendererComment = mappend "# ",
-            rendererScriptExtension = ".py"
-          }
+  cmdargs <- asksConfig matplotlibCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = Matplotlib,
+        rendererCapture = matplotlibCapture,
+        rendererCommand = matplotlibCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -c "import matplotlib"|],
+        rendererSupportedSaveFormats = matplotlibSupportedSaveFormats,
+        rendererChecks = [matplotlibCheckIfShow],
+        rendererLanguage = "python",
+        rendererComment = mappend "# ",
+        rendererScriptExtension = ".py"
+      }
 
 matplotlibSupportedSaveFormats :: [SaveFormat]
 matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]

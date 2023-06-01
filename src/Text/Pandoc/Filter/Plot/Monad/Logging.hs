@@ -76,7 +76,7 @@ data Command
   = LogMessage Text
   | EndLogging
 
-class Monad m => MonadLogger m where
+class (Monad m) => MonadLogger m where
   askLogger :: m Logger
 
 -- | Ensure that all log messages are flushed, and stop logging

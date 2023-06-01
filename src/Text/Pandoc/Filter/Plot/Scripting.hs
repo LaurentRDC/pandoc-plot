@@ -38,9 +38,9 @@ import System.FilePath
   ( addExtension,
     normalise,
     replaceExtension,
-    takeDirectory,
-    (</>), 
     takeBaseName,
+    takeDirectory,
+    (</>),
   )
 import Text.Pandoc.Class (runPure)
 import Text.Pandoc.Definition (Block (CodeBlock), Pandoc (Pandoc))
@@ -116,7 +116,7 @@ runTempScript spec@FigureSpec {..} = do
       let scriptWithCapture = rendererCapture renderer_ spec target
 
       -- Note the use of a lock. This is a crude solution for issue #53, where
-      -- multiple identical figures can cause a race condition to write to the 
+      -- multiple identical figures can cause a race condition to write to the
       -- same output file.
       sem <- asks envIOLock
       liftIO $ withMVar sem $ \_ -> T.writeFile scriptPath scriptWithCapture
@@ -188,7 +188,7 @@ figurePath spec = do
   fh <- figureContentHash spec
   let ext = extension . saveFormat $ spec
       -- MATLAB will refuse to process files that don't start with
-      -- a letter so it is simplest to use filenames that start 
+      -- a letter so it is simplest to use filenames that start
       -- with "pandocplot" throughout
       stem = flip addExtension ext . mappend "pandocplot" . show $ fh
   return $ normalise $ directory spec </> stem
@@ -205,9 +205,9 @@ writeSource spec = do
             -- Note that making the document self-contained is absolutely required so that the CSS for
             -- syntax highlighting is included directly in the document.
             t = either (const mempty) id $ runPure (writeHtml5String opts doc >>= makeSelfContained)
-        
+
         -- Note the use of a lock. This is a crude solution for issue #53, where
-        -- multiple identical figures can cause a race condition to write to the 
+        -- multiple identical figures can cause a race condition to write to the
         -- same output file.
         sem <- asks envIOLock
         liftIO $ withMVar sem $ \_ -> T.writeFile scp t

@@ -24,19 +24,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 bokeh :: PlotM Renderer
 bokeh = do
-      cmdargs <- asksConfig bokehCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = Bokeh,
-            rendererCapture = appendCapture bokehCaptureFragment,
-            rendererCommand = bokehCommand cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -c "import bokeh; import selenium"|],
-            rendererSupportedSaveFormats = bokehSupportedSaveFormats,
-            rendererChecks = [bokehCheckIfShow],
-            rendererLanguage = "python",
-            rendererComment = mappend "# ",
-            rendererScriptExtension = ".py"
-          }
+  cmdargs <- asksConfig bokehCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = Bokeh,
+        rendererCapture = appendCapture bokehCaptureFragment,
+        rendererCommand = bokehCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -c "import bokeh; import selenium"|],
+        rendererSupportedSaveFormats = bokehSupportedSaveFormats,
+        rendererChecks = [bokehCheckIfShow],
+        rendererLanguage = "python",
+        rendererComment = mappend "# ",
+        rendererScriptExtension = ".py"
+      }
 
 bokehSupportedSaveFormats :: [SaveFormat]
 bokehSupportedSaveFormats = [PNG, SVG, HTML]

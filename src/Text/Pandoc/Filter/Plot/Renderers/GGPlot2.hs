@@ -23,19 +23,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 ggplot2 :: PlotM Renderer
 ggplot2 = do
-      cmdargs <- asksConfig ggplot2CmdArgs
-      return $
-        Renderer
-          { rendererToolkit = GGPlot2,
-            rendererCapture = ggplot2Capture,
-            rendererCommand = ggplot2Command cmdargs,
-            rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "if(!require('ggplot2')) {quit(status=1)}"|],
-            rendererSupportedSaveFormats = ggplot2SupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "r",
-            rendererComment = mappend "# ",
-            rendererScriptExtension = ".r"
-          }
+  cmdargs <- asksConfig ggplot2CmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = GGPlot2,
+        rendererCapture = ggplot2Capture,
+        rendererCommand = ggplot2Command cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -e "if(!require('ggplot2')) {quit(status=1)}"|],
+        rendererSupportedSaveFormats = ggplot2SupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "r",
+        rendererComment = mappend "# ",
+        rendererScriptExtension = ".r"
+      }
 
 ggplot2SupportedSaveFormats :: [SaveFormat]
 ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]

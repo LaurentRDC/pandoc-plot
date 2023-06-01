@@ -22,7 +22,7 @@
 --
 -- @
 -- This is a paragraph.
--- 
+--
 -- ```{.matlabplot}
 -- figure()
 -- plot([1,2,3,4,5], [1,2,3,4,5], '-k')
@@ -34,7 +34,7 @@
 -- @
 -- ```{.gnuplot format=png caption="Sinusoidal function" source=true}
 -- sin(x)
--- 
+--
 -- set xlabel "x"
 -- set ylabel "y"
 -- ```
@@ -63,8 +63,7 @@
 --       code block will be ignored. This path should be specified with respect to the current working
 --       directory, and not with respect to the document.
 --
--- All attributes are described in the online documentation, linked on the home page. 
-
+-- All attributes are described in the online documentation, linked on the home page.
 module Text.Pandoc.Filter.Plot
   ( -- * Operating on whole Pandoc documents
     plotFilter,
@@ -106,7 +105,7 @@ import Data.Map (singleton)
 import Data.Text (Text, pack, unpack)
 import Data.Version (Version)
 import Paths_pandoc_plot (version)
-import Text.Pandoc.Definition (Block, Meta (..), Format, MetaValue (..), Pandoc (..))
+import Text.Pandoc.Definition (Block, Format, Meta (..), MetaValue (..), Pandoc (..))
 import Text.Pandoc.Filter.Plot.Internal
   ( Configuration (..),
     FigureSpec,
@@ -175,7 +174,7 @@ plotFilter conf mfmt (Pandoc meta blocks) = do
 -- on documents without having all necessary toolkits installed. In this case, error
 -- messages are printed to stderr, and blocks are left unchanged.
 --
--- __Note that this function is DEPRECATED in favour of @plotFilter@. It will be 
+-- __Note that this function is DEPRECATED in favour of @plotFilter@. It will be
 -- removed in the next major update (v2+).__
 plotTransform ::
   -- | Configuration for default values
@@ -183,11 +182,12 @@ plotTransform ::
   -- | Input document
   Pandoc ->
   IO Pandoc
-{-# DEPRECATED plotTransform
-  [ "plotTransform has been deprecated in favour of plotFilter, which is aware of conversion format."
-  , "plotTransform will be removed in an upcoming major update."
-  ] 
-#-}
+{-# DEPRECATED
+  plotTransform
+  [ "plotTransform has been deprecated in favour of plotFilter, which is aware of conversion format.",
+    "plotTransform will be removed in an upcoming major update."
+  ]
+  #-}
 plotTransform conf = plotFilter conf Nothing
 
 -- | The version of the pandoc-plot package.
@@ -197,7 +197,7 @@ pandocPlotVersion :: Version
 pandocPlotVersion = version
 
 -- | Try to process the block with `pandoc-plot`. If a failure happens (or the block)
--- was not meant to become a figure, return the block as-is unless running in strict mode. 
+-- was not meant to become a figure, return the block as-is unless running in strict mode.
 -- In strict mode, any failure (for example, due to a missing plotting toolkit) will halt execution.
 --
 -- New in version 1.2.0: this function will detect nested code blocks, for example in @Div@ blocks.
@@ -208,7 +208,7 @@ make = walkM $ \blk -> either (onError blk) return =<< makeEither blk
     onError b e = do
       whenStrict $ throwStrictError (pack . show $ e)
       return b
-    
+
     whenStrict f = asksConfig strictMode >>= \s -> when s f
 
 -- | Try to process the block with `pandoc-plot`, documenting the error.
@@ -239,4 +239,4 @@ instance Show PandocPlotError where
   show (ScriptRuntimeError _ exitcode) = "ERROR (pandoc-plot) The script failed with exit code " <> show exitcode <> "."
   show (ScriptChecksFailedError msg) = "ERROR (pandoc-plot) A script check failed with message: " <> unpack msg <> "."
   show (ToolkitNotInstalledError tk) = "ERROR (pandoc-plot) The " <> show tk <> " toolkit is required but not installed."
-  show (IncompatibleSaveFormatError tk sv) = "ERROR (pandoc-plot) Save format " <> show sv <> " not supported by the " <> show tk <> " toolkit." 
+  show (IncompatibleSaveFormatError tk sv) = "ERROR (pandoc-plot) Save format " <> show sv <> " not supported by the " <> show tk <> " toolkit."

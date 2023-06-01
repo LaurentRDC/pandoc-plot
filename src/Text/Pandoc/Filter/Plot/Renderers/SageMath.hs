@@ -22,19 +22,19 @@ import Text.Pandoc.Filter.Plot.Renderers.Prelude
 
 sagemath :: PlotM Renderer
 sagemath = do
-      cmdargs <- asksConfig sagemathCmdArgs
-      return $
-        Renderer
-          { rendererToolkit = SageMath,
-            rendererCapture = sagemathCapture,
-            rendererCommand = sagemathCommand cmdargs,
-            rendererAvailability = CommandSuccess  $ \exe -> [st|#{pathToExe exe} -v|],
-            rendererSupportedSaveFormats = sagemathSupportedSaveFormats,
-            rendererChecks = mempty,
-            rendererLanguage = "sagemath",
-            rendererComment = mappend "# ",
-            rendererScriptExtension = ".sage"
-          }
+  cmdargs <- asksConfig sagemathCmdArgs
+  return
+    $ Renderer
+      { rendererToolkit = SageMath,
+        rendererCapture = sagemathCapture,
+        rendererCommand = sagemathCommand cmdargs,
+        rendererAvailability = CommandSuccess $ \exe -> [st|#{pathToExe exe} -v|],
+        rendererSupportedSaveFormats = sagemathSupportedSaveFormats,
+        rendererChecks = mempty,
+        rendererLanguage = "sagemath",
+        rendererComment = mappend "# ",
+        rendererScriptExtension = ".sage"
+      }
 
 -- See here:
 -- https://doc.sagemath.org/html/en/reference/plotting/sage/plot/graphics.html#sage.plot.graphics.Graphics.save
