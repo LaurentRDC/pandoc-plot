@@ -4,7 +4,7 @@ plot-configuration: tests/fixtures/.verbose-config.yml
 
 # Example Asymptote plot
 
-```asy
+```{.asy}
 
 // This example was taken from Asymptote's gallery
 import graph;

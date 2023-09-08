@@ -33,7 +33,8 @@ defaultTestConfig :: Configuration
 defaultTestConfig =
   defaultConfiguration
     { logVerbosity = Silent,
-      logSink = StdErr
+      logSink = StdErr,
+      defaultSaveFormat = PDF -- Asymptote does not support PNG
     }
 
 -------------------------------------------------------------------------------
@@ -47,6 +48,7 @@ testFileCreation tk =
 
     let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
     _ <- runPlotM Nothing defaultTestConfig $ make cb
+    created <- listDirectory tempDir
     filesCreated <- length <$> listDirectory tempDir
     assertEqual "" 2 filesCreated
 

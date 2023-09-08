@@ -306,7 +306,7 @@ instance FromJSON D2Precursor where
   parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
 
 instance FromJSON AsyPrecursor where
-  parseJSON (Object v) = AsyPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= asyExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= d2CmdArgs defaultConfiguration
+  parseJSON (Object v) = AsyPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= asyExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= asyCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Asymptote, " configuration."]
 
 toolkitAsKey :: Toolkit -> Key
