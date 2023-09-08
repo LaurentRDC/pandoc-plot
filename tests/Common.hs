@@ -128,6 +128,7 @@ testFileInclusion tk =
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
 testSaveFormat :: Toolkit -> TestTree
+testSaveFormat Asymptote = testCase "asymptote does not support format selection" $ return ()
 testSaveFormat tk =
   testCase "saves in the appropriate format" $ do
     let postfix = unpack . cls $ tk
