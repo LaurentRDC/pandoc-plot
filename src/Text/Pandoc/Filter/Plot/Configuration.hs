@@ -65,6 +65,7 @@ defaultConfiguration =
       plantumlPreamble = mempty,
       sagemathPreamble = mempty,
       d2Preamble = mempty,
+      asyPreamble = mempty,
       -- Executables
       matplotlibExe = python,
       matlabExe = "matlab",
@@ -80,6 +81,7 @@ defaultConfiguration =
       plantumlExe = "java",
       sagemathExe = "sage",
       d2Exe = "d2",
+      asyExe = "asy",
       -- Command line arguments
       matplotlibCmdArgs = mempty,
       matlabCmdArgs = mempty,
@@ -95,6 +97,7 @@ defaultConfiguration =
       plantumlCmdArgs = "-jar plantuml.jar",
       sagemathCmdArgs = mempty,
       d2CmdArgs = mempty,
+      asyCmdArgs = mempty,
       -- Extras
       matplotlibTightBBox = False,
       matplotlibTransparent = False
@@ -155,7 +158,8 @@ data ConfigPrecursor = ConfigPrecursor
     _plotsjlPrec :: !PlotsjlPrecursor,
     _plantumlPrec :: !PlantUMLPrecursor,
     _sagemathPrec :: !SageMathPrecursor,
-    _d2Prec :: !D2Precursor
+    _d2Prec :: !D2Precursor,
+    _asyPrec :: !AsyPrecursor
   }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -183,7 +187,8 @@ defaultConfigPrecursor =
       _plotsjlPrec = PlotsjlPrecursor Nothing (plotsjlExe defaultConfiguration) (plotsjlCmdArgs defaultConfiguration),
       _plantumlPrec = PlantUMLPrecursor Nothing (plantumlExe defaultConfiguration) (plantumlCmdArgs defaultConfiguration),
       _sagemathPrec = SageMathPrecursor Nothing (sagemathExe defaultConfiguration) (sagemathCmdArgs defaultConfiguration),
-      _d2Prec = D2Precursor Nothing (d2Exe defaultConfiguration) (d2CmdArgs defaultConfiguration)
+      _d2Prec = D2Precursor Nothing (d2Exe defaultConfiguration) (d2CmdArgs defaultConfiguration),
+      _asyPrec = AsyPrecursor Nothing (asyExe defaultConfiguration) (asyCmdArgs defaultConfiguration)
     }
 
 data LoggingPrecursor = LoggingPrecursor
@@ -225,6 +230,8 @@ data PlantUMLPrecursor = PlantUMLPrecursor {_plantumlPreamble :: !(Maybe FilePat
 data SageMathPrecursor = SageMathPrecursor {_sagemathPreamble :: !(Maybe FilePath), _sagemathExe :: !FilePath, _sagemathCmdArgs :: !Text}
 
 data D2Precursor = D2Precursor {_d2Preamble :: !(Maybe FilePath), _d2Exe :: !FilePath, _d2CmdArgs :: !Text}
+
+data AsyPrecursor = AsyPrecursor {_asyPreamble :: !(Maybe FilePath), _asyExe :: !FilePath, _asyCmdArgs :: !Text}
 
 instance FromJSON LoggingPrecursor where
   parseJSON (Object v) =
@@ -298,6 +305,10 @@ instance FromJSON D2Precursor where
   parseJSON (Object v) = D2Precursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= d2Exe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= d2CmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
 
+instance FromJSON AsyPrecursor where
+  parseJSON (Object v) = AsyPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= asyExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= d2CmdArgs defaultConfiguration
+  parseJSON _ = fail $ mconcat ["Could not parse ", show Asymptote, " configuration."]
+
 toolkitAsKey :: Toolkit -> Key
 toolkitAsKey = fromString . unpack . cls
 
@@ -328,6 +339,7 @@ instance FromJSON ConfigPrecursor where
     _plantumlPrec <- v .:? toolkitAsKey PlantUML .!= _plantumlPrec defaultConfigPrecursor
     _sagemathPrec <- v .:? toolkitAsKey SageMath .!= _sagemathPrec defaultConfigPrecursor
     _d2Prec <- v .:? toolkitAsKey D2 .!= _d2Prec defaultConfigPrecursor
+    _asyPrec <- v .:? toolkitAsKey Asymptote .!= _asyPrec defaultConfigPrecursor
 
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."
@@ -363,6 +375,7 @@ renderConfig ConfigPrecursor {..} = do
       plantumlExe = _plantumlExe _plantumlPrec
       sagemathExe = _sagemathExe _sagemathPrec
       d2Exe = _d2Exe _d2Prec
+      asyExe = _asyExe _asyPrec
 
       matplotlibCmdArgs = _matplotlibCmdArgs _matplotlibPrec
       matlabCmdArgs = _matlabCmdArgs _matlabPrec
@@ -378,6 +391,7 @@ renderConfig ConfigPrecursor {..} = do
       plantumlCmdArgs = _plantumlCmdArgs _plantumlPrec
       sagemathCmdArgs = _sagemathCmdArgs _sagemathPrec
       d2CmdArgs = _d2CmdArgs _d2Prec
+      asyCmdArgs = _asyCmdArgs _asyPrec
 
   matplotlibPreamble <- readPreamble (_matplotlibPreamble _matplotlibPrec)
   matlabPreamble <- readPreamble (_matlabPreamble _matlabPrec)
@@ -393,6 +407,7 @@ renderConfig ConfigPrecursor {..} = do
   plantumlPreamble <- readPreamble (_plantumlPreamble _plantumlPrec)
   sagemathPreamble <- readPreamble (_sagemathPreamble _sagemathPrec)
   d2Preamble <- readPreamble (_d2Preamble _d2Prec)
+  asyPreamble <- readPreamble (_asyPreamble _asyPrec)
 
   return Configuration {..}
   where

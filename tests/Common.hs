@@ -121,6 +121,7 @@ testFileInclusion tk =
     include PlantUML = "tests/includes/plantuml.txt"
     include SageMath = "tests/includes/sagemath.sage"
     include D2 = "tests/includes/d2-dd.d2"
+    include Asymptote = "tests/includes/asymptote.asy"
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
@@ -403,6 +404,7 @@ trivialContent Plotsjl = "using Plots; x = 1:10; y = rand(10); plot(x, y);"
 trivialContent PlantUML = "@startuml\nAlice -> Bob: test\n@enduml"
 trivialContent SageMath = "G = plot(sin, 1, 10)"
 trivialContent D2 = "x -> y -> z"
+trivialContent Asymptote = "draw((0,0)--(1,0));"
 
 addCaption :: String -> Block -> Block
 addCaption caption (CodeBlock (id', cls, attrs) script) =

@@ -62,6 +62,7 @@ data Toolkit
   | PlantUML
   | SageMath
   | D2
+  | Asymptote
   deriving (Bounded, Eq, Enum, Generic, Ord)
 
 -- | This instance should only be used to display toolkit names
@@ -80,6 +81,7 @@ instance Show Toolkit where
   show PlantUML = "PlantUML"
   show SageMath = "SageMath"
   show D2 = "D2"
+  show Asymptote = "Asymptote"
 
 -- | Class name which will trigger the filter
 cls :: Toolkit -> Text
@@ -97,6 +99,7 @@ cls Plotsjl = "plotsjl"
 cls PlantUML = "plantuml"
 cls SageMath = "sageplot"
 cls D2 = "d2"
+cls Asymptote = "asy"
 
 -- | Executable program, and sometimes the directory where it can be found.
 data Executable
