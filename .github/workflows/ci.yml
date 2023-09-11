@@ -124,6 +124,11 @@ jobs:
         choco install --yes --no-progress plantuml
         plantuml -h
 
+    - name: Install Asymptote [Mac]
+      if: runner.os == 'macOS'
+      run: |
+        sudo brew update
+        sudo brew install asymptote
     - name: Install Plots.jl toolkit [Linux]
       # Integration tests sometimes hang on MacOS and Windows
       if: matrix.os == 'ubuntu-latest'
