@@ -98,14 +98,14 @@ jobs:
       run: |
         Rscript -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
 
-    - name: Install Octave, Gnuplot, Graphviz, and PlantUML [Linux]
+    - name: Install Octave, Gnuplot, Graphviz, PlantUML, and Asymptote [Linux]
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt-get --quiet --yes install octave
         sudo apt-get --quiet --yes install gnuplot
         sudo apt-get --quiet --yes install graphviz
-        
+        sudo apt-get --quiet --yes install asymptote
         sudo apt-get --quiet --yes install plantuml
         echo $(plantuml -version)
         # The ubuntu package version is too old
@@ -120,6 +120,7 @@ jobs:
         dot -c
 
         choco install --yes --no-progress gnuplot
+        choco install --yes --no-progress asymptote
         choco install --yes --no-progress plantuml
         plantuml -h
 
@@ -193,6 +194,12 @@ jobs:
           exit 1
         fi
         pandoc-plot clean tests/issue53.md
+        
+        pandoc --filter pandoc-plot -i tests/issue55.md -t native
+        if [ $(ls "plots" | wc -l) != 2 ]; then
+          exit 1
+        fi
+        pandoc-plot clean tests/issue55.md
     
     - name: Build documentation
       run: source tools/mkmanual.sh
