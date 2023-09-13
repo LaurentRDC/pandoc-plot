@@ -51,7 +51,7 @@ toolkitSuite tk =
       testFileCreationPathWithSpaces,
       testNestedCodeBlocks,
       testFileInclusion,
-      testSaveFormat,
+      testAllSaveFormats,
       testSaveFormatIncompatibility,
       testWithSource,
       testSourceLabel,

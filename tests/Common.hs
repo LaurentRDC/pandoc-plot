@@ -3,7 +3,7 @@
 
 module Common where
 
-import Control.Monad (unless, when)
+import Control.Monad (unless, when, forM)
 import Data.List (isInfixOf, isSuffixOf, (!!))
 import Data.Monoid ((<>))
 import qualified Data.Set as S
@@ -34,7 +34,7 @@ defaultTestConfig =
   defaultConfiguration
     { logVerbosity = Silent,
       logSink = StdErr,
-      defaultSaveFormat = PDF -- Asymptote does not support PNG
+      defaultSaveFormat = PNG
     }
 
 -------------------------------------------------------------------------------
@@ -48,7 +48,6 @@ testFileCreation tk =
 
     let cb = (addDirectory tempDir $ codeBlock tk (trivialContent tk))
     _ <- runPlotM Nothing defaultTestConfig $ make cb
-    created <- listDirectory tempDir
     filesCreated <- length <$> listDirectory tempDir
     assertEqual "" 2 filesCreated
 
@@ -126,16 +125,19 @@ testFileInclusion tk =
     include Asymptote = "tests/includes/asymptote.asy"
 
 -------------------------------------------------------------------------------
+-- Tests that the files are saved in all the advertised formats
+testAllSaveFormats :: Toolkit -> TestTree
+testAllSaveFormats tk =
+   testGroup "advertised output formats" (testSaveFormat tk <$> supportedSaveFormats tk)
+-------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
-testSaveFormat :: Toolkit -> TestTree
-testSaveFormat Asymptote = testCase "asymptote does not support format selection" $ return ()
-testSaveFormat tk =
-  testCase "saves in the appropriate format" $ do
+testSaveFormat :: Toolkit -> SaveFormat -> TestTree
+testSaveFormat tk fmt =
+  testCase ("saves in the appropriate format (" <> show fmt <> ")") $ do
     let postfix = unpack . cls $ tk
     tempDir <- (</> "test-safe-format-" <> postfix) <$> getTemporaryDirectory
     ensureDirectoryExistsAndEmpty tempDir
-    let fmt = head (supportedSaveFormats tk)
-        cb =
+    let cb =
           ( addSaveFormat fmt $
               addDirectory tempDir $
                 codeBlock tk (trivialContent tk)
