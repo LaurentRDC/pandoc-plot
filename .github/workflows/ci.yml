@@ -123,6 +123,15 @@ jobs:
         choco install --yes --no-progress plantuml
         plantuml -h
 
+    - name: Install Octave, Gnuplot, Graphviz, and PlantUML [Mac]
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install octave
+        brew install gnuplot
+        brew install graphviz
+        brew install plantuml
+    
     - name: Install Plots.jl toolkit [Linux]
       # Integration tests sometimes hang on MacOS and Windows
       if: matrix.os == 'ubuntu-latest'
