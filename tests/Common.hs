@@ -132,6 +132,9 @@ testAllSaveFormats :: Toolkit -> TestTree
 testAllSaveFormats tk@Graphviz =
    testGroup "advertised save formats that work on CI"
       (testSaveFormat tk <$> (supportedSaveFormats tk \\ [WEBP]))
+testAllSaveFormats tk@Matlab =
+   testGroup "advertised save formats that work on CI"
+      (testSaveFormat tk <$> (supportedSaveFormats tk \\ [SVG]))
 testAllSaveFormats tk@GGPlot2 =
    testGroup "advertised save formats that work on CI"
       (testSaveFormat tk <$> (supportedSaveFormats tk \\ [SVG]))
