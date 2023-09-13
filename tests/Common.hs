@@ -4,7 +4,7 @@
 module Common where
 
 import Control.Monad (unless, when, forM)
-import Data.List (isInfixOf, isSuffixOf, (!!))
+import Data.List (isInfixOf, isSuffixOf, (!!), (\\))
 import Data.Monoid ((<>))
 import qualified Data.Set as S
 import Data.String (fromString)
@@ -127,8 +127,18 @@ testFileInclusion tk =
 -------------------------------------------------------------------------------
 -- Tests that the files are saved in all the advertised formats
 testAllSaveFormats :: Toolkit -> TestTree
+-- Correct formats unsupported on CI.
+-- TODO: change when CI support improves
+testAllSaveFormats tk@Graphviz =
+   testGroup "advertised save formats that work on CI"
+      (testSaveFormat tk <$> (supportedSaveFormats tk \\ [WEBP]))
+testAllSaveFormats tk@GGPlot2 =
+   testGroup "advertised save formats that work on CI"
+      (testSaveFormat tk <$> (supportedSaveFormats tk \\ [SVG]))
+-- All other formats:
 testAllSaveFormats tk =
    testGroup "advertised output formats" (testSaveFormat tk <$> supportedSaveFormats tk)
+
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
 testSaveFormat :: Toolkit -> SaveFormat -> TestTree
