@@ -38,7 +38,7 @@ ggplot2 = do
       }
 
 ggplot2SupportedSaveFormats :: [SaveFormat]
-ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
+ggplot2SupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS]
 
 ggplot2Command :: Text -> OutputSpec -> Text
 ggplot2Command cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]
