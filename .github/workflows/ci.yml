@@ -107,6 +107,8 @@ jobs:
         sudo apt-get --quiet --yes install graphviz
         sudo apt-get --quiet --yes install asymptote
         sudo apt-get --quiet --yes install plantuml
+        echo $(dot -version</dev/null)
+        echo $(asy --version)
         echo $(plantuml -version)
         # The ubuntu package version is too old
         sudo curl -L "http://sourceforge.net/projects/plantuml/files/plantuml.jar/download" -o "/usr/share/plantuml/plantuml.jar"
