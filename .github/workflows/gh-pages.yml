@@ -53,7 +53,7 @@ jobs:
       name: Cache Python build artifacts
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-${{ hashFiles('.github/workflows/requirements.txt') }}
+        key: ${{ runner.os }}-${{ hashFiles('.github/workflows/gh_pages_requirements.txt') }}
 
     - name: Install pandoc-plot and other dependencies
       run: |
@@ -63,7 +63,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r .github/workflows/requirements.txt
+        pip install -r .github/workflows/gh_pages_requirements.txt
     
     - name: Build documentation
       run: source tools/mkmanual.sh
