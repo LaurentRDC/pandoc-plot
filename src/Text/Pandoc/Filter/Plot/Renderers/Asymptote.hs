@@ -19,6 +19,7 @@ module Text.Pandoc.Filter.Plot.Renderers.Asymptote
 where
 
 import Text.Pandoc.Filter.Plot.Renderers.Prelude
+import Data.Char(toLower)
 
 asymptote :: PlotM Renderer
 asymptote = do
@@ -37,11 +38,11 @@ asymptote = do
       }
 
 asymptoteSupportedSaveFormats :: [SaveFormat]
-asymptoteSupportedSaveFormats = [PDF]
+asymptoteSupportedSaveFormats = [PDF, EPS, PNG]
 
 asymptoteCommand :: Text -> OutputSpec -> Text
 asymptoteCommand cmdArgs OutputSpec {..} =
-  [st|#{pathToExe oExecutable} #{cmdArgs} -o "#{oFigurePath}" "#{oScriptPath}"|]
+  [st|#{pathToExe oExecutable} #{cmdArgs} -f #{toLower <$> show (saveFormat oFigureSpec)} -o "#{oFigurePath}" "#{oScriptPath}"|]
 
 -- Asymptote export is entirely based on command-line arguments
 -- so there is no need to modify the script itself.
