@@ -123,7 +123,13 @@ jobs:
         dot -c
 
         choco install --yes --no-progress gnuplot
+        gnuplot --version
+
         choco install --yes --no-progress asymptote
+        refreshenv
+        asy -version
+        asy -environment
+
         choco install --yes --no-progress plantuml
         plantuml -h
 
