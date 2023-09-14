@@ -1,4 +1,4 @@
-packages: pandoc-plot.cabal ../pandoc-theorem/pandoc-theorem.cabal
+packages: pandoc-plot.cabal
 
 test-show-details: streaming
 
