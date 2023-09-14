@@ -114,6 +114,7 @@ jobs:
         # The ubuntu package version is too old
         sudo curl -L "http://sourceforge.net/projects/plantuml/files/plantuml.jar/download" -o "/usr/share/plantuml/plantuml.jar"
         echo $(plantuml -version)
+        echo $PATH
 
     - name: Install Graphviz, GNUplot, and PlantUML [Windows]
       if: runner.os == 'Windows'
