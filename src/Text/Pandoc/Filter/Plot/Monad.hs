@@ -283,6 +283,7 @@ executable tk = exeSelector tk <&> exeFromPath
     exeSelector PlantUML = asksConfig plantumlExe
     exeSelector SageMath = asksConfig sagemathExe
     exeSelector D2 = asksConfig d2Exe
+    exeSelector Asymptote = asksConfig asyExe
 
 -- | The @Configuration@ type holds the default values to use
 -- when running pandoc-plot. These values can be overridden in code blocks.
@@ -353,6 +354,8 @@ data Configuration = Configuration
     sagemathPreamble :: !Script,
     -- | The default preamble script for the d2 toolkit.
     d2Preamble :: !Script,
+    -- | The default preamble script for the Asymptote toolkit.
+    asyPreamble :: !Script,
     -- | The executable to use to generate figures using the matplotlib toolkit.
     matplotlibExe :: !FilePath,
     -- | The executable to use to generate figures using the MATLAB toolkit.
@@ -381,6 +384,8 @@ data Configuration = Configuration
     sagemathExe :: !FilePath,
     -- | The executable to use to generate figures using d2.
     d2Exe :: !FilePath,
+    -- | The executable to use to generate figures using Asymptote
+    asyExe :: !FilePath,
     -- | Command-line arguments to pass to the Python interpreter for the Matplotlib toolkit
     matplotlibCmdArgs :: !Text,
     -- | Command-line arguments to pass to the interpreter for the MATLAB toolkit.
@@ -409,6 +414,8 @@ data Configuration = Configuration
     sagemathCmdArgs :: !Text,
     -- | Command-line arguments to pass to the interpreter for the d2 toolkit.
     d2CmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Asymptote toolkit.
+    asyCmdArgs :: !Text,
     -- | Whether or not to make Matplotlib figures tight by default.
     matplotlibTightBBox :: !Bool,
     -- | Whether or not to make Matplotlib figures transparent by default.

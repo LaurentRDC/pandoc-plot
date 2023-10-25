@@ -44,7 +44,7 @@ matplotlib = do
       }
 
 matplotlibSupportedSaveFormats :: [SaveFormat]
-matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, GIF, TIF]
+matplotlibSupportedSaveFormats = [PNG, PDF, SVG, JPG, EPS, TIF]
 
 matplotlibCommand :: Text -> OutputSpec -> Text
 matplotlibCommand cmdargs OutputSpec {..} = [st|#{pathToExe oExecutable} #{cmdargs} "#{oScriptPath}"|]

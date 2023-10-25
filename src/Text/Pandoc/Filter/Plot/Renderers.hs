@@ -95,7 +95,10 @@ import Text.Pandoc.Filter.Plot.Renderers.SageMath
   ( sagemath,
     sagemathSupportedSaveFormats,
   )
-
+import Text.Pandoc.Filter.Plot.Renderers.Asymptote
+  ( asymptote,
+    asymptoteSupportedSaveFormats,
+  )
 -- | Get the renderer associated with a toolkit.
 -- If the renderer has not been used before,
 -- initialize it and store where it is. It will be re-used.
@@ -114,6 +117,7 @@ renderer Plotsjl = plotsjl
 renderer PlantUML = plantuml
 renderer SageMath = sagemath
 renderer D2 = d2
+renderer Asymptote = asymptote
 
 -- | Save formats supported by this renderer.
 supportedSaveFormats :: Toolkit -> [SaveFormat]
@@ -131,6 +135,7 @@ supportedSaveFormats Plotsjl = plotsjlSupportedSaveFormats
 supportedSaveFormats PlantUML = plantumlSupportedSaveFormats
 supportedSaveFormats SageMath = sagemathSupportedSaveFormats
 supportedSaveFormats D2 = d2SupportedSaveFormats
+supportedSaveFormats Asymptote = asymptoteSupportedSaveFormats
 
 -- | The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
@@ -148,6 +153,7 @@ preambleSelector Plotsjl = plotsjlPreamble
 preambleSelector PlantUML = plantumlPreamble
 preambleSelector SageMath = sagemathPreamble
 preambleSelector D2 = d2Preamble
+preambleSelector Asymptote = asyPreamble
 
 -- | Parse code block headers for extra attributes that are specific
 -- to this renderer. By default, no extra attributes are parsed.

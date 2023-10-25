@@ -3,8 +3,8 @@
 
 module Common where
 
-import Control.Monad (unless, when)
-import Data.List (isInfixOf, isSuffixOf, (!!))
+import Control.Monad (unless, when, forM)
+import Data.List (isInfixOf, isSuffixOf, (!!), (\\))
 import Data.Monoid ((<>))
 import qualified Data.Set as S
 import Data.String (fromString)
@@ -33,7 +33,8 @@ defaultTestConfig :: Configuration
 defaultTestConfig =
   defaultConfiguration
     { logVerbosity = Silent,
-      logSink = StdErr
+      logSink = StdErr,
+      defaultSaveFormat = PNG
     }
 
 -------------------------------------------------------------------------------
@@ -121,17 +122,35 @@ testFileInclusion tk =
     include PlantUML = "tests/includes/plantuml.txt"
     include SageMath = "tests/includes/sagemath.sage"
     include D2 = "tests/includes/d2-dd.d2"
+    include Asymptote = "tests/includes/asymptote.asy"
+
+-------------------------------------------------------------------------------
+-- Tests that the files are saved in all the advertised formats
+testAllSaveFormats :: Toolkit -> TestTree
+-- Correct formats unsupported on CI.
+-- TODO: change when CI support improves
+testAllSaveFormats tk@Graphviz =
+   testGroup "advertised save formats that work on CI"
+      (testSaveFormat tk <$> (supportedSaveFormats tk \\ [WEBP]))
+testAllSaveFormats tk@Matlab =
+   testGroup "advertised save formats that work on CI"
+      (testSaveFormat tk <$> (supportedSaveFormats tk \\ [SVG]))
+testAllSaveFormats tk@GGPlot2 =
+   testGroup "advertised save formats that work on CI"
+      (testSaveFormat tk <$> (supportedSaveFormats tk \\ [SVG]))
+-- All other formats:
+testAllSaveFormats tk =
+   testGroup "advertised output formats" (testSaveFormat tk <$> supportedSaveFormats tk)
 
 -------------------------------------------------------------------------------
 -- Test that the files are saved in the appropriate format
-testSaveFormat :: Toolkit -> TestTree
-testSaveFormat tk =
-  testCase "saves in the appropriate format" $ do
+testSaveFormat :: Toolkit -> SaveFormat -> TestTree
+testSaveFormat tk fmt =
+  testCase ("saves in the appropriate format (" <> show fmt <> ")") $ do
     let postfix = unpack . cls $ tk
     tempDir <- (</> "test-safe-format-" <> postfix) <$> getTemporaryDirectory
     ensureDirectoryExistsAndEmpty tempDir
-    let fmt = head (supportedSaveFormats tk)
-        cb =
+    let cb =
           ( addSaveFormat fmt $
               addDirectory tempDir $
                 codeBlock tk (trivialContent tk)
@@ -403,6 +422,7 @@ trivialContent Plotsjl = "using Plots; x = 1:10; y = rand(10); plot(x, y);"
 trivialContent PlantUML = "@startuml\nAlice -> Bob: test\n@enduml"
 trivialContent SageMath = "G = plot(sin, 1, 10)"
 trivialContent D2 = "x -> y -> z"
+trivialContent Asymptote = "draw((0,0)--(1,0));"
 
 addCaption :: String -> Block -> Block
 addCaption caption (CodeBlock (id', cls, attrs) script) =
