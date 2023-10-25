@@ -34,7 +34,9 @@ plot-configuration: plot-config.yml
   - `graphviz`: graphs using [Graphviz](http://graphviz.org/);
   - `bokeh`: plots using the [Bokeh](https://bokeh.org/) visualization library;
   - `plotsjl`: plots using the [Julia `Plots.jl`](http://docs.juliaplots.org/latest/) package;
-  - `plantuml`: diagrams using [PlantUML](https://plantuml.com).
+  - `plantuml`: diagrams using [PlantUML](https://plantuml.com);
+  - `d2`: plots using [D2](https://d2lang.com/);
+  - `asymptote`: plots using [Asymptote](https://asymptote.sourceforge.io/).
 
 ## Simple examples
 

@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.8.0
+
+* Added support for [Asymptote](https://asymptote.sourceforge.io/), thanks to a contribution by Michał J. Gajda (#61).
+
 ## Release 1.7.0
 
 * Added support for the declarative diagram language [D2](https://d2lang.com/), thanks to a contribution by Sanchayan Maity (#60).
