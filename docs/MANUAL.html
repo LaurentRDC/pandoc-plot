@@ -4,87 +4,182 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>pandoc-plot 1.3.0 manual</title>
+  <title>pandoc-plot 1.8.0 manual</title>
   <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    .sourceCode { overflow: visible; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {   }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #7d9029; } /* Attribute */
-    code span.bn { color: #40a070; } /* BaseN */
-    code span.bu { } /* BuiltIn */
-    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4070a0; } /* Char */
-    code span.cn { color: #880000; } /* Constant */
-    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-    code span.dt { color: #902000; } /* DataType */
-    code span.dv { color: #40a070; } /* DecVal */
-    code span.er { color: #ff0000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #40a070; } /* Float */
-    code span.fu { color: #06287e; } /* Function */
-    code span.im { } /* Import */
-    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-    code span.op { color: #666666; } /* Operator */
-    code span.ot { color: #007020; } /* Other */
-    code span.pp { color: #bc7a00; } /* Preprocessor */
-    code span.sc { color: #4070a0; } /* SpecialChar */
-    code span.ss { color: #bb6688; } /* SpecialString */
-    code span.st { color: #4070a0; } /* String */
-    code span.va { color: #19177c; } /* Variable */
-    code span.vs { color: #4070a0; } /* VerbatimString */
-    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-  </style>
-  <link rel="stylesheet" href="data:text/css,html%20%7B%20font%2Dsize%3A%20100%25%3B%20overflow%2Dy%3A%20scroll%3B%20%2Dwebkit%2Dtext%2Dsize%2Dadjust%3A%20100%25%3B%20%2Dms%2Dtext%2Dsize%2Dadjust%3A%20100%25%3B%20%7Dbody%7Bcolor%3A%23444%3Bfont%2Dfamily%3AGeorgia%2C%20Palatino%2C%20%27Palatino%20Linotype%27%2C%20Times%2C%20%27Times%20New%20Roman%27%2C%20serif%3Bfont%2Dsize%3A12px%3Bline%2Dheight%3A1%2E5em%3Bpadding%3A1em%3Bmargin%3Aauto%3Bmax%2Dwidth%3A42em%3Bbackground%3A%23fefefe%3B%7Da%7B%20color%3A%20%230645ad%3B%20text%2Ddecoration%3Anone%3B%7Da%3Avisited%7B%20color%3A%20%230b0080%3B%20%7Da%3Ahover%7B%20color%3A%20%2306e%3B%20%7Da%3Aactive%7B%20color%3A%23faa700%3B%20%7Da%3Afocus%7B%20outline%3A%20thin%20dotted%3B%20%7Da%3Ahover%2C%20a%3Aactive%7B%20outline%3A%200%3B%20%7D%3A%3A%2Dmoz%2Dselection%7Bbackground%3Argba%28255%2C255%2C0%2C0%2E3%29%3Bcolor%3A%23000%7D%3A%3Aselection%7Bbackground%3Argba%28255%2C255%2C0%2C0%2E3%29%3Bcolor%3A%23000%7Da%3A%3A%2Dmoz%2Dselection%7Bbackground%3Argba%28255%2C255%2C0%2C0%2E3%29%3Bcolor%3A%230645ad%7Da%3A%3Aselection%7Bbackground%3Argba%28255%2C255%2C0%2C0%2E3%29%3Bcolor%3A%230645ad%7Dp%7Bmargin%3A1em%200%3B%7Dimg%7Bmax%2Dwidth%3A100%25%3B%7Dh1%2Ch2%2Ch3%2Ch4%2Ch5%2Ch6%7Bfont%2Dweight%3Anormal%3Bcolor%3A%23111%3Bline%2Dheight%3A1em%3B%7Dh4%2Ch5%2Ch6%7B%20font%2Dweight%3A%20bold%3B%20%7Dh1%7B%20font%2Dsize%3A2%2E5em%3B%20%7Dh2%7B%20font%2Dsize%3A2em%3B%20%7Dh3%7B%20font%2Dsize%3A1%2E5em%3B%20%7Dh4%7B%20font%2Dsize%3A1%2E2em%3B%20%7Dh5%7B%20font%2Dsize%3A1em%3B%20%7Dh6%7B%20font%2Dsize%3A0%2E9em%3B%20%7Dblockquote%7Bcolor%3A%23666666%3Bmargin%3A0%3Bpadding%2Dleft%3A%203em%3Bborder%2Dleft%3A%200%2E5em%20%23EEE%20solid%3B%7Dhr%20%7B%20display%3A%20block%3B%20height%3A%202px%3B%20border%3A%200%3B%20border%2Dtop%3A%201px%20solid%20%23aaa%3Bborder%2Dbottom%3A%201px%20solid%20%23eee%3B%20margin%3A%201em%200%3B%20padding%3A%200%3B%20%7Dpre%2C%20code%2C%20kbd%2C%20samp%20%7B%20color%3A%20%23000%3B%20font%2Dfamily%3A%20monospace%2C%20monospace%3B%20%5Ffont%2Dfamily%3A%20%27courier%20new%27%2C%20monospace%3B%20font%2Dsize%3A%200%2E98em%3B%20%7Dpre%20%7B%20white%2Dspace%3A%20pre%3B%20white%2Dspace%3A%20pre%2Dwrap%3B%20word%2Dwrap%3A%20break%2Dword%3B%20%7Db%2C%20strong%20%7B%20font%2Dweight%3A%20bold%3B%20%7Ddfn%20%7B%20font%2Dstyle%3A%20italic%3B%20%7Dins%20%7B%20background%3A%20%23ff9%3B%20color%3A%20%23000%3B%20text%2Ddecoration%3A%20none%3B%20%7Dmark%20%7B%20background%3A%20%23ff0%3B%20color%3A%20%23000%3B%20font%2Dstyle%3A%20italic%3B%20font%2Dweight%3A%20bold%3B%20%7Dsub%2C%20sup%20%7B%20font%2Dsize%3A%2075%25%3B%20line%2Dheight%3A%200%3B%20position%3A%20relative%3B%20vertical%2Dalign%3A%20baseline%3B%20%7Dsup%20%7B%20top%3A%20%2D0%2E5em%3B%20%7Dsub%20%7B%20bottom%3A%20%2D0%2E25em%3B%20%7Dul%2C%20ol%20%7B%20margin%3A%201em%200%3B%20padding%3A%200%200%200%202em%3B%20%7Dli%20p%3Alast%2Dchild%20%7B%20margin%3A0%20%7Ddd%20%7B%20margin%3A%200%200%200%202em%3B%20%7Dimg%20%7B%20border%3A%200%3B%20%2Dms%2Dinterpolation%2Dmode%3A%20bicubic%3B%20vertical%2Dalign%3A%20middle%3B%20%7Dtable%20%7Bborder%2Dcollapse%3A%20collapse%3Bborder%2Dspacing%3A%200%3Bwidth%3A%20100%25%3B%7Dth%20%7B%20border%2Dbottom%3A%201px%20solid%20black%3B%20%7Dtd%20%7B%20vertical%2Dalign%3A%20top%3B%20%7D%40media%20only%20screen%20and%20%28min%2Dwidth%3A%20480px%29%20%7Bbody%7Bfont%2Dsize%3A14px%3B%7D%7D%40media%20only%20screen%20and%20%28min%2Dwidth%3A%20768px%29%20%7Bbody%7Bfont%2Dsize%3A16px%3B%7D%7D%40media%20print%20%7B%2A%20%7B%20background%3A%20transparent%20%21important%3B%20color%3A%20black%20%21important%3B%20filter%3Anone%20%21important%3B%20%2Dms%2Dfilter%3A%20none%20%21important%3B%20%7Dbody%7Bfont%2Dsize%3A12pt%3B%20max%2Dwidth%3A100%25%3B%7Da%2C%20a%3Avisited%20%7B%20text%2Ddecoration%3A%20underline%3B%20%7Dhr%20%7B%20height%3A%201px%3B%20border%3A0%3B%20border%2Dbottom%3A1px%20solid%20black%3B%20%7Da%5Bhref%5D%3Aafter%20%7B%20content%3A%20%22%20%28%22%20attr%28href%29%20%22%29%22%3B%20%7Dabbr%5Btitle%5D%3Aafter%20%7B%20content%3A%20%22%20%28%22%20attr%28title%29%20%22%29%22%3B%20%7D%2Eir%20a%3Aafter%2C%20a%5Bhref%5E%3D%22javascript%3A%22%5D%3Aafter%2C%20a%5Bhref%5E%3D%22%23%22%5D%3Aafter%20%7B%20content%3A%20%22%22%3B%20%7Dpre%2C%20blockquote%20%7B%20border%3A%201px%20solid%20%23999%3B%20padding%2Dright%3A%201em%3B%20page%2Dbreak%2Dinside%3A%20avoid%3B%20%7Dtr%2C%20img%20%7B%20page%2Dbreak%2Dinside%3A%20avoid%3B%20%7Dimg%20%7B%20max%2Dwidth%3A%20100%25%20%21important%3B%20%7D%40page%20%3Aleft%20%7B%20margin%3A%2015mm%2020mm%2015mm%2010mm%3B%20%7D%40page%20%3Aright%20%7B%20margin%3A%2015mm%2010mm%2015mm%2020mm%3B%20%7Dp%2C%20h2%2C%20h3%20%7B%20orphans%3A%203%3B%20widows%3A%203%3B%20%7Dh2%2C%20h3%20%7B%20page%2Dbreak%2Dafter%3A%20avoid%3B%20%7D%7D" />
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+body{
+color:#444;
+font-family:Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
+font-size:12px;
+line-height:1.5em;
+padding:1em;
+margin:auto;
+max-width:42em;
+background:#fefefe;
+}
+a{ color: #0645ad; text-decoration:none;}
+a:visited{ color: #0b0080; }
+a:hover{ color: #06e; }
+a:active{ color:#faa700; }
+a:focus{ outline: thin dotted; }
+a:hover, a:active{ outline: 0; }
+::-moz-selection{background:rgba(255,255,0,0.3);color:#000}
+::selection{background:rgba(255,255,0,0.3);color:#000}
+a::-moz-selection{background:rgba(255,255,0,0.3);color:#0645ad}
+a::selection{background:rgba(255,255,0,0.3);color:#0645ad}
+p{
+margin:1em 0;
+}
+img{
+max-width:100%;
+}
+h1,h2,h3,h4,h5,h6{
+font-weight:normal;
+color:#111;
+line-height:1em;
+}
+h4,h5,h6{ font-weight: bold; }
+h1{ font-size:2.5em; }
+h2{ font-size:2em; }
+h3{ font-size:1.5em; }
+h4{ font-size:1.2em; }
+h5{ font-size:1em; }
+h6{ font-size:0.9em; }
+blockquote{
+color:#666666;
+margin:0;
+padding-left: 3em;
+border-left: 0.5em #EEE solid;
+}
+hr { display: block; height: 2px; border: 0; border-top: 1px solid #aaa;border-bottom: 1px solid #eee; margin: 1em 0; padding: 0; }
+pre, code, kbd, samp { color: #000; font-family: monospace, monospace; _font-family: 'courier new', monospace; font-size: 0.98em; }
+pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
+b, strong { font-weight: bold; }
+dfn { font-style: italic; }
+ins { background: #ff9; color: #000; text-decoration: none; }
+mark { background: #ff0; color: #000; font-style: italic; font-weight: bold; }
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+ul, ol { margin: 1em 0; padding: 0 0 0 2em; }
+li p:last-child { margin:0 }
+dd { margin: 0 0 0 2em; }
+img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
+table {
+border-collapse: collapse;
+border-spacing: 0;
+width: 100%;
+}
+th { border-bottom: 1px solid black; }
+td { vertical-align: top; }
+@media only screen and (min-width: 480px) {
+body{font-size:14px;}
+}
+@media only screen and (min-width: 768px) {
+body{font-size:16px;}
+}
+@media print {
+* { background: transparent !important; color: black !important; filter:none !important; -ms-filter: none !important; }
+body{font-size:12pt; max-width:100%;}
+a, a:visited { text-decoration: underline; }
+hr { height: 1px; border:0; border-bottom:1px solid black; }
+a[href]:after { content: " (" attr(href) ")"; }
+abbr[title]:after { content: " (" attr(title) ")"; }
+.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+pre, blockquote { border: 1px solid #999; padding-right: 1em; page-break-inside: avoid; }
+tr, img { page-break-inside: avoid; }
+img { max-width: 100% !important; }
+@page :left { margin: 15mm 20mm 15mm 10mm; }
+@page :right { margin: 15mm 10mm 15mm 20mm; }
+p, h2, h3 { orphans: 3; widows: 3; }
+h2, h3 { page-break-after: avoid; }
+}</style>
   <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">pandoc-plot 1.3.0 manual</h1>
+<h1 class="title">pandoc-plot 1.8.0 manual</h1>
 </header>
 <!--
 The file MANUAL.md is automatically generated by the tools/mkmanual.ps1 script. Do not edit manually.
@@ -214,7 +309,7 @@ The file MANUAL.md is automatically generated by the tools/mkmanual.ps1 script. 
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc-plot</span> 1.3.0 <span class="at">-</span> generate figures directly in documents</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Usage:</span> pandoc-plot.EXE [<span class="er">(</span><span class="ex">-v</span><span class="kw">|</span><span class="ex">--version</span><span class="kw">)</span> <span class="kw">|</span> <span class="ex">--full-version</span> <span class="kw">|</span> <span class="kw">(</span><span class="ex">-m</span><span class="kw">|</span><span class="ex">--manual</span><span class="kw">)</span><span class="ex">]</span> </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                       <span class="ex">[COMMAND]</span> [AST]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                       <span class="ex">[COMMAND]</span> <span class="pp">[</span><span class="ss">AST</span><span class="pp">]</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="ex">This</span> pandoc filter generates plots from code blocks using a multitude of</span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">possible</span> renderers. This allows to keep documentation and figures in perfect</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">synchronicity.</span></span>
