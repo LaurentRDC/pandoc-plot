@@ -220,6 +220,8 @@ data FigureMode
   FloatingFigure
   | -- | Wrap figure in text
   WrappedFigure
+  | -- | Single-column figure for multi-column mode
+  ColumnFigure
   | -- | Inline image, no float, no caption
   Inline
   deriving (Eq, Ord, Show, Enum, Bounded, Generic)
@@ -228,6 +230,7 @@ instance IsString FigureMode where
   fromString (fmap toLower -> s)
     | s `elem` ["float",  "floating", "figure", "fig"           ] = FloatingFigure
     | s `elem` ["wrap",   "wrapped",  "wrapfig", "wrappedfigure"] = WrappedFigure
+    | s `elem` ["col",    "column",   "halfwidth"               ] = ColumnFigure 
     | s `elem` ["inline", "nofigure"                            ] = Inline
     | otherwise =
         errorWithoutStackTrace $
