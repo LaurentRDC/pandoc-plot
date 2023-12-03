@@ -218,6 +218,11 @@ All following parameters are optional, with their default values controlled by t
 * `file` is a path to a file from which to read the figure content. If this parameter is used, the content of the code block is ignored. By using this parameter, you can use all the standard tooling of your plotting toolkit of choice, which is especially useful for complex figures.
 * `executable` is a path to the executable to use (e.g. `C:\\python3.exe`) or the name of the executable (e.g. `python3`).
 * `caption_format` is the text format of the caption. Possible values are exactly the same as `pandoc`'s format specification, usually `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with raw LaTeX would be parsed correctly provided that `caption_format=markdown+raw_tex`. See Pandoc's guide on [Specifying formats](https://pandoc.org/MANUAL.html#specifying-formats).
+* `mode` tells how to wrap a figure:
+    - `mode="floating"` is default mode: floating figure with a caption (all modes)
+    - `mode="column"`  creates minipage environment with a width of a single line, for narrow figures in multi-column mode (LaTeX only)
+    - `mode="inline"`  strips the figure and caption to make the figure inline (all modes)
+    - `mode="wrapped"` uses wrapfig environment to wrap text around figure (LaTeX only)
 
 
 #### Code highlighting
