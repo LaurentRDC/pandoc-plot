@@ -1,5 +1,7 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ViewPatterns      #-}
+{-# LANGUAGE InstanceSigs #-}
 
 -- |
 -- Module      : $header$
@@ -20,6 +22,7 @@ module Text.Pandoc.Filter.Plot.Monad.Types
     FigureSpec (..),
     OutputSpec (..),
     SaveFormat (..),
+    FigureMode (..),
     cls,
     extension,
     toolkits,
@@ -152,6 +155,7 @@ data InclusionKey
   | FileK
   | MatplotlibTightBBoxK
   | MatplotlibTransparentK
+  | ModeK
   deriving (Bounded, Eq, Enum)
 
 -- | Keys that pandoc-plot will look for in code blocks.
@@ -172,6 +176,7 @@ instance Show InclusionKey where
   show FileK = "file"
   show MatplotlibTightBBoxK = "tight_bbox"
   show MatplotlibTransparentK = "transparent"
+  show ModeK = "mode"
 
 -- | List of all keys related to pandoc-plot that
 -- can be specified in source material.
@@ -204,8 +209,46 @@ data FigureSpec = FigureSpec
     -- | Renderer-specific extra attributes.
     extraAttrs :: ![(Text, Text)],
     -- | Attributes not related to @pandoc-plot@ will be propagated.
-    blockAttrs :: !Attr
+    blockAttrs :: !Attr,
+    -- | Should we use figure, wrapped figure (latex only), or inline image.
+    figureMode :: FigureMode
   }
+
+-- | Should we use figure, wrapped figure (latex only), or inline image.
+data FigureMode
+  = -- | Default: figure as a separate float
+  FloatingFigure
+  | -- | Wrap figure in text
+  WrappedFigure
+  | -- | Inline image, no float, no caption
+  Inline
+  deriving (Eq, Ord, Show, Enum, Bounded, Generic)
+
+instance IsString FigureMode where
+  fromString (fmap toLower -> s)
+    | s `elem` ["float",  "floating", "figure", "fig"           ] = FloatingFigure
+    | s `elem` ["wrap",   "wrapped",  "wrapfig", "wrappedfigure"] = WrappedFigure
+    | s `elem` ["inline", "nofigure"                            ] = Inline
+    | otherwise =
+        errorWithoutStackTrace $
+          mconcat
+            [ s,
+              " is not one of the valid figure modes : ",
+              mconcat $ intersperse ", " $ show <$> figureModes,
+              " (and lowercase variations). "
+            ]
+    where
+      -- | All available figure modes
+      figureModes :: [FigureMode]
+      figureModes  = [minBound, maxBound]
+
+-- | Use the IsString instance to parse JSON so that the parsing is flexible
+-- with respect to uppercase/lowercase (#42)
+instance FromJSON FigureMode where
+  parseJSON = withText "FigureMode" (pure . fromString . unpack)
+
+instance ToJSON FigureMode where
+  toJSON = toJSON . show
 
 -- | Generated figure file format supported by pandoc-plot.
 -- Note that not all formats are supported by all toolkits.

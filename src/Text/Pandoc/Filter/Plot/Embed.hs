@@ -60,27 +60,33 @@ toFigure ::
   FigureSpec ->
   PlotM Block
 toFigure fmt spec = do
-  target <- figurePath spec
-  scp <- pack <$> sourceCodePath spec
-  sourceLabel <- asksConfig sourceCodeLabel -- Allow the possibility for non-english labels
-  let srcLink = link scp mempty (str sourceLabel)
-      attrs' = blockAttrs spec
-      captionText = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
-      captionLinks = mconcat [" (", srcLink, ")"]
-      caption' = if withSource spec then captionText <> captionLinks else captionText
-  builder attrs' target caption'
+    target <- figurePath spec
+    scp <- pack <$> sourceCodePath spec
+    sourceLabel <- asksConfig sourceCodeLabel -- Allow the possibility for non-english labels
+    let srcLink = link scp mempty (str sourceLabel)
+        attrs' = blockAttrs spec
+        figMode = figureMode spec
+        captionText = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
+        captionLinks = mconcat [" (", srcLink, ")"]
+        caption' = if withSource spec then captionText <> captionLinks else captionText
+    builder figMode attrs' target caption'
   where
     builder = case saveFormat spec of
-      HTML -> interactiveBlock
+      HTML  -> interactiveBlock
       LaTeX -> latexInput
-      _ -> figure
+      _     -> figure           
 
 figure ::
+  FigureMode ->
   Attr ->
   FilePath ->
   Inlines ->
   PlotM Block
-figure as fp caption' =
+figure Inline as fp caption' =
+  return . head . toList $
+    plain $
+      imageWith mempty (pack fp) mempty caption'
+figure fm as fp caption' =
   return . head . toList $
     -- We want the attributes both on the Figure element and the contained Image element
     -- so that pandoc-plot plays nice with pandoc-crossref and other filters
@@ -110,38 +116,62 @@ figure as fp caption' =
 -- </figure>
 --     |]
 
-latexInput :: Attr -> FilePath -> Inlines -> PlotM Block
-latexInput _ fp caption' = do
+-- | Normalize path to include within document.
+normalizePath :: FilePath -> FilePath
+normalizePath = map f
+  where
+    f '\\' = '/'
+    f x = x
+
+-- | LaTeX source for embedding of the figure.
+latexInput :: FigureMode -> Attr -> FilePath -> Inlines -> PlotM Block
+latexInput Inline _ fp caption' = do
+  return $
+    RawBlock
+      "latex"
+      [st|
+        \centering
+        \input{#{pack $ normalizePath $ fp}}
+        |]
+latexInput fm _ fp caption' = do
   renderedCaption' <- writeLatex caption'
   let renderedCaption =
         if renderedCaption' /= ""
           then [st|\caption{#{renderedCaption'}}|]
           else ""
+      figEnv = case fm of
+                 FloatingFigure -> "figure" :: Text
+                 WrappedFigure  -> "wrapfig"
+                 s              -> error $ "Impossible: " <> show s <> " in figure section"
   return $
     RawBlock
       "latex"
       [st|
-    \begin{figure}
+    \begin{#{figEnv}}
         \centering
         \input{#{pack $ normalizePath $ fp}}
         #{renderedCaption}
-    \end{figure}
+    \end{#{figEnv}}
         |]
-  where
-    normalizePath = map f
-      where
-        f '\\' = '/'
-        f x = x
 
 interactiveBlock ::
-  Attr ->
-  FilePath ->
-  Inlines ->
+  FigureMode ->
+  Attr       ->
+  FilePath   ->
+  Inlines    ->
   PlotM Block
-interactiveBlock _ fp caption' = do
+interactiveBlock Inline _ fp caption' = do
+  htmlpage <- liftIO $ T.readFile fp
+  return $
+    RawBlock
+      "html5"
+      (extractPlot htmlpage)
+interactiveBlock fm _ fp caption' = do
   -- TODO: should we instead include the scripts in the "include-after"
   --       template variable?
   --       See https://github.com/jgm/pandoc/issues/6582
+  -- TODO: wrap HTML figures with <img src="..." align="left"> without <div/>
+  --       https://www.uvm.edu/~bnelson/computer/html/wrappingtextaroundimages.html
   htmlpage <- liftIO $ T.readFile fp
   renderedCaption <- writeHtml caption'
   return $

@@ -116,6 +116,7 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
               dpi = maybe defDPI (read . unpack) (Map.lookup (tshow DpiK) attrs')
               extraAttrs = Map.toList extraAttrs'
               blockAttrs = (id', filter (/= cls toolkit) classes, filteredAttrs)
+              figureMode = maybe FloatingFigure (fromString . unpack) $ Map.lookup (tshow ModeK) attrs'
 
           let blockDependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
               dependencies = defaultDependencies conf <> blockDependencies
