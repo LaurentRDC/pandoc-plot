@@ -87,6 +87,7 @@ module Text.Pandoc.Filter.Plot
     unavailableToolkits,
     toolkits,
     supportedSaveFormats,
+    availableBlockKeys,
 
     -- * Version information
     pandocPlotVersion,
@@ -135,7 +136,11 @@ import Text.Pandoc.Filter.Plot.Internal
     toolkits,
     unavailableToolkits,
   )
+import Text.Pandoc.Filter.Plot.Monad.Types(inclusionKeys)
 import Text.Pandoc.Walk (walkM)
+
+availableBlockKeys :: [String]
+availableBlockKeys  = show <$> inclusionKeys
 
 -- | Walk over an entire Pandoc document, transforming appropriate code blocks
 -- into figures. This function will operate on blocks in parallel if possible.

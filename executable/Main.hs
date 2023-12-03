@@ -51,6 +51,7 @@ import Text.Pandoc.Definition (pandocTypesVersion)
 import Text.Pandoc.Filter.Plot
   ( Configuration (..),
     availableToolkits,
+    availableBlockKeys,
     configuration,
     defaultConfiguration,
     pandocPlotVersion,
@@ -81,6 +82,7 @@ data Command
   = Clean (Maybe FilePath) FilePath
   | WriteConfig FilePath
   | Toolkits (Maybe FilePath)
+  | BlockKeys
 
 data Flag
   = Version
@@ -127,9 +129,10 @@ main = do
     go (Just Version) _ _ = putStrLn (V.showVersion pandocPlotVersion)
     go (Just FullVersion) _ _ = showFullVersion
     go (Just Manual) _ _ = showManPage
-    go _ (Just (Toolkits mfp)) _ = showAvailableToolkits mfp
-    go _ (Just (Clean mfp fp)) _ = clean mfp fp
-    go _ (Just (WriteConfig fp)) _ = writeFile fp $(embedExampleConfig)
+    go _ (Just (Toolkits    mfp   )) _ = showAvailableToolkits mfp
+    go _ (Just (Clean       mfp fp)) _ = clean mfp fp
+    go _ (Just (WriteConfig     fp)) _ = writeFile fp $(embedExampleConfig)
+    go _ (Just  BlockKeys          ) _ = showAvailableBlockKeys
     go Nothing Nothing _ = toJSONFilterWithConfig
 
 flagParser :: Parser (Maybe Flag)
@@ -191,12 +194,17 @@ commandParser =
           command
             "write-example-config"
             ( info (writeConfigP <**> helper) (progDesc "Write example configuration to a file and exit.")
+            ),
+          command
+            "block-keys"
+            ( info (blockKeysP <**> helper) (progDesc "Write all supported per-block keys, not just those documented.")
             )
         ]
   where
-    configP = optional $ strOption (mconcat [long "config", metavar "PATH", help "Path to optional configuration file."])
-    toolkitsP = Toolkits <$> configP
-    cleanP = Clean <$> configP <*> strArgument (metavar "FILE")
+    configP      = optional $ strOption (mconcat [long "config", metavar "PATH", help "Path to optional configuration file."])
+    toolkitsP    = Toolkits <$> configP
+    blockKeysP   = pure BlockKeys
+    cleanP       = Clean <$> configP <*> strArgument (metavar "FILE")
     writeConfigP =
       WriteConfig
         <$> strOption
@@ -298,6 +306,11 @@ showAvailableToolkits mfp = do
       putStrLn mempty
     availToolkitInfo = toolkitInfo True
     unavailToolkitInfo = toolkitInfo False
+
+showAvailableBlockKeys :: IO ()
+showAvailableBlockKeys = do
+  putStrLn "\nAVAILABLE KEYS FOR FIGURE BLOCKS\n"
+  mapM_ putStrLn availableBlockKeys
 
 -- | Clean output directories associated with a file
 --

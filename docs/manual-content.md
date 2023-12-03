@@ -219,6 +219,10 @@ All following parameters are optional, with their default values controlled by t
 * `executable` is a path to the executable to use (e.g. `C:\\python3.exe`) or the name of the executable (e.g. `python3`).
 * `caption_format` is the text format of the caption. Possible values are exactly the same as `pandoc`'s format specification, usually `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with raw LaTeX would be parsed correctly provided that `caption_format=markdown+raw_tex`. See Pandoc's guide on [Specifying formats](https://pandoc.org/MANUAL.html#specifying-formats).
 
+The `pandoc-plot block-keys --help` option will list all supported parameters:
+
+```{.bash include=help-block-keys.txt}
+```
 
 #### Code highlighting
 

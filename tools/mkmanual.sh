@@ -5,9 +5,10 @@ cabal install pandoc-cli --overwrite-policy=always
 declare version="$(pandoc-plot --version)"
 
 pandoc-plot --help > help.txt
-pandoc-plot clean --help > help-clean.txt
-pandoc-plot toolkits --help > help-toolkits.txt
+pandoc-plot clean                --help > help-clean.txt
+pandoc-plot toolkits             --help > help-toolkits.txt
 pandoc-plot write-example-config --help > help-config.txt
+pandoc-plot block-keys                  > help-block-keys.txt
 
 # For GitHub
 echo "Creating Markdown manual..."
