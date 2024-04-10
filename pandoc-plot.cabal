@@ -20,7 +20,8 @@ tested-with:    GHC == 8.10.4,
                 GHC == 9.2.2,
                 GHC == 9.4.4,
                 GHC == 9.6.1,
-                GHC == 9.6.3
+                GHC == 9.6.3,
+                GHC == 9.8.2
 extra-source-files:
     CHANGELOG.md
     LICENSE
