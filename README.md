@@ -134,17 +134,6 @@ Manager](https://github.com/microsoft/winget-cli) `winget` (just like
 ``` sh
 winget install pandoc-plot
 ```
-
-### Arch Linux
-
-[![AUR version](https://img.shields.io/aur/version/pandoc-plot-bin)](https://aur.archlinux.org/packages/pandoc-plot-bin/)
-
-You can install `pandoc-plot` from the [archlinux user repository](https://aur.archlinux.org/packages/pandoc-plot-bin/) as `pandoc-plot-bin`. You can install using e.g. `yay`:
-
-```sh
-yay -S pandoc-plot-bin
-```
-
 ### From Hackage/Stackage
 
 [![Hackage version](https://img.shields.io/hackage/v/pandoc-plot.svg)](http://hackage.haskell.org/package/pandoc-plot)
