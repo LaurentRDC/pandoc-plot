@@ -274,7 +274,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4.1.7
     
     - name: Compress artifacts and move to assets
       run: |
@@ -310,7 +310,7 @@ jobs:
   #   steps:
   #   - uses: actions/checkout@v2
 
-  #   - uses: actions/download-artifact@v2
+  #   - uses: actions/download-artifact@v4.1.7
 
   #   - name: Update Winget package
   #     shell: pwsh
