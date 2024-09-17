@@ -303,7 +303,7 @@ instance FromJSON SageMathPrecursor where
 
 instance FromJSON D2Precursor where
   parseJSON (Object v) = D2Precursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= d2Exe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= d2CmdArgs defaultConfiguration
-  parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
+  parseJSON _ = fail $ mconcat ["Could not parse ", show D2, " configuration."]
 
 instance FromJSON AsyPrecursor where
   parseJSON (Object v) = AsyPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= asyExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= asyCmdArgs defaultConfiguration
