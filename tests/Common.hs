@@ -123,6 +123,7 @@ testFileInclusion tk =
     include SageMath = "tests/includes/sagemath.sage"
     include D2 = "tests/includes/d2-dd.d2"
     include Asymptote = "tests/includes/asymptote.asy"
+    include Mermaid = "tests/includes/mermaid.mermaid"
 
 -------------------------------------------------------------------------------
 -- Tests that the files are saved in all the advertised formats
@@ -423,6 +424,7 @@ trivialContent PlantUML = "@startuml\nAlice -> Bob: test\n@enduml"
 trivialContent SageMath = "G = plot(sin, 1, 10)"
 trivialContent D2 = "x -> y -> z"
 trivialContent Asymptote = "draw((0,0)--(1,0));"
+trivialContent Mermaid = "graph LR\n\tA --> B"
 
 addCaption :: String -> Block -> Block
 addCaption caption (CodeBlock (id', cls, attrs) script) =

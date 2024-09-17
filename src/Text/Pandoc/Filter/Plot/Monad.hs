@@ -284,6 +284,7 @@ executable tk = exeSelector tk <&> exeFromPath
     exeSelector SageMath = asksConfig sagemathExe
     exeSelector D2 = asksConfig d2Exe
     exeSelector Asymptote = asksConfig asyExe
+    exeSelector Mermaid = asksConfig mermaidExe
 
 -- | The @Configuration@ type holds the default values to use
 -- when running pandoc-plot. These values can be overridden in code blocks.
@@ -356,6 +357,8 @@ data Configuration = Configuration
     d2Preamble :: !Script,
     -- | The default preamble script for the Asymptote toolkit.
     asyPreamble :: !Script,
+    -- | The default preamble script for the Mermaid toolkit.
+    mermaidPreamble :: !Script,
     -- | The executable to use to generate figures using the matplotlib toolkit.
     matplotlibExe :: !FilePath,
     -- | The executable to use to generate figures using the MATLAB toolkit.
@@ -386,6 +389,8 @@ data Configuration = Configuration
     d2Exe :: !FilePath,
     -- | The executable to use to generate figures using Asymptote
     asyExe :: !FilePath,
+    -- | The executable to use to generate figures using Mermaid
+    mermaidExe :: !FilePath,
     -- | Command-line arguments to pass to the Python interpreter for the Matplotlib toolkit
     matplotlibCmdArgs :: !Text,
     -- | Command-line arguments to pass to the interpreter for the MATLAB toolkit.
@@ -416,6 +421,8 @@ data Configuration = Configuration
     d2CmdArgs :: !Text,
     -- | Command-line arguments to pass to the interpreter for the Asymptote toolkit.
     asyCmdArgs :: !Text,
+    -- | Command-line arguments to pass to the interpreter for the Mermaid toolkit.
+    mermaidCmdArgs :: !Text,
     -- | Whether or not to make Matplotlib figures tight by default.
     matplotlibTightBBox :: !Bool,
     -- | Whether or not to make Matplotlib figures transparent by default.

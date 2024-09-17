@@ -99,6 +99,10 @@ import Text.Pandoc.Filter.Plot.Renderers.Asymptote
   ( asymptote,
     asymptoteSupportedSaveFormats,
   )
+import Text.Pandoc.Filter.Plot.Renderers.Mermaid
+  ( mermaid,
+    mermaidSupportedSaveFormats,
+  )
 -- | Get the renderer associated with a toolkit.
 -- If the renderer has not been used before,
 -- initialize it and store where it is. It will be re-used.
@@ -118,6 +122,7 @@ renderer PlantUML = plantuml
 renderer SageMath = sagemath
 renderer D2 = d2
 renderer Asymptote = asymptote
+renderer Mermaid = mermaid
 
 -- | Save formats supported by this renderer.
 supportedSaveFormats :: Toolkit -> [SaveFormat]
@@ -136,6 +141,7 @@ supportedSaveFormats PlantUML = plantumlSupportedSaveFormats
 supportedSaveFormats SageMath = sagemathSupportedSaveFormats
 supportedSaveFormats D2 = d2SupportedSaveFormats
 supportedSaveFormats Asymptote = asymptoteSupportedSaveFormats
+supportedSaveFormats Mermaid = mermaidSupportedSaveFormats
 
 -- | The function that maps from configuration to the preamble.
 preambleSelector :: Toolkit -> (Configuration -> Script)
@@ -154,6 +160,7 @@ preambleSelector PlantUML = plantumlPreamble
 preambleSelector SageMath = sagemathPreamble
 preambleSelector D2 = d2Preamble
 preambleSelector Asymptote = asyPreamble
+preambleSelector Mermaid = mermaidPreamble
 
 -- | Parse code block headers for extra attributes that are specific
 -- to this renderer. By default, no extra attributes are parsed.
