@@ -231,7 +231,7 @@ jobs:
         fi
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ runner.os }}-artifact
         path: artifact/pandoc-plot*
@@ -245,7 +245,7 @@ jobs:
         chmod u+x artifact-static/pandoc-plot
 
     - name: Upload artifact [Linux - static]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: runner.os == 'Linux'
       with:
         name: ${{ runner.os }}-artifact-static
@@ -261,7 +261,7 @@ jobs:
         iscc /dAppVersion=$version ".\installer\pandoc-plot-setup.iss"
 
     - name: Upload artifact [Windows - installer]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: runner.os == 'Windows'
       with:
         name: ${{ runner.os }}-artifact-installer
@@ -274,7 +274,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4
     
     - name: Compress artifacts and move to assets
       run: |
@@ -310,7 +310,7 @@ jobs:
   #   steps:
   #   - uses: actions/checkout@v2
 
-  #   - uses: actions/download-artifact@v2
+  #   - uses: actions/download-artifact@v4
 
   #   - name: Update Winget package
   #     shell: pwsh
