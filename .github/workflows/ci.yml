@@ -8,6 +8,7 @@ on:
   push:
     paths-ignore:
     - '.github/workflows/gh-pages.yml'
+    - '.github/workflows/gh_pages_requirements.txt'
   pull_request:
 
 jobs:
