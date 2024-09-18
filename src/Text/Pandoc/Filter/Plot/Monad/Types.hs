@@ -63,6 +63,7 @@ data Toolkit
   | SageMath
   | D2
   | Asymptote
+  | Mermaid
   deriving (Bounded, Eq, Enum, Generic, Ord)
 
 -- | This instance should only be used to display toolkit names
@@ -82,6 +83,7 @@ instance Show Toolkit where
   show SageMath = "SageMath"
   show D2 = "D2"
   show Asymptote = "Asymptote"
+  show Mermaid = "Mermaid"
 
 -- | Class name which will trigger the filter
 cls :: Toolkit -> Text
@@ -100,6 +102,7 @@ cls PlantUML = "plantuml"
 cls SageMath = "sageplot"
 cls D2 = "d2"
 cls Asymptote = "asy"
+cls Mermaid = "mermaid"
 
 -- | Executable program, and sometimes the directory where it can be found.
 data Executable

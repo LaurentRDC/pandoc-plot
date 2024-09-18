@@ -66,6 +66,7 @@ defaultConfiguration =
       sagemathPreamble = mempty,
       d2Preamble = mempty,
       asyPreamble = mempty,
+      mermaidPreamble = mempty,
       -- Executables
       matplotlibExe = python,
       matlabExe = "matlab",
@@ -82,6 +83,7 @@ defaultConfiguration =
       sagemathExe = "sage",
       d2Exe = "d2",
       asyExe = "asy",
+      mermaidExe = "mmdc",
       -- Command line arguments
       matplotlibCmdArgs = mempty,
       matlabCmdArgs = mempty,
@@ -98,6 +100,7 @@ defaultConfiguration =
       sagemathCmdArgs = mempty,
       d2CmdArgs = mempty,
       asyCmdArgs = mempty,
+      mermaidCmdArgs = mempty,
       -- Extras
       matplotlibTightBBox = False,
       matplotlibTransparent = False
@@ -159,7 +162,8 @@ data ConfigPrecursor = ConfigPrecursor
     _plantumlPrec :: !PlantUMLPrecursor,
     _sagemathPrec :: !SageMathPrecursor,
     _d2Prec :: !D2Precursor,
-    _asyPrec :: !AsyPrecursor
+    _asyPrec :: !AsyPrecursor,
+    _mermaidPrec :: !MermaidPrecursor
   }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -188,7 +192,8 @@ defaultConfigPrecursor =
       _plantumlPrec = PlantUMLPrecursor Nothing (plantumlExe defaultConfiguration) (plantumlCmdArgs defaultConfiguration),
       _sagemathPrec = SageMathPrecursor Nothing (sagemathExe defaultConfiguration) (sagemathCmdArgs defaultConfiguration),
       _d2Prec = D2Precursor Nothing (d2Exe defaultConfiguration) (d2CmdArgs defaultConfiguration),
-      _asyPrec = AsyPrecursor Nothing (asyExe defaultConfiguration) (asyCmdArgs defaultConfiguration)
+      _asyPrec = AsyPrecursor Nothing (asyExe defaultConfiguration) (asyCmdArgs defaultConfiguration),
+      _mermaidPrec = MermaidPrecursor Nothing (mermaidExe defaultConfiguration) (mermaidCmdArgs defaultConfiguration)
     }
 
 data LoggingPrecursor = LoggingPrecursor
@@ -232,6 +237,8 @@ data SageMathPrecursor = SageMathPrecursor {_sagemathPreamble :: !(Maybe FilePat
 data D2Precursor = D2Precursor {_d2Preamble :: !(Maybe FilePath), _d2Exe :: !FilePath, _d2CmdArgs :: !Text}
 
 data AsyPrecursor = AsyPrecursor {_asyPreamble :: !(Maybe FilePath), _asyExe :: !FilePath, _asyCmdArgs :: !Text}
+
+data MermaidPrecursor = MermaidPrecursor {_mermaidPreamble :: !(Maybe FilePath), _mermaidExe :: !FilePath, _mermaidCmdArgs :: !Text}
 
 instance FromJSON LoggingPrecursor where
   parseJSON (Object v) =
@@ -303,11 +310,15 @@ instance FromJSON SageMathPrecursor where
 
 instance FromJSON D2Precursor where
   parseJSON (Object v) = D2Precursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= d2Exe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= d2CmdArgs defaultConfiguration
-  parseJSON _ = fail $ mconcat ["Could not parse ", show SageMath, " configuration."]
+  parseJSON _ = fail $ mconcat ["Could not parse ", show D2, " configuration."]
 
 instance FromJSON AsyPrecursor where
   parseJSON (Object v) = AsyPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= asyExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= asyCmdArgs defaultConfiguration
   parseJSON _ = fail $ mconcat ["Could not parse ", show Asymptote, " configuration."]
+
+instance FromJSON MermaidPrecursor where
+  parseJSON (Object v) = MermaidPrecursor <$> v .:? asKey PreambleK <*> v .:? asKey ExecutableK .!= mermaidExe defaultConfiguration <*> v .:? asKey CommandLineArgsK .!= mermaidCmdArgs defaultConfiguration
+  parseJSON _ = fail $ mconcat ["Could not parse ", show Mermaid, " configuration."]
 
 toolkitAsKey :: Toolkit -> Key
 toolkitAsKey = fromString . unpack . cls
@@ -340,6 +351,7 @@ instance FromJSON ConfigPrecursor where
     _sagemathPrec <- v .:? toolkitAsKey SageMath .!= _sagemathPrec defaultConfigPrecursor
     _d2Prec <- v .:? toolkitAsKey D2 .!= _d2Prec defaultConfigPrecursor
     _asyPrec <- v .:? toolkitAsKey Asymptote .!= _asyPrec defaultConfigPrecursor
+    _mermaidPrec <- v .:? toolkitAsKey Mermaid .!= _mermaidPrec defaultConfigPrecursor
 
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."
@@ -376,6 +388,7 @@ renderConfig ConfigPrecursor {..} = do
       sagemathExe = _sagemathExe _sagemathPrec
       d2Exe = _d2Exe _d2Prec
       asyExe = _asyExe _asyPrec
+      mermaidExe = _mermaidExe _mermaidPrec
 
       matplotlibCmdArgs = _matplotlibCmdArgs _matplotlibPrec
       matlabCmdArgs = _matlabCmdArgs _matlabPrec
@@ -392,6 +405,7 @@ renderConfig ConfigPrecursor {..} = do
       sagemathCmdArgs = _sagemathCmdArgs _sagemathPrec
       d2CmdArgs = _d2CmdArgs _d2Prec
       asyCmdArgs = _asyCmdArgs _asyPrec
+      mermaidCmdArgs = _mermaidCmdArgs _mermaidPrec
 
   matplotlibPreamble <- readPreamble (_matplotlibPreamble _matplotlibPrec)
   matlabPreamble <- readPreamble (_matlabPreamble _matlabPrec)
@@ -408,6 +422,7 @@ renderConfig ConfigPrecursor {..} = do
   sagemathPreamble <- readPreamble (_sagemathPreamble _sagemathPrec)
   d2Preamble <- readPreamble (_d2Preamble _d2Prec)
   asyPreamble <- readPreamble (_asyPreamble _asyPrec)
+  mermaidPreamble <- readPreamble (_mermaidPreamble _mermaidPrec)
 
   return Configuration {..}
   where
