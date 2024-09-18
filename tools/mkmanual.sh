@@ -13,6 +13,7 @@ pandoc-plot write-example-config --help > help-config.txt
 echo "Creating Markdown manual..."
 pandoc \
     --standalone \
+    --embed-resources \
     --toc \
     --toc-depth=4 \
     --metadata version=$version \
@@ -27,7 +28,7 @@ pandoc \
 echo "Creating HTML manual..."
 pandoc \
     --standalone \
-    --self-contained \
+    --embed-resources \
     --wrap=preserve \
     --metadata title="pandoc-plot $version manual" \
     --css=docs/theme.css \

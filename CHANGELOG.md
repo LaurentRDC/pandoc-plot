@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.9.0
+
+* Added support for [Mermaid](https://mermaid.js.org/), thanks to a contribution by Sanchayan Maity (#74).
+
 ## Release 1.8.0
 
 * Added support for [Asymptote](https://asymptote.sourceforge.io/), thanks to a contribution by Michał J. Gajda (#61).

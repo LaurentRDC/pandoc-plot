@@ -334,6 +334,7 @@ To avoid repetition, `pandoc-plot` can be configured using simple YAML
 files. Here are **all** the possible parameters:
 
 ``` yaml
+
 # This is an example configuration. Everything in this file is optional.
 # Please refer to the documentation to know about the parameters herein.
 #
@@ -450,16 +451,19 @@ graphviz:
   executable: dot
   command_line_arguments:
 
+# The possible parameters for the Bokeh toolkit using Python
 bokeh:
   # preamble: bokeh.py
   executable: python
   command_line_arguments:
 
+# The possible parameters for the Plots.jl toolkit using Julia
 plotsjl:
   # preamble: plotsjl.jl
   executable: julia
   command_line_arguments:
 
+# The possible parameters for the PlantUML toolkit
 plantuml:
   # preamble: plantuml.txt
   executable: java
@@ -469,6 +473,19 @@ plantuml:
   # plantuml:
   #   executable: plantuml
   #   command_line_arguments:
+
+sageplot:
+  # preamble: sageplot.sage
+  executable: sage
+  command_line_arguments:
+
+d2:
+  executable: d2
+  command_line_arguments:
+
+mermaid:
+  executable: mmdc
+  command_line_arguments:
 ```
 
 A file like the above sets the **default** values; you can still override them in documents directly.
