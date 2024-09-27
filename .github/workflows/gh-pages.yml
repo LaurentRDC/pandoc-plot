@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Install cabal/ghc
       uses: haskell/actions/setup@v1
@@ -37,19 +37,19 @@ jobs:
         cabal user-config update -f -a "split-sections: True"
         cabal user-config update -f -a "executable-stripping: True"
 
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
     - name: Cache cabal work
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: |
           dist-newstyle
           ${{ steps.setup-haskell.outputs.cabal-store }}
         key: ${{ runner.os }}-${{ hashFiles('cabal.project.freeze') }}-cabal-install-v2
 
-    - uses: actions/cache@v3
+    - uses: actions/checkout@v4
       name: Cache Python build artifacts
       with:
         path: ~/.cache/pip
