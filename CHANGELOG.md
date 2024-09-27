@@ -2,6 +2,10 @@
 
 pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
+## Release 1.9.2
+
+* Fixed an issue where TeX output contained a figure even if the caption was empty (#37).
+
 ## Release 1.9.1
 
 * Fixed an issue where extra parameters were not passed down to `pandoc`, depending on the output format (#38).

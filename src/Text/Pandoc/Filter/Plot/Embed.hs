@@ -82,11 +82,15 @@ figure ::
   PlotM Block
 figure as fp caption' =
   return . head . toList $
-    -- We want the attributes both on the Figure element and the contained Image element
-    -- so that pandoc-plot plays nice with pandoc-crossref and other filters
-    figureWith as (simpleCaption (plain caption')) $
-      plain $
-        imageWith as (pack fp) mempty caption'
+    if null caption'
+      -- If there is no caption, a LaTeX figure may look strange. See #37
+      then plain $ imageWith as (pack fp) mempty caption'
+      else 
+        -- We want the attributes both on the Figure element and the contained Image element
+        -- so that pandoc-plot plays nice with pandoc-crossref and other filters
+        figureWith as (simpleCaption (plain caption')) $
+          plain $
+            imageWith as (pack fp) mempty caption'
 
 -- TODO: also add the case where SVG plots can be
 --       embedded in HTML output
