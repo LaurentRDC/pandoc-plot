@@ -17,7 +17,6 @@ module Text.Pandoc.Filter.Plot.Embed
 where
 
 import Data.Default (def)
-import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
 import qualified Data.Text.IO as T
 import Text.HTML.TagSoup
@@ -63,11 +62,19 @@ toFigure fmt spec = do
   target <- figurePath spec
   scp <- pack <$> sourceCodePath spec
   sourceLabel <- asksConfig sourceCodeLabel -- Allow the possibility for non-english labels
+
+  cap <- case (captionReader fmt $ caption spec) of
+    Left exc -> do
+      err $ "Unable to parse caption: " <> (pack $ show exc)
+      pure mempty
+    Right c -> do
+      debug $ "Parsed caption: " <> (pack $ show c)
+      pure $ fromList c
+  
   let srcLink = link scp mempty (str sourceLabel)
       attrs' = blockAttrs spec
-      captionText = fromList $ fromMaybe mempty (captionReader fmt $ caption spec)
       captionLinks = mconcat [" (", srcLink, ")"]
-      caption' = if withSource spec then captionText <> captionLinks else captionText
+      caption' = if withSource spec then cap <> captionLinks else cap
   builder attrs' target caption'
   where
     builder = case saveFormat spec of

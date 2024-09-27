@@ -44,6 +44,7 @@ import Text.Pandoc.Filter.Plot.Renderers
 import Text.Pandoc.Format (parseFlavoredFormat)
 import Text.Pandoc.Options (ReaderOptions (..))
 import Text.Pandoc.Readers (Reader (..), getReader)
+import Text.Pandoc (PandocError)
 
 tshow :: (Show a) => a -> Text
 tshow = pack . show
@@ -162,8 +163,8 @@ plotToolkit (CodeBlock (_, classes, _) _) =
 plotToolkit _ = Nothing
 
 -- | Reader a caption, based on input document format
-captionReader :: Format -> Text -> Maybe [Inline]
-captionReader (Format f) t = either (const Nothing) (Just . extractFromBlocks) $
+captionReader :: Format -> Text -> Either PandocError [Inline]
+captionReader (Format f) t = fmap extractFromBlocks $
   runPure $ do
     fmt <- parseFlavoredFormat f
     (reader, exts) <- getReader fmt

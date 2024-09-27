@@ -380,12 +380,13 @@ testAttributesPreservedOnFigure tk =
     -- constructed
     let expectedAttrs = ("hello", [cls tk], [("key1", "val1"), ("key2", "val2")])
         cb =
-          setAttrs expectedAttrs $
             addDirectory tempDir $
-              addCaption "[title](https://google.com)" $
-                codeBlock tk (trivialContent tk)
+              addCaption "This is a caption [title](https://google.com)" $
+                setAttrs expectedAttrs $
+                  codeBlock tk (trivialContent tk)
         fmt = B.Format "markdown"
-    Figure (id', _, keyvals) _ _ <-
+
+    block  <-
       runPlotM
         Nothing
         ( defaultTestConfig
@@ -394,9 +395,12 @@ testAttributesPreservedOnFigure tk =
             }
         )
         $ make cb
-    let (expectedId, _, expectedKeyVals) = expectedAttrs
-    assertEqual "identifier" expectedId id'
-    assertEqual "key-value pairs" expectedKeyVals keyvals
+    case block of
+      Figure (id', _, keyvals) _ _ -> do
+        let (expectedId, _, expectedKeyVals) = expectedAttrs
+        assertEqual "identifier" expectedId id'
+        assertEqual "key-value pairs" expectedKeyVals keyvals
+      other -> assertFailure $ "Unexpected block: " <> show block
   where
     extractCaption (B.Figure _ (Caption _ caption) _) = caption
 
