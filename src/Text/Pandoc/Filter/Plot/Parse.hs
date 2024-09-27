@@ -117,6 +117,8 @@ parseFigureSpec block@(CodeBlock (id', classes, attrs) _) = do
               extraAttrs = Map.toList extraAttrs'
               blockAttrs = (id', filter (/= cls toolkit) classes, filteredAttrs)
 
+          debug $ "Propagating attributes unrelated to pandoc-plot: " <> tshow blockAttrs
+
           let blockDependencies = parseFileDependencies $ fromMaybe mempty $ Map.lookup (tshow DependenciesK) attrs'
               dependencies = defaultDependencies conf <> blockDependencies
 

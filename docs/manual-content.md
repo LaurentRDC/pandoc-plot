@@ -195,7 +195,8 @@ There are parameters that affect the figure that will be included in your docume
       dependencies=[...]
       file=(path)
       executable=(path) 
-      caption_format=(text)
+      caption_format=(text),
+      ...
       }
   # script content
   ```
@@ -218,6 +219,36 @@ All following parameters are optional, with their default values controlled by t
 * `file` is a path to a file from which to read the figure content. If this parameter is used, the content of the code block is ignored. By using this parameter, you can use all the standard tooling of your plotting toolkit of choice, which is especially useful for complex figures.
 * `executable` is a path to the executable to use (e.g. `C:\\python3.exe`) or the name of the executable (e.g. `python3`).
 * `caption_format` is the text format of the caption. Possible values are exactly the same as `pandoc`'s format specification, usually `FORMAT+EXTENSION-EXTENSION`. For example, captions in Markdown with raw LaTeX would be parsed correctly provided that `caption_format=markdown+raw_tex`. See Pandoc's guide on [Specifying formats](https://pandoc.org/MANUAL.html#specifying-formats).
+
+**All parameters not understood by `pandoc-plot` will be forwarded to pandoc**. For example, the following script:
+
+````markdown
+  Paragraph
+
+  ```{.graphviz width=50mm height=60mm}
+  digraph D {
+
+    A [shape=diamond]
+    B [shape=box]
+    C [shape=circle]
+
+    A -> B [style=dashed, color=grey]
+    A -> C [color="black:invis:black"]
+    A -> D [penwidth=5, arrowhead=none]
+
+  }
+  ```
+````
+
+contains two extra parameters, `width=50mm` and `height=60mm`. When rendered with `pandoc --filter pandoc-plot -i example.md -o example.tex`, the output will be:
+
+````latex
+\begin{figure}
+\centering
+\includegraphics[width=50mm,height=60mm]{plots/11623886912816197297.png}
+\caption{}
+\end{figure}
+````
 
 
 #### Code highlighting

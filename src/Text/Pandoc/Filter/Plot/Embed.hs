@@ -86,7 +86,7 @@ figure as fp caption' =
     -- so that pandoc-plot plays nice with pandoc-crossref and other filters
     figureWith as (simpleCaption (plain caption')) $
       plain $
-        imageWith mempty (pack fp) mempty caption'
+        imageWith as (pack fp) mempty caption'
 
 -- TODO: also add the case where SVG plots can be
 --       embedded in HTML output
@@ -111,19 +111,22 @@ figure as fp caption' =
 --     |]
 
 latexInput :: Attr -> FilePath -> Inlines -> PlotM Block
-latexInput _ fp caption' = do
+latexInput (_, _, attrs) fp caption' = do
   renderedCaption' <- writeLatex caption'
   let renderedCaption =
         if renderedCaption' /= ""
           then [st|\caption{#{renderedCaption'}}|]
           else ""
+  -- We need to propagate extra attributes, for example, to control
+  -- figure sizes. See #38
+  let renderedExtraAttributes = mconcat $ [key <> "=" <> value | (key, value) <- attrs]
   return $
     RawBlock
       "latex"
       [st|
     \begin{figure}
         \centering
-        \input{#{pack $ normalizePath $ fp}}
+        \includegraphics[#{renderedExtraAttributes}]{#{pack $ normalizePath $ fp}}
         #{renderedCaption}
     \end{figure}
         |]
