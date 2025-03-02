@@ -16,7 +16,9 @@ module Text.Pandoc.Filter.Plot.Embed
   )
 where
 
+import Control.Exception (Exception, throwIO)
 import Data.Default (def)
+import Data.Maybe (listToMaybe)
 import Data.Text (Text, pack)
 import qualified Data.Text.IO as T
 import Text.HTML.TagSoup
@@ -70,7 +72,7 @@ toFigure fmt spec = do
     Right c -> do
       debug $ "Parsed caption: " <> (pack $ show c)
       pure $ fromList c
-  
+
   let srcLink = link scp mempty (str sourceLabel)
       attrs' = blockAttrs spec
       captionLinks = mconcat [" (", srcLink, ")"]
@@ -88,11 +90,15 @@ figure ::
   Inlines ->
   PlotM Block
 figure as fp caption' =
-  return . head . toList $
-    if null caption'
+  maybe
+    (liftIO $ throwIO PandocBuilderException) -- We cannot build a single `Block` unfortunately, so we must be ready to throw an exception.
+    pure
+    . listToMaybe
+    . toList
+    $ if null caption'
       -- If there is no caption, a LaTeX figure may look strange. See #37
       then plain $ imageWith as (pack fp) mempty caption'
-      else 
+      else
         -- We want the attributes both on the Figure element and the contained Image element
         -- so that pandoc-plot plays nice with pandoc-crossref and other filters
         figureWith as (simpleCaption (plain caption')) $
@@ -199,6 +205,14 @@ extractPlot t =
 -- | Get content inside a tag, e.g. /inside "body"/ returns all tags
 -- between /<body>/ and /</body>/
 inside :: Text -> [Tag Text] -> [Tag Text]
-inside t = init . tail . tgs
+inside t = init . drop 1 . tgs
   where
     tgs = takeWhile (~/= TagClose t) . dropWhile (~/= TagOpen t [])
+
+
+-- | Exception thrown when a Pandoc builder (e.g. `Blocks`)
+-- has an unexpected structure.
+data PandocBuilderException = PandocBuilderException
+  deriving (Show)
+
+instance Exception PandocBuilderException
