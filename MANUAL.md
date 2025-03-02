@@ -174,7 +174,7 @@ pandoc --filter pandoc-plot --filter pandoc-crossref -i myfile.md -o myfile.html
 ``` bash
 pandoc-plot 1.3.0 - generate figures directly in documents
 
-Usage: pandoc-plot.EXE [(-v|--version) | --full-version | (-m|--manual)] 
+Usage: pandoc-plot.EXE [(-v|--version) | --full-version | (-m|--manual)]
                        [COMMAND] [AST]
   This pandoc filter generates plots from code blocks using a multitude of
   possible renderers. This allows to keep documentation and figures in perfect
@@ -243,18 +243,18 @@ Note that the `minted` LaTeX package need not be installed.
 There are parameters that affect the figure that will be included in your document. Here are all the possible general parameters, in Markdown syntax:
 
 ```` markdown
-  ```{.cls 
+  ```{.cls
       .language
-      directory=(path) 
-      caption=(text) 
-      format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP|HTML|LATEX) 
-      source=(true|True|false|False) 
+      directory=(path)
+      caption=(text)
+      format=(PNG|PDF|SVG|JPG|EPS|GIF|TIF|WEBP|HTML|LATEX)
+      source=(true|True|false|False)
       source_label=(text)
-      preamble=(path) 
+      preamble=(path)
       dpi=(integer)
       dependencies=[...]
       file=(path)
-      executable=(path) 
+      executable=(path)
       caption_format=(text)
       }
   # script content
@@ -323,7 +323,7 @@ You can take a look at the [demonstration page](https://laurentrdc.github.io/pan
 Many interactive plots rely on javascript scripts stored on the internet. If you want to have a self-contained document that can be viewed offline – or you want your document to work for the next 10 years –, you can use pandoc’s `--self-contained` flag:
 
 ``` bash
-pandoc --self-contained --filter pandoc-plot -i mydoc.md -o webpage.html 
+pandoc --self-contained --filter pandoc-plot -i mydoc.md -o webpage.html
 ```
 
 The resulting output `webpage.html` will contain everything, at the cost of size.
@@ -350,7 +350,7 @@ files. Here are **all** the possible parameters:
 # current working directory, or absolute.
 directory: plots/
 
-# Whether or not to include a link to the source script in the caption. 
+# Whether or not to include a link to the source script in the caption.
 # Particularly useful for HTML output.
 source: false
 
@@ -360,15 +360,15 @@ source: false
 strict: false
 
 # Text label for links to source code.
-# You can change this label if you are writing a document in a non-English language. 
+# You can change this label if you are writing a document in a non-English language.
 # This only matters if `source` is set to `true`.
 source_label: Source code
 
-# Default density of figures in dots per inches (DPI). 
+# Default density of figures in dots per inches (DPI).
 # This can be changed in the document specifically as well.
 dpi: 80
 
-# Default format in which to save the figures. This can be specified 
+# Default format in which to save the figures. This can be specified
 # individually as well.
 format: PNG
 
@@ -380,8 +380,8 @@ dependencies:
   - file2.txt
 
 # Text format for the captions. Unfortunately, there is no way to detect
-# this automatically. You can use the same notation as Pandoc's --from 
-# parameter, specified here: 
+# this automatically. You can use the same notation as Pandoc's --from
+# parameter, specified here:
 #     https://pandoc.org/MANUAL.html#option--from
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
@@ -468,11 +468,16 @@ plantuml:
   # preamble: plantuml.txt
   executable: java
   command_line_arguments: -jar plantuml.jar
-  # On Linux, if you have `plantuml.jar` as an executable, you can also
-  # use the following configuration instead:
-  # plantuml:
-  #   executable: plantuml
-  #   command_line_arguments:
+
+# On Linux, if you have `plantuml.jar` as an executable, you can also
+# use the following configuration instead:
+# plantuml:
+#   executable: plantuml
+#   command_line_arguments: ""
+#
+# Note that the `command_line_arguments` above are specifically the empty string.
+# Providing no value is equivalent to the default command line arguments, which
+# for `plantuml` are "-jar plantuml.jar".
 
 sageplot:
   # preamble: sageplot.sage
@@ -567,7 +572,7 @@ logging:
     # debug level shows all messages
     # error level shows all but debug messages, etc.
     verbosity: info
-    
+
     # OPTIONAL: log to file
     # Remove line below to log to stderr
     filepath: log.txt
@@ -660,15 +665,15 @@ import Text.Pandoc.Definition (Pandoc, Format(..)) -- from pandoc-types
 import Hakyll
 
 plotFilter' :: Pandoc -> IO Pandoc
-plotFilter' = 
+plotFilter' =
   -- Notify pandoc-plot that the final conversion will be to HTML
   -- This helps give better error messages and adjust default values
-  plotFilter defaultConfiguration (Just $ Format "html5") 
+  plotFilter defaultConfiguration (Just $ Format "html5")
 
 -- Unsafe compiler is required because of the interaction
 -- in IO (i.e. running an external script).
 makePlotPandocCompiler :: Compiler (Item String)
-makePlotPandocCompiler = 
+makePlotPandocCompiler =
   pandocCompilerWithTransformM
     defaultHakyllReaderOptions
     defaultHakyllWriterOptions

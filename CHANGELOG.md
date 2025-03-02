@@ -5,6 +5,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 ## Release 1.9.2
 
 * Fixed an issue where TeX output contained a figure even if the caption was empty (#37).
+* Fixed a documentation issue where the null command-line arguments for `plantuml` should have been `""` (#76).
 
 ## Release 1.9.1
 
@@ -177,7 +178,7 @@ plotsjl:
 ## Release 1.0.0.0
 
 * Added support for Pandoc 2.11. Unfortunately, there is no way to support prior versions of Pandoc at the same time.
-* With release 1.0.0.0, `pandoc-plot` has stabilized. The Haskell library API will not change until version 2+. 
+* With release 1.0.0.0, `pandoc-plot` has stabilized. The Haskell library API will not change until version 2+.
 
 ## Release 0.9.4.0
 
@@ -208,13 +209,13 @@ plotsjl:
 
 ````
 * Better error messages when specifying logger verbosity.
-* Cleaning output directories with `pandoc-plot clean` now follows configuration values for logging. 
+* Cleaning output directories with `pandoc-plot clean` now follows configuration values for logging.
 * Fixed an issue where configuration in metadata did not get parsed properly.
 
 ## Release 0.9.0.0
 
 * The `bokeh` toolkit now supports exporting plots as SVGs (#8).
-* Interactive plots relying on javascript scripts will now defer loading the scripts (#9). 
+* Interactive plots relying on javascript scripts will now defer loading the scripts (#9).
 * Added the `dependencies` argument, which tells `pandoc-plot` what files are important to a particular figure (#10). If a file listed in `dependencies` changes (for example, a data file), `pandoc-plot` will re-render the associated figure.
 * Better heuristic to determine what `bokeh` plot to save. This allows the user to export plots like the [`bokeh.layouts` module](https://docs.bokeh.org/en/latest/docs/user_guide/layout.html#creating-layouts).
 * Added support for the `dpi` parameter in `graphviz` and `mathematica`.
@@ -258,7 +259,7 @@ fig = px.scatter_ternary(df, a="Joly", b="Coderre", c="Bergeron")
 
 ## Release 0.7.1.0
 
-* Better multi-threaded logging. Only one thread (the logging thread) performs IO on the log file. This prevents hang-ups when working on large documents. 
+* Better multi-threaded logging. Only one thread (the logging thread) performs IO on the log file. This prevents hang-ups when working on large documents.
 
 ## Release 0.7.0.0
 
@@ -271,7 +272,7 @@ logging:
     # debug level shows all messages
     # error level shows all but debug messages, etc.
     verbosity: info
-    
+
     # OPTIONAL: log to file
     # Remove line below to log to stderr
     filepath: log.txt
@@ -304,7 +305,7 @@ Other changes:
     title: My document
     author: John Doe
     plot-configuration: /path/to/file.yml
-    ---     
+    ---
     ```
 
 or on the command line:
@@ -316,10 +317,10 @@ pandoc --filter pandoc-plot -M plot-configuration=/path/to/file.yml ...
 
 ## Release 0.5.0.0
 
-* The `pandoc-plot` executable will now process documents in parallel. This should dramatically speed up processing of large documents with lots of figures. 
+* The `pandoc-plot` executable will now process documents in parallel. This should dramatically speed up processing of large documents with lots of figures.
 This happens automatically through the function `plotTransform`.
 * Added a benchmarking suite.
-* Added `defaultConfiguration` so that people don't have to install the `data-default` package to get access to default configuration values. 
+* Added `defaultConfiguration` so that people don't have to install the `data-default` package to get access to default configuration values.
 * Added a check for the `matplotlib` toolkit, preventing users from using `matplotlib.pyplot.show` in figures. This would halt `pandoc-plot`.
 
 ## Release 0.4.0.1
