@@ -2,8 +2,8 @@ cabal-version:  2.2
 name:           pandoc-plot
 version:        1.9.2
 synopsis:       A Pandoc filter to include figures generated from code blocks using your plotting toolkit of choice.
-description:    A Pandoc filter to include figures generated from code blocks. 
-                Keep the document and code in the same location. Output is 
+description:    A Pandoc filter to include figures generated from code blocks.
+                Keep the document and code in the same location. Output is
                 captured and included as a figure.
 category:       Text
 copyright:      (c) 2019-present Laurent P. René de Cotret
@@ -14,9 +14,9 @@ maintainer:     Laurent P. René de Cotret
 license:        GPL-2.0-or-later
 license-file:   LICENSE
 build-type:     Simple
-tested-with:    GHC == 8.10.4, 
-                GHC == 9.0.1, 
-                GHC == 9.2.1, 
+tested-with:    GHC == 8.10.4,
+                GHC == 9.0.1,
+                GHC == 9.2.1,
                 GHC == 9.2.2,
                 GHC == 9.4.4,
                 GHC == 9.6.1,
@@ -33,12 +33,19 @@ extra-source-files:
 
     data/srctemplate.html
 
+    tests/integration.md
+    tests/issue16.md
+    tests/issue46.md
+    tests/issue53.md
+    tests/issue55.md
+
     tests/fixtures/.config-meta.yml
     tests/fixtures/.empty-config.yml
+    tests/fixtures/.issue30.yml
     tests/fixtures/.verbose-config.yml
     tests/fixtures/plotfile.py
     tests/fixtures/data.csv
-    
+
     tests/includes/bokeh.py
     tests/includes/ggplot2.r
     tests/includes/gnuplot.gp
@@ -95,8 +102,8 @@ library
         Paths_pandoc_plot
     hs-source-dirs:
         src
-    ghc-options: 
-        -Wall 
+    ghc-options:
+        -Wall
         -Wcompat
         -Widentities
         -Wincomplete-uni-patterns
@@ -110,7 +117,7 @@ library
         , base               >= 4.11  && < 5
         , bytestring
         , containers
-        , data-default  
+        , data-default
         , directory          >= 1.2.7 && < 2
         , filepath           >= 1.4   && < 2
         , hashable           >= 1     && < 2
