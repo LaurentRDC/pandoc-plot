@@ -1,8 +1,8 @@
-# pandoc-plot 
+# pandoc-plot
 
 ## A Pandoc filter to generate figures from code blocks in documents
 
-[![license](https://img.shields.io/badge/license-GPLv2+-lightgray.svg)](https://www.gnu.org/licenses/gpl.html) 
+[![license](https://img.shields.io/badge/license-GPLv2+-lightgray.svg)](https://www.gnu.org/licenses/gpl.html)
 
 `pandoc-plot` turns code blocks present in your documents (Markdown, LaTeX, etc.) into embedded figures, using your plotting toolkit of choice, including Matplotlib, ggplot2, MATLAB, Mathematica, and more.
 
@@ -72,7 +72,8 @@ The resulting `output.html` looks like this:
   - `plantuml`: diagrams using the [PlantUML](https://plantuml.com/) software suite;
   - `sageplot`: plots using the [Sage](https://www.sagemath.org/) software system;
   - `d2`: plots using [D2](https://d2lang.com/);
-  - `asymptote`: plots using [Asymptote](https://asymptote.sourceforge.io/).
+  - `asymptote`: plots using [Asymptote](https://asymptote.sourceforge.io/);
+  - `mermaid`: plots using the [MermaidJS](https://mermaid.js.org//).
 
 To know which toolkits are useable on *your machine* (and which ones are
 not available), you can check with the `toolkits` command:
@@ -113,11 +114,11 @@ To install in the current environment:
 conda install -c conda-forge pandoc-plot
 ```
 
-### Homebrew 
+### Homebrew
 
 [![homebrew version](https://img.shields.io/homebrew/v/pandoc-plot)](https://formulae.brew.sh/formula/pandoc-plot)
 
-`pandoc-plot` is available as a package via [`Homebrew`](https://brew.sh/). [Click here to see the package page](https://formulae.brew.sh/formula/pandoc-plot#default). 
+`pandoc-plot` is available as a package via [`Homebrew`](https://brew.sh/). [Click here to see the package page](https://formulae.brew.sh/formula/pandoc-plot#default).
 
 To install:
 
