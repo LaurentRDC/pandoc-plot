@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>pandoc-plot 1.9.2 manual</title>
   <style>
+
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -479,112 +480,119 @@ files. Here are <strong>all</strong> the possible parameters:</p>
 <span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> file2.txt</span></span>
 <span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Text format for the captions. Unfortunately, there is no way to detect</span></span>
-<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a><span class="co"># this automatically. You can use the same notation as Pandoc&#39;s --from </span></span>
-<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a><span class="co"># parameter, specified here: </span></span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a><span class="co"># this automatically. You can use the same notation as Pandoc&#39;s --from</span></span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a><span class="co"># parameter, specified here:</span></span>
 <span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a><span class="co">#     https://pandoc.org/MANUAL.html#option--from</span></span>
 <span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: markdown, rst+raw_tex</span></span>
 <span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a><span class="fu">caption_format</span><span class="kw">:</span><span class="at"> markdown+tex_math_dollars</span></span>
 <span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Logging configuration</span></span>
-<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a><span class="fu">logging</span><span class="kw">:</span></span>
-<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a><span class="co">  # Possible verbosity values: debug, error, warning, info, silent</span></span>
-<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbosity</span><span class="kw">:</span><span class="at"> warning</span></span>
-<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a><span class="co">  # If the filepath below is not present, then pandoc-plot will log to stderr</span></span>
-<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a><span class="co">  # Otherwise, log messages will be appended to the filepath.</span></span>
-<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a><span class="co">  # filepath: path/to/file.txt</span></span>
-<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Matplotlib toolkit</span></span>
-<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a><span class="fu">matplotlib</span><span class="kw">:</span></span>
-<span id="cb24-64"><a href="#cb24-64" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: matplotlib.py</span></span>
-<span id="cb24-65"><a href="#cb24-65" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tight_bbox</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb24-66"><a href="#cb24-66" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">transparent</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb24-67"><a href="#cb24-67" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
-<span id="cb24-68"><a href="#cb24-68" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-69"><a href="#cb24-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-70"><a href="#cb24-70" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the MATLAB toolkit</span></span>
-<span id="cb24-71"><a href="#cb24-71" aria-hidden="true" tabindex="-1"></a><span class="fu">matlabplot</span><span class="kw">:</span></span>
-<span id="cb24-72"><a href="#cb24-72" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: matlab.m</span></span>
-<span id="cb24-73"><a href="#cb24-73" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> matlab</span></span>
-<span id="cb24-74"><a href="#cb24-74" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-75"><a href="#cb24-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-76"><a href="#cb24-76" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Plotly/Python toolkit</span></span>
-<span id="cb24-77"><a href="#cb24-77" aria-hidden="true" tabindex="-1"></a><span class="fu">plotly_python</span><span class="kw">:</span></span>
-<span id="cb24-78"><a href="#cb24-78" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotly-python.py</span></span>
-<span id="cb24-79"><a href="#cb24-79" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
-<span id="cb24-80"><a href="#cb24-80" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-81"><a href="#cb24-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-82"><a href="#cb24-82" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Plotly/R toolkit</span></span>
-<span id="cb24-83"><a href="#cb24-83" aria-hidden="true" tabindex="-1"></a><span class="fu">plotly_r</span><span class="kw">:</span></span>
-<span id="cb24-84"><a href="#cb24-84" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotly-r.r</span></span>
-<span id="cb24-85"><a href="#cb24-85" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> Rscript</span></span>
-<span id="cb24-86"><a href="#cb24-86" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-87"><a href="#cb24-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-88"><a href="#cb24-88" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Mathematica toolkit</span></span>
-<span id="cb24-89"><a href="#cb24-89" aria-hidden="true" tabindex="-1"></a><span class="fu">mathplot</span><span class="kw">:</span></span>
-<span id="cb24-90"><a href="#cb24-90" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: mathematica.m</span></span>
-<span id="cb24-91"><a href="#cb24-91" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> math</span></span>
-<span id="cb24-92"><a href="#cb24-92" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-93"><a href="#cb24-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-94"><a href="#cb24-94" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the GNU Octave toolkit</span></span>
-<span id="cb24-95"><a href="#cb24-95" aria-hidden="true" tabindex="-1"></a><span class="fu">octaveplot</span><span class="kw">:</span></span>
-<span id="cb24-96"><a href="#cb24-96" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: octave.m</span></span>
-<span id="cb24-97"><a href="#cb24-97" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> octave</span></span>
-<span id="cb24-98"><a href="#cb24-98" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-99"><a href="#cb24-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-100"><a href="#cb24-100" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the ggplot2 toolkit</span></span>
-<span id="cb24-101"><a href="#cb24-101" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot2</span><span class="kw">:</span></span>
-<span id="cb24-102"><a href="#cb24-102" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: ggplot2.r</span></span>
-<span id="cb24-103"><a href="#cb24-103" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> Rscript</span></span>
-<span id="cb24-104"><a href="#cb24-104" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-105"><a href="#cb24-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-106"><a href="#cb24-106" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the gnuplot toolkit</span></span>
-<span id="cb24-107"><a href="#cb24-107" aria-hidden="true" tabindex="-1"></a><span class="fu">gnuplot</span><span class="kw">:</span></span>
-<span id="cb24-108"><a href="#cb24-108" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: gnuplot.gp</span></span>
-<span id="cb24-109"><a href="#cb24-109" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> gnuplot</span></span>
-<span id="cb24-110"><a href="#cb24-110" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-111"><a href="#cb24-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-112"><a href="#cb24-112" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the graphviz toolkit</span></span>
-<span id="cb24-113"><a href="#cb24-113" aria-hidden="true" tabindex="-1"></a><span class="fu">graphviz</span><span class="kw">:</span></span>
-<span id="cb24-114"><a href="#cb24-114" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: graphviz.dot</span></span>
-<span id="cb24-115"><a href="#cb24-115" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> dot</span></span>
-<span id="cb24-116"><a href="#cb24-116" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-117"><a href="#cb24-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-118"><a href="#cb24-118" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Bokeh toolkit using Python</span></span>
-<span id="cb24-119"><a href="#cb24-119" aria-hidden="true" tabindex="-1"></a><span class="fu">bokeh</span><span class="kw">:</span></span>
-<span id="cb24-120"><a href="#cb24-120" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: bokeh.py</span></span>
-<span id="cb24-121"><a href="#cb24-121" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
-<span id="cb24-122"><a href="#cb24-122" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-123"><a href="#cb24-123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-124"><a href="#cb24-124" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Plots.jl toolkit using Julia</span></span>
-<span id="cb24-125"><a href="#cb24-125" aria-hidden="true" tabindex="-1"></a><span class="fu">plotsjl</span><span class="kw">:</span></span>
-<span id="cb24-126"><a href="#cb24-126" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotsjl.jl</span></span>
-<span id="cb24-127"><a href="#cb24-127" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> julia</span></span>
-<span id="cb24-128"><a href="#cb24-128" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-129"><a href="#cb24-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-130"><a href="#cb24-130" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the PlantUML toolkit</span></span>
-<span id="cb24-131"><a href="#cb24-131" aria-hidden="true" tabindex="-1"></a><span class="fu">plantuml</span><span class="kw">:</span></span>
-<span id="cb24-132"><a href="#cb24-132" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plantuml.txt</span></span>
-<span id="cb24-133"><a href="#cb24-133" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> java</span></span>
-<span id="cb24-134"><a href="#cb24-134" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span><span class="at"> -jar plantuml.jar</span></span>
-<span id="cb24-135"><a href="#cb24-135" aria-hidden="true" tabindex="-1"></a><span class="co">  # On Linux, if you have `plantuml.jar` as an executable, you can also</span></span>
-<span id="cb24-136"><a href="#cb24-136" aria-hidden="true" tabindex="-1"></a><span class="co">  # use the following configuration instead:</span></span>
-<span id="cb24-137"><a href="#cb24-137" aria-hidden="true" tabindex="-1"></a><span class="co">  # plantuml:</span></span>
-<span id="cb24-138"><a href="#cb24-138" aria-hidden="true" tabindex="-1"></a><span class="co">  #   executable: plantuml</span></span>
-<span id="cb24-139"><a href="#cb24-139" aria-hidden="true" tabindex="-1"></a><span class="co">  #   command_line_arguments:</span></span>
-<span id="cb24-140"><a href="#cb24-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-141"><a href="#cb24-141" aria-hidden="true" tabindex="-1"></a><span class="fu">sageplot</span><span class="kw">:</span></span>
-<span id="cb24-142"><a href="#cb24-142" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: sageplot.sage</span></span>
-<span id="cb24-143"><a href="#cb24-143" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> sage</span></span>
-<span id="cb24-144"><a href="#cb24-144" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-145"><a href="#cb24-145" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-146"><a href="#cb24-146" aria-hidden="true" tabindex="-1"></a><span class="fu">d2</span><span class="kw">:</span></span>
-<span id="cb24-147"><a href="#cb24-147" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> d2</span></span>
-<span id="cb24-148"><a href="#cb24-148" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
-<span id="cb24-149"><a href="#cb24-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-150"><a href="#cb24-150" aria-hidden="true" tabindex="-1"></a><span class="fu">mermaid</span><span class="kw">:</span></span>
-<span id="cb24-151"><a href="#cb24-151" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> mmdc</span></span>
-<span id="cb24-152"><a href="#cb24-152" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span></code></pre></div>
+<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Directory in which to write temporary rendering scripts before they</span></span>
+<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a><span class="co"># are executed by each toolkit. By default, the system temporary directory</span></span>
+<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a><span class="co"># is used (e.g. /tmp on Linux). Override this when the renderer cannot</span></span>
+<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a><span class="co"># access the system temporary directory -- for example, when `mmdc` is</span></span>
+<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a><span class="co"># installed via `snap` on Linux and is sandboxed away from /tmp.</span></span>
+<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a><span class="co"># build_directory: .pandoc-plot-build</span></span>
+<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a><span class="co"># Logging configuration</span></span>
+<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a><span class="fu">logging</span><span class="kw">:</span></span>
+<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a><span class="co">  # Possible verbosity values: debug, error, warning, info, silent</span></span>
+<span id="cb24-64"><a href="#cb24-64" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">verbosity</span><span class="kw">:</span><span class="at"> warning</span></span>
+<span id="cb24-65"><a href="#cb24-65" aria-hidden="true" tabindex="-1"></a><span class="co">  # If the filepath below is not present, then pandoc-plot will log to stderr</span></span>
+<span id="cb24-66"><a href="#cb24-66" aria-hidden="true" tabindex="-1"></a><span class="co">  # Otherwise, log messages will be appended to the filepath.</span></span>
+<span id="cb24-67"><a href="#cb24-67" aria-hidden="true" tabindex="-1"></a><span class="co">  # filepath: path/to/file.txt</span></span>
+<span id="cb24-68"><a href="#cb24-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-69"><a href="#cb24-69" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Matplotlib toolkit</span></span>
+<span id="cb24-70"><a href="#cb24-70" aria-hidden="true" tabindex="-1"></a><span class="fu">matplotlib</span><span class="kw">:</span></span>
+<span id="cb24-71"><a href="#cb24-71" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: matplotlib.py</span></span>
+<span id="cb24-72"><a href="#cb24-72" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tight_bbox</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb24-73"><a href="#cb24-73" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">transparent</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb24-74"><a href="#cb24-74" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
+<span id="cb24-75"><a href="#cb24-75" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-76"><a href="#cb24-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-77"><a href="#cb24-77" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the MATLAB toolkit</span></span>
+<span id="cb24-78"><a href="#cb24-78" aria-hidden="true" tabindex="-1"></a><span class="fu">matlabplot</span><span class="kw">:</span></span>
+<span id="cb24-79"><a href="#cb24-79" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: matlab.m</span></span>
+<span id="cb24-80"><a href="#cb24-80" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> matlab</span></span>
+<span id="cb24-81"><a href="#cb24-81" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-82"><a href="#cb24-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-83"><a href="#cb24-83" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Plotly/Python toolkit</span></span>
+<span id="cb24-84"><a href="#cb24-84" aria-hidden="true" tabindex="-1"></a><span class="fu">plotly_python</span><span class="kw">:</span></span>
+<span id="cb24-85"><a href="#cb24-85" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotly-python.py</span></span>
+<span id="cb24-86"><a href="#cb24-86" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
+<span id="cb24-87"><a href="#cb24-87" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-88"><a href="#cb24-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-89"><a href="#cb24-89" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Plotly/R toolkit</span></span>
+<span id="cb24-90"><a href="#cb24-90" aria-hidden="true" tabindex="-1"></a><span class="fu">plotly_r</span><span class="kw">:</span></span>
+<span id="cb24-91"><a href="#cb24-91" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotly-r.r</span></span>
+<span id="cb24-92"><a href="#cb24-92" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> Rscript</span></span>
+<span id="cb24-93"><a href="#cb24-93" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-94"><a href="#cb24-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-95"><a href="#cb24-95" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Mathematica toolkit</span></span>
+<span id="cb24-96"><a href="#cb24-96" aria-hidden="true" tabindex="-1"></a><span class="fu">mathplot</span><span class="kw">:</span></span>
+<span id="cb24-97"><a href="#cb24-97" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: mathematica.m</span></span>
+<span id="cb24-98"><a href="#cb24-98" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> math</span></span>
+<span id="cb24-99"><a href="#cb24-99" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-100"><a href="#cb24-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-101"><a href="#cb24-101" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the GNU Octave toolkit</span></span>
+<span id="cb24-102"><a href="#cb24-102" aria-hidden="true" tabindex="-1"></a><span class="fu">octaveplot</span><span class="kw">:</span></span>
+<span id="cb24-103"><a href="#cb24-103" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: octave.m</span></span>
+<span id="cb24-104"><a href="#cb24-104" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> octave</span></span>
+<span id="cb24-105"><a href="#cb24-105" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-106"><a href="#cb24-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-107"><a href="#cb24-107" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the ggplot2 toolkit</span></span>
+<span id="cb24-108"><a href="#cb24-108" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot2</span><span class="kw">:</span></span>
+<span id="cb24-109"><a href="#cb24-109" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: ggplot2.r</span></span>
+<span id="cb24-110"><a href="#cb24-110" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> Rscript</span></span>
+<span id="cb24-111"><a href="#cb24-111" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-112"><a href="#cb24-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-113"><a href="#cb24-113" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the gnuplot toolkit</span></span>
+<span id="cb24-114"><a href="#cb24-114" aria-hidden="true" tabindex="-1"></a><span class="fu">gnuplot</span><span class="kw">:</span></span>
+<span id="cb24-115"><a href="#cb24-115" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: gnuplot.gp</span></span>
+<span id="cb24-116"><a href="#cb24-116" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> gnuplot</span></span>
+<span id="cb24-117"><a href="#cb24-117" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-118"><a href="#cb24-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-119"><a href="#cb24-119" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the graphviz toolkit</span></span>
+<span id="cb24-120"><a href="#cb24-120" aria-hidden="true" tabindex="-1"></a><span class="fu">graphviz</span><span class="kw">:</span></span>
+<span id="cb24-121"><a href="#cb24-121" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: graphviz.dot</span></span>
+<span id="cb24-122"><a href="#cb24-122" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> dot</span></span>
+<span id="cb24-123"><a href="#cb24-123" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-124"><a href="#cb24-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-125"><a href="#cb24-125" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Bokeh toolkit using Python</span></span>
+<span id="cb24-126"><a href="#cb24-126" aria-hidden="true" tabindex="-1"></a><span class="fu">bokeh</span><span class="kw">:</span></span>
+<span id="cb24-127"><a href="#cb24-127" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: bokeh.py</span></span>
+<span id="cb24-128"><a href="#cb24-128" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> python</span></span>
+<span id="cb24-129"><a href="#cb24-129" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-130"><a href="#cb24-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-131"><a href="#cb24-131" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the Plots.jl toolkit using Julia</span></span>
+<span id="cb24-132"><a href="#cb24-132" aria-hidden="true" tabindex="-1"></a><span class="fu">plotsjl</span><span class="kw">:</span></span>
+<span id="cb24-133"><a href="#cb24-133" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plotsjl.jl</span></span>
+<span id="cb24-134"><a href="#cb24-134" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> julia</span></span>
+<span id="cb24-135"><a href="#cb24-135" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-136"><a href="#cb24-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-137"><a href="#cb24-137" aria-hidden="true" tabindex="-1"></a><span class="co"># The possible parameters for the PlantUML toolkit</span></span>
+<span id="cb24-138"><a href="#cb24-138" aria-hidden="true" tabindex="-1"></a><span class="fu">plantuml</span><span class="kw">:</span></span>
+<span id="cb24-139"><a href="#cb24-139" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: plantuml.txt</span></span>
+<span id="cb24-140"><a href="#cb24-140" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> java</span></span>
+<span id="cb24-141"><a href="#cb24-141" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span><span class="at"> -jar plantuml.jar</span></span>
+<span id="cb24-142"><a href="#cb24-142" aria-hidden="true" tabindex="-1"></a><span class="co">  # On Linux, if you have `plantuml.jar` as an executable, you can also</span></span>
+<span id="cb24-143"><a href="#cb24-143" aria-hidden="true" tabindex="-1"></a><span class="co">  # use the following configuration instead:</span></span>
+<span id="cb24-144"><a href="#cb24-144" aria-hidden="true" tabindex="-1"></a><span class="co">  # plantuml:</span></span>
+<span id="cb24-145"><a href="#cb24-145" aria-hidden="true" tabindex="-1"></a><span class="co">  #   executable: plantuml</span></span>
+<span id="cb24-146"><a href="#cb24-146" aria-hidden="true" tabindex="-1"></a><span class="co">  #   command_line_arguments:</span></span>
+<span id="cb24-147"><a href="#cb24-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-148"><a href="#cb24-148" aria-hidden="true" tabindex="-1"></a><span class="fu">sageplot</span><span class="kw">:</span></span>
+<span id="cb24-149"><a href="#cb24-149" aria-hidden="true" tabindex="-1"></a><span class="co">  # preamble: sageplot.sage</span></span>
+<span id="cb24-150"><a href="#cb24-150" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> sage</span></span>
+<span id="cb24-151"><a href="#cb24-151" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-152"><a href="#cb24-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-153"><a href="#cb24-153" aria-hidden="true" tabindex="-1"></a><span class="fu">d2</span><span class="kw">:</span></span>
+<span id="cb24-154"><a href="#cb24-154" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> d2</span></span>
+<span id="cb24-155"><a href="#cb24-155" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span>
+<span id="cb24-156"><a href="#cb24-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-157"><a href="#cb24-157" aria-hidden="true" tabindex="-1"></a><span class="fu">mermaid</span><span class="kw">:</span></span>
+<span id="cb24-158"><a href="#cb24-158" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">executable</span><span class="kw">:</span><span class="at"> mmdc</span></span>
+<span id="cb24-159"><a href="#cb24-159" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">command_line_arguments</span><span class="kw">:</span></span></code></pre></div>
 <p>A file like the above sets the <strong>default</strong> values; you can still override them in documents directly.</p>
 <p>The easiest way to specify configuration for <code>pandoc-plot</code> is to place a <code>.pandoc-plot.yml</code> file in the current working directory. You can also specify a configuration file in document metadata, under the <code>plot-configuration</code> key. For example, in Markdown:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
