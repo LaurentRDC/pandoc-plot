@@ -148,7 +148,14 @@ tempScriptPath fs@FigureSpec {..} = do
   -- be rendered or not.
   fp <- figurePath fs
   let hashedPath = takeBaseName fp <> ext
-  liftIO $ (</> hashedPath) <$> getTemporaryDirectory
+  -- If a custom build directory is configured (see issue #81), use it so
+  -- that sandboxed renderers like snap-installed mmdc can read the script.
+  -- Otherwise fall back to the system temporary directory.
+  mBuildDir <- asksConfig configBuildDir
+  buildDir <- liftIO $ case mBuildDir of
+    Just d -> createDirectoryIfMissing True d >> pure d
+    Nothing -> getTemporaryDirectory
+  return (buildDir </> hashedPath)
 
 -- | Determine the path to the source code that generated the figure.
 -- To ensure that the source code path is distinguished from HTML figures, we use the extension .src.html.
