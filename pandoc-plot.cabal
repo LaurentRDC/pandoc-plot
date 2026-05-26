@@ -39,6 +39,7 @@ extra-source-files:
     tests/issue53.md
     tests/issue55.md
 
+    tests/fixtures/.build-directory-config.yml
     tests/fixtures/.config-meta.yml
     tests/fixtures/.empty-config.yml
     tests/fixtures/.issue30.yml

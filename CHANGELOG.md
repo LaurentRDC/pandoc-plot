@@ -4,6 +4,7 @@ pandoc-plot uses [Semantic Versioning](http://semver.org/spec/v2.0.0.html)
 
 ## Release 1.9.2
 
+* Added a `build_directory` configuration option to override the directory where temporary rendering scripts are written. This is useful for sandboxed renderers (e.g. `mmdc` installed via `snap` on Linux) that cannot access the system temporary directory (#82).
 * Fixed an issue where TeX output contained a figure even if the caption was empty (#37).
 * Fixed a documentation issue where the null command-line arguments for `plantuml` should have been `""` (#76).
 

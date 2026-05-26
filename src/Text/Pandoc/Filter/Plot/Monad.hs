@@ -327,6 +327,11 @@ data Configuration = Configuration
     logVerbosity :: !Verbosity,
     -- | Method of logging, i.e. printing to stderr or file.
     logSink :: !LogSink,
+    -- | Directory in which to write temporary rendering scripts. When @Nothing@,
+    -- the system temporary directory is used. Override this when the renderer
+    -- is sandboxed and cannot access the system temporary directory (e.g.
+    -- @mmdc@ installed via @snap@ on Linux).
+    configBuildDir :: !(Maybe FilePath),
     -- | The default preamble script for the matplotlib toolkit.
     matplotlibPreamble :: !Script,
     -- | The default preamble script for the Plotly/Python toolkit.

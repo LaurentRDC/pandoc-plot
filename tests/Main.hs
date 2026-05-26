@@ -28,7 +28,8 @@ main = do
           "Configuration tests"
           [ testEmptyConfiguration,
             testExampleConfiguration,
-            testConfigurationPathMeta
+            testConfigurationPathMeta,
+            testBuildDirectoryConfiguration
           ],
         testGroup
           "Parsing tests"
@@ -91,6 +92,13 @@ testExampleConfiguration =
 
     parsedConfig <- configuration "example-config.yml"
     assertEqual "" config parsedConfig
+
+-- Test for #81: a build_directory key in YAML maps to configBuildDir.
+testBuildDirectoryConfiguration :: TestTree
+testBuildDirectoryConfiguration =
+  testCase "build_directory is parsed into configBuildDir" $ do
+    parsedConfig <- configuration "tests/fixtures/.build-directory-config.yml"
+    assertEqual "" (Just "my-build-dir") (configBuildDir parsedConfig)
 
 -- Test that the path to configuration in metadata is found correctly
 testConfigurationPathMeta :: TestTree

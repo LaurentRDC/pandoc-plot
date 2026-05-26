@@ -50,6 +50,7 @@ defaultConfiguration =
       strictMode = False,
       logVerbosity = Warning,
       logSink = StdErr,
+      configBuildDir = Nothing,
       -- Preambles
       matplotlibPreamble = mempty,
       plotlyPythonPreamble = mempty,
@@ -163,7 +164,8 @@ data ConfigPrecursor = ConfigPrecursor
     _sagemathPrec :: !SageMathPrecursor,
     _d2Prec :: !D2Precursor,
     _asyPrec :: !AsyPrecursor,
-    _mermaidPrec :: !MermaidPrecursor
+    _mermaidPrec :: !MermaidPrecursor,
+    _configBuildDir :: !(Maybe FilePath)
   }
 
 defaultConfigPrecursor :: ConfigPrecursor
@@ -193,7 +195,8 @@ defaultConfigPrecursor =
       _sagemathPrec = SageMathPrecursor Nothing (sagemathExe defaultConfiguration) (sagemathCmdArgs defaultConfiguration),
       _d2Prec = D2Precursor Nothing (d2Exe defaultConfiguration) (d2CmdArgs defaultConfiguration),
       _asyPrec = AsyPrecursor Nothing (asyExe defaultConfiguration) (asyCmdArgs defaultConfiguration),
-      _mermaidPrec = MermaidPrecursor Nothing (mermaidExe defaultConfiguration) (mermaidCmdArgs defaultConfiguration)
+      _mermaidPrec = MermaidPrecursor Nothing (mermaidExe defaultConfiguration) (mermaidCmdArgs defaultConfiguration),
+      _configBuildDir = configBuildDir defaultConfiguration
     }
 
 data LoggingPrecursor = LoggingPrecursor
@@ -353,6 +356,8 @@ instance FromJSON ConfigPrecursor where
     _asyPrec <- v .:? toolkitAsKey Asymptote .!= _asyPrec defaultConfigPrecursor
     _mermaidPrec <- v .:? toolkitAsKey Mermaid .!= _mermaidPrec defaultConfigPrecursor
 
+    _configBuildDir <- v .:? "build_directory" .!= _configBuildDir defaultConfigPrecursor
+
     return $ ConfigPrecursor {..}
   parseJSON _ = fail "Could not parse configuration."
 
@@ -372,6 +377,8 @@ renderConfig ConfigPrecursor {..} = do
 
       matplotlibTightBBox = _matplotlibTightBBox _matplotlibPrec
       matplotlibTransparent = _matplotlibTransparent _matplotlibPrec
+
+      configBuildDir = _configBuildDir
 
       matplotlibExe = _matplotlibExe _matplotlibPrec
       matlabExe = _matlabExe _matlabPrec

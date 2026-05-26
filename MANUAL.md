@@ -386,6 +386,13 @@ dependencies:
 # Example: markdown, rst+raw_tex
 caption_format: markdown+tex_math_dollars
 
+# Directory in which to write temporary rendering scripts before they
+# are executed by each toolkit. By default, the system temporary directory
+# is used (e.g. /tmp on Linux). Override this when the renderer cannot
+# access the system temporary directory -- for example, when `mmdc` is
+# installed via `snap` on Linux and is sandboxed away from /tmp.
+# build_directory: .pandoc-plot-build
+
 
 # Logging configuration
 logging:
