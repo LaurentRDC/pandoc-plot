@@ -142,6 +142,8 @@ executable pandoc-plot
         ExampleConfig
         OpenFile
         Paths_pandoc_plot
+    autogen-modules:
+        Paths_pandoc_plot
     hs-source-dirs:
         executable
     ghc-options: -Wall -Wcompat -threaded -rtsopts -with-rtsopts=-N
